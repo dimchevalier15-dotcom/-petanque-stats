@@ -1,0 +1,25 @@
+{
+  "app": {
+    "title": "Pétanque Analytics"
+  },
+  "common": {
+    "hello": "Hello World"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "login": {
+      "title": "Sign in",
+      "submit": "Sign in",
+      "link": "Sign in"
+    },
+    "register": {
+      "title": "Create account",
+      "submit": "Register",
+      "link": "Create account"
+    },
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "logout": "Logout"
+  }
+}

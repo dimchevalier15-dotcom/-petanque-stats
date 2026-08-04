@@ -1,0 +1,25 @@
+{
+  "app": {
+    "title": "Pétanque Analytics"
+  },
+  "common": {
+    "hello": "Hello World"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Heslo",
+    "login": {
+      "title": "Prihlásenie",
+      "submit": "Prihlásiť sa",
+      "link": "Prihlásiť sa"
+    },
+    "register": {
+      "title": "Vytvoriť účet",
+      "submit": "Registrovať",
+      "link": "Vytvoriť účet"
+    },
+    "noAccount": "Ešte nemáte účet?",
+    "haveAccount": "Už máte účet?",
+    "logout": "Odhlásiť sa"
+  }
+}
