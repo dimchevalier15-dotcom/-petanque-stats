@@ -8,6 +8,7 @@ use App\Dto\Request\CreateMatchRequest;
 use App\Service\MatchService;
 use App\Dto\Request\CompleteMatchRequest;
 use App\Service\MatchRecordingService;
+use App\Service\MatchSummaryService;
 use App\Service\MatchValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,6 +24,7 @@ final class MatchController extends AbstractController
         private MatchRecordingService $recording,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
+        private MatchSummaryService $summary,
     ) {}
 
     /**
@@ -75,6 +77,17 @@ final class MatchController extends AbstractController
             return new JsonResponse(['errors' => $errors], 400);
         }
         $res = $this->recording->complete($id, $input);
+        $json = $this->serializer->serialize($res, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/matches/{id}/summary', name: 'api_matches_summary', methods: ['GET'])]
+    public function summary(int $id): JsonResponse
+    {
+        $res = $this->summary->getSummary($id);
+        if ($res === null) {
+            return new JsonResponse(['message' => 'Not found'], 404);
+        }
         $json = $this->serializer->serialize($res, 'json');
         return new JsonResponse($json, 200, [], true);
     }

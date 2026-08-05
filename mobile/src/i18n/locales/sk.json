@@ -6,6 +6,17 @@
     "hello": "Hello World",
     "comingSoon": "Už čoskoro"
   },
+  "summary": {
+    "title": "Zhrnutie zápasu",
+    "winnerA": "Víťazstvo Tím A",
+    "winnerB": "Víťazstvo Tím B",
+    "ends": "{n} mèn",
+    "table": {
+      "player": "Hráč",
+      "avg": "Priemer"
+    },
+    "actions": { "backHome": "Späť na úvod" }
+  },
   "home": {
     "welcome": "Vitajte!",
     "connectedAs": "Prihlásený ako {email}",

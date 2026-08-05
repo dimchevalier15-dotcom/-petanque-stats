@@ -213,7 +213,7 @@ function goNext() { goNextEnd() }
 async function onFinish() {
   const payload: CompleteMatchRequestDto = toSubmission()
   await matchesService.complete(matchId, payload)
-  router.push({ name: 'home' })
+  router.push({ name: 'matchSummary', params: { id: matchId } })
 }
 
 const names = ref<Record<number, string>>({})

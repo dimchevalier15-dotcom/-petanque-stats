@@ -14,6 +14,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/match/new', name: 'newMatch', component: NewMatchView },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView },
   { path: '/matches/:id/score', name: 'matchScore', component: () => import('../views/MatchPlayView.vue') },
+  { path: '/matches/:id/summary', name: 'matchSummary', component: () => import('../views/MatchSummaryView.vue') },
 ]
 
 const router = createRouter({

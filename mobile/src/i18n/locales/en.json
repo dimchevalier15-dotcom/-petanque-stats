@@ -6,6 +6,17 @@
     "hello": "Hello World",
     "comingSoon": "Coming soon"
   },
+  "summary": {
+    "title": "Match summary",
+    "winnerA": "Team A wins",
+    "winnerB": "Team B wins",
+    "ends": "{n} ends",
+    "table": {
+      "player": "Player",
+      "avg": "Average"
+    },
+    "actions": { "backHome": "Back to home" }
+  },
   "home": {
     "welcome": "Welcome!",
     "connectedAs": "Signed in as {email}",

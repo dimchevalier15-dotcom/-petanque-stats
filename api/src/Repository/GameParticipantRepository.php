@@ -47,4 +47,21 @@ final class GameParticipantRepository extends ServiceEntityRepository
             ->getQuery()->getSingleColumnResult();
         return array_map('intval', $rows);
     }
+
+    /**
+     * @return array<int, string> Map playerId => team ('A'|'B')
+     */
+    public function mapPlayerTeamByGame(Game $game): array
+    {
+        $rows = $this->createQueryBuilder('gp')
+            ->select('IDENTITY(gp.player) as pid, gp.team as team')
+            ->where('gp.game = :game')
+            ->setParameter('game', $game)
+            ->getQuery()->getArrayResult();
+        $map = [];
+        foreach ($rows as $r) {
+            $map[(int) $r['pid']] = (string) $r['team'];
+        }
+        return $map;
+    }
 }

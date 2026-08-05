@@ -6,6 +6,17 @@
     "hello": "Hello World",
     "comingSoon": "À venir"
   },
+  "summary": {
+    "title": "Résumé du match",
+    "winnerA": "Victoire Équipe A",
+    "winnerB": "Victoire Équipe B",
+    "ends": "{n} mènes",
+    "table": {
+      "player": "Joueur",
+      "avg": "Moyenne"
+    },
+    "actions": { "backHome": "Retour à l'accueil" }
+  },
   "home": {
     "welcome": "Bienvenue !",
     "connectedAs": "Connecté en tant que {email}",
