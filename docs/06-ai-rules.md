@@ -277,24 +277,155 @@ Exemples :
 La V1 privilégie systématiquement la solution la plus simple répondant au besoin métier.
 
 
-## Organisation des types TypeScript
+# Architecture Frontend
 
-Ne jamais déclarer un type ou une interface dans un composant Vue lorsqu'il représente une donnée métier ou un contrat d'API.
+## Principe
 
-Toujours créer un fichier dédié.
+Le frontend distingue toujours :
+
+- les modèles métier ;
+- les contrats d'échange avec l'API.
+
+Ces deux notions ne doivent jamais être mélangées.
+
+---
+
+## Models
+
+Les modèles représentent le métier.
 
 Organisation :
 
-- src/models : modèles métier
-- src/dto : contrats d'API (Request / Response)
+```
+src/
+    models/
+```
 
-Les composants importent toujours ces types.
+Exemples :
+
+```
+Player.ts
+User.ts
+Club.ts
+Match.ts
+```
+
+Un modèle décrit un objet métier utilisé dans l'application.
+
+Exemple :
+
+```ts
+export interface Player {
+    id: number
+    firstName: string
+    lastName: string
+    nickname: string
+    club: number | null
+}
+```
+
+Un modèle ne représente jamais directement un payload HTTP.
+
+---
+
+## DTO
+
+Les DTO représentent uniquement les échanges avec le backend.
+
+Organisation :
+
+```
+src/
+    dto/
+        auth/
+        player/
+        match/
+```
+
+Exemples :
+
+```
+LoginRequest
+LoginResponse
+
+RegisterRequest
+RegisterResponse
+
+CreatePlayerRequest
+CreatePlayerResponse
+
+CreateMatchRequest
+CreateMatchResponse
+```
+
+Les DTO décrivent exclusivement :
+
+- les requêtes HTTP ;
+- les réponses HTTP.
+
+Ils ne représentent pas le métier.
+
+---
+
+## Services
+
+Les Services :
+
+- appellent l'API ;
+- utilisent les DTO pour communiquer ;
+- convertissent les DTO si nécessaire.
+
+Ils ne contiennent jamais de logique métier.
+
+Ils ne déclarent jamais de type local.
+
+---
+
+## Stores
+
+Les Stores manipulent uniquement les modèles métier.
+
+Ils ne doivent pas manipuler directement les DTO lorsque cela peut être évité.
+
+La conversion DTO → Model doit être réalisée dans les Services.
+
+---
+
+## Composants Vue
+
+Les composants ne déclarent jamais :
+
+- interface ;
+- type ;
+
+lorsqu'il s'agit :
+
+- d'un modèle métier ;
+- d'un contrat d'API.
+
+Ils importent toujours les types existants.
+
+---
+
+## Règles
+
+Un fichier = une responsabilité.
+
+Un modèle = un fichier.
+
+Un DTO = un fichier.
+
+Aucune duplication.
+
+Aucun type métier déclaré localement.
+
+Aucun DTO déclaré localement.
 
 Objectif :
 
-- un modèle = une définition ;
-- aucune duplication ;
-- aucun type métier déclaré localement dans un composant.
+- une seule définition ;
+- un code lisible ;
+- un projet facile à maintenir.
 
 
 # Architecture Backend

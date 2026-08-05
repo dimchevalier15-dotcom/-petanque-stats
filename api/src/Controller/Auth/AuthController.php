@@ -5,26 +5,29 @@ declare(strict_types=1);
 namespace App\Controller\Auth;
 
 use App\Dto\Auth\RegisterInput;
+use App\Service\Auth\CurrentUserService;
 use App\Service\Auth\EmailAlreadyUsedException;
+use App\Service\Auth\InvalidCredentialsException;
 use App\Service\Auth\RegistrationService;
 use App\Service\Auth\RegistrationValidationException;
-use App\Repository\UserRepository;
+use App\Dto\Request\LoginRequest;
+use App\Service\Auth\LoginService;
+use App\Dto\Response\LoginResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class AuthController extends AbstractController
 {
     public function __construct(
         private SerializerInterface $serializer,
         private RegistrationService $registrationService,
-        private UserRepository $users,
-        private UserPasswordHasherInterface $passwordHasher,
-        private JWTEncoderInterface $jwtEncoder,
+        private LoginService $loginService,
+        private ValidatorInterface $validator,
+        private CurrentUserService $currentUserService,
     ) {}
 
     #[Route('/api/auth/register', name: 'api_auth_register', methods: ['POST'])]
@@ -36,21 +39,25 @@ final class AuthController extends AbstractController
 
             $output = $this->registrationService->register($input);
 
-            return $this->json($output, status: 201);
+            $json = $this->serializer->serialize($output, 'json');
+            return new JsonResponse($json, 201, [], true);
         } catch (RegistrationValidationException $e) {
-            return $this->json([
+            $payload = [
                 'error' => 'invalid_request',
                 'details' => $e->errors,
-            ], status: 400);
+            ];
+            return new JsonResponse($payload, 400);
         } catch (EmailAlreadyUsedException) {
-            return $this->json([
+            $payload = [
                 'error' => 'email_already_used',
-            ], status: 409);
+            ];
+            return new JsonResponse($payload, 409);
         } catch (\Throwable $e) {
             // Do not expose technical details
-            return $this->json([
+            $payload = [
                 'error' => $e->getMessage(),
-            ], status: 400);
+            ];
+            return new JsonResponse($payload, 400);
         }
     }
 
@@ -58,37 +65,39 @@ final class AuthController extends AbstractController
     public function login(Request $request): JsonResponse
     {
         try {
-            /** @var array{email?: string, password?: string} $payload */
-            $payload = (array) json_decode($request->getContent(), true);
-            $email = isset($payload['email']) && \is_string($payload['email']) ? trim($payload['email']) : '';
-            $password = isset($payload['password']) && \is_string($payload['password']) ? $payload['password'] : '';
-
-            if ($email === '' || $password === '') {
-                return $this->json(['message' => 'Invalid credentials.'], 401);
+            /** @var LoginRequest $input */
+            $input = $this->serializer->deserialize($request->getContent(), LoginRequest::class, 'json');
+            $violations = $this->validator->validate($input);
+            if (\count($violations) > 0) {
+                return new JsonResponse(['message' => 'Invalid credentials.'], 401);
             }
 
-            $user = $this->users->findOneBy(['email' => $email]);
-            if ($user === null) {
-                return $this->json(['message' => 'Invalid credentials.'], 401);
-            }
-
-            if (!$this->passwordHasher->isPasswordValid($user, $password)) {
-                return $this->json(['message' => 'Invalid credentials.'], 401);
-            }
-
-            // Build a payload compatible with Lexik configuration (username claim is conventional)
-            $token = $this->jwtEncoder->encode([
-                'username' => $user->getEmail(),
-                'sub' => (string) $user->getId(),
-                'roles' => [],
-                'exp' => time() + 3600, // 1 hour validity by default
-                'iat' => time(),
-            ]);
-
-            return $this->json(['token' => $token]);
+            $res = $this->loginService->login($input);
+            // Ensure exact payload shape {"token":"..."}
+            $json = $this->serializer->serialize($res, 'json');
+            return new JsonResponse($json, 200, [], true);
+        } catch (InvalidCredentialsException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
         } catch (\Throwable) {
             // Never expose technical errors
-            return $this->json(['message' => 'Invalid credentials.'], 401);
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+    }
+
+    #[Route('/api/auth/me', name: 'api_auth_me', methods: ['GET'])]
+    public function me(Request $request): JsonResponse
+    {
+        $authHeader = (string) $request->headers->get('Authorization', '');
+        if (!str_starts_with($authHeader, 'Bearer ')) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+        $token = substr($authHeader, 7);
+        try {
+            $res = $this->currentUserService->meFromToken($token);
+            $json = $this->serializer->serialize($res, 'json');
+            return new JsonResponse($json, 200, [], true);
+        } catch (\App\Service\Auth\InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
         }
     }
 }

@@ -4,100 +4,65 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Player;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Dto\Request\CreatePlayerRequest;
+use App\Dto\Request\SearchPlayersQuery;
+use App\Dto\Response\CreatePlayerResponse;
+use App\Dto\Response\PlayerItem;
+use App\Service\PlayerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class PlayerController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        private PlayerService $playerService,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
     ) {
     }
 
     #[Route('/api/players', name: 'api_players_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        /** @var array{firstName?: mixed, lastName?: mixed, nickname?: mixed} $payload */
-        $payload = (array) json_decode($request->getContent(), true);
-
-        $firstName = isset($payload['firstName']) && \is_string($payload['firstName']) ? trim($payload['firstName']) : '';
-        $lastName = isset($payload['lastName']) && \is_string($payload['lastName']) ? trim($payload['lastName']) : '';
-        $nickname = isset($payload['nickname']) && \is_string($payload['nickname']) ? trim($payload['nickname']) : '';
-
-        $errors = [];
-        if ($firstName === '') {
-            $errors['firstName'] = 'This field is required.';
-        }
-        if ($lastName === '') {
-            $errors['lastName'] = 'This field is required.';
+        /** @var CreatePlayerRequest $input */
+        $input = $this->serializer->deserialize($request->getContent(), CreatePlayerRequest::class, 'json');
+        $violations = $this->validator->validate($input);
+        if (\count($violations) > 0) {
+            $errors = [];
+            foreach ($violations as $v) {
+                $field = $v->getPropertyPath();
+                $errors[$field] = $v->getMessage();
+            }
+            return new JsonResponse(['errors' => $errors], 400);
         }
 
-        if ($errors !== []) {
-            return $this->json(['errors' => $errors], 400);
-        }
-
-        $player = new Player(
-            firstName: $firstName,
-            lastName: $lastName,
-            nickname: $nickname !== '' ? $nickname : $firstName,
-        );
-        // Ensure new player is not linked to any user
-        $player->setUser(null);
-
-        $this->em->persist($player);
-        $this->em->flush();
-
-        return $this->json([
-            'id' => (int) $player->getId(),
-            'firstName' => $player->getFirstName(),
-            'lastName' => $player->getLastName(),
-            'nickname' => $player->getNickname(),
-        ], 201);
+        $output = $this->playerService->create($input);
+        $json = $this->serializer->serialize($output, 'json');
+        return new JsonResponse($json, 201, [], true);
     }
 
     #[Route('/api/players', name: 'api_players_search', methods: ['GET'])]
     public function search(Request $request): JsonResponse
     {
-        $q = trim((string) $request->query->get('q', ''));
-        $qb = $this->em->createQueryBuilder();
-        $qb->select('p')
-            ->from(Player::class, 'p');
-        if ($q !== '') {
-            $qb->where($qb->expr()->orX(
-                $qb->expr()->like('LOWER(p.firstName)', ':q'),
-                $qb->expr()->like('LOWER(p.lastName)', ':q'),
-                $qb->expr()->like('LOWER(p.nickname)', ':q'),
-            ))
-            ->setParameter('q', '%'.mb_strtolower($q).'%');
-        }
-        $qb->setMaxResults(20)->orderBy('p.firstName', 'ASC');
-        /** @var list<Player> $players */
-        $players = $qb->getQuery()->getResult();
-        $data = array_map(fn(Player $p) => [
-            'id' => (int) $p->getId(),
-            'firstName' => $p->getFirstName(),
-            'lastName' => $p->getLastName(),
-            'nickname' => $p->getNickname(),
-        ], $players);
-        return $this->json($data);
+        $q = new SearchPlayersQuery();
+        $q->q = $request->query->get('q') !== null ? (string) $request->query->get('q') : null;
+        $items = $this->playerService->search($q);
+        $json = $this->serializer->serialize($items, 'json');
+        return new JsonResponse($json, 200, [], true);
     }
 
     #[Route('/api/players/{id}', name: 'api_players_get', methods: ['GET'])]
     public function getOne(int $id): JsonResponse
     {
-        $player = $this->em->getRepository(Player::class)->find($id);
-        if (!$player) {
-            return $this->json(['message' => 'Not found'], 404);
+        $item = $this->playerService->getOne($id);
+        if ($item === null) {
+            return new JsonResponse(['message' => 'Not found'], 404);
         }
-        return $this->json([
-            'id' => (int) $player->getId(),
-            'firstName' => $player->getFirstName(),
-            'lastName' => $player->getLastName(),
-            'nickname' => $player->getNickname(),
-        ]);
+        $json = $this->serializer->serialize($item, 'json');
+        return new JsonResponse($json, 200, [], true);
     }
 }
