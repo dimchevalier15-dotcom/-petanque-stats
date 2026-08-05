@@ -74,6 +74,12 @@
       "triplette": "Triplette"
     },
     "fields": { "playerN": "Player {n}", "type": "Type", "target": "Target score" },
+    "stats": {
+      "sectionTitle": "Statistics",
+      "mode": { "title": "Scoring mode" },
+      "modes": { "standard": "Standard", "simple": "Simple" },
+      "tracked": { "title": "Tracked players" }
+    },
     "actions": { "start": "Start match", "cancel": "Cancel" },
     "validations": {
       "required": "Required field",

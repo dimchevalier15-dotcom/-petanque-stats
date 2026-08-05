@@ -8,6 +8,7 @@ use App\Dto\Request\CreateMatchRequest;
 use App\Dto\Response\CreateMatchResponse;
 use App\Entity\Game;
 use App\Entity\GameParticipant;
+use App\Entity\GameTracked;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -53,7 +54,26 @@ final class MatchService
             }
         }
 
-        $game = new Game($req->type, $req->targetScore);
+        // statistics mode validation (also asserted in DTO)
+        if (!in_array($req->statisticsMode, ['standard','simple'], true)) {
+            throw MatchValidationException::withErrors(['statisticsMode' => 'Invalid statistics mode.']);
+        }
+
+        // Normalize tracked players: default to all if empty
+        $tracked = $req->trackedPlayers;
+        if ($tracked === null || $tracked === []) {
+            $tracked = $allIds;
+        } else {
+            // Ensure all tracked players are part of the match selection
+            $tracked = array_values(array_unique(array_map('intval', $tracked)));
+            foreach ($tracked as $pid) {
+                if (!in_array($pid, $allIds, true)) {
+                    throw MatchValidationException::withErrors(['trackedPlayers' => 'Tracked player not in match: '.$pid]);
+                }
+            }
+        }
+
+        $game = new Game($req->type, $req->targetScore, $req->statisticsMode);
         $this->em->persist($game);
         $pos = 1;
         foreach ($req->teamA as $pid) {
@@ -62,6 +82,10 @@ final class MatchService
         $pos = 1;
         foreach ($req->teamB as $pid) {
             $this->em->persist(new GameParticipant($game, $map[(int) $pid], 'B', $pos++));
+        }
+        // Persist tracked players
+        foreach ($tracked as $pid) {
+            $this->em->persist(new GameTracked($game, $map[(int) $pid]));
         }
         $this->em->flush();
 

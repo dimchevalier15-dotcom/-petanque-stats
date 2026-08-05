@@ -74,6 +74,12 @@
       "triplette": "Triplette"
     },
     "fields": { "playerN": "Joueur {n}", "type": "Type", "target": "Score cible" },
+    "stats": {
+      "sectionTitle": "Statistiques",
+      "mode": { "title": "Mode de notation" },
+      "modes": { "standard": "Standard", "simple": "Simplifié" },
+      "tracked": { "title": "Joueurs suivis" }
+    },
     "actions": { "start": "Commencer le match", "cancel": "Annuler" },
     "validations": {
       "required": "Champ obligatoire",

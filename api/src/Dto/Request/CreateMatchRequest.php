@@ -15,6 +15,14 @@ final class CreateMatchRequest
     #[Assert\Positive]
     public int $targetScore = 13;
 
+    /**
+     * Statistics entry mode for this match.
+     * Allowed values: standard | simple
+     */
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: ['standard','simple'])]
+    public string $statisticsMode = 'standard';
+
     /** @var list<int> */
     #[Assert\Count(min: 1, max: 3)]
     public array $teamA = [];
@@ -22,4 +30,10 @@ final class CreateMatchRequest
     /** @var list<int> */
     #[Assert\Count(min: 1, max: 3)]
     public array $teamB = [];
+
+    /**
+     * @var list<int> Player ids that will have their individual statistics tracked
+     * Optional; when empty, defaults to all selected players server-side.
+     */
+    public array $trackedPlayers = [];
 }

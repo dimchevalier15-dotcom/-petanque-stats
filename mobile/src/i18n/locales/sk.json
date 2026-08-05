@@ -74,6 +74,12 @@
       "triplette": "Triplette"
     },
     "fields": { "playerN": "Hráč {n}", "type": "Typ", "target": "Cieľové skóre" },
+    "stats": {
+      "sectionTitle": "Štatistiky",
+      "mode": { "title": "Režim bodovania" },
+      "modes": { "standard": "Štandardný", "simple": "Zjednodušený" },
+      "tracked": { "title": "Sledovaní hráči" }
+    },
     "actions": { "start": "Začať zápas", "cancel": "Zrušiť" },
     "validations": {
       "required": "Povinné pole",

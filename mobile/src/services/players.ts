@@ -1,23 +1,24 @@
 import api from './http'
+import type { CreatePlayerRequest } from '../dto/player/CreatePlayerRequest'
+import type { CreatePlayerResponseDto } from '../dto/player/CreatePlayerResponse'
+import type { PlayerItemDto } from '../dto/player/PlayerItem'
+import type { Player } from '../models/Player'
 
-export type Player = {
-  id: number
-  firstName: string
-  lastName: string
-  nickname: string
+function toModel(dto: PlayerItemDto): Player {
+  return { id: dto.id, firstName: dto.firstName, lastName: dto.lastName, nickname: dto.nickname }
 }
 
 export const playersService = {
-  async create(payload: { firstName: string; lastName: string; nickname?: string }): Promise<Player> {
-    const { data } = await api.post<Player>('/players', payload)
-    return data
+  async create(payload: CreatePlayerRequest): Promise<Player> {
+    const { data } = await api.post<CreatePlayerResponseDto>('/players', payload)
+    return toModel(data)
   },
   async search(q: string): Promise<Player[]> {
-    const { data } = await api.get<Player[]>('/players', { params: { q } })
-    return data
+    const { data } = await api.get<PlayerItemDto[]>('/players', { params: { q } })
+    return data.map(toModel)
   },
   async getById(id: number): Promise<Player> {
-    const { data } = await api.get<Player>(`/players/${id}`)
-    return data
+    const { data } = await api.get<PlayerItemDto>(`/players/${id}`)
+    return toModel(data)
   },
 }

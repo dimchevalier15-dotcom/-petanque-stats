@@ -1,17 +1,10 @@
 import api from './http'
-
-export type MatchType = 'tete_a_tete' | 'doublette' | 'triplette'
-
-export type CreateMatchPayload = {
-  type: MatchType
-  targetScore: number
-  teamA: number[]
-  teamB: number[]
-}
+import type { CreateMatchRequestDto } from '../dto/match/CreateMatchRequest'
+import type { CreateMatchResponseDto } from '../dto/match/CreateMatchResponse'
 
 export const matchesService = {
-  async create(payload: CreateMatchPayload): Promise<{ id: number }> {
-    const { data } = await api.post<{ id: number }>('/matches', payload)
+  async create(payload: CreateMatchRequestDto): Promise<CreateMatchResponseDto> {
+    const { data } = await api.post<CreateMatchResponseDto>('/matches', payload)
     return data
   },
 }

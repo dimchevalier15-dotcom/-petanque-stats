@@ -97,6 +97,30 @@ sans demande explicite.
 
 ---
 
+# Avant toute implémentation
+
+Avant de créer :
+
+- une classe ;
+- un composant ;
+- un Model ;
+- un DTO ;
+- un Service ;
+- une Entity ;
+- un Repository ;
+
+toujours vérifier s'il n'existe pas déjà.
+
+S'il existe :
+
+- le compléter ;
+- le réutiliser ;
+
+Ne jamais créer un doublon.
+
+La duplication est interdite.
+
+
 # Frontend
 
 Les composants Vue doivent rester simples.

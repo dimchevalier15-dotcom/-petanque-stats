@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia'
-import { authService, type AuthResponse, type AuthUser } from '../services/auth'
+import { authService } from '../services/auth'
+import type { AuthSession } from '../models/AuthSession'
+import type { User } from '../models/User'
 
 const TOKEN_KEY = 'auth_token'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: null as string | null,
-    user: null as AuthUser | null,
+    user: null as User | null,
     loading: false,
     lastError: null as string | null,
   }),
@@ -31,7 +33,7 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       this.lastError = null
       try {
-        const res: AuthResponse = await authService.register(email, password)
+        const res: AuthSession = await authService.register(email, password)
         this.token = res.token
         this.user = res.user
         localStorage.setItem(TOKEN_KEY, res.token)
@@ -45,7 +47,7 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       this.lastError = null
       try {
-        const res: AuthResponse = await authService.login(email, password)
+        const res: AuthSession = await authService.login(email, password)
         this.token = res.token
         this.user = res.user
         localStorage.setItem(TOKEN_KEY, res.token)
