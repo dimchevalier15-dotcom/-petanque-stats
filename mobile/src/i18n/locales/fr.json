@@ -87,5 +87,11 @@
       "generic": "Impossible de créer le match."
     },
     "score": { "title": "Saisie des mènes", "content": "Écran à venir." }
+  },
+  "play": {
+    "end": "Mène",
+    "score": "Score",
+    "endScore": { "title": "Fin de mène" },
+    "actions": { "saveEnd": "Enregistrer la mène", "finish": "Terminer le match" }
   }
 }

@@ -13,7 +13,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/register', name: 'register', component: RegisterView },
   { path: '/match/new', name: 'newMatch', component: NewMatchView },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView },
-  { path: '/matches/:id/score', name: 'matchScore', component: () => import('../views/MatchScorePlaceholder.vue') },
+  { path: '/matches/:id/score', name: 'matchScore', component: () => import('../views/MatchPlayView.vue') },
 ]
 
 const router = createRouter({

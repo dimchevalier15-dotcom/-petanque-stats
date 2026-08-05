@@ -87,5 +87,11 @@
       "generic": "Could not create the match."
     },
     "score": { "title": "End recording", "content": "Screen coming soon." }
+  },
+  "play": {
+    "end": "End",
+    "score": "Score",
+    "endScore": { "title": "End score" },
+    "actions": { "saveEnd": "Save end", "finish": "Finish match" }
   }
 }

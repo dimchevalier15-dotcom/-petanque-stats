@@ -6,6 +6,8 @@ namespace App\Controller;
 
 use App\Dto\Request\CreateMatchRequest;
 use App\Service\MatchService;
+use App\Dto\Request\CompleteMatchRequest;
+use App\Service\MatchRecordingService;
 use App\Service\MatchValidationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,6 +20,7 @@ final class MatchController extends AbstractController
 {
     public function __construct(
         private MatchService $service,
+        private MatchRecordingService $recording,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {}
@@ -55,5 +58,24 @@ final class MatchController extends AbstractController
         } catch (MatchValidationException $e) {
             return new JsonResponse(['errors' => $e->errors], 400);
         }
+    }
+
+    #[Route('/api/matches/{id}/complete', name: 'api_matches_complete', methods: ['POST'])]
+    public function complete(int $id, Request $request): JsonResponse
+    {
+        /** @var CompleteMatchRequest $input */
+        $input = $this->serializer->deserialize($request->getContent(), CompleteMatchRequest::class, 'json');
+        $violations = $this->validator->validate($input);
+        if (\count($violations) > 0) {
+            $errors = [];
+            foreach ($violations as $v) {
+                $field = $v->getPropertyPath();
+                $errors[$field] = $v->getMessage();
+            }
+            return new JsonResponse(['errors' => $errors], 400);
+        }
+        $res = $this->recording->complete($id, $input);
+        $json = $this->serializer->serialize($res, 'json');
+        return new JsonResponse($json, 200, [], true);
     }
 }

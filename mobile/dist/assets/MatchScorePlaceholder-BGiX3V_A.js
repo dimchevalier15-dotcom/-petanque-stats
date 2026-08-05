@@ -1,1 +1,0 @@
-import{d as a,u as o,c as n,a as t,t as c,b as s,o as r,_ as l}from"./index-rXNOuYHm.js";const _={class:"placeholder"},p=a({__name:"MatchScorePlaceholder",setup(d){const{t:e}=o();return(h,u)=>(r(),n("section",_,[t("h2",null,c(s(e)("matches.score.title")),1),t("p",null,c(s(e)("matches.score.content")),1)]))}}),i=l(p,[["__scopeId","data-v-9cf63f7d"]]);export{i as default};

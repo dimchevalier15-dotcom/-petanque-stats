@@ -355,7 +355,18 @@ async function onSubmit() {
       statisticsMode: statisticsMode.value,
       trackedPlayers,
     })
-    router.push({ name: 'matchScore', params: { id } })
+    router.push({
+      name: 'matchScore',
+      params: { id },
+      query: {
+        type: type.value,
+        targetScore: String(targetScore.value),
+        teamA: teamA.join(','),
+        teamB: teamB.join(','),
+        statisticsMode: statisticsMode.value,
+        tracked: trackedPlayers.join(','),
+      },
+    })
   } catch (e) {
     // naive mapping of backend errors (display on first slot)
     errors['A1'] = errors['A1'] || t('matches.validations.generic')
