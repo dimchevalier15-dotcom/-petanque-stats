@@ -1,11 +1,5 @@
 import api from './http'
 
-export type CreatePlayerInput = {
-  firstName: string
-  lastName: string
-  nickname?: string
-}
-
 export type Player = {
   id: number
   firstName: string
@@ -14,8 +8,16 @@ export type Player = {
 }
 
 export const playersService = {
-  async create(input: CreatePlayerInput): Promise<Player> {
-    const { data } = await api.post<Player>('/players', input)
+  async create(payload: { firstName: string; lastName: string; nickname?: string }): Promise<Player> {
+    const { data } = await api.post<Player>('/players', payload)
+    return data
+  },
+  async search(q: string): Promise<Player[]> {
+    const { data } = await api.get<Player[]>('/players', { params: { q } })
+    return data
+  },
+  async getById(id: number): Promise<Player> {
+    const { data } = await api.get<Player>(`/players/${id}`)
     return data
   },
 }

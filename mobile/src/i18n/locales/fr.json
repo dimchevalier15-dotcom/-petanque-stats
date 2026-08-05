@@ -64,5 +64,22 @@
     "validations": {
       "required": "Champ obligatoire"
     }
+  },
+  "matches": {
+    "create": { "title": "Nouveau match" },
+    "teams": { "a": "Équipe A", "b": "Équipe B" },
+    "types": {
+      "teteATete": "Tête-à-tête",
+      "doublette": "Doublette",
+      "triplette": "Triplette"
+    },
+    "fields": { "playerN": "Joueur {n}", "type": "Type", "target": "Score cible" },
+    "actions": { "start": "Commencer le match", "cancel": "Annuler" },
+    "validations": {
+      "required": "Champ obligatoire",
+      "duplicates": "Un joueur ne peut pas être sélectionné deux fois.",
+      "generic": "Impossible de créer le match."
+    },
+    "score": { "title": "Saisie des mènes", "content": "Écran à venir." }
   }
 }

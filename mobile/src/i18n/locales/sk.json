@@ -64,5 +64,22 @@
     "validations": {
       "required": "Povinné pole"
     }
+  },
+  "matches": {
+    "create": { "title": "Nový zápas" },
+    "teams": { "a": "Tím A", "b": "Tím B" },
+    "types": {
+      "teteATete": "Hra jeden na jedného",
+      "doublette": "Doublette",
+      "triplette": "Triplette"
+    },
+    "fields": { "playerN": "Hráč {n}", "type": "Typ", "target": "Cieľové skóre" },
+    "actions": { "start": "Začať zápas", "cancel": "Zrušiť" },
+    "validations": {
+      "required": "Povinné pole",
+      "duplicates": "Hráča nie je možné vybrať dvakrát.",
+      "generic": "Zápas sa nepodarilo vytvoriť."
+    },
+    "score": { "title": "Zápis mèn", "content": "Obrazovka čoskoro." }
   }
 }

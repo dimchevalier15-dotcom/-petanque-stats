@@ -59,14 +59,19 @@ async function onSubmit(): Promise<void> {
   if (!validateLocal()) return
   submitting.value = true
   try {
-    await playersService.create({
+    const created = await playersService.create({
       firstName: firstName.value.trim(),
       lastName: lastName.value.trim(),
       nickname: nickname.value.trim() || undefined,
     })
 
     toast.add({ severity: 'success', summary: t('players.create.toast.success'), life: 2000 })
-    router.push({ name: 'home' })
+    const q = router.currentRoute.value.query as Record<string, string | undefined>
+    if (q.returnTo === 'newMatch' && q.slot) {
+      router.push({ name: 'newMatch', query: { newPlayerId: String(created.id), slot: q.slot } })
+    } else {
+      router.push({ name: 'home' })
+    }
   } catch (e: unknown) {
     // Try to read server-side validation format { errors: { firstName?: string, lastName?: string } }
     const err = e as import('axios').AxiosError<{ errors?: Record<string, string> }>

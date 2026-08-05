@@ -275,3 +275,201 @@ Exemples :
 - Design patterns avancés
 
 La V1 privilégie systématiquement la solution la plus simple répondant au besoin métier.
+
+
+## Organisation des types TypeScript
+
+Ne jamais déclarer un type ou une interface dans un composant Vue lorsqu'il représente une donnée métier ou un contrat d'API.
+
+Toujours créer un fichier dédié.
+
+Organisation :
+
+- src/models : modèles métier
+- src/dto : contrats d'API (Request / Response)
+
+Les composants importent toujours ces types.
+
+Objectif :
+
+- un modèle = une définition ;
+- aucune duplication ;
+- aucun type métier déclaré localement dans un composant.
+
+
+# Architecture Backend
+
+## Principe
+
+Le backend suit une architecture simple.
+
+```
+HTTP
+    ↓
+Controller
+    ↓
+Service
+    ↓
+Repository
+    ↓
+Database
+```
+
+Le Controller ne contient jamais de logique métier.
+
+---
+
+## Controllers
+
+Le Controller a une seule responsabilité.
+
+Il doit uniquement :
+
+- recevoir la requête HTTP ;
+- désérialiser le DTO d'entrée ;
+- déclencher la validation Symfony ;
+- appeler un Service ;
+- retourner un DTO de réponse.
+
+Le Controller ne doit jamais :
+
+- parser du JSON manuellement ;
+- construire une Entity ;
+- appeler Doctrine directement ;
+- écrire une requête DQL ;
+- contenir des règles métier.
+
+Un Controller doit rester très court.
+
+Objectif :
+
+moins de 30 lignes par méthode.
+
+---
+
+## DTO
+
+Tous les endpoints utilisent des DTO.
+
+Organisation :
+
+```
+src/
+    DTO/
+        Request/
+        Response/
+```
+
+Exemple :
+
+```
+CreatePlayerRequest
+CreatePlayerResponse
+
+LoginRequest
+LoginResponse
+
+RegisterRequest
+RegisterResponse
+```
+
+Les Controllers ne manipulent jamais directement les Entities.
+
+---
+
+## Services
+
+Toute la logique métier est placée dans un Service.
+
+Exemple :
+
+```
+PlayerService
+
+AuthService
+
+MatchService
+```
+
+Les Services :
+
+- appliquent les règles métier ;
+- créent les Entities ;
+- utilisent les Repositories.
+
+Ils ne connaissent jamais HTTP.
+
+Ils ne retournent jamais de JsonResponse.
+
+---
+
+## Repositories
+
+Les requêtes Doctrine sont placées dans les Repository.
+
+Les Controllers et Services n'utilisent jamais QueryBuilder directement.
+
+Les méthodes doivent être explicites.
+
+Exemple :
+
+```
+search(string $query): array
+
+findByEmail(string $email): ?User
+```
+
+---
+
+## Validation
+
+Toujours utiliser le composant Validator de Symfony.
+
+Ne jamais construire un tableau d'erreurs manuellement.
+
+Les contraintes sont portées par les DTO.
+
+Exemple :
+
+- NotBlank
+- Length
+- Email
+
+---
+
+## Serializer
+
+Toujours utiliser le Serializer Symfony.
+
+Ne jamais utiliser :
+
+json_decode()
+
+Ne jamais construire les réponses JSON sous forme de tableaux.
+
+Les DTO de réponse sont sérialisés automatiquement.
+
+---
+
+## Typage
+
+Strict types obligatoires.
+
+Ne jamais utiliser :
+
+- mixed
+- array<string,mixed>
+
+Créer un DTO dès qu'une structure est échangée.
+
+---
+
+## Objectif
+
+Le code doit être lisible.
+
+Chaque classe possède une responsabilité unique.
+
+Le backend doit rester simple.
+
+La simplicité est toujours préférée à une implémentation "intelligente".

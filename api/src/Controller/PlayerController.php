@@ -58,4 +58,46 @@ final class PlayerController extends AbstractController
             'nickname' => $player->getNickname(),
         ], 201);
     }
+
+    #[Route('/api/players', name: 'api_players_search', methods: ['GET'])]
+    public function search(Request $request): JsonResponse
+    {
+        $q = trim((string) $request->query->get('q', ''));
+        $qb = $this->em->createQueryBuilder();
+        $qb->select('p')
+            ->from(Player::class, 'p');
+        if ($q !== '') {
+            $qb->where($qb->expr()->orX(
+                $qb->expr()->like('LOWER(p.firstName)', ':q'),
+                $qb->expr()->like('LOWER(p.lastName)', ':q'),
+                $qb->expr()->like('LOWER(p.nickname)', ':q'),
+            ))
+            ->setParameter('q', '%'.mb_strtolower($q).'%');
+        }
+        $qb->setMaxResults(20)->orderBy('p.firstName', 'ASC');
+        /** @var list<Player> $players */
+        $players = $qb->getQuery()->getResult();
+        $data = array_map(fn(Player $p) => [
+            'id' => (int) $p->getId(),
+            'firstName' => $p->getFirstName(),
+            'lastName' => $p->getLastName(),
+            'nickname' => $p->getNickname(),
+        ], $players);
+        return $this->json($data);
+    }
+
+    #[Route('/api/players/{id}', name: 'api_players_get', methods: ['GET'])]
+    public function getOne(int $id): JsonResponse
+    {
+        $player = $this->em->getRepository(Player::class)->find($id);
+        if (!$player) {
+            return $this->json(['message' => 'Not found'], 404);
+        }
+        return $this->json([
+            'id' => (int) $player->getId(),
+            'firstName' => $player->getFirstName(),
+            'lastName' => $player->getLastName(),
+            'nickname' => $player->getNickname(),
+        ]);
+    }
 }

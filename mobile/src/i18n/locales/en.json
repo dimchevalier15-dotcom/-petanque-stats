@@ -64,5 +64,22 @@
     "validations": {
       "required": "Required field"
     }
+  },
+  "matches": {
+    "create": { "title": "New match" },
+    "teams": { "a": "Team A", "b": "Team B" },
+    "types": {
+      "teteATete": "Head-to-head",
+      "doublette": "Doublette",
+      "triplette": "Triplette"
+    },
+    "fields": { "playerN": "Player {n}", "type": "Type", "target": "Target score" },
+    "actions": { "start": "Start match", "cancel": "Cancel" },
+    "validations": {
+      "required": "Required field",
+      "duplicates": "A player cannot be selected twice.",
+      "generic": "Could not create the match."
+    },
+    "score": { "title": "End recording", "content": "Screen coming soon." }
   }
 }
