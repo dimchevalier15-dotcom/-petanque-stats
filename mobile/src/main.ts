@@ -5,6 +5,7 @@ import PrimeVue from 'primevue/config'
 import Aura from '@primeuix/themes/aura'
 
 import App from './App.vue'
+import ToastService from 'primevue/toastservice'
 import router from './router'
 import { i18n } from './i18n'
 import { useAuthStore } from './stores/auth'
@@ -17,6 +18,7 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 app.use(i18n)
+app.use(ToastService)
 
 // Restore session from local storage if possible
 const auth = useAuthStore(pinia)

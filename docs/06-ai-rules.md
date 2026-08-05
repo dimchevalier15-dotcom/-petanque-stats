@@ -256,3 +256,22 @@ Elle implémente les décisions validées dans la documentation.
 En cas d'incertitude :
 
 elle pose une question plutôt que de faire une hypothèse.
+
+## Simplicité avant modernité
+
+Ne jamais introduire une technologie ou une abstraction non demandée.
+
+Exemples :
+
+- UUID
+- ULID
+- Event Sourcing
+- CQRS
+- Bus de messages
+- Value Objects
+- Specifications
+- Architecture hexagonale
+- Event Dispatcher
+- Design patterns avancés
+
+La V1 privilégie systématiquement la solution la plus simple répondant au besoin métier.

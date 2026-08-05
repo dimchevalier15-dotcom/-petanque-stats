@@ -3,7 +3,29 @@
     "title": "Pétanque Analytics"
   },
   "common": {
-    "hello": "Hello World"
+    "hello": "Hello World",
+    "comingSoon": "Už čoskoro"
+  },
+  "home": {
+    "welcome": "Vitajte!",
+    "connectedAs": "Prihlásený ako {email}",
+    "actions": {
+      "newMatch": "Nový zápas",
+      "addPlayer": "Pridať hráča",
+      "myStats": "Moje štatistiky",
+      "settings": "Nastavenia",
+      "logout": "Odhlásiť sa"
+    }
+  },
+  "placeholders": {
+    "newMatch": {
+      "title": "Nový zápas",
+      "content": "Obrazovka čoskoro."
+    },
+    "addPlayer": {
+      "title": "Pridať hráča",
+      "content": "Obrazovka čoskoro."
+    }
   },
   "auth": {
     "email": "Email",
@@ -20,6 +42,27 @@
     },
     "noAccount": "Ešte nemáte účet?",
     "haveAccount": "Už máte účet?",
-    "logout": "Odhlásiť sa"
+    "logout": "Odhlásiť sa",
+    "errors": {
+      "invalidCredentials": "Nesprávny email alebo heslo.",
+      "generic": "Niekde sa stala chyba. Skúste znova."
+    }
+  },
+  "players": {
+    "create": {
+      "title": "Pridať hráča",
+      "toast": { "success": "Hráč vytvorený." }
+    },
+    "fields": {
+      "firstName": "Meno",
+      "lastName": "Priezvisko",
+      "nickname": "Prezývka"
+    },
+    "actions": {
+      "submit": "Uložiť"
+    },
+    "validations": {
+      "required": "Povinné pole"
+    }
   }
 }

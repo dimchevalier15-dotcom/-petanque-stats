@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --host",
-    "lint": "biome lint .",
+    "lint": "biome lint --files-ignore-unknown=true .",
     "format": "biome format --write .",
     "fix": "biome check --write .",
     "test": "vitest run",

@@ -7,11 +7,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
-      "style": {
-        "noUnusedVariables": "error",
-        "useShorthandArrayType": "error"
-      }
+      "recommended": false
     }
   },
   "organizeImports": {

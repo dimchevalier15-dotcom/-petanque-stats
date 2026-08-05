@@ -3,7 +3,29 @@
     "title": "Pétanque Analytics"
   },
   "common": {
-    "hello": "Hello World"
+    "hello": "Hello World",
+    "comingSoon": "À venir"
+  },
+  "home": {
+    "welcome": "Bienvenue !",
+    "connectedAs": "Connecté en tant que {email}",
+    "actions": {
+      "newMatch": "Nouveau match",
+      "addPlayer": "Ajouter un joueur",
+      "myStats": "Mes statistiques",
+      "settings": "Paramètres",
+      "logout": "Déconnexion"
+    }
+  },
+  "placeholders": {
+    "newMatch": {
+      "title": "Nouveau match",
+      "content": "Écran à venir."
+    },
+    "addPlayer": {
+      "title": "Ajouter un joueur",
+      "content": "Écran à venir."
+    }
   },
   "auth": {
     "email": "Email",
@@ -20,6 +42,27 @@
     },
     "noAccount": "Pas encore de compte ?",
     "haveAccount": "Déjà un compte ?",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "errors": {
+      "invalidCredentials": "Email ou mot de passe incorrect.",
+      "generic": "Une erreur est survenue. Veuillez réessayer."
+    }
+  },
+  "players": {
+    "create": {
+      "title": "Ajouter un joueur",
+      "toast": { "success": "Joueur créé." }
+    },
+    "fields": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "nickname": "Surnom"
+    },
+    "actions": {
+      "submit": "Enregistrer"
+    },
+    "validations": {
+      "required": "Champ obligatoire"
+    }
   }
 }

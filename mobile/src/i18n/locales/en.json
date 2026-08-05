@@ -3,7 +3,29 @@
     "title": "Pétanque Analytics"
   },
   "common": {
-    "hello": "Hello World"
+    "hello": "Hello World",
+    "comingSoon": "Coming soon"
+  },
+  "home": {
+    "welcome": "Welcome!",
+    "connectedAs": "Signed in as {email}",
+    "actions": {
+      "newMatch": "New match",
+      "addPlayer": "Add player",
+      "myStats": "My statistics",
+      "settings": "Settings",
+      "logout": "Logout"
+    }
+  },
+  "placeholders": {
+    "newMatch": {
+      "title": "New match",
+      "content": "Screen coming soon."
+    },
+    "addPlayer": {
+      "title": "Add player",
+      "content": "Screen coming soon."
+    }
   },
   "auth": {
     "email": "Email",
@@ -20,6 +42,27 @@
     },
     "noAccount": "No account yet?",
     "haveAccount": "Already have an account?",
-    "logout": "Logout"
+    "logout": "Logout",
+    "errors": {
+      "invalidCredentials": "Incorrect email or password.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "players": {
+    "create": {
+      "title": "Add player",
+      "toast": { "success": "Player created." }
+    },
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "nickname": "Nickname"
+    },
+    "actions": {
+      "submit": "Save"
+    },
+    "validations": {
+      "required": "Required field"
+    }
   }
 }

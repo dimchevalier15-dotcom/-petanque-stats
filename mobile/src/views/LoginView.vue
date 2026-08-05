@@ -2,6 +2,7 @@
   <section class="auth">
     <h2>{{ t('auth.login.title') }}</h2>
     <form @submit.prevent="onSubmit" class="form">
+      <Message v-if="errorMessage" severity="error">{{ errorMessage }}</Message>
       <label class="field">
         <span>{{ t('auth.email') }}</span>
         <InputText v-model="email" type="email" autocomplete="email" required />
@@ -27,6 +28,7 @@ import { useAuthStore } from '../stores/auth'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
+import Message from 'primevue/message'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -36,6 +38,7 @@ const email = ref('')
 const password = ref('')
 
 const loading = computed(() => auth.loading)
+const errorMessage = computed(() => (auth.lastError ? t(auth.lastError) : ''))
 
 async function onSubmit() {
   await auth.login(email.value, password.value)
