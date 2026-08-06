@@ -170,5 +170,4 @@ onMounted(load)
 .counts-header { margin-left: 56px; }
 .counts-moy-header { margin-right: 4px; }
 .actions { display: grid; margin-top: 0.5rem; }
-@media (min-width: 640px) { .teams { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
 </style>

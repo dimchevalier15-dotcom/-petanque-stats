@@ -452,5 +452,4 @@ function onCancel() {
 .actions { display: grid; gap: 0.5rem; }
 .error { color: #dc2626; font-size: 0.8rem; }
 .mode { display: flex; align-items: center; gap: 16px; }
-@media (min-width: 640px) { .teams { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
 </style>

@@ -299,5 +299,4 @@ onMounted(async () => {
 .validate-end-btn { width: 100%; }
 .finish { display: grid; justify-items: center; margin-top: 0.25rem; }
 .finish-btn { width: 100%; }
-@media (min-width: 640px) { .teams { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
 </style>
