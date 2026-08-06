@@ -91,6 +91,7 @@
       "modes": { "standard": "Standard", "simple": "Simple" },
       "tracked": { "title": "Tracked players" }
     },
+    "roles": { "pointeur": "Point", "milieu": "Middle", "tireur": "Shoot" },
     "actions": { "start": "Start match", "cancel": "Cancel" },
     "validations": {
       "required": "Required field",
@@ -103,6 +104,7 @@
     "end": "End",
     "score": "Score",
     "endScore": { "title": "End score" },
-    "actions": { "saveEnd": "Save end", "finish": "Finish match" }
+    "shots": { "point": "Point", "tir": "Shot" },
+    "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "finish": "Finish match" }
   }
 }

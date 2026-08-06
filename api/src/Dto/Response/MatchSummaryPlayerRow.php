@@ -18,6 +18,8 @@ final class MatchSummaryPlayerRow
         public int $p0,
         public int $m1,
         public int $m2,
+        public ?MatchSummaryShotBreakdown $point = null,
+        public ?MatchSummaryShotBreakdown $tir = null,
     ) {
     }
 }

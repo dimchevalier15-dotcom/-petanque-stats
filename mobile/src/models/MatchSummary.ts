@@ -1,3 +1,12 @@
+export interface MatchSummaryShotBreakdown {
+  average: number
+  p2: number
+  p1: number
+  p0: number
+  m1: number
+  m2: number
+}
+
 export interface MatchSummaryPlayer {
   playerId: number
   firstName: string
@@ -10,6 +19,8 @@ export interface MatchSummaryPlayer {
   p0: number
   m1: number
   m2: number
+  point?: MatchSummaryShotBreakdown | null
+  tir?: MatchSummaryShotBreakdown | null
 }
 
 export interface MatchSummary {

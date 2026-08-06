@@ -91,6 +91,7 @@
       "modes": { "standard": "Standard", "simple": "Simplifié" },
       "tracked": { "title": "Joueurs suivis" }
     },
+    "roles": { "pointeur": "Point", "milieu": "Milieu", "tireur": "Tir" },
     "actions": { "start": "Commencer le match", "cancel": "Annuler" },
     "validations": {
       "required": "Champ obligatoire",
@@ -103,6 +104,7 @@
     "end": "Mène",
     "score": "Score",
     "endScore": { "title": "Fin de mène" },
-    "actions": { "saveEnd": "Enregistrer la mène", "finish": "Terminer le match" }
+    "shots": { "point": "Point", "tir": "Tir" },
+    "actions": { "saveEnd": "Enregistrer la mène", "validateEnd": "Valider la mène", "finish": "Terminer le match" }
   }
 }

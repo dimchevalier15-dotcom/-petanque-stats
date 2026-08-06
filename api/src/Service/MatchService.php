@@ -75,13 +75,33 @@ final class MatchService
 
         $game = new Game($req->type, $req->targetScore, $req->statisticsMode);
         $this->em->persist($game);
+
+        // Build default shot type map from DTO if provided
+        $defaults = [];
+        foreach ($req->defaultShotTypes as $d) {
+            $defaults[(int) $d->playerId] = in_array($d->defaultShotType, ['point','tir'], true) ? $d->defaultShotType : 'point';
+        }
+        // Helper to compute default by position if not provided
+        $computeDefault = function (int $position, string $type) {
+            // tete_a_tete: position 1 => point
+            // doublette: pos1 => point, pos2 => tir
+            // triplette: pos1 => point, pos2 => point (milieu), pos3 => tir
+            if ($type === 'doublette' && $position === 2) return 'tir';
+            if ($type === 'triplette' && $position === 3) return 'tir';
+            return 'point';
+        };
+
         $pos = 1;
         foreach ($req->teamA as $pid) {
-            $this->em->persist(new GameParticipant($game, $map[(int) $pid], 'A', $pos++));
+            $pid = (int) $pid;
+            $def = $defaults[$pid] ?? $computeDefault($pos, $req->type);
+            $this->em->persist(new GameParticipant($game, $map[$pid], 'A', $pos++, $def));
         }
         $pos = 1;
         foreach ($req->teamB as $pid) {
-            $this->em->persist(new GameParticipant($game, $map[(int) $pid], 'B', $pos++));
+            $pid = (int) $pid;
+            $def = $defaults[$pid] ?? $computeDefault($pos, $req->type);
+            $this->em->persist(new GameParticipant($game, $map[$pid], 'B', $pos++, $def));
         }
         // Persist tracked players
         foreach ($tracked as $pid) {

@@ -57,4 +57,7 @@ final class CompleteMatchEndBallDto
 
     /** @var list<int> */
     public array $notes = [];
+
+    /** @var list<string> shot types aligned with notes: values 'point' | 'tir' */
+    public array $shotTypes = [];
 }

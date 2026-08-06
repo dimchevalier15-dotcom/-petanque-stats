@@ -51,6 +51,9 @@
     </div>
 
     <OverlayPanel ref="op">
+      <div class="shot-type">
+        <SelectButton v-model="shotType" :options="shotOptions" optionLabel="label" optionValue="value" size="small" />
+      </div>
       <div class="note-picker">
         <Button
           v-for="opt in notesOptions()"
@@ -63,7 +66,7 @@
       </div>
     </OverlayPanel>
 
-    <Dialog v-model:visible="scoreDialog" modal :header="t('play.endScore.title')" :closable="false">
+    <Dialog v-model:visible="scoreDialog" :modal="false" :dismissableMask="true" :header="t('play.endScore.title')" :closable="true">
       <div class="end-score">
         <div class="winner">
           <SelectButton v-model="winner" :options="winnerOptions" optionLabel="label" optionValue="value" />
@@ -76,6 +79,10 @@
         </div>
       </div>
     </Dialog>
+
+    <div class="validate-end" v-if="currentEndComplete && !scoreDialog && !isFinished">
+      <Button class="validate-end-btn" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
+    </div>
 
     <div class="finish" v-if="isFinished">
       <Button class="finish-btn" :label="t('play.actions.finish')" icon="pi pi-check" @click="onFinish" />
@@ -93,7 +100,7 @@ import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import SelectButton from 'primevue/selectbutton'
 import type { TeamSide } from '../models/MatchPlay'
-import type { MatchType, StatisticsMode } from '../models/Match'
+import type { MatchType, ShotType, StatisticsMode } from '../models/Match'
 import { useMatchPlay } from '../composables/useMatchPlay'
 import { matchesService } from '../services/matches'
 import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
@@ -113,7 +120,18 @@ const teamA = q.teamA ? q.teamA.split(',').map((x) => Number(x)) : []
 const teamB = q.teamB ? q.teamB.split(',').map((x) => Number(x)) : []
 const trackedPlayers = q.tracked ? q.tracked.split(',').map((x) => Number(x)) : [...teamA, ...teamB]
 
-const setup = { id: matchId, type, targetScore, statisticsMode, teamA, teamB, trackedPlayers }
+// Parse default shot types map from query (format: "pid:type,pid:type")
+const defaultsParam = q.defaults || ''
+const defaultShotTypes: Record<number, 'point' | 'tir'> = {}
+if (defaultsParam) {
+  for (const pair of defaultsParam.split(',')) {
+    const [pidStr, st] = pair.split(':')
+    const pid = Number(pidStr)
+    if (pid && (st === 'point' || st === 'tir')) defaultShotTypes[pid] = st
+  }
+}
+
+const setup = { id: matchId, type, targetScore, statisticsMode, teamA, teamB, trackedPlayers, defaultShotTypes }
 
 const {
   currentEndIndex,
@@ -125,7 +143,7 @@ const {
   ballsPerPlayer,
   goPrevEnd,
   goNextEnd,
-  setNote,
+  setNoteWithShot,
   setEndScore,
   notesOptions,
   currentEndComplete,
@@ -135,15 +153,30 @@ const {
 
 const op = ref<InstanceType<typeof OverlayPanel> | null>(null)
 const noteCtx = ref<{ playerId: number; noteIndex: number } | null>(null)
+const shotType = ref<ShotType>('point')
+const shotOptions = computed(() => [
+  { label: t('play.shots.point'), value: 'point' as ShotType },
+  { label: t('play.shots.tir'), value: 'tir' as ShotType },
+])
+
+function shotAt(playerId: number, idx: number): ShotType | undefined {
+  const e = currentEnd.value
+  const entry = e.balls.find((b) => b.playerId === playerId)
+  const v = entry?.shotTypes[idx]
+  return v as ShotType | undefined
+}
 
 function openNote(event: Event, playerId: number, noteIndex: number) {
   noteCtx.value = { playerId, noteIndex }
+  // initialize shot type from existing note or default map
+  const existing = shotAt(playerId, noteIndex)
+  shotType.value = existing ?? (setup.defaultShotTypes?.[playerId] ?? 'point')
   op.value?.toggle(event)
 }
 
 function applyNote(val: -2 | -1 | 0 | 1 | 2) {
   if (!noteCtx.value) return
-  setNote(noteCtx.value.playerId, noteCtx.value.noteIndex, val)
+  setNoteWithShot(noteCtx.value.playerId, noteCtx.value.noteIndex, val, shotType.value)
   op.value?.hide()
 }
 
@@ -207,6 +240,13 @@ function confirmEndScore() {
   scoreDialog.value = false
 }
 
+function reopenEndDialog() {
+  // Reopen the non-blocking dialog when user taps the bottom action
+  winner.value = winner.value ?? null
+  points.value = points.value ?? 1
+  scoreDialog.value = true
+}
+
 function goPrev() { goPrevEnd() }
 function goNext() { goNextEnd() }
 
@@ -255,6 +295,8 @@ onMounted(async () => {
 .end-score { display: grid; gap: 0.75rem; }
 .end-score .winner { display: flex; justify-content: center; }
 .end-score .points { display: grid; gap: 0.25rem; justify-items: center; }
+.validate-end { position: sticky; bottom: 0; background: #fff; border-top: 1px solid #eee; padding: 0.5rem 0.5rem; display: grid; justify-items: center; }
+.validate-end-btn { width: 100%; }
 .finish { display: grid; justify-items: center; margin-top: 0.25rem; }
 .finish-btn { width: 100%; }
 @media (min-width: 640px) { .teams { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }

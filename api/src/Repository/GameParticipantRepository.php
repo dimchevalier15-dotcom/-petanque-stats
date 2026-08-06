@@ -64,4 +64,21 @@ final class GameParticipantRepository extends ServiceEntityRepository
         }
         return $map;
     }
+
+    /**
+     * @return array<int, string> Map playerId => default_shot_type ('point'|'tir')
+     */
+    public function mapDefaultShotTypeByGame(Game $game): array
+    {
+        $rows = $this->createQueryBuilder('gp')
+            ->select('IDENTITY(gp.player) as pid, gp.defaultShotType as st')
+            ->where('gp.game = :game')
+            ->setParameter('game', $game)
+            ->getQuery()->getArrayResult();
+        $map = [];
+        foreach ($rows as $r) {
+            $map[(int) $r['pid']] = (string) $r['st'];
+        }
+        return $map;
+    }
 }

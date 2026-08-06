@@ -12,6 +12,14 @@
               @update:modelValue="(v) => setTrackedFor('A', slot, v)"
               :disabled="!teamASelections[slot-1]"
             />
+            <SelectButton
+              v-model="teamARoles[slot-1]"
+              :options="roleOptions"
+              optionLabel="label"
+              optionValue="value"
+              :disabled="!teamASelections[slot-1]"
+              class="role"
+            />
             <AutoComplete
               v-model="teamASelections[slot-1]"
               :suggestions="teamASuggestions[slot-1]"
@@ -44,6 +52,14 @@
               :modelValue="trackedFor('B', slot)"
               @update:modelValue="(v) => setTrackedFor('B', slot, v)"
               :disabled="!teamBSelections[slot-1]"
+            />
+            <SelectButton
+              v-model="teamBRoles[slot-1]"
+              :options="roleOptions"
+              optionLabel="label"
+              optionValue="value"
+              :disabled="!teamBSelections[slot-1]"
+              class="role"
             />
             <AutoComplete
               v-model="teamBSelections[slot-1]"
@@ -118,7 +134,8 @@ import ToggleSwitch from 'primevue/toggleswitch'
 import { playersService } from '../services/players'
 import { matchesService } from '../services/matches'
 import type { Player } from '../models/Player'
-import type { MatchType, StatisticsMode } from '../models/Match'
+import type { MatchType, StatisticsMode, PlayerRole, ShotType } from '../models/Match'
+import type { DefaultShotTypeDto } from '../dto/match/CreateMatchRequest'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -133,6 +150,29 @@ const modeOptions = computed(() => [
   { label: t('matches.stats.modes.standard'), value: 'standard' },
   { label: t('matches.stats.modes.simple'), value: 'simple' },
 ])
+
+// Role selection per player within a team
+const roleOptions = computed(() => {
+  if (type.value === 'tete_a_tete') {
+    return [];
+  }
+
+  if (type.value === 'doublette') {
+    return [
+      { label: t('matches.roles.pointeur'), value: 'pointeur' as PlayerRole },
+      { label: t('matches.roles.tireur'), value: 'tireur' as PlayerRole },
+    ]
+  }
+
+  return [
+    { label: t('matches.roles.pointeur'), value: 'pointeur' as PlayerRole },
+    { label: t('matches.roles.milieu'), value: 'milieu' as PlayerRole },
+    { label: t('matches.roles.tireur'), value: 'tireur' as PlayerRole },
+  ]
+})
+
+const teamARoles = reactive<PlayerRole[]>(['pointeur', 'tireur', 'tireur'])
+const teamBRoles = reactive<PlayerRole[]>(['pointeur', 'tireur', 'tireur'])
 
 const typeOptions = computed(() => [
   { label: t('matches.types.teteATete'), value: 'tete_a_tete' },
@@ -297,9 +337,21 @@ watch(
                   ? 2
                   : 3
 
+      // reset selections beyond expected
       for (let i = expected; i < 3; i++) {
         teamASelections[i] = null
         teamBSelections[i] = null
+      }
+
+      // set default roles per type
+      const defaultsFor = (pos: number): PlayerRole => {
+        if (type.value === 'doublette') return pos === 2 ? 'tireur' : 'pointeur'
+        if (type.value === 'triplette') return pos === 3 ? 'tireur' : 'pointeur'
+        return 'pointeur'
+      }
+      for (let i = 0; i < 3; i++) {
+        teamARoles[i] = teamARoles[i] ?? defaultsFor(i + 1)
+        teamBRoles[i] = teamBRoles[i] ?? defaultsFor(i + 1)
       }
 
       validateAll()
@@ -347,6 +399,12 @@ async function onSubmit() {
     const teamB = teamBSelections.slice(0, expected).map((o) => (o as { id: number }).id)
 
     const trackedPlayers = selectedPlayers.value.filter((p) => tracked[p.id] !== false).map((p) => p.id)
+    // Build default shot types from selected roles
+    const toShot = (r: PlayerRole): ShotType => (r === 'tireur' ? 'tir' : 'point')
+    const defaults: DefaultShotTypeDto[] = []
+    teamA.forEach((pid, idx) => defaults.push({ playerId: pid, defaultShotType: toShot(teamARoles[idx] ?? 'pointeur') }))
+    teamB.forEach((pid, idx) => defaults.push({ playerId: pid, defaultShotType: toShot(teamBRoles[idx] ?? 'pointeur') }))
+
     const { id } = await matchesService.create({
       type: type.value,
       targetScore: targetScore.value,
@@ -354,6 +412,7 @@ async function onSubmit() {
       teamB,
       statisticsMode: statisticsMode.value,
       trackedPlayers,
+      defaultShotTypes: defaults,
     })
     router.push({
       name: 'matchScore',
@@ -365,6 +424,7 @@ async function onSubmit() {
         teamB: teamB.join(','),
         statisticsMode: statisticsMode.value,
         tracked: trackedPlayers.join(','),
+        defaults: defaults.map((d) => `${d.playerId}:${d.defaultShotType}`).join(','),
       },
     })
   } catch (e) {
@@ -383,13 +443,14 @@ function onCancel() {
 <style scoped>
 .new-match { max-width: 520px; margin: 1rem auto 2rem; display: grid; gap: 1rem; }
 .form { display: grid; gap: 1rem; }
-.teams { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+.teams { display: flex; flex-direction: column; gap: 1rem; }
 .team { display: grid; gap: 0.5rem; padding: 0.5rem; border: 1px solid #eee; border-radius: 8px; }
-.player-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.375rem; }
+.player-row { display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 0.375rem; }
 .add { justify-self: end; }
 .info { display: grid; gap: 0.75rem; }
 .field { display: grid; gap: 0.25rem; }
 .actions { display: grid; gap: 0.5rem; }
 .error { color: #dc2626; font-size: 0.8rem; }
+.mode { display: flex; align-items: center; gap: 16px; }
 @media (min-width: 640px) { .teams { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
 </style>

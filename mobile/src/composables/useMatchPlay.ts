@@ -10,6 +10,7 @@ export interface MatchSetup {
   teamA: number[]
   teamB: number[]
   trackedPlayers: number[]
+  defaultShotTypes?: Record<number, 'point' | 'tir'>
 }
 
 export function useMatchPlay(setup: MatchSetup) {
@@ -29,12 +30,15 @@ export function useMatchPlay(setup: MatchSetup) {
       // initialize entries for tracked players only
       end.balls = allPlayers.value
         .filter((id) => trackedSet.value.has(id))
-        .map((playerId) => ({ playerId, notes: [] as BallNote[] }))
+        .map((playerId) => ({ playerId, notes: [] as BallNote[], shotTypes: [] as ('point'|'tir')[] }))
     }
-    // clamp length of notes arrays
+    // clamp length of arrays
     for (const entry of end.balls) {
       if (entry.notes.length > ballsPerPlayer.value) {
         entry.notes = entry.notes.slice(0, ballsPerPlayer.value)
+      }
+      if (entry.shotTypes.length > ballsPerPlayer.value) {
+        entry.shotTypes = entry.shotTypes.slice(0, ballsPerPlayer.value)
       }
     }
   }
@@ -81,7 +85,7 @@ export function useMatchPlay(setup: MatchSetup) {
     return setup.statisticsMode === 'standard' ? [-2, -1, 0, 1, 2] : [-1, 1]
   }
 
-  function setNote(playerId: number, noteIndex: number, value: BallNote | null): void {
+  function setNoteWithShot(playerId: number, noteIndex: number, value: BallNote | null, shotType?: 'point' | 'tir'): void {
     if (isFinished.value) return
     const end = ends[currentEndIndex.value]
     ensureEndStructure(end)
@@ -90,20 +94,30 @@ export function useMatchPlay(setup: MatchSetup) {
     const max = ballsPerPlayer.value
     if (noteIndex >= max) return
     if (value === null) {
-      // remove this note
+      // remove this note and its shot type
       if (noteIndex < entry.notes.length) {
         entry.notes.splice(noteIndex, 1)
       }
+      if (noteIndex < entry.shotTypes.length) {
+        entry.shotTypes.splice(noteIndex, 1)
+      }
     } else {
-      // fill preceding slots with zeros if missing to allow random access
+      // fill preceding slots to allow random access
       while (entry.notes.length < noteIndex) entry.notes.push(0)
+      while (entry.shotTypes.length < noteIndex) entry.shotTypes.push(setup.defaultShotTypes?.[playerId] ?? 'point')
       entry.notes[noteIndex] = value
+      entry.shotTypes[noteIndex] = shotType ?? (setup.defaultShotTypes?.[playerId] ?? 'point')
       if (entry.notes.length > max) entry.notes = entry.notes.slice(0, max)
+      if (entry.shotTypes.length > max) entry.shotTypes = entry.shotTypes.slice(0, max)
     }
     // autoshow end scoring if all notes filled for tracked players
     if (allTrackedNotesFilled(end)) {
       // no-op here; the view can open the dialog when this computed flips to true
     }
+  }
+
+  function setNote(playerId: number, noteIndex: number, value: BallNote | null): void {
+    setNoteWithShot(playerId, noteIndex, value)
   }
 
   function allTrackedNotesFilled(end: EndRecord): boolean {
@@ -159,7 +173,7 @@ export function useMatchPlay(setup: MatchSetup) {
           index: e.index,
           winner: e.winner as TeamSide,
           points: e.points as number,
-          balls: e.balls.map((b) => ({ playerId: b.playerId, notes: b.notes })),
+          balls: e.balls.map((b) => ({ playerId: b.playerId, notes: b.notes, shotTypes: b.shotTypes })),
         })),
     }
   }
@@ -177,6 +191,7 @@ export function useMatchPlay(setup: MatchSetup) {
     goPrevEnd,
     goNextEnd,
     setNote,
+    setNoteWithShot,
     setEndScore,
     // helpers
     notesOptions,

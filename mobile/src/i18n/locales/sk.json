@@ -91,6 +91,7 @@
       "modes": { "standard": "Štandardný", "simple": "Zjednodušený" },
       "tracked": { "title": "Sledovaní hráči" }
     },
+    "roles": { "pointeur": "plac", "milieu": "Ucko", "tireur": "Strelba" },
     "actions": { "start": "Začať zápas", "cancel": "Zrušiť" },
     "validations": {
       "required": "Povinné pole",
@@ -98,5 +99,12 @@
       "generic": "Zápas sa nepodarilo vytvoriť."
     },
     "score": { "title": "Zápis mèn", "content": "Obrazovka čoskoro." }
+  },
+  "play": {
+    "end": "Mèna",
+    "score": "Skóre",
+    "endScore": { "title": "Koniec mèny" },
+    "shots": { "point": "Bod", "tir": "Strela" },
+    "actions": { "saveEnd": "Uložiť mènu", "validateEnd": "Potvrdiť mènu", "finish": "Ukončiť zápas" }
   }
 }

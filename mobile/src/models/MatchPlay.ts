@@ -6,6 +6,7 @@ export type BallNote = -2 | -1 | 0 | 1 | 2
 export interface EndBallEntry {
   playerId: number
   notes: BallNote[]
+  shotTypes: ('point' | 'tir')[]
 }
 
 export interface EndRecord {

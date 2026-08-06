@@ -4,6 +4,7 @@ import type { BallNote, TeamSide } from '../../models/MatchPlay'
 export interface EndBallDto {
   playerId: number
   notes: BallNote[]
+  shotTypes: ('point' | 'tir')[]
 }
 
 export interface EndDto {

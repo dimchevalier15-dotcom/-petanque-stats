@@ -31,13 +31,19 @@ class GameParticipant
     #[ORM\Column(type: 'smallint')]
     private int $position;
 
-    public function __construct(Game $game, Player $player, string $team, int $position)
+    // default shot type for this player in this match: 'point' | 'tir'
+    #[ORM\Column(name: 'default_shot_type', type: 'string', length: 6)]
+    private string $defaultShotType = 'point';
+
+    public function __construct(Game $game, Player $player, string $team, int $position, string $defaultShotType = 'point')
     {
         $this->game = $game;
         $this->player = $player;
         $this->team = $team;
         $this->position = $position;
+        $this->defaultShotType = in_array($defaultShotType, ['point','tir'], true) ? $defaultShotType : 'point';
     }
 
     public function getId(): ?int { return $this->id; }
+    public function getDefaultShotType(): string { return $this->defaultShotType; }
 }

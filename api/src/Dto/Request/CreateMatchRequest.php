@@ -36,4 +36,20 @@ final class CreateMatchRequest
      * Optional; when empty, defaults to all selected players server-side.
      */
     public array $trackedPlayers = [];
+
+    /**
+     * Optional default shot type per player for this match (from role selection).
+     * When empty, server computes defaults by type & slot.
+     * @var list<CreateMatchDefaultShotType>
+     */
+    public array $defaultShotTypes = [];
+}
+
+final class CreateMatchDefaultShotType
+{
+    #[Assert\Positive]
+    public int $playerId;
+
+    #[Assert\Choice(choices: ['point','tir'])]
+    public string $defaultShotType = 'point';
 }

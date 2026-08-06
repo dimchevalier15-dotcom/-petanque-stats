@@ -47,6 +47,10 @@ final class MatchRecordingService
             // Optional: cleanup previous completion if any (idempotency)
             // For minimal change, we do not delete previous data.
 
+            // Preload default shot type map for participants
+            $participantRepo = $this->participants;
+            $defaultMap = $participantRepo->mapDefaultShotTypeByGame($game);
+
             foreach ($req->ends as $endDto) {
                 // Basic guards
                 if (!in_array($endDto->winner, ['A', 'B'], true)) {
@@ -69,17 +73,19 @@ final class MatchRecordingService
                         continue;
                     }
                     $notes = array_values($ballDto->notes);
+                    $shots = array_values($ballDto->shotTypes ?? []);
                     $max = min($allowedPerPlayer, count($notes));
                     for ($i = 0; $i < $max; $i++) {
                         $note = (int) $notes[$i];
                         if ($note < -2 || $note > 2) {
                             continue;
                         }
+                        $shot = isset($shots[$i]) && in_array($shots[$i], ['point','tir'], true) ? (string) $shots[$i] : ((string) ($defaultMap[$pid] ?? 'point'));
                         $player = $this->players->find($pid);
                         if ($player === null) {
                             continue;
                         }
-                        $this->em->persist(new GameBall($end, $player, $i, $note));
+                        $this->em->persist(new GameBall($end, $player, $i, $note, $shot));
                     }
                 }
             }

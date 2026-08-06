@@ -1,4 +1,9 @@
-import type { MatchType, StatisticsMode } from '../../models/Match'
+import type { MatchType, ShotType, StatisticsMode } from '../../models/Match'
+
+export interface DefaultShotTypeDto {
+  playerId: number
+  defaultShotType: ShotType
+}
 
 export interface CreateMatchRequestDto {
   type: MatchType
@@ -7,4 +12,5 @@ export interface CreateMatchRequestDto {
   teamB: number[]
   statisticsMode: StatisticsMode
   trackedPlayers: number[]
+  defaultShotTypes?: DefaultShotTypeDto[]
 }
