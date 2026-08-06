@@ -7,82 +7,90 @@
         <div class="team">
           <h3>{{ t('matches.teams.a') }}</h3>
           <div class="player-row" v-for="slot in teamASlots" :key="slot">
-            <ToggleSwitch
-              :modelValue="trackedFor('A', slot)"
-              @update:modelValue="(v) => setTrackedFor('A', slot, v)"
-              :disabled="!teamASelections[slot-1]"
-            />
-            <SelectButton
-              v-model="teamARoles[slot-1]"
-              :options="roleOptions"
-              optionLabel="label"
-              optionValue="value"
-              :disabled="!teamASelections[slot-1]"
-              class="role"
-            />
-            <AutoComplete
-              v-model="teamASelections[slot-1]"
-              :suggestions="teamASuggestions[slot-1]"
-              optionLabel="label"
-              :placeholder="t('matches.fields.playerN', { n: slot })"
-              @complete="(e) => onSearch('A', slot, e.query)"
-              @item-select="() => touch('A', slot)"
-              @blur="() => touch('A', slot)"
-              :pt="{ input: { autocomplete: 'off' } }"
-              :invalid="touched[`A${slot}`] && !!errors[`A${slot}`]"
-            />
-            <Button
-              class="add"
-              icon="pi pi-plus"
-              text
-              aria-label="add player"
-              @click="goQuickAdd('A', slot)"
-            />
-            <small
-                class="error"
-                v-if="touched[`A${slot}`] && errors[`A${slot}`]"
-            >{{ errors[`A${slot}`] }}</small>
+            <div>
+              <AutoComplete
+                  v-model="teamASelections[slot-1]"
+                  :suggestions="teamASuggestions[slot-1]"
+                  optionLabel="label"
+                  :placeholder="t('matches.fields.playerN', { n: slot })"
+                  @complete="(e) => onSearch('A', slot, e.query)"
+                  @item-select="() => touch('A', slot)"
+                  @blur="() => touch('A', slot)"
+                  :pt="{ input: { autocomplete: 'off' } }"
+                  :invalid="touched[`A${slot}`] && !!errors[`A${slot}`]"
+              />
+              <Button
+                  class="add"
+                  icon="pi pi-plus"
+                  text
+                  aria-label="add player"
+                  @click="goQuickAdd('A', slot)"
+              />
+              <small
+                  class="error"
+                  v-if="touched[`A${slot}`] && errors[`A${slot}`]"
+              >{{ errors[`A${slot}`] }}</small>
+            </div>
+            <div class="player-options">
+              <ToggleSwitch
+                  :modelValue="trackedFor('A', slot)"
+                  @update:modelValue="(v) => setTrackedFor('A', slot, v)"
+                  :disabled="!teamASelections[slot-1]"
+              />
+              <SelectButton
+                  v-model="teamARoles[slot-1]"
+                  :options="roleOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  :disabled="!teamASelections[slot-1]"
+                  class="role"
+              />
+            </div>
           </div>
         </div>
 
         <div class="team">
           <h3>{{ t('matches.teams.b') }}</h3>
           <div class="player-row" v-for="slot in teamBSlots" :key="slot">
-            <ToggleSwitch
-              :modelValue="trackedFor('B', slot)"
-              @update:modelValue="(v) => setTrackedFor('B', slot, v)"
-              :disabled="!teamBSelections[slot-1]"
-            />
-            <SelectButton
-              v-model="teamBRoles[slot-1]"
-              :options="roleOptions"
-              optionLabel="label"
-              optionValue="value"
-              :disabled="!teamBSelections[slot-1]"
-              class="role"
-            />
-            <AutoComplete
-              v-model="teamBSelections[slot-1]"
-              :suggestions="teamBSuggestions[slot-1]"
-              optionLabel="label"
-              :placeholder="t('matches.fields.playerN', { n: slot })"
-              @complete="(e) => onSearch('B', slot, e.query)"
-              @item-select="() => touch('B', slot)"
-              @blur="() => touch('B', slot)"
-              :pt="{ input: { autocomplete: 'off' } }"
-              :invalid="touched[`B${slot}`] && !!errors[`B${slot}`]"
-            />
-            <Button
-              class="add"
-              icon="pi pi-plus"
-              text
-              aria-label="add player"
-              @click="goQuickAdd('B', slot)"
-            />
-            <small
-                class="error"
-                v-if="touched[`B${slot}`] && errors[`B${slot}`]"
-            >{{ errors[`B${slot}`] }}</small>
+            <div>
+              <AutoComplete
+                  v-model="teamBSelections[slot-1]"
+                  :suggestions="teamBSuggestions[slot-1]"
+                  optionLabel="label"
+                  :placeholder="t('matches.fields.playerN', { n: slot })"
+                  @complete="(e) => onSearch('B', slot, e.query)"
+                  @item-select="() => touch('B', slot)"
+                  @blur="() => touch('B', slot)"
+                  :pt="{ input: { autocomplete: 'off' } }"
+                  :invalid="touched[`B${slot}`] && !!errors[`B${slot}`]"
+              />
+              <Button
+                  class="add"
+                  icon="pi pi-plus"
+                  text
+                  aria-label="add player"
+                  @click="goQuickAdd('B', slot)"
+              />
+              <small
+                  class="error"
+                  v-if="touched[`B${slot}`] && errors[`B${slot}`]"
+              >{{ errors[`B${slot}`] }}</small>
+            </div>
+            <div class="player-options">
+              <ToggleSwitch
+                  :modelValue="trackedFor('B', slot)"
+                  @update:modelValue="(v) => setTrackedFor('B', slot, v)"
+                  :disabled="!teamBSelections[slot-1]"
+              />
+              <SelectButton
+                  v-model="teamBRoles[slot-1]"
+                  :options="roleOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  :disabled="!teamBSelections[slot-1]"
+                  class="role"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -445,7 +453,18 @@ function onCancel() {
 .form { display: grid; gap: 1rem; }
 .teams { display: flex; flex-direction: column; gap: 1rem; }
 .team { display: grid; gap: 0.5rem; padding: 0.5rem; border: 1px solid #eee; border-radius: 8px; }
-.player-row { display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 0.375rem; }
+.player-row {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  align-content: flex-start;
+  align-items: flex-start;
+}
+.player-options {
+  gap: 16px;
+  display: flex;
+  align-items: center;
+}
 .add { justify-self: end; }
 .info { display: grid; gap: 0.75rem; }
 .field { display: grid; gap: 0.25rem; }
