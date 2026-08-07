@@ -84,9 +84,36 @@
       <Button class="validate-end-btn" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
     </div>
 
-    <div class="finish" v-if="isFinished">
-      <Button class="finish-btn" :label="t('play.actions.finish')" icon="pi pi-check" @click="onFinish" />
+    <div class="cancel-end" v-if="!isFinished && !currentEnd.winner && !currentEnd.points">
+      <Button class="cancel-end-btn" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" @click="openCancelDialog" />
     </div>
+
+    <Dialog v-model:visible="cancelDialog" :modal="true" :header="t('play.cancel.title')" :closable="false">
+      <div class="cancel-content">
+        <p>{{ t('play.cancel.message1') }}</p>
+        <p>{{ t('play.cancel.message2') }}</p>
+        <p><strong>{{ t('play.cancel.question') }}</strong></p>
+        <div class="actions">
+          <Button :label="t('play.cancel.abort')" severity="secondary" @click="cancelDialog = false" />
+          <Button :label="t('play.cancel.confirm')" severity="danger" @click="confirmCancelEnd" />
+        </div>
+      </div>
+    </Dialog>
+
+    <div class="finish">
+      <Button class="finish-btn" :label="t('play.actions.finish')" icon="pi pi-check" @click="openFinishDialog" />
+    </div>
+
+    <Dialog v-model:visible="finishDialog" :modal="true" :header="t('play.finish.title')" :closable="false">
+      <div class="finish-content">
+        <p>{{ t('play.finish.message1') }}</p>
+        <p>{{ t('play.finish.message2') }}</p>
+        <div class="actions">
+          <Button :label="t('play.finish.abort')" severity="secondary" @click="finishDialog = false" />
+          <Button :label="t('play.finish.confirm')" icon="pi pi-check" @click="confirmFinish" />
+        </div>
+      </div>
+    </Dialog>
   </section>
 </template>
 
@@ -149,6 +176,7 @@ const {
   currentEndComplete,
   colorFor,
   toSubmission,
+  cancelCurrentEnd,
 } = useMatchPlay(setup)
 
 const op = ref<InstanceType<typeof OverlayPanel> | null>(null)
@@ -233,6 +261,20 @@ watch(currentEndComplete, (v) => {
     scoreDialog.value = true
   }
 })
+
+const cancelDialog = ref(false)
+function openCancelDialog() { cancelDialog.value = true }
+function confirmCancelEnd() {
+  cancelCurrentEnd()
+  cancelDialog.value = false
+}
+
+const finishDialog = ref(false)
+function openFinishDialog() { finishDialog.value = true }
+async function confirmFinish() {
+  finishDialog.value = false
+  await onFinish()
+}
 
 function confirmEndScore() {
   if (!winner.value || !points.value) return

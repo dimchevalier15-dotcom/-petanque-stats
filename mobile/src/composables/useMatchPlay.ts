@@ -16,7 +16,7 @@ export interface MatchSetup {
 export function useMatchPlay(setup: MatchSetup) {
   const currentEndIndex = ref(0) // 0-based index
   const ends = reactive<EndRecord[]>([
-    { index: 1, balls: [], winner: undefined, points: undefined },
+    { index: 1, balls: [], winner: undefined, points: undefined, canceled: false },
   ])
 
   // Precompute balls per player per end depending on type
@@ -53,6 +53,7 @@ export function useMatchPlay(setup: MatchSetup) {
     let a = 0
     let b = 0
     for (const e of ends) {
+      if (e.canceled) continue
       if (e.winner && e.points) {
         if (e.winner === 'A') a += e.points
         else b += e.points
@@ -75,7 +76,7 @@ export function useMatchPlay(setup: MatchSetup) {
 
   function addEndIfNeeded(): void {
     if (currentEndIndex.value === ends.length - 1) {
-      const e: EndRecord = { index: ends.length + 1, balls: [], winner: undefined, points: undefined }
+      const e: EndRecord = { index: ends.length + 1, balls: [], winner: undefined, points: undefined, canceled: false }
       ensureEndStructure(e)
       ends.push(e)
     }
@@ -132,6 +133,7 @@ export function useMatchPlay(setup: MatchSetup) {
 
   function setEndScore(winner: TeamSide, points: number): void {
     const end = currentEnd.value
+    end.canceled = false
     end.winner = winner
     end.points = points
     recomputeGlobalScore()
@@ -139,6 +141,24 @@ export function useMatchPlay(setup: MatchSetup) {
       addEndIfNeeded()
       currentEndIndex.value += 1
     }
+  }
+
+  function cancelCurrentEnd(): void {
+    if (isFinished.value) return
+    const end = currentEnd.value
+    // Mark as canceled and reset scoring-related data
+    end.canceled = true
+    end.winner = undefined
+    end.points = 0
+    // Clear notes to reflect interruption
+    for (const entry of end.balls) {
+      entry.notes = []
+      entry.shotTypes = []
+    }
+    recomputeGlobalScore()
+    // Immediately start next end
+    addEndIfNeeded()
+    currentEndIndex.value += 1
   }
 
   function colorFor(note: BallNote | undefined): string {
@@ -168,12 +188,13 @@ export function useMatchPlay(setup: MatchSetup) {
       teamB: setup.teamB,
       trackedPlayers: setup.trackedPlayers,
       ends: ends
-        .filter((e) => e.winner && e.points)
+        .filter((e) => (e.canceled === true) || (e.winner && e.points))
         .map((e) => ({
           index: e.index,
-          winner: e.winner as TeamSide,
-          points: e.points as number,
-          balls: e.balls.map((b) => ({ playerId: b.playerId, notes: b.notes, shotTypes: b.shotTypes })),
+          winner: (e.winner as TeamSide) ?? 'A',
+          points: e.canceled ? 0 : ((e.points as number) ?? 0),
+          canceled: e.canceled === true,
+          balls: e.canceled ? [] : e.balls.map((b) => ({ playerId: b.playerId, notes: b.notes, shotTypes: b.shotTypes })),
         })),
     }
   }
@@ -198,5 +219,6 @@ export function useMatchPlay(setup: MatchSetup) {
     currentEndComplete,
     colorFor,
     toSubmission,
+    cancelCurrentEnd,
   }
 }

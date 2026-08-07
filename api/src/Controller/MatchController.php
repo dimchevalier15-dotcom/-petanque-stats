@@ -10,6 +10,7 @@ use App\Dto\Request\CompleteMatchRequest;
 use App\Service\MatchRecordingService;
 use App\Service\MatchSummaryService;
 use App\Service\MatchValidationException;
+use App\Service\MatchHistoryService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,7 @@ final class MatchController extends AbstractController
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private MatchSummaryService $summary,
+        private MatchHistoryService $history,
     ) {}
 
     /**
@@ -88,6 +90,22 @@ final class MatchController extends AbstractController
         if ($res === null) {
             return new JsonResponse(['message' => 'Not found'], 404);
         }
+        $json = $this->serializer->serialize($res, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/matches/history', name: 'api_matches_history', methods: ['GET'])]
+    public function history(Request $request): JsonResponse
+    {
+        $authHeader = (string) $request->headers->get('Authorization', '');
+        if (!str_starts_with($authHeader, 'Bearer ')) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+        $token = substr($authHeader, 7);
+        $page = $request->query->get('page') !== null ? max(1, (int) $request->query->get('page')) : 1;
+        $size = $request->query->get('size') !== null ? max(1, (int) $request->query->get('size')) : 20;
+
+        $res = $this->history->historyForToken($token, $page, $size);
         $json = $this->serializer->serialize($res, 'json');
         return new JsonResponse($json, 200, [], true);
     }

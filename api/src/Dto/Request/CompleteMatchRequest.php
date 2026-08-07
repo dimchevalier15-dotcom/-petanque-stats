@@ -43,8 +43,13 @@ final class CompleteMatchEndDto
     #[Assert\Choice(choices: ['A','B'])]
     public string $winner;
 
-    #[Assert\Positive]
+    /**
+     * When canceled=true, points must be 0; otherwise >=1.
+     */
+    #[Assert\GreaterThanOrEqual(value: 0)]
     public int $points;
+
+    public bool $canceled = false;
 
     /** @var list<CompleteMatchEndBallDto> */
     public array $balls = [];

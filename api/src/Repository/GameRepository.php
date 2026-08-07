@@ -17,4 +17,37 @@ final class GameRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Game::class);
     }
+
+    /**
+     * Returns total count and paginated games for a given player id, ordered by most recent first.
+     *
+     * @return array{0:int,1:list<Game>}
+     */
+    public function findHistoryForPlayer(int $playerId, int $page, int $pageSize): array
+    {
+        $page = max(1, $page);
+        $pageSize = max(1, $pageSize);
+        $offset = ($page - 1) * $pageSize;
+
+        // total
+        $total = (int) $this->createQueryBuilder('g')
+            ->select('COUNT(DISTINCT g.id)')
+            ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
+            ->where('gp.player = :pid')
+            ->setParameter('pid', $playerId)
+            ->getQuery()->getSingleScalarResult();
+
+        // items
+        /** @var list<Game> $items */
+        $items = $this->createQueryBuilder('g')
+            ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
+            ->where('gp.player = :pid')
+            ->setParameter('pid', $playerId)
+            ->orderBy('g.createdAt', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults($pageSize)
+            ->getQuery()->getResult();
+
+        return [$total, $items];
+    }
 }

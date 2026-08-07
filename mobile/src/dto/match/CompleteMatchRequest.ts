@@ -12,6 +12,7 @@ export interface EndDto {
   balls: EndBallDto[]
   winner: TeamSide
   points: number
+  canceled?: boolean
 }
 
 export interface CompleteMatchRequestDto {

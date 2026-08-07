@@ -5,6 +5,7 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import NewMatchView from '../views/NewMatchView.vue'
 import AddPlayerView from '../views/AddPlayerView.vue'
+import MatchHistoryView from '../views/MatchHistoryView.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: { name: 'home' } },
@@ -13,6 +14,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/register', name: 'register', component: RegisterView },
   { path: '/match/new', name: 'newMatch', component: NewMatchView },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView },
+  { path: '/matches/history', name: 'matchHistory', component: MatchHistoryView },
   { path: '/matches/:id/score', name: 'matchScore', component: () => import('../views/MatchPlayView.vue') },
   { path: '/matches/:id/summary', name: 'matchSummary', component: () => import('../views/MatchSummaryView.vue') },
 ]

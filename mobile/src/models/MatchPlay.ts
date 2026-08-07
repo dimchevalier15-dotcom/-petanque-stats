@@ -14,4 +14,5 @@ export interface EndRecord {
   balls: EndBallEntry[]
   winner?: TeamSide
   points?: number
+  canceled?: boolean
 }

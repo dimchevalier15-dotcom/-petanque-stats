@@ -26,10 +26,6 @@
                   aria-label="add player"
                   @click="goQuickAdd('A', slot)"
               />
-              <small
-                  class="error"
-                  v-if="touched[`A${slot}`] && errors[`A${slot}`]"
-              >{{ errors[`A${slot}`] }}</small>
             </div>
             <div class="player-options">
               <ToggleSwitch
@@ -71,10 +67,6 @@
                   aria-label="add player"
                   @click="goQuickAdd('B', slot)"
               />
-              <small
-                  class="error"
-                  v-if="touched[`B${slot}`] && errors[`B${slot}`]"
-              >{{ errors[`B${slot}`] }}</small>
             </div>
             <div class="player-options">
               <ToggleSwitch

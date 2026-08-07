@@ -25,6 +25,14 @@
         @click="goAddPlayer"
       />
 
+      <Button
+        class="action"
+        :label="t('home.actions.history')"
+        icon="pi pi-history"
+        iconPos="left"
+        @click="goHistory"
+      />
+
       <div class="action with-badge">
         <Button
           class="w-full"
@@ -76,6 +84,9 @@ function goNewMatch(): void {
 }
 function goAddPlayer(): void {
   router.push({ name: 'addPlayer' })
+}
+function goHistory(): void {
+  router.push({ name: 'matchHistory' })
 }
 
 function onLogout(): void {

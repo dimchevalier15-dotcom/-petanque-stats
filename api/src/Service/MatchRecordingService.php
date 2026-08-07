@@ -53,13 +53,23 @@ final class MatchRecordingService
 
             foreach ($req->ends as $endDto) {
                 // Basic guards
-                if (!in_array($endDto->winner, ['A', 'B'], true)) {
+                $isCanceled = property_exists($endDto, 'canceled') ? (bool) $endDto->canceled : false;
+                $winner = in_array($endDto->winner, ['A','B'], true) ? $endDto->winner : 'A';
+                $points = (int) $endDto->points;
+                if ($isCanceled) {
+                    // For a canceled end, force points to 0 and do not persist balls
+                    $points = 0;
+                    $end = new GameEnd($game, $endDto->index, $winner, $points, true);
+                    $this->em->persist($end);
                     continue;
                 }
-                if ($endDto->points <= 0) {
+                if (!in_array($winner, ['A', 'B'], true)) {
                     continue;
                 }
-                $end = new GameEnd($game, $endDto->index, $endDto->winner, $endDto->points);
+                if ($points <= 0) {
+                    continue;
+                }
+                $end = new GameEnd($game, $endDto->index, $winner, $points, false);
                 $this->em->persist($end);
 
                 foreach ($endDto->balls as $ballDto) {

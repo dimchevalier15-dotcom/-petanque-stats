@@ -23,6 +23,7 @@
     "actions": {
       "newMatch": "Nový zápas",
       "addPlayer": "Pridať hráča",
+      "history": "História zápasov",
       "myStats": "Moje štatistiky",
       "settings": "Nastavenia",
       "logout": "Odhlásiť sa"
@@ -91,7 +92,7 @@
       "modes": { "standard": "Štandardný", "simple": "Zjednodušený" },
       "tracked": { "title": "Sledovaní hráči" }
     },
-    "roles": { "pointeur": "plac", "milieu": "Ucko", "tireur": "Strelba" },
+    "roles": { "pointeur": "Plac", "milieu": "Ucko", "tireur": "Strelba" },
     "actions": { "start": "Začať zápas", "cancel": "Zrušiť" },
     "validations": {
       "required": "Povinné pole",
@@ -105,6 +106,22 @@
     "score": "Skóre",
     "endScore": { "title": "Koniec mèny" },
     "shots": { "point": "Bod", "tir": "Strela" },
-    "actions": { "saveEnd": "Uložiť mènu", "validateEnd": "Potvrdiť mènu", "finish": "Ukončiť zápas" }
+    "actions": { "saveEnd": "Uložiť mènu", "validateEnd": "Potvrdiť mènu", "cancelEnd": "Zrušiť mènu", "finish": "Ukončiť zápas" },
+    "cancel": {
+      "title": "Mèna zrušená",
+      "message1": "Cieľ vyšiel z ihriska.",
+      "message2": "Táto mèna bude zrušená.",
+      "question": "Pokračovať?",
+      "confirm": "Potvrdiť",
+      "abort": "Zrušiť"
+    },
+    "finish": {
+      "title": "Ukončiť zápas",
+      "message1": "Ukončiť zápas teraz?",
+      "message2": "Aktuálne skóre zostane zachované.",
+      "confirm": "Ukončiť",
+      "abort": "Späť"
+    },
+    "endCanceled": "Mèna zrušená"
   }
 }

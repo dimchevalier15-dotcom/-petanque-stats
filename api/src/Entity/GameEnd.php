@@ -30,12 +30,16 @@ class GameEnd
     #[ORM\Column(type: 'smallint')]
     private int $points;
 
-    public function __construct(Game $game, int $index, string $winner, int $points)
+    #[ORM\Column(type: 'boolean', options: ["default" => false])]
+    private bool $canceled = false;
+
+    public function __construct(Game $game, int $index, string $winner, int $points, bool $canceled = false)
     {
         $this->game = $game;
         $this->index = $index;
         $this->winner = $winner;
         $this->points = $points;
+        $this->canceled = $canceled;
     }
 
     public function getId(): ?int { return $this->id; }
@@ -43,4 +47,5 @@ class GameEnd
     public function getIndex(): int { return $this->index; }
     public function getWinner(): string { return $this->winner; }
     public function getPoints(): int { return $this->points; }
+    public function isCanceled(): bool { return $this->canceled; }
 }

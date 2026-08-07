@@ -23,6 +23,7 @@
     "actions": {
       "newMatch": "Nouveau match",
       "addPlayer": "Ajouter un joueur",
+      "history": "Historique des matchs",
       "myStats": "Mes statistiques",
       "settings": "Paramètres",
       "logout": "Déconnexion"
@@ -91,7 +92,7 @@
       "modes": { "standard": "Standard", "simple": "Simplifié" },
       "tracked": { "title": "Joueurs suivis" }
     },
-    "roles": { "pointeur": "Point", "milieu": "Milieu", "tireur": "Tir" },
+    "roles": { "pointeur": "Pointeur", "milieu": "Milieu", "tireur": "Tireur" },
     "actions": { "start": "Commencer le match", "cancel": "Annuler" },
     "validations": {
       "required": "Champ obligatoire",
@@ -105,6 +106,29 @@
     "score": "Score",
     "endScore": { "title": "Fin de mène" },
     "shots": { "point": "Point", "tir": "Tir" },
-    "actions": { "saveEnd": "Enregistrer la mène", "validateEnd": "Valider la mène", "finish": "Terminer le match" }
+    "actions": { "saveEnd": "Enregistrer la mène", "validateEnd": "Valider la mène", "cancelEnd": "Annuler la mène", "finish": "Terminer le match" },
+    "cancel": {
+      "title": "Mène annulée",
+      "message1": "Le but est sorti.",
+      "message2": "Cette mène sera annulée.",
+      "question": "Continuer ?",
+      "confirm": "Confirmer",
+      "abort": "Annuler"
+    },
+    "finish": {
+      "title": "Terminer le match",
+      "message1": "Terminer le match maintenant ?",
+      "message2": "Le score actuel sera conservé.",
+      "confirm": "Terminer",
+      "abort": "Retour"
+    },
+    "endCanceled": "Mène annulée"
+  },
+  "history": {
+    "title": "Historique des matchs",
+    "empty": "Aucun match pour le moment.",
+    "loadMore": "Charger plus",
+    "victory": "Victoire",
+    "defeat": "Défaite"
   }
 }

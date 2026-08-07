@@ -23,6 +23,7 @@
     "actions": {
       "newMatch": "New match",
       "addPlayer": "Add player",
+      "history": "Match history",
       "myStats": "My statistics",
       "settings": "Settings",
       "logout": "Logout"
@@ -91,7 +92,7 @@
       "modes": { "standard": "Standard", "simple": "Simple" },
       "tracked": { "title": "Tracked players" }
     },
-    "roles": { "pointeur": "Point", "milieu": "Middle", "tireur": "Shoot" },
+    "roles": { "pointeur": "Pointer", "milieu": "Middle", "tireur": "Shooter" },
     "actions": { "start": "Start match", "cancel": "Cancel" },
     "validations": {
       "required": "Required field",
@@ -105,6 +106,20 @@
     "score": "Score",
     "endScore": { "title": "End score" },
     "shots": { "point": "Point", "tir": "Shot" },
-    "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "finish": "Finish match" }
+    "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "finish": "Finish match" },
+    "finish": {
+      "title": "Finish match",
+      "message1": "Finish the match now?",
+      "message2": "The current score will be kept.",
+      "confirm": "Finish",
+      "abort": "Back"
+    }
+  },
+  "history": {
+    "title": "Match history",
+    "empty": "No matches yet.",
+    "loadMore": "Load more",
+    "victory": "Victory",
+    "defeat": "Defeat"
   }
 }
