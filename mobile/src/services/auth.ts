@@ -3,13 +3,55 @@ import type { AuthResponseDto } from '../dto/auth/AuthResponse'
 import type { AuthUserDto } from '../dto/auth/AuthUser'
 import type { AuthSession } from '../models/AuthSession'
 import type { User } from '../models/User'
+import type { RegisterRequest } from '../dto/auth/RegisterRequest'
+import axios from 'axios'
+
+export class AuthValidationError extends Error {
+  readonly fields: Record<string, string>
+
+  constructor(fields: Record<string, string>) {
+    super('auth.errors.validation')
+    this.fields = fields
+  }
+}
+
+function mapAuthError(error: unknown): Error {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as
+      | { error?: string; details?: Array<{ field: string; message: string }> }
+      | undefined
+
+    if (data?.error === 'invalid_request' && Array.isArray(data.details)) {
+      const fields: Record<string, string> = {}
+      for (const detail of data.details) {
+        fields[detail.field] = detail.message
+      }
+      return new AuthValidationError(fields)
+    }
+
+    const code = data?.error
+    if (code === 'email_already_used') {
+      return new Error('auth.errors.emailAlreadyUsed')
+    }
+    if (code === 'player_already_linked') {
+      return new Error('auth.errors.playerAlreadyLinked')
+    }
+    if (code === 'player_not_found') {
+      return new Error('auth.errors.playerNotFound')
+    }
+  }
+  return new Error('auth.errors.generic')
+}
 
 export const authService = {
-  async register(email: string, password: string): Promise<AuthSession> {
-    const { data } = await api.post<AuthResponseDto>('/auth/register', { email, password })
-    // Map DTO -> Model (shapes currently equivalent)
-    const session: AuthSession = { token: data.token, user: data.user as unknown as User }
-    return session
+  async register(payload: RegisterRequest): Promise<AuthSession> {
+    try {
+      const { data } = await api.post<AuthResponseDto>('/auth/register', payload)
+      const session: AuthSession = { token: data.token, user: data.user as unknown as User }
+      return session
+    } catch (error) {
+      throw mapAuthError(error)
+    }
   },
   async login(email: string, password: string): Promise<AuthSession> {
     const { data } = await api.post<AuthResponseDto>('/auth/login', { email, password })

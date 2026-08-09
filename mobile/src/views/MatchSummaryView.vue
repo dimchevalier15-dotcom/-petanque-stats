@@ -1,15 +1,15 @@
 <template>
-  <section class="summary">
-    <h2>{{ t('summary.title') }}</h2>
+  <PageHeader :title="t('summary.title')" :back-to="{ name: 'home' }" />
 
-    <div class="banner">
+  <section class="summary">
+    <div class="banner app-card">
       <div class="winner" :class="winnerClass">{{ winnerText }}</div>
       <div class="final-score">{{ summary.scoreA }} - {{ summary.scoreB }}</div>
       <div class="ends">{{ t('summary.ends', { n: summary.ends }) }}</div>
     </div>
 
     <div class="teams">
-      <div class="team">
+      <div class="team app-card">
         <h3>{{ teamALabel }}</h3>
         <div v-for="p in teamA" :key="p.playerId" class="player-block">
           <div class="player-header">{{ fullName(p) }}</div>
@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <div class="team">
+      <div class="team app-card">
         <h3>{{ teamBLabel }}</h3>
         <div v-for="p in teamB" :key="p.playerId" class="player-block">
           <div class="player-header">{{ fullName(p) }}</div>
@@ -88,21 +88,22 @@
       </div>
     </div>
 
-    <div v-if="contextSummary.length > 0" class="context-summary">
+    <div v-if="contextSummary.length > 0" class="context-summary app-card">
       <h3>{{ t('context.summaryTitle') }}</h3>
       <ul>
         <li v-for="line in contextSummary" :key="line">{{ line }}</li>
       </ul>
     </div>
 
-    <div class="actions">
+    <div class="app-actions">
       <Button
         :label="contextActionLabel"
         severity="secondary"
         outlined
+        class="w-full"
         @click="openContext"
       />
-      <Button :label="t('summary.actions.backHome')" @click="goHome" />
+      <Button class="w-full" :label="t('summary.actions.backHome')" @click="goHome" />
     </div>
   </section>
 </template>
@@ -113,6 +114,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import Tag from 'primevue/tag'
 import Button from 'primevue/button'
+import PageHeader from '../components/layout/PageHeader.vue'
 import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
 import type { MatchContext } from '../models/MatchContext'
 import { hasMatchContextData } from '../models/MatchContext'
@@ -214,25 +216,25 @@ onMounted(load)
 </script>
 
 <style scoped>
-.summary { max-width: 560px; margin: 0.75rem auto 1.5rem; display: grid; gap: 0.75rem; }
-.banner { display: grid; gap: 0.25rem; text-align: center; }
+.summary { display: grid; gap: var(--app-space-md); }
+.banner { padding: var(--app-space-lg); display: grid; gap: 0.25rem; text-align: center; }
 .winner { font-weight: 700; }
-.final-score { font-size: 1.5rem; font-weight: 800; }
-.ends { opacity: 0.8; }
-.teams { display: grid; gap: 1rem; grid-template-columns: 1fr; }
-.team { border: 1px solid #eee; border-radius: 10px; padding: 0.5rem; display: grid; gap: 0.5rem; }
-.player-block { border-top: 1px solid #f0f0f0; padding-top: 0.5rem; }
+.final-score { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; }
+.ends { color: var(--app-text-muted); font-size: 0.875rem; }
+.teams { display: grid; gap: var(--app-space-md); }
+.team { padding: var(--app-space-md); display: grid; gap: var(--app-space-sm); }
+.player-block { border-top: 1px solid var(--app-border); padding-top: var(--app-space-sm); }
 .player-block:first-of-type { border-top: none; padding-top: 0; }
 .player-header { font-weight: 700; margin-bottom: 0.25rem; }
 .line { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.125rem 0; }
-.line .label { font-size: 0.75rem; text-transform: uppercase; opacity: 0.8; min-width: 48px; }
+.line .label { font-size: 0.75rem; text-transform: uppercase; color: var(--app-text-muted); min-width: 48px; }
 .avg :deep(.p-tag) { font-weight: 700; }
 :deep(.p-tag) { width: 38px; }
 .counts { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
 .counts-header { margin-left: 56px; }
 .counts-moy-header { margin-right: 4px; }
-.actions { display: grid; gap: 0.5rem; margin-top: 0.5rem; }
-.context-summary { border: 1px solid #eee; border-radius: 10px; padding: 0.5rem 0.75rem; display: grid; gap: 0.25rem; }
+.context-summary { padding: var(--app-space-md); display: grid; gap: 0.25rem; }
 .context-summary h3 { margin: 0; font-size: 0.95rem; }
-.context-summary ul { margin: 0; padding-left: 1rem; display: grid; gap: 0.125rem; font-size: 0.9rem; }
+.context-summary ul { margin: 0; padding-left: 1rem; display: grid; gap: 0.125rem; font-size: 0.875rem; }
+.w-full { width: 100%; }
 </style>

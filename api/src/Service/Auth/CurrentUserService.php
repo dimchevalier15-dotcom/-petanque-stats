@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Auth;
 
 use App\Dto\Response\MeResponse;
+use App\Entity\User;
 use App\Repository\PlayerRepository;
 use App\Repository\UserRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
@@ -22,6 +23,24 @@ final class CurrentUserService
      * @throws InvalidTokenException
      */
     public function meFromToken(string $token): MeResponse
+    {
+        $user = $this->getUserFromToken($token);
+        $player = $this->players->findOneByUserId((int) $user->getId());
+
+        return new MeResponse(
+            id: (int) $user->getId(),
+            email: $user->getEmail(),
+            playerId: $player?->getId() !== null ? (int) $player->getId() : null,
+            firstName: $player?->getFirstName(),
+            lastName: $player?->getLastName(),
+            nickname: $player?->getNickname(),
+        );
+    }
+
+    /**
+     * @throws InvalidTokenException
+     */
+    public function getUserFromToken(string $token): User
     {
         try {
             /** @var array{username?: string, sub?: string} $payload */
@@ -41,16 +60,7 @@ final class CurrentUserService
             throw new InvalidTokenException();
         }
 
-        $player = $this->players->findOneByUserId((int) $user->getId());
-
-        return new MeResponse(
-            id: (int) $user->getId(),
-            email: $user->getEmail(),
-            playerId: $player?->getId() !== null ? (int) $player->getId() : null,
-            firstName: $player?->getFirstName(),
-            lastName: $player?->getLastName(),
-            nickname: $player?->getNickname(),
-        );
+        return $user;
     }
 }
 

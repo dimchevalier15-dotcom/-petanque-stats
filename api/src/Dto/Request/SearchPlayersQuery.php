@@ -7,4 +7,6 @@ namespace App\Dto\Request;
 final class SearchPlayersQuery
 {
     public ?string $q = null;
+
+    public ?bool $unlinkedOnly = null;
 }

@@ -61,4 +61,35 @@ final class PlayerRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['user' => $userId]);
     }
+
+    public function findUnlinkedById(int $id): ?Player
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.id = :id')
+            ->andWhere('p.user IS NULL')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @return list<Player>
+     */
+    public function searchUnlinkedByQuery(string $q, int $limit = 20): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->where('p.user IS NULL');
+        if ($q !== '') {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->like('LOWER(p.firstName)', ':q'),
+                $qb->expr()->like('LOWER(p.lastName)', ':q'),
+                $qb->expr()->like('LOWER(p.nickname)', ':q'),
+            ))->setParameter('q', '%'.mb_strtolower($q).'%');
+        }
+        $qb->setMaxResults($limit)->orderBy('p.firstName', 'ASC');
+        /** @var list<Player> $res */
+        $res = $qb->getQuery()->getResult();
+
+        return $res;
+    }
 }

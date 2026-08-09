@@ -6,6 +6,14 @@
     "hello": "Hello World",
     "comingSoon": "Už čoskoro"
   },
+  "nav": {
+    "aria": "Hlavná navigácia",
+    "home": "Domov",
+    "history": "História",
+    "newMatch": "Nový zápas",
+    "stats": "Stats",
+    "back": "Späť"
+  },
   "summary": {
     "title": "Zhrnutie zápasu",
     "winnerA": "Víťazstvo Tím A",
@@ -65,6 +73,8 @@
   "home": {
     "welcome": "Vitajte!",
     "connectedAs": "Prihlásený ako {email}",
+    "quickActions": "Viac",
+    "language": "Jazyk",
     "actions": {
       "newMatch": "Nový zápas",
       "addPlayer": "Pridať hráča",
@@ -95,14 +105,64 @@
     "register": {
       "title": "Vytvoriť účet",
       "submit": "Registrovať",
-      "link": "Vytvoriť účet"
+      "link": "Vytvoriť účet",
+      "profile": {
+        "title": "Váš profil hráča",
+        "hint": "Tieto informácie sa použijú pre vášho hráča v aplikácii."
+      },
+      "linkPlayer": {
+        "title": "Už ste boli pridaní do zápasu?",
+        "hint": "Môžete nájsť svojho existujúceho hráča a prepojiť ho s účtom. Tento krok je voliteľný.",
+        "searchPlaceholder": "Hľadať hráča (min. 3 znaky)",
+        "empty": "Momentálne nie sú k dispozícii žiadni hráči."
+      }
     },
     "noAccount": "Ešte nemáte účet?",
     "haveAccount": "Už máte účet?",
     "logout": "Odhlásiť sa",
     "errors": {
       "invalidCredentials": "Nesprávny email alebo heslo.",
-      "generic": "Niekde sa stala chyba. Skúste znova."
+      "generic": "Niekde sa stala chyba. Skúste znova.",
+      "validation": "Opravte prosím zvýraznené polia.",
+      "emailAlreadyUsed": "Tento email sa už používa.",
+      "playerAlreadyLinked": "Tento hráč je už prepojený s iným účtom.",
+      "playerNotFound": "Tento hráč už neexistuje alebo nie je dostupný."
+    },
+    "validations": {
+      "required": "Povinné pole",
+      "emailInvalid": "Neplatná emailová adresa.",
+      "passwordMinLength": "Heslo musí mať aspoň 8 znakov."
+    }
+  },
+  "settings": {
+    "title": "Nastavenia účtu",
+    "loading": "Načítava sa…",
+    "profile": {
+      "title": "Profil hráča",
+      "hint": "Upravte informácie zobrazené pre vášho hráča v aplikácii.",
+      "save": "Uložiť",
+      "saved": "Profil bol uložený."
+    },
+    "linked": {
+      "title": "Prepojený hráč",
+      "hint": "Váš účet je prepojený s týmto hráčom. História zápasov a štatistiky zostávajú dostupné v aplikácii."
+    },
+    "unlinked": {
+      "title": "Nájsť existujúceho hráča",
+      "hint": "Ak ste boli už pridaní do zápasu bez vytvorenia účtu, môžete tohto hráča prepojiť so svojím účtom.",
+      "searchLabel": "Hľadať hráča",
+      "searchPlaceholder": "Hľadať (min. 3 znaky)",
+      "empty": "Žiadni neprepojení hráči nezodpovedajú vášmu hľadaniu.",
+      "linkAction": "Prepojiť tohto hráča"
+    },
+    "errors": {
+      "loadFailed": "Nepodarilo sa načítať informácie o účte.",
+      "profileSaveFailed": "Nepodarilo sa uložiť profil. Skúste znova.",
+      "noLinkedPlayer": "K vášmu účtu nie je prepojený žiadny hráč.",
+      "linkFailed": "Nepodarilo sa prepojiť tohto hráča. Skúste znova.",
+      "playerAlreadyLinked": "Tento hráč je už prepojený s iným účtom.",
+      "playerNotFound": "Tento hráč už neexistuje alebo nie je dostupný.",
+      "userAlreadyHasPlayer": "Váš účet je už prepojený s hráčom."
     }
   },
   "players": {
@@ -168,6 +228,65 @@
       "abort": "Späť"
     },
     "endCanceled": "Mèna zrušená"
+  },
+  "history": {
+    "title": "História zápasov",
+    "empty": "Zatiaľ žiadne zápasy.",
+    "loadMore": "Načítať viac",
+    "victory": "Víťazstvo",
+    "defeat": "Prehra"
+  },
+  "stats": {
+    "title": "Moje štatistiky",
+    "actions": { "back": "Späť" },
+    "kpi": {
+      "matches": "Zápasy",
+      "victories": "Víťazstvá",
+      "defeats": "Prehry",
+      "winRate": "Úspešnosť"
+    },
+    "overallAverage": "Celkový priemer",
+    "ballsTracked": "{n} analyzovaných gúl",
+    "sections": {
+      "evolution": "Vývoj",
+      "distribution": "Rozdelenie známok",
+      "shots": "Point & Tir",
+      "byNature": "Podľa povahy zápasu"
+    },
+    "notes": {
+      "m2": "-2",
+      "m1": "-1",
+      "p0": "0",
+      "p1": "+1",
+      "p2": "+2"
+    },
+    "evolution": {
+      "average": "Priemer",
+      "matchLabel": "Z{n}",
+      "hint": "Zelené body = víťazstvo, červené = prehra. Posledných 10 analyzovaných zápasov."
+    },
+    "byNature": {
+      "hint": "Iba zápasy s vyplneným kontextom.",
+      "meta": "{matches} zápasov · {balls} gúl"
+    },
+    "empty": {
+      "noPlayerTitle": "Žiadny priradený hráč",
+      "noPlayerHint": "Váš účet zatiaľ nie je prepojený s hráčom. Štatistiky budú dostupné po prepojení.",
+      "noMatchesTitle": "Zatiaľ žiadne zápasy",
+      "noMatchesHint": "Odohrajte prvý zápas a začnite sledovať svoju formu.",
+      "noDataTitle": "Nedostatok dát",
+      "noDataHint": "Pokračujte v hraní a obohaťte svoje štatistiky.",
+      "noTrackedDataTitle": "Štatistiky z gúl nedostupné",
+      "noTrackedData": "Máte zaznamenané zápasy, ale pre vás neboli analyzované žiadne gule.",
+      "noPointData": "Žiadne dáta o pointe.",
+      "noTirData": "Žiadne dáta o tire.",
+      "noShotBreakdown": "Nedostatok dát na rozlíšenie pointu a tiru.",
+      "startMatch": "Nový zápas",
+      "goHome": "Späť na úvod",
+      "loadErrorTitle": "Nepodarilo sa načítať štatistiky",
+      "loadErrorHint": "Skontrolujte pripojenie alebo to skúste znova.",
+      "retry": "Skúsiť znova"
+    }
   },
   "doc": {
     "title": "Príručka hodnotenia",

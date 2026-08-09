@@ -10,6 +10,8 @@ use App\Service\Auth\EmailAlreadyUsedException;
 use App\Service\Auth\InvalidCredentialsException;
 use App\Service\Auth\RegistrationService;
 use App\Service\Auth\RegistrationValidationException;
+use App\Service\Account\PlayerAlreadyLinkedException;
+use App\Service\Account\PlayerNotFoundException;
 use App\Dto\Request\LoginRequest;
 use App\Service\Auth\LoginService;
 use App\Dto\Response\LoginResponse;
@@ -52,6 +54,10 @@ final class AuthController extends AbstractController
                 'error' => 'email_already_used',
             ];
             return new JsonResponse($payload, 409);
+        } catch (PlayerNotFoundException) {
+            return new JsonResponse(['error' => 'player_not_found'], 404);
+        } catch (PlayerAlreadyLinkedException) {
+            return new JsonResponse(['error' => 'player_already_linked'], 409);
         } catch (\Throwable $e) {
             // Do not expose technical details
             $payload = [

@@ -50,4 +50,24 @@ final class GameRepository extends ServiceEntityRepository
 
         return [$total, $items];
     }
+
+    /**
+     * Completed games (at least one end) where the player participated, oldest first.
+     *
+     * @return list<Game>
+     */
+    public function findCompletedGamesForPlayer(int $playerId): array
+    {
+        /** @var list<Game> $items */
+        $items = $this->createQueryBuilder('g')
+            ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
+            ->where('gp.player = :pid')
+            ->setParameter('pid', $playerId)
+            ->groupBy('g.id')
+            ->orderBy('g.createdAt', 'ASC')
+            ->getQuery()->getResult();
+
+        return $items;
+    }
 }

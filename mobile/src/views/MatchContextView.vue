@@ -1,73 +1,80 @@
 <template>
+  <PageHeader :title="title" :back-to="{ name: 'matchSummary', params: { id: matchId } }" />
+
   <section class="context">
-    <h2>{{ title }}</h2>
     <p class="hint">{{ t('context.hint') }}</p>
 
-    <form class="form" @submit.prevent="onSubmit">
-      <label class="field">
-        <span>{{ t('context.fields.comment') }}</span>
-        <Textarea v-model="form.comment" rows="3" auto-resize />
-      </label>
-
-      <label class="field">
-        <span>{{ t('context.fields.teamAName') }}</span>
-        <InputText v-model="form.teamAName" />
-      </label>
-
-      <label class="field">
-        <span>{{ t('context.fields.teamBName') }}</span>
-        <InputText v-model="form.teamBName" />
-      </label>
-
-      <label class="field">
-        <span>{{ t('context.fields.nature') }}</span>
-        <Dropdown
-          v-model="form.nature"
-          :options="natureOptions"
-          option-label="label"
-          option-value="value"
-          :placeholder="t('context.placeholders.select')"
-          show-clear
-        />
-      </label>
-
-      <template v-if="form.nature === 'competition'">
-        <label class="field">
-          <span>{{ t('context.fields.competitionName') }}</span>
-          <InputText v-model="form.competitionName" />
+    <form class="app-form" @submit.prevent="onSubmit">
+      <div class="app-card form-card">
+        <label class="app-field">
+          <span>{{ t('context.fields.comment') }}</span>
+          <Textarea v-model="form.comment" rows="3" auto-resize fluid />
         </label>
 
-        <label class="field">
-          <span>{{ t('context.fields.competitionStage') }}</span>
+        <label class="app-field">
+          <span>{{ t('context.fields.teamAName') }}</span>
+          <InputText v-model="form.teamAName" fluid />
+        </label>
+
+        <label class="app-field">
+          <span>{{ t('context.fields.teamBName') }}</span>
+          <InputText v-model="form.teamBName" fluid />
+        </label>
+
+        <label class="app-field">
+          <span>{{ t('context.fields.nature') }}</span>
           <Dropdown
-            v-model="form.competitionStage"
-            :options="competitionStageOptions"
+            v-model="form.nature"
+            :options="natureOptions"
             option-label="label"
             option-value="value"
             :placeholder="t('context.placeholders.select')"
             show-clear
+            fluid
           />
         </label>
-      </template>
 
-      <label class="field">
-        <span>{{ t('context.fields.terrainType') }}</span>
-        <Dropdown
-          v-model="form.terrainType"
-          :options="terrainTypeOptions"
-          option-label="label"
-          option-value="value"
-          :placeholder="t('context.placeholders.select')"
-          show-clear
-        />
-      </label>
+        <template v-if="form.nature === 'competition'">
+          <label class="app-field">
+            <span>{{ t('context.fields.competitionName') }}</span>
+            <InputText v-model="form.competitionName" fluid />
+          </label>
 
-      <div class="actions">
-        <Button type="submit" :label="t('context.actions.save')" :loading="submitting" />
+          <label class="app-field">
+            <span>{{ t('context.fields.competitionStage') }}</span>
+            <Dropdown
+              v-model="form.competitionStage"
+              :options="competitionStageOptions"
+              option-label="label"
+              option-value="value"
+              :placeholder="t('context.placeholders.select')"
+              show-clear
+              fluid
+            />
+          </label>
+        </template>
+
+        <label class="app-field">
+          <span>{{ t('context.fields.terrainType') }}</span>
+          <Dropdown
+            v-model="form.terrainType"
+            :options="terrainTypeOptions"
+            option-label="label"
+            option-value="value"
+            :placeholder="t('context.placeholders.select')"
+            show-clear
+            fluid
+          />
+        </label>
+      </div>
+
+      <div class="app-actions">
+        <Button type="submit" class="w-full" :label="t('context.actions.save')" :loading="submitting" />
         <Button
           type="button"
           severity="secondary"
           outlined
+          class="w-full"
           :label="t('context.actions.skip')"
           @click="goBack"
         />
@@ -84,6 +91,7 @@ import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
+import PageHeader from '../components/layout/PageHeader.vue'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
 import {
   emptyMatchContextForm,
@@ -151,9 +159,24 @@ onMounted(load)
 </script>
 
 <style scoped>
-.context { max-width: 560px; margin: 0.75rem auto 1.5rem; display: grid; gap: 0.75rem; }
-.hint { opacity: 0.8; margin: 0; font-size: 0.9rem; }
-.form { display: grid; gap: 0.75rem; }
-.field { display: grid; gap: 0.25rem; }
-.actions { display: grid; gap: 0.5rem; margin-top: 0.25rem; }
+.context {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+}
+
+.form-card {
+  padding: var(--app-space-lg);
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.w-full {
+  width: 100%;
+}
 </style>

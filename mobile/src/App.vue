@@ -1,18 +1,28 @@
 <template>
-  <main class="container">
-    <h1>{{ t('app.title') }}</h1>
-    <Toast />
-    <router-view />
-  </main>
+  <component :is="layoutComponent" />
+  <Toast />
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Toast from 'primevue/toast'
-const { t } = useI18n()
-</script>
+import MainLayout from './layouts/MainLayout.vue'
+import AuthLayout from './layouts/AuthLayout.vue'
+import FocusLayout from './layouts/FocusLayout.vue'
+import PlayLayout from './layouts/PlayLayout.vue'
 
-<style scoped>
-.container { padding: 4px; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol; }
-h1 { margin: 0 0 1rem; }
-</style>
+const route = useRoute()
+
+const layouts = {
+  main: MainLayout,
+  auth: AuthLayout,
+  focus: FocusLayout,
+  play: PlayLayout,
+} as const
+
+const layoutComponent = computed(() => {
+  const key = (route.meta.layout as keyof typeof layouts) ?? 'main'
+  return layouts[key] ?? MainLayout
+})
+</script>

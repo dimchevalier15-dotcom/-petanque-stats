@@ -13,8 +13,10 @@ export const playersService = {
     const { data } = await api.post<CreatePlayerResponseDto>('/players', payload)
     return toModel(data)
   },
-  async search(q: string): Promise<Player[]> {
-    const { data } = await api.get<PlayerItemDto[]>('/players', { params: { q } })
+  async search(q: string, options?: { unlinkedOnly?: boolean }): Promise<Player[]> {
+    const { data } = await api.get<PlayerItemDto[]>('/players', {
+      params: { q, unlinkedOnly: options?.unlinkedOnly ? true : undefined },
+    })
     return data.map(toModel)
   },
   async getById(id: number): Promise<Player> {

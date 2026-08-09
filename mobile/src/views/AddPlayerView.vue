@@ -1,28 +1,28 @@
 <template>
-  <section class="player-form">
-    <h2>{{ t('players.create.title') }}</h2>
+  <PageHeader :title="t('players.create.title')" :back-to="{ name: 'home' }" />
 
-    <form @submit.prevent="onSubmit" class="form" novalidate>
-      <label class="field">
+  <form @submit.prevent="onSubmit" class="app-form" novalidate>
+    <div class="app-card form-card">
+      <label class="app-field">
         <span>{{ t('players.fields.firstName') }}</span>
-        <InputText v-model="firstName" :invalid="!!errors.firstName" autocomplete="given-name" />
+        <InputText v-model="firstName" :invalid="!!errors.firstName" autocomplete="given-name" fluid />
         <small v-if="errors.firstName" class="error">{{ errors.firstName }}</small>
       </label>
 
-      <label class="field">
+      <label class="app-field">
         <span>{{ t('players.fields.lastName') }}</span>
-        <InputText v-model="lastName" :invalid="!!errors.lastName" autocomplete="family-name" />
+        <InputText v-model="lastName" :invalid="!!errors.lastName" autocomplete="family-name" fluid />
         <small v-if="errors.lastName" class="error">{{ errors.lastName }}</small>
       </label>
 
-      <label class="field">
+      <label class="app-field">
         <span>{{ t('players.fields.nickname') }}</span>
-        <InputText v-model="nickname" autocomplete="nickname" />
+        <InputText v-model="nickname" autocomplete="nickname" fluid />
       </label>
+    </div>
 
-      <Button type="submit" :label="t('players.actions.submit')" :disabled="submitting || !canSubmit" />
-    </form>
-  </section>
+    <Button type="submit" class="w-full" :label="t('players.actions.submit')" :disabled="submitting || !canSubmit" />
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -32,6 +32,7 @@ import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
+import PageHeader from '../components/layout/PageHeader.vue'
 import { playersService } from '../services/players'
 
 type Errors = { firstName?: string; lastName?: string }
@@ -73,7 +74,6 @@ async function onSubmit(): Promise<void> {
       router.push({ name: 'home' })
     }
   } catch (e: unknown) {
-    // Try to read server-side validation format { errors: { firstName?: string, lastName?: string } }
     const err = e as import('axios').AxiosError<{ errors?: Record<string, string> }>
     const serverErrors = err.response?.data?.errors
     if (serverErrors) {
@@ -87,8 +87,18 @@ async function onSubmit(): Promise<void> {
 </script>
 
 <style scoped>
-.player-form { max-width: 480px; margin: 1.5rem auto; display: grid; gap: 1rem; }
-.form { display: grid; gap: 0.9rem; }
-.field { display: grid; gap: 0.25rem; }
-.error { color: #dc2626; font-size: 0.8rem; }
+.form-card {
+  padding: var(--app-space-lg);
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.error {
+  color: #c24141;
+  font-size: 0.8125rem;
+}
+
+.w-full {
+  width: 100%;
+}
 </style>

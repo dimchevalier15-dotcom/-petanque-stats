@@ -1,26 +1,28 @@
 <template>
-  <section class="history">
-    <h2>{{ t('history.title') }}</h2>
+  <AppPage :title="t('history.title')">
+    <EmptyState
+      v-if="items.length === 0 && !loading"
+      :title="t('history.empty')"
+      icon="pi pi-inbox"
+    />
 
-    <div v-if="items.length === 0 && !loading" class="empty">{{ t('history.empty') }}</div>
-
-    <ul class="list">
+    <ul v-else class="list">
       <li v-for="m in items" :key="m.id">
-        <Button class="card" @click="open(m.id)">
+        <button type="button" class="match-card app-card" @click="open(m.id)">
           <div class="head">
             <span class="date">{{ formatDate(m.date) }}</span>
             <Tag :value="m.victory ? t('history.victory') : t('history.defeat')" :severity="m.victory ? 'success' : 'danger'" />
           </div>
           <div class="type">{{ typeLabel(m.type) }}</div>
           <div class="score">{{ m.scoreA }} - {{ m.scoreB }}</div>
-        </Button>
+        </button>
       </li>
     </ul>
 
-    <div class="actions" v-if="canLoadMore">
-      <Button :label="t('history.loadMore')" :loading="loading" @click="loadMore" />
+    <div v-if="canLoadMore" class="app-actions">
+      <Button :label="t('history.loadMore')" :loading="loading" outlined @click="loadMore" />
     </div>
-  </section>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
@@ -29,6 +31,8 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
+import AppPage from '../components/layout/AppPage.vue'
+import EmptyState from '../components/layout/EmptyState.vue'
 import { matchesService } from '../services/matches'
 import type { MatchHistoryItem, MatchHistoryPage } from '../models/MatchHistory'
 
@@ -57,7 +61,6 @@ function typeLabel(type: 'tete_a_tete' | 'doublette' | 'triplette'): string {
 }
 
 function formatDate(iso: string): string {
-  // Use i18n date formatting if configured, fallback to locale string
   try {
     return d(new Date(iso), 'short') as string
   } catch {
@@ -70,7 +73,6 @@ async function load() {
   try {
     const res: MatchHistoryPage = await matchesService.getHistory(page.value, pageSize.value)
     total.value = res.total
-    // Append items (avoid duplicates if any)
     const known = new Set(items.value.map((i) => i.id))
     const next = res.items.filter((i) => !known.has(i.id))
     items.value = [...items.value, ...next]
@@ -93,13 +95,52 @@ onMounted(load)
 </script>
 
 <style scoped>
-.history { max-width: 560px; margin: 0.75rem auto 1.5rem; display: grid; gap: 0.75rem; }
-.list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
-.card { width: 100%; display: grid; gap: 0.25rem; justify-items: start; border: 1px solid #eee; border-radius: 10px; padding: 0.5rem 0.75rem; text-align: left; }
-.head { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
-.date { opacity: 0.8; font-size: 0.9rem; }
-.type { opacity: 0.9; }
-.score { font-weight: 800; font-size: 1.25rem; }
-.empty { opacity: 0.7; text-align: center; padding: 1rem 0; }
-.actions { display: grid; justify-items: center; margin-top: 0.25rem; }
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--app-space-sm);
+}
+
+.match-card {
+  width: 100%;
+  padding: var(--app-space-md);
+  display: grid;
+  gap: 0.125rem;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: transform 0.12s ease;
+}
+
+.match-card:active {
+  transform: scale(0.99);
+}
+
+.head {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--app-space-sm);
+}
+
+.date {
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+}
+
+.type {
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+}
+
+.score {
+  font-weight: 800;
+  font-size: 1.375rem;
+  letter-spacing: -0.02em;
+}
 </style>

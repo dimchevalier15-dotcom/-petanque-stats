@@ -1,7 +1,7 @@
 <template>
-  <section class="guidelines">
-    <h1>{{ t('doc.title') }}</h1>
+  <PageHeader :title="t('doc.title')" :back-to="{ name: 'home' }" />
 
+  <section class="guidelines">
     <p class="intro">
       {{ t('doc.introduction') }}
     </p>
@@ -142,6 +142,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import PageHeader from '../components/layout/PageHeader.vue'
 
 const { t } = useI18n()
 </script>
@@ -152,35 +153,34 @@ p {
   margin-bottom: 0;
 }
 .guidelines {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: var(--app-space-lg);
 }
 
 .intro {
   line-height: 1.6;
+  color: var(--app-text-muted);
 }
 
 .block {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--app-space-md);
+}
+
+.block h2 {
+  margin: 0;
+  font-size: 1.0625rem;
 }
 
 .rating {
-  border-left: 4px solid var(--primary-color);
-  padding-left: 1rem;
-}
-
-.rating h3 {
-  margin-bottom: .5rem;
+  border-left: 4px solid var(--app-primary);
+  padding-left: var(--app-space-md);
 }
 
 .rating ul {
-  margin: .5rem 0;
+  margin: 0.5rem 0;
   padding-left: 1.2rem;
 }
 
@@ -189,14 +189,14 @@ p {
 }
 
 .question {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--app-space-lg);
 }
 
 blockquote {
-  margin-top: 1rem;
-  padding-left: 1rem;
-  border-left: 4px solid var(--primary-color);
+  margin: 0;
+  padding-left: var(--app-space-md);
+  border-left: 4px solid var(--app-accent);
   font-style: italic;
-  opacity: .9;
+  color: var(--app-text-muted);
 }
 </style>

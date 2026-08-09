@@ -9,6 +9,7 @@ use App\Dto\Request\SearchPlayersQuery;
 use App\Dto\Response\CreatePlayerResponse;
 use App\Dto\Response\PlayerItem;
 use App\Service\PlayerService;
+use App\Service\PlayerStatsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,7 @@ final class PlayerController extends AbstractController
 {
     public function __construct(
         private PlayerService $playerService,
+        private PlayerStatsService $playerStatsService,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {
@@ -50,8 +52,23 @@ final class PlayerController extends AbstractController
     {
         $q = new SearchPlayersQuery();
         $q->q = $request->query->get('q') !== null ? (string) $request->query->get('q') : null;
+        $unlinkedOnly = $request->query->get('unlinkedOnly');
+        $q->unlinkedOnly = $unlinkedOnly !== null ? filter_var($unlinkedOnly, FILTER_VALIDATE_BOOLEAN) : null;
         $items = $this->playerService->search($q);
         $json = $this->serializer->serialize($items, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/players/me/stats', name: 'api_players_me_stats', methods: ['GET'])]
+    public function myStats(Request $request): JsonResponse
+    {
+        $authHeader = (string) $request->headers->get('Authorization', '');
+        if (!str_starts_with($authHeader, 'Bearer ')) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+        $token = substr($authHeader, 7);
+        $res = $this->playerStatsService->statsForToken($token);
+        $json = $this->serializer->serialize($res, 'json');
         return new JsonResponse($json, 200, [], true);
     }
 

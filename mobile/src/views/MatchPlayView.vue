@@ -1,6 +1,6 @@
 <template>
   <section class="play">
-    <header class="banner">
+    <header class="banner app-card">
       <Button icon="pi pi-chevron-left" text @click="goPrev" :disabled="currentEndIndex === 0" aria-label="prev" />
       <div class="info">
         <span>{{ t('play.end') }} {{ currentEnd.index }}</span>
@@ -11,7 +11,7 @@
     </header>
 
     <div class="teams">
-      <div class="team">
+      <div class="team app-card">
         <h3>{{ t('matches.teams.a') }}</h3>
         <div v-for="pid in setup.teamA" :key="pid" class="player">
           <div class="player-name">{{ nameFor(pid) }}</div>
@@ -30,7 +30,7 @@
         </div>
       </div>
 
-      <div class="team">
+      <div class="team app-card">
         <h3>{{ t('matches.teams.b') }}</h3>
         <div v-for="pid in setup.teamB" :key="pid" class="player">
           <div class="player-name">{{ nameFor(pid) }}</div>
@@ -325,20 +325,41 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.play { max-width: 520px; margin: 0.5rem auto 1rem; display: grid; gap: 0.75rem; }
-.banner { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.25rem; }
-.banner .info { justify-self: center; display: flex; gap: 0.5rem; font-weight: 600; }
-.teams { display: grid; gap: 0.75rem; grid-template-columns: 1fr; }
-.team { border: 1px solid #eee; border-radius: 10px; padding: 0.5rem; }
+.play {
+  max-width: var(--app-page-max);
+  margin: 0 auto;
+  padding: var(--app-space-md) var(--app-space-lg) calc(env(safe-area-inset-bottom, 0px) + var(--app-space-lg));
+  display: grid;
+  gap: var(--app-space-md);
+}
+.banner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.25rem;
+  padding: var(--app-space-sm) var(--app-space-md);
+}
+.banner .info { justify-self: center; display: flex; gap: 0.5rem; font-weight: 700; font-size: 0.9375rem; }
+.teams { display: grid; gap: var(--app-space-md); }
+.team { padding: var(--app-space-md); display: grid; gap: var(--app-space-sm); }
 .player { display: grid; gap: 0.25rem; padding: 0.25rem 0; }
-.balls { display: flex; gap: 0.25rem; }
-.ball { min-width: 2.25rem; }
-.note-picker { display: flex; gap: 0.5rem; }
-.end-score { display: grid; gap: 0.75rem; }
+.player-name { font-weight: 600; font-size: 0.9375rem; }
+.balls { display: flex; gap: 0.375rem; flex-wrap: wrap; }
+.ball { min-width: 2.75rem; min-height: 2.75rem; }
+.note-picker { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.end-score { display: grid; gap: var(--app-space-md); }
 .end-score .winner { display: flex; justify-content: center; }
 .end-score .points { display: grid; gap: 0.25rem; justify-items: center; }
-.validate-end { position: sticky; bottom: 0; background: #fff; border-top: 1px solid #eee; padding: 0.5rem 0.5rem; display: grid; justify-items: center; }
+.validate-end {
+  position: sticky;
+  bottom: 0;
+  background: var(--app-bg);
+  border-top: 1px solid var(--app-border);
+  padding: var(--app-space-sm) 0;
+  display: grid;
+}
 .validate-end-btn { width: 100%; }
-.finish { display: grid; justify-items: center; margin-top: 0.25rem; }
+.finish { display: grid; margin-top: 0.25rem; }
 .finish-btn { width: 100%; }
+.cancel-end-btn { width: 100%; }
 </style>

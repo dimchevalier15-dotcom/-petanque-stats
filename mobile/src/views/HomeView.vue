@@ -1,94 +1,43 @@
 <template>
-  <section class="home">
-    <header class="brand">
-      <span class="logo" aria-hidden="true">🏆</span>
-      <h2 class="app-name">{{ t('app.title') }}</h2>
-      <div />
-
-      <Button
-          icon="pi pi-language"
-          :label="currentLanguage"
-          text
-          @click="toggleLanguageMenu"
-      />
-
-      <Menu
-          ref="languageMenu"
-          :model="languageItems"
-          popup
-      />
-    </header>
-
-    <p class="welcome">{{ t('home.welcome') }}</p>
-    <p v-if="auth.user" class="connected">{{ t('home.connectedAs', { email: auth.user.email }) }}</p>
-
-
-    <nav class="actions" :aria-label="t('home.welcome')">
-      <Button
-        class="action primary"
-        :label="t('home.actions.newMatch')"
-        icon="pi pi-plus"
-        iconPos="left"
-        @click="goNewMatch"
-      />
-
-      <Button
-        class="action"
-        :label="t('home.actions.addPlayer')"
-        icon="pi pi-user-plus"
-        iconPos="left"
-        @click="goAddPlayer"
-      />
-
-      <Button
-        class="action"
-        :label="t('home.actions.history')"
-        icon="pi pi-history"
-        iconPos="left"
-        @click="goHistory"
-      />
-
-      <Button
-        class="action"
-        :label="t('doc.title')"
-        icon="pi pi-book"
-        iconPos="left"
-        @click="goGuidelines"
-      />
-
-      <div class="action with-badge">
-        <Button
-          class="w-full"
-          :label="t('home.actions.myStats')"
-          icon="pi pi-chart-line"
-          iconPos="left"
-          disabled
-        />
-        <Tag class="badge" severity="secondary" :value="t('common.comingSoon')" />
+  <AppPage>
+    <div class="welcome-card app-card">
+      <div class="brand-row">
+        <span class="logo" aria-hidden="true">🥅</span>
+        <div>
+          <h2 class="app-section-title">{{ t('app.title') }}</h2>
+          <p class="app-section-subtitle">{{ t('home.welcome') }}</p>
+        </div>
       </div>
+      <p v-if="auth.user" class="connected">{{ t('home.connectedAs', { email: auth.user.email }) }}</p>
+    </div>
 
-      <div class="action with-badge">
-        <Button
-          class="w-full"
-          :label="t('home.actions.settings')"
-          icon="pi pi-cog"
-          iconPos="left"
-          disabled
-        />
-        <Tag class="badge" severity="secondary" :value="t('common.comingSoon')" />
+    <section class="quick-section">
+      <h3 class="section-label">{{ t('home.quickActions') }}</h3>
+      <div class="quick-grid">
+        <button type="button" class="quick-item app-card" @click="goAddPlayer">
+          <i class="pi pi-user-plus" aria-hidden="true" />
+          <span>{{ t('home.actions.addPlayer') }}</span>
+        </button>
+        <button type="button" class="quick-item app-card" @click="goGuidelines">
+          <i class="pi pi-book" aria-hidden="true" />
+          <span>{{ t('doc.title') }}</span>
+        </button>
+        <button type="button" class="quick-item app-card" @click="goSettings">
+          <i class="pi pi-cog" aria-hidden="true" />
+          <span>{{ t('home.actions.settings') }}</span>
+        </button>
+        <button type="button" class="quick-item app-card" @click="toggleLanguageMenu">
+          <i class="pi pi-language" aria-hidden="true" />
+          <span>{{ t('home.language') }} · {{ currentLanguage }}</span>
+        </button>
+        <button type="button" class="quick-item app-card quick-item--danger" @click="onLogout">
+          <i class="pi pi-sign-out" aria-hidden="true" />
+          <span>{{ t('home.actions.logout') }}</span>
+        </button>
       </div>
-
-      <Button
-        class="action"
-        severity="secondary"
-        outlined
-        :label="t('home.actions.logout')"
-        icon="pi pi-sign-out"
-        iconPos="left"
-        @click="onLogout"
-      />
-    </nav>
-  </section>
+      <Menu ref="languageMenu" :model="languageItems" popup />
+    </section>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
@@ -96,22 +45,18 @@ import { computed, ref } from 'vue'
 import Menu from 'primevue/menu'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
-import Tag from 'primevue/tag'
+import AppPage from '../components/layout/AppPage.vue'
 import { useAuthStore } from '../stores/auth'
 
 const { t, locale } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 
-function goNewMatch(): void {
-  router.push({ name: 'newMatch' })
-}
 function goAddPlayer(): void {
   router.push({ name: 'addPlayer' })
 }
-function goHistory(): void {
-  router.push({ name: 'matchHistory' })
+function goSettings(): void {
+  router.push({ name: 'settings' })
 }
 function goGuidelines(): void {
   router.push({ name: 'guidelines' })
@@ -138,18 +83,9 @@ const currentLanguage = computed(() => {
 })
 
 const languageItems = [
-  {
-    label: 'Français',
-    command: () => changeLanguage('fr')
-  },
-  {
-    label: 'English',
-    command: () => changeLanguage('en')
-  },
-  {
-    label: 'Slovenčina',
-    command: () => changeLanguage('sk')
-  }
+  { label: 'Français', command: () => changeLanguage('fr') },
+  { label: 'English', command: () => changeLanguage('en') },
+  { label: 'Slovenčina', command: () => changeLanguage('sk') },
 ]
 
 function changeLanguage(lang: string) {
@@ -163,18 +99,75 @@ function toggleLanguageMenu(event: Event) {
 </script>
 
 <style scoped>
-.home { max-width: 480px; margin: 1rem auto 2rem; display: grid; gap: 1rem; }
-.brand { display: flex; align-items: center; gap: 0.5rem; }
-.logo { font-size: 1.5rem; }
-.app-name { margin: 0; font-size: 1.25rem; }
-.welcome { margin: 0.25rem 0 0.25rem; opacity: 0.75; }
-.connected { margin: 0 0 0.75rem; font-size: 0.95rem; opacity: 0.85; }
-.actions { display: grid; gap: 0.75rem; }
-.action.with-badge { position: relative; }
-.badge { position: absolute; top: -0.5rem; right: -0.5rem; }
-.topbar {
+.welcome-card {
+  padding: var(--app-space-lg);
+  display: grid;
+  gap: var(--app-space-sm);
+}
+
+.brand-row {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
+  align-items: center;
+  gap: var(--app-space-md);
+}
+
+.logo {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.connected {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+}
+
+.section-label {
+  margin: 0 0 var(--app-space-sm);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--app-text-subtle);
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-sm);
+}
+
+.quick-item {
+  min-height: 5.5rem;
+  padding: var(--app-space-md);
+  display: grid;
+  gap: var(--app-space-sm);
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: var(--app-text);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.quick-item i {
+  font-size: 1.25rem;
+  color: var(--app-primary);
+}
+
+.quick-item span {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.quick-item:active {
+  transform: scale(0.98);
+}
+
+.quick-item--danger i {
+  color: #c24141;
 }
 </style>

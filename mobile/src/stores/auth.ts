@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import { authService } from '../services/auth'
+import { authService, AuthValidationError } from '../services/auth'
 import type { AuthSession } from '../models/AuthSession'
 import type { User } from '../models/User'
+import type { RegisterRequest } from '../dto/auth/RegisterRequest'
 
 const TOKEN_KEY = 'auth_token'
 
@@ -11,6 +12,7 @@ export const useAuthStore = defineStore('auth', {
     user: null as User | null,
     loading: false,
     lastError: null as string | null,
+    lastFieldErrors: {} as Record<string, string>,
   }),
   getters: {
     isAuthenticated: (state) => !!state.token,
@@ -18,6 +20,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async initFromStorage() {
       this.lastError = null
+      this.lastFieldErrors = {}
       const token = localStorage.getItem(TOKEN_KEY)
       if (token) {
         this.token = token
@@ -29,16 +32,22 @@ export const useAuthStore = defineStore('auth', {
         }
       }
     },
-    async register(email: string, password: string) {
+    async register(payload: RegisterRequest) {
       this.loading = true
       this.lastError = null
+      this.lastFieldErrors = {}
       try {
-        const res: AuthSession = await authService.register(email, password)
+        const res: AuthSession = await authService.register(payload)
         this.token = res.token
         this.user = res.user
         localStorage.setItem(TOKEN_KEY, res.token)
-      } catch {
-        this.lastError = 'auth.errors.generic'
+      } catch (error) {
+        if (error instanceof AuthValidationError) {
+          this.lastFieldErrors = error.fields
+          this.lastError = error.message
+        } else {
+          this.lastError = error instanceof Error ? error.message : 'auth.errors.generic'
+        }
       } finally {
         this.loading = false
       }

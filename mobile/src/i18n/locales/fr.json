@@ -6,6 +6,14 @@
     "hello": "Hello World",
     "comingSoon": "À venir"
   },
+  "nav": {
+    "aria": "Navigation principale",
+    "home": "Accueil",
+    "history": "Historique",
+    "newMatch": "Nouveau match",
+    "stats": "Stats",
+    "back": "Retour"
+  },
   "summary": {
     "title": "Résumé du match",
     "winnerA": "Victoire Équipe A",
@@ -65,6 +73,8 @@
   "home": {
     "welcome": "Bienvenue !",
     "connectedAs": "Connecté en tant que {email}",
+    "quickActions": "Plus",
+    "language": "Langue",
     "actions": {
       "newMatch": "Nouveau match",
       "addPlayer": "Ajouter un joueur",
@@ -95,14 +105,64 @@
     "register": {
       "title": "Créer un compte",
       "submit": "S'inscrire",
-      "link": "Créer un compte"
+      "link": "Créer un compte",
+      "profile": {
+        "title": "Votre profil joueur",
+        "hint": "Ces informations seront utilisées pour votre joueur dans l'application."
+      },
+      "linkPlayer": {
+        "title": "Tu as déjà été ajouté à un match ?",
+        "hint": "Tu peux retrouver ton joueur existant et le lier à ton compte. Cette étape est facultative.",
+        "searchPlaceholder": "Rechercher un joueur (3 caractères min.)",
+        "empty": "Aucun joueur disponible pour le moment."
+      }
     },
     "noAccount": "Pas encore de compte ?",
     "haveAccount": "Déjà un compte ?",
     "logout": "Se déconnecter",
     "errors": {
       "invalidCredentials": "Email ou mot de passe incorrect.",
-      "generic": "Une erreur est survenue. Veuillez réessayer."
+      "generic": "Une erreur est survenue. Veuillez réessayer.",
+      "validation": "Veuillez corriger les champs indiqués.",
+      "emailAlreadyUsed": "Cet email est déjà utilisé.",
+      "playerAlreadyLinked": "Ce joueur est déjà lié à un autre compte.",
+      "playerNotFound": "Ce joueur n'existe plus ou n'est plus disponible."
+    },
+    "validations": {
+      "required": "Champ obligatoire",
+      "emailInvalid": "Adresse email invalide.",
+      "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères."
+    }
+  },
+  "settings": {
+    "title": "Paramètres du compte",
+    "loading": "Chargement…",
+    "profile": {
+      "title": "Profil joueur",
+      "hint": "Modifiez les informations affichées pour votre joueur dans l'application.",
+      "save": "Enregistrer",
+      "saved": "Profil enregistré."
+    },
+    "linked": {
+      "title": "Joueur lié",
+      "hint": "Votre compte est associé à ce joueur. L'historique et les statistiques restent accessibles depuis l'application."
+    },
+    "unlinked": {
+      "title": "Retrouver un joueur existant",
+      "hint": "Si vous avez déjà été ajouté à un match sans créer de compte, vous pouvez lier ce joueur à votre compte.",
+      "searchLabel": "Rechercher un joueur",
+      "searchPlaceholder": "Rechercher (3 caractères min.)",
+      "empty": "Aucun joueur non lié ne correspond à votre recherche.",
+      "linkAction": "Lier ce joueur"
+    },
+    "errors": {
+      "loadFailed": "Impossible de charger les informations du compte.",
+      "profileSaveFailed": "Impossible d'enregistrer le profil. Veuillez réessayer.",
+      "noLinkedPlayer": "Aucun joueur n'est lié à votre compte.",
+      "linkFailed": "Impossible de lier ce joueur. Veuillez réessayer.",
+      "playerAlreadyLinked": "Ce joueur est déjà lié à un autre compte.",
+      "playerNotFound": "Ce joueur n'existe plus ou n'est plus disponible.",
+      "userAlreadyHasPlayer": "Votre compte est déjà lié à un joueur."
     }
   },
   "players": {
@@ -175,6 +235,58 @@
     "loadMore": "Charger plus",
     "victory": "Victoire",
     "defeat": "Défaite"
+  },
+  "stats": {
+    "title": "Mes statistiques",
+    "actions": { "back": "Retour" },
+    "kpi": {
+      "matches": "Matchs",
+      "victories": "Victoires",
+      "defeats": "Défaites",
+      "winRate": "Taux de victoire"
+    },
+    "overallAverage": "Moyenne globale",
+    "ballsTracked": "{n} boules analysées",
+    "sections": {
+      "evolution": "Évolution",
+      "distribution": "Répartition des notes",
+      "shots": "Point & Tir",
+      "byNature": "Par nature de match"
+    },
+    "notes": {
+      "m2": "-2",
+      "m1": "-1",
+      "p0": "0",
+      "p1": "+1",
+      "p2": "+2"
+    },
+    "evolution": {
+      "average": "Moyenne",
+      "matchLabel": "M{n}",
+      "hint": "Points verts = victoire, rouges = défaite. 10 derniers matchs analysés."
+    },
+    "byNature": {
+      "hint": "Uniquement les matchs avec contexte renseigné.",
+      "meta": "{matches} matchs · {balls} boules"
+    },
+    "empty": {
+      "noPlayerTitle": "Aucun joueur associé",
+      "noPlayerHint": "Votre compte n'est pas encore lié à un joueur. Les statistiques seront disponibles une fois ce lien établi.",
+      "noMatchesTitle": "Pas encore de matchs",
+      "noMatchesHint": "Jouez votre premier match pour commencer à suivre vos performances.",
+      "noDataTitle": "Données insuffisantes",
+      "noDataHint": "Continuez à jouer pour enrichir vos statistiques.",
+      "noTrackedDataTitle": "Statistiques de jeu indisponibles",
+      "noTrackedData": "Vous avez des matchs enregistrés, mais aucune boule n'a été analysée pour vous.",
+      "noPointData": "Aucune donnée de point.",
+      "noTirData": "Aucune donnée de tir.",
+      "noShotBreakdown": "Pas assez de données pour distinguer point et tir.",
+      "startMatch": "Nouveau match",
+      "goHome": "Retour à l'accueil",
+      "loadErrorTitle": "Impossible de charger les statistiques",
+      "loadErrorHint": "Vérifiez votre connexion ou réessayez dans un instant.",
+      "retry": "Réessayer"
+    }
   },
   "doc": {
     "title": "Guide de notation",

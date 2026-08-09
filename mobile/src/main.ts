@@ -11,6 +11,7 @@ import { i18n } from './i18n'
 import { useAuthStore } from './stores/auth'
 
 import 'primeicons/primeicons.css'
+import './assets/theme.css'
 
 const app = createApp(App)
 

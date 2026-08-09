@@ -5,39 +5,40 @@ declare(strict_types=1);
 namespace App\Service\Auth;
 
 use App\Dto\Auth\RegisterInput;
-use App\Dto\Auth\RegisterOutput;
+use App\Dto\Response\AuthSessionResponse;
+use App\Dto\Response\MeResponse;
 use App\Entity\User;
 use App\Entity\Player;
 use App\Repository\UserRepository;
+use App\Service\Account\PlayerAlreadyLinkedException;
+use App\Service\Account\PlayerLinkService;
+use App\Service\Account\PlayerNotFoundException;
+use App\Service\Account\UserAlreadyHasPlayerException;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
 final class RegistrationService
 {
-    private UserRepository $userRepository;
-    private EntityManagerInterface $em;
-    private UserPasswordHasherInterface $passwordHasher;
-    private ValidatorInterface $validator;
-
     public function __construct(
-        UserRepository $userRepository,
-        EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher,
-        ValidatorInterface $validator,
+        private UserRepository $userRepository,
+        private EntityManagerInterface $em,
+        private UserPasswordHasherInterface $passwordHasher,
+        private ValidatorInterface $validator,
+        private PlayerLinkService $playerLinkService,
+        private JWTEncoderInterface $jwtEncoder,
     ) {
-        $this->userRepository = $userRepository;
-        $this->em = $em;
-        $this->passwordHasher = $passwordHasher;
-        $this->validator = $validator;
     }
 
     /**
      * @throws RegistrationValidationException when input is invalid
      * @throws EmailAlreadyUsedException when email already exists
+     * @throws PlayerNotFoundException when selected player does not exist
+     * @throws PlayerAlreadyLinkedException when selected player is already linked
      */
-    public function register(RegisterInput $input): RegisterOutput
+    public function register(RegisterInput $input): AuthSessionResponse
     {
         $violations = $this->validator->validate($input);
         if (\count($violations) > 0) {
@@ -57,32 +58,51 @@ final class RegistrationService
             throw new EmailAlreadyUsedException();
         }
 
-        // Create User and Player within a single unit of work
         $user = new User($input->email);
         $hashed = $this->passwordHasher->hashPassword($user, $input->password);
         $user->setPassword($hashed);
 
-        // Derive default names from email local part
-        $localPart = strtolower((string) strstr($input->email, '@', true));
-        if ($localPart === '') {
-            $localPart = strtolower($input->email);
-        }
-
-        $player = new Player(
-            firstName: $localPart,
-            lastName: $localPart,
-            nickname: $localPart,
-        );
-        $player->setUser($user);
-
         $this->em->persist($user);
-        $this->em->persist($player);
         $this->em->flush();
 
-        return new RegisterOutput(
-            id: (int) $user->getId(),
-            email: $user->getEmail(),
-            playerId: (int) $player->getId(),
+        if ($input->playerId !== null) {
+            $player = $this->playerLinkService->linkToUser($user, $input->playerId);
+        } else {
+            $firstName = trim((string) $input->firstName);
+            $lastName = trim((string) $input->lastName);
+            $nickname = $input->nickname !== null && trim($input->nickname) !== ''
+                ? trim($input->nickname)
+                : $firstName;
+
+            $player = new Player(
+                firstName: $firstName,
+                lastName: $lastName,
+                nickname: $nickname,
+            );
+            $player->setUser($user);
+
+            $this->em->persist($player);
+            $this->em->flush();
+        }
+
+        $token = $this->jwtEncoder->encode([
+            'username' => $user->getEmail(),
+            'sub' => (string) $user->getId(),
+            'roles' => [],
+            'exp' => time() + 3600,
+            'iat' => time(),
+        ]);
+
+        return new AuthSessionResponse(
+            token: $token,
+            user: new MeResponse(
+                id: (int) $user->getId(),
+                email: $user->getEmail(),
+                playerId: (int) $player->getId(),
+                firstName: $player->getFirstName(),
+                lastName: $player->getLastName(),
+                nickname: $player->getNickname(),
+            ),
         );
     }
 }

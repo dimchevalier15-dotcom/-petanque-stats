@@ -45,7 +45,9 @@ final class PlayerService
     public function search(SearchPlayersQuery $query): array
     {
         $q = trim((string) ($query->q ?? ''));
-        $list = $this->players->searchByQuery($q, 20);
+        $list = ($query->unlinkedOnly ?? false)
+            ? $this->players->searchUnlinkedByQuery($q, 20)
+            : $this->players->searchByQuery($q, 20);
         $out = [];
         foreach ($list as $p) {
             $out[] = new PlayerItem(

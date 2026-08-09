@@ -6,6 +6,14 @@
     "hello": "Hello World",
     "comingSoon": "Coming soon"
   },
+  "nav": {
+    "aria": "Main navigation",
+    "home": "Home",
+    "history": "History",
+    "newMatch": "New match",
+    "stats": "Stats",
+    "back": "Back"
+  },
   "summary": {
     "title": "Match summary",
     "winnerA": "Team A wins",
@@ -65,6 +73,8 @@
   "home": {
     "welcome": "Welcome!",
     "connectedAs": "Signed in as {email}",
+    "quickActions": "More",
+    "language": "Language",
     "actions": {
       "newMatch": "New match",
       "addPlayer": "Add player",
@@ -95,14 +105,64 @@
     "register": {
       "title": "Create account",
       "submit": "Register",
-      "link": "Create account"
+      "link": "Create account",
+      "profile": {
+        "title": "Your player profile",
+        "hint": "This information will be used for your player in the app."
+      },
+      "linkPlayer": {
+        "title": "Already added to a match?",
+        "hint": "You can find your existing player and link them to your account. This step is optional.",
+        "searchPlaceholder": "Search for a player (min. 3 characters)",
+        "empty": "No available players at the moment."
+      }
     },
     "noAccount": "No account yet?",
     "haveAccount": "Already have an account?",
     "logout": "Logout",
     "errors": {
       "invalidCredentials": "Incorrect email or password.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "validation": "Please fix the highlighted fields.",
+      "emailAlreadyUsed": "This email is already in use.",
+      "playerAlreadyLinked": "This player is already linked to another account.",
+      "playerNotFound": "This player no longer exists or is unavailable."
+    },
+    "validations": {
+      "required": "Required field",
+      "emailInvalid": "Invalid email address.",
+      "passwordMinLength": "Password must be at least 8 characters."
+    }
+  },
+  "settings": {
+    "title": "Account settings",
+    "loading": "Loading…",
+    "profile": {
+      "title": "Player profile",
+      "hint": "Edit the information displayed for your player in the app.",
+      "save": "Save",
+      "saved": "Profile saved."
+    },
+    "linked": {
+      "title": "Linked player",
+      "hint": "Your account is linked to this player. Match history and statistics remain available in the app."
+    },
+    "unlinked": {
+      "title": "Find an existing player",
+      "hint": "If you were already added to a match without creating an account, you can link that player to your account.",
+      "searchLabel": "Search for a player",
+      "searchPlaceholder": "Search (min. 3 characters)",
+      "empty": "No unlinked players match your search.",
+      "linkAction": "Link this player"
+    },
+    "errors": {
+      "loadFailed": "Unable to load account information.",
+      "profileSaveFailed": "Unable to save profile. Please try again.",
+      "noLinkedPlayer": "No player is linked to your account.",
+      "linkFailed": "Unable to link this player. Please try again.",
+      "playerAlreadyLinked": "This player is already linked to another account.",
+      "playerNotFound": "This player no longer exists or is unavailable.",
+      "userAlreadyHasPlayer": "Your account is already linked to a player."
     }
   },
   "players": {
@@ -166,6 +226,58 @@
     "loadMore": "Load more",
     "victory": "Victory",
     "defeat": "Defeat"
+  },
+  "stats": {
+    "title": "My statistics",
+    "actions": { "back": "Back" },
+    "kpi": {
+      "matches": "Matches",
+      "victories": "Wins",
+      "defeats": "Losses",
+      "winRate": "Win rate"
+    },
+    "overallAverage": "Overall average",
+    "ballsTracked": "{n} balls tracked",
+    "sections": {
+      "evolution": "Trend",
+      "distribution": "Rating distribution",
+      "shots": "Point & Shoot",
+      "byNature": "By match nature"
+    },
+    "notes": {
+      "m2": "-2",
+      "m1": "-1",
+      "p0": "0",
+      "p1": "+1",
+      "p2": "+2"
+    },
+    "evolution": {
+      "average": "Average",
+      "matchLabel": "M{n}",
+      "hint": "Green dots = win, red = loss. Last 10 tracked matches."
+    },
+    "byNature": {
+      "hint": "Only matches with context filled in.",
+      "meta": "{matches} matches · {balls} balls"
+    },
+    "empty": {
+      "noPlayerTitle": "No linked player",
+      "noPlayerHint": "Your account is not linked to a player yet. Statistics will appear once that link exists.",
+      "noMatchesTitle": "No matches yet",
+      "noMatchesHint": "Play your first match to start tracking your performance.",
+      "noDataTitle": "Not enough data",
+      "noDataHint": "Keep playing to build your statistics.",
+      "noTrackedDataTitle": "No ball statistics",
+      "noTrackedData": "You have recorded matches, but no balls were tracked for you.",
+      "noPointData": "No point data.",
+      "noTirData": "No shooting data.",
+      "noShotBreakdown": "Not enough data to split point and shoot.",
+      "startMatch": "New match",
+      "goHome": "Back to home",
+      "loadErrorTitle": "Unable to load statistics",
+      "loadErrorHint": "Check your connection or try again in a moment.",
+      "retry": "Retry"
+    }
   },
   "doc": {
     "title": "Scoring Guide",

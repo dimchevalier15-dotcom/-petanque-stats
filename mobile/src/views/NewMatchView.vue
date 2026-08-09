@@ -1,10 +1,9 @@
 <template>
+  <PageHeader :title="t('matches.create.title')" :back-to="{ name: 'home' }" />
   <section class="new-match">
-    <h2>{{ t('matches.create.title') }}</h2>
-
-    <form class="form" @submit.prevent="onSubmit">
+    <form class="app-form" @submit.prevent="onSubmit">
       <div class="teams">
-        <div class="team">
+        <div class="team app-card">
           <h3>{{ t('matches.teams.a') }}</h3>
           <div class="player-row" v-for="slot in teamASlots" :key="slot">
             <div>
@@ -45,7 +44,7 @@
           </div>
         </div>
 
-        <div class="team">
+        <div class="team app-card">
           <h3>{{ t('matches.teams.b') }}</h3>
           <div class="player-row" v-for="slot in teamBSlots" :key="slot">
             <div>
@@ -87,19 +86,19 @@
         </div>
       </div>
 
-      <div class="info">
-        <label class="field">
+      <div class="info app-card">
+        <label class="app-field">
           <span>{{ t('matches.fields.type') }}</span>
           <Dropdown v-model="type" :options="typeOptions" optionLabel="label" optionValue="value" />
         </label>
 
-        <label class="field">
+        <label class="app-field">
           <span>{{ t('matches.fields.target') }}</span>
           <InputText type="number" min="1" v-model.number="targetScore" />
         </label>
       </div>
 
-      <div class="stats">
+      <div class="stats app-card">
         <h3>{{ t('matches.stats.sectionTitle') }}</h3>
 
         <div class="mode">
@@ -113,9 +112,9 @@
         </div>
       </div>
 
-      <div class="actions">
-        <Button type="submit" class="start" :label="t('matches.actions.start')" :disabled="submitting || !isValid" />
-        <Button type="button" severity="secondary" outlined :label="t('matches.actions.cancel')" @click="onCancel" />
+      <div class="app-actions">
+        <Button type="submit" class="start w-full" :label="t('matches.actions.start')" :disabled="submitting || !isValid" />
+        <Button type="button" severity="secondary" outlined class="w-full" :label="t('matches.actions.cancel')" @click="onCancel" />
       </div>
     </form>
   </section>
@@ -136,6 +135,7 @@ import { matchesService } from '../services/matches'
 import type { Player } from '../models/Player'
 import type { MatchType, StatisticsMode, PlayerRole, ShotType } from '../models/Match'
 import type { DefaultShotTypeDto } from '../dto/match/CreateMatchRequest'
+import PageHeader from '../components/layout/PageHeader.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -441,10 +441,10 @@ function onCancel() {
 </script>
 
 <style scoped>
-.new-match { max-width: 520px; margin: 1rem auto 2rem; display: grid; gap: 1rem; }
-.form { display: grid; gap: 1rem; }
-.teams { display: flex; flex-direction: column; gap: 1rem; }
-.team { display: grid; gap: 0.5rem; padding: 0.5rem; border: 1px solid #eee; border-radius: 8px; }
+.new-match { display: grid; gap: var(--app-space-md); }
+.teams { display: flex; flex-direction: column; gap: var(--app-space-md); }
+.team { display: grid; gap: var(--app-space-sm); padding: var(--app-space-md); }
+.info, .stats { padding: var(--app-space-md); display: grid; gap: var(--app-space-md); }
 .player-row {
   display: flex;
   gap: 8px;
