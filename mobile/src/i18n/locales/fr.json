@@ -130,5 +130,128 @@
     "loadMore": "Charger plus",
     "victory": "Victoire",
     "defeat": "Défaite"
+  },
+  "doc": {
+    "title": "Guide de notation",
+    "introduction": "Ce guide présente le barème utilisé pour noter chaque boule. L'objectif est d'obtenir des statistiques cohérentes et comparables entre tous les joueurs.",
+    "why": {
+      "title": "Pourquoi noter les boules ?",
+      "text":
+      "L'application ne cherche pas à juger la qualité technique d'un joueur. Elle mesure l'impact réel de chaque boule sur la mène afin de produire des statistiques pertinentes."
+    },
+    "commonScale": {
+      "title": "Un barème commun",
+      "text":
+      "Pour que les statistiques aient un sens, tous les joueurs doivent utiliser la même échelle. Avec un peu d'habitude, la notation devient rapide et naturelle."
+    },
+    "scale": {
+      "title": "Le barème",
+
+      "minus2": {
+        "title": "🟥 -2 · Boule pénalisante",
+        "description":
+        "La boule dégrade clairement la situation de son équipe.",
+
+        "example1": "Point qui pousse une boule de son équipe.",
+        "example2": "Tir manqué qui ouvre complètement le jeu adverse.",
+        "example3": "Toute boule qui fait perdre un avantage important.",
+
+        "summary":
+        "Une boule à -2 fait perdre quelque chose à son équipe."
+      },
+
+      "minus1": {
+        "title": "🟧 -1 · Boule inutile",
+        "description":
+        "La boule n'apporte rien à son équipe.",
+        "example1": "Un trou.",
+        "example2": "Un point beaucoup trop long ou trop court.",
+        "example3": "Une boule qui ne joue pas.",
+        "example4": "Un tir manqué sans conséquence.",
+        "summary":
+        "La boule ne produit aucun effet utile."
+      },
+
+      "zero": {
+        "title": "⚪ 0 · Boule moyenne",
+        "description":
+        "La boule a un impact limité sur la mène.",
+
+        "example1": "Un point relativement proche mais insuffisant.",
+        "example2": "Un tir manqué de peu.",
+        "example3": "Une boule qui met une légère pression sans changer réellement le jeu.",
+
+        "summary":
+        "La boule existe, mais son influence reste faible."
+      },
+
+      "plus1": {
+        "title": "🟩 +1 · Bonne boule",
+        "description":
+        "La boule atteint son objectif.",
+        "example1": "Un bon point.",
+        "example2": "Un tir réussi.",
+        "example3": "Une reprise du point.",
+        "example4": "Un devant de boule efficace.",
+        "summary":
+        "Une bonne boule, conforme à ce qui était attendu."
+      },
+
+      "plus2": {
+        "title": "🟦 +2 · Boule exceptionnelle",
+        "description":
+        "La boule procure un avantage majeur à son équipe.",
+        "example1": "Un carreau.",
+        "example2": "Un point quasiment imbattable.",
+        "example3": "Un devant de boule qui verrouille complètement le jeu.",
+        "example4": "Toute boule qui change fortement l'issue de la mène.",
+        "summary":
+        "Une +2 est une boule dont l'impact dépasse largement celui d'une bonne boule."
+      }
+    },
+
+    "faq": {
+      "title": "Questions fréquentes",
+
+      "carreau": {
+        "title": "Un carreau vaut-il toujours +2 ?",
+        "answer":
+        "Non. La note dépend toujours de l'impact de la boule. La plupart des carreaux seront notés +2, mais un tir très facile ou sans véritable enjeu pourra simplement valoir +1."
+      },
+
+      "palet": {
+        "title": "Un palet vaut-il +2 ?",
+        "answer":
+        "Non. Un palet est généralement noté +1 : il remplit parfaitement son objectif. Il devient +2 uniquement lorsqu'il apporte un avantage exceptionnel."
+      },
+
+      "firstPoint": {
+        "title": "Le premier point peut-il valoir +2 ?",
+        "answer":
+        "Oui. Un premier point quasiment impossible à améliorer ou qui verrouille déjà la mène peut mériter +2. Un premier point simplement bon reste un +1."
+      },
+
+      "difficulty": {
+        "title": "La difficulté du geste est-elle prise en compte ?",
+        "answer":
+        "Non. La notation ne mesure pas la difficulté technique, mais uniquement la valeur apportée par la boule au moment où elle est jouée."
+      },
+
+      "beautiful": {
+        "title": "Une boule très bien jouée peut-elle être mal notée ?",
+        "answer":
+        "Oui. Une boule techniquement réussie mais sans réel impact pourra recevoir une note moyenne. À l'inverse, une boule mal jouée techniquement peut mériter +2 si son impact est exceptionnel."
+      }
+    },
+
+    "philosophy": {
+      "title": "La philosophie du système",
+      "text1":
+      "Une note ne récompense pas un beau geste. Elle mesure uniquement la valeur apportée à l'équipe.",
+      "text2":
+      "En utilisant tous le même barème, les statistiques deviennent comparables d'un joueur à l'autre et d'un match à l'autre.",
+      "quote":
+      "Ne te demande pas si la boule était belle. Demande-toi combien elle a apporté à ton équipe."
+    }
   }
 }

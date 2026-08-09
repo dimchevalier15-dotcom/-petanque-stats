@@ -3,10 +3,25 @@
     <header class="brand">
       <span class="logo" aria-hidden="true">🏆</span>
       <h2 class="app-name">{{ t('app.title') }}</h2>
+      <div />
+
+      <Button
+          icon="pi pi-language"
+          :label="currentLanguage"
+          text
+          @click="toggleLanguageMenu"
+      />
+
+      <Menu
+          ref="languageMenu"
+          :model="languageItems"
+          popup
+      />
     </header>
 
     <p class="welcome">{{ t('home.welcome') }}</p>
     <p v-if="auth.user" class="connected">{{ t('home.connectedAs', { email: auth.user.email }) }}</p>
+
 
     <nav class="actions" :aria-label="t('home.welcome')">
       <Button
@@ -31,6 +46,14 @@
         icon="pi pi-history"
         iconPos="left"
         @click="goHistory"
+      />
+
+      <Button
+        class="action"
+        :label="t('doc.title')"
+        icon="pi pi-book"
+        iconPos="left"
+        @click="goGuidelines"
       />
 
       <div class="action with-badge">
@@ -69,13 +92,15 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import Menu from 'primevue/menu'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import { useAuthStore } from '../stores/auth'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 
@@ -88,10 +113,52 @@ function goAddPlayer(): void {
 function goHistory(): void {
   router.push({ name: 'matchHistory' })
 }
+function goGuidelines(): void {
+  router.push({ name: 'guidelines' })
+}
 
 function onLogout(): void {
   auth.logout()
   router.push({ name: 'login' })
+}
+
+const languageMenu = ref()
+
+const currentLanguage = computed(() => {
+  switch (locale.value) {
+    case 'fr':
+      return 'FR'
+    case 'en':
+      return 'EN'
+    case 'sk':
+      return 'SK'
+    default:
+      return locale.value.toUpperCase()
+  }
+})
+
+const languageItems = [
+  {
+    label: 'Français',
+    command: () => changeLanguage('fr')
+  },
+  {
+    label: 'English',
+    command: () => changeLanguage('en')
+  },
+  {
+    label: 'Slovenčina',
+    command: () => changeLanguage('sk')
+  }
+]
+
+function changeLanguage(lang: string) {
+  locale.value = lang
+  localStorage.setItem('locale', lang)
+}
+
+function toggleLanguageMenu(event: Event) {
+  languageMenu.value.toggle(event)
 }
 </script>
 
@@ -105,4 +172,9 @@ function onLogout(): void {
 .actions { display: grid; gap: 0.75rem; }
 .action.with-badge { position: relative; }
 .badge { position: absolute; top: -0.5rem; right: -0.5rem; }
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
 </style>

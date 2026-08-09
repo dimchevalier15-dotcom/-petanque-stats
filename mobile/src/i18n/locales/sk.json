@@ -123,5 +123,108 @@
       "abort": "Späť"
     },
     "endCanceled": "Mèna zrušená"
+  },
+  "doc": {
+    "title": "Príručka hodnotenia",
+
+    "introduction": "Táto príručka vysvetľuje stupnicu používanú na hodnotenie každej gule. Cieľom je získať konzistentné a porovnateľné štatistiky medzi všetkými hráčmi.",
+
+    "why": {
+      "title": "Prečo hodnotiť gule?",
+      "text": "Aplikácia nehodnotí technickú kvalitu hráča. Meria skutočný vplyv každej gule na priebeh endu, aby vytvorila zmysluplné štatistiky."
+    },
+
+    "commonScale": {
+      "title": "Spoločná stupnica",
+      "text": "Aby mali štatistiky význam, všetci hráči musia používať rovnakú stupnicu. S trochou praxe sa hodnotenie stane rýchlym a prirodzeným."
+    },
+
+    "scale": {
+      "title": "Stupnica hodnotenia",
+
+      "minus2": {
+        "title": "🟥 -2 · Škodlivá guľa",
+        "description": "Guľa jednoznačne zhorší situáciu svojho tímu.",
+        "example1": "Bod vytlačí vlastnú guľu.",
+        "example2": "Nevydarený výstrel úplne otvorí hru súperovi.",
+        "example3": "Akákoľvek guľa, ktorá pripraví tím o dôležitú výhodu.",
+        "summary": "Guľa za -2 spôsobí svojmu tímu skutočnú škodu."
+      },
+
+      "minus1": {
+        "title": "🟧 -1 · Zbytočná guľa",
+        "description": "Guľa neprinesie tímu žiadny úžitok.",
+        "example1": "Úplne minutá guľa.",
+        "example2": "Príliš dlhý alebo príliš krátky bod.",
+        "example3": "Guľa, ktorá vôbec nehrá.",
+        "example4": "Nevydarený výstrel bez následkov.",
+        "summary": "Guľa nepriniesla žiadny užitočný efekt."
+      },
+
+      "zero": {
+        "title": "⚪ 0 · Priemerná guľa",
+        "description": "Guľa má len obmedzený vplyv na priebeh endu.",
+        "example1": "Pomerne blízky bod, ale nedostatočný.",
+        "example2": "Tesne neúspešný výstrel.",
+        "example3": "Guľa vytvorí mierny tlak, ale výrazne nemení hru.",
+        "summary": "Guľa existuje, ale jej vplyv zostáva malý."
+      },
+
+      "plus1": {
+        "title": "🟩 +1 · Dobrá guľa",
+        "description": "Guľa splní svoj cieľ.",
+        "example1": "Dobrý bod.",
+        "example2": "Úspešný výstrel.",
+        "example3": "Získanie bodu späť.",
+        "example4": "Účinná guľa pred súperovou.",
+        "summary": "Dobrá guľa, ktorá splnila očakávania."
+      },
+
+      "plus2": {
+        "title": "🟦 +2 · Výnimočná guľa",
+        "description": "Guľa prinesie tímu významnú výhodu.",
+        "example1": "Carreau.",
+        "example2": "Takmer neprekonateľný bod.",
+        "example3": "Guľa, ktorá úplne uzamkne hru.",
+        "example4": "Akákoľvek guľa, ktorá výrazne ovplyvní výsledok endu.",
+        "summary": "Guľa za +2 má oveľa väčší prínos než obyčajne dobrá guľa."
+      }
+    },
+
+    "faq": {
+      "title": "Často kladené otázky",
+
+      "carreau": {
+        "title": "Má carreau vždy hodnotu +2?",
+        "answer": "Nie. Hodnota vždy závisí od skutočného vplyvu gule. Väčšina carreau bude hodnotená +2, ale veľmi jednoduchý výstrel alebo výstrel bez veľkého významu môže dostať iba +1."
+      },
+
+      "palet": {
+        "title": "Má palet hodnotu +2?",
+        "answer": "Nie. Palet je vo väčšine prípadov hodnotený +1, pretože splní svoj cieľ. Hodnotu +2 dostane len vtedy, ak prinesie mimoriadnu výhodu."
+      },
+
+      "firstPoint": {
+        "title": "Môže mať prvý bod hodnotu +2?",
+        "answer": "Áno. Prvý bod, ktorý je takmer nemožné prekonať alebo okamžite uzamkne hru, môže dostať +2. Bežný dobrý prvý bod zostáva +1."
+      },
+
+      "difficulty": {
+        "title": "Zohľadňuje sa náročnosť hodu?",
+        "answer": "Nie. Hodnotenie nezohľadňuje technickú náročnosť hodu, ale iba hodnotu, ktorú guľa priniesla tímu v okamihu, keď bola zahraná."
+      },
+
+      "beautiful": {
+        "title": "Môže byť technicky krásna guľa hodnotená nízko?",
+        "answer": "Áno. Technicky veľmi pekná guľa bez skutočného vplyvu môže dostať priemerné hodnotenie. Naopak, technicky menej dokonalá guľa môže dostať +2, ak mala výnimočný význam."
+      }
+    },
+
+    "philosophy": {
+      "title": "Filozofia systému",
+      "text1": "Hodnotenie neodmeňuje pekný hod. Hodnotí iba hodnotu, ktorú guľa priniesla tímu.",
+      "text2": "Ak všetci používajú rovnakú stupnicu, štatistiky sú porovnateľné medzi hráčmi aj medzi zápasmi.",
+      "quote": "Nepýtaj sa, či bola guľa pekná. Opýtaj sa, koľko priniesla svojmu tímu."
+    }
   }
 }

@@ -121,5 +121,103 @@
     "loadMore": "Load more",
     "victory": "Victory",
     "defeat": "Defeat"
+  },
+  "doc": {
+    "title": "Scoring Guide",
+    "introduction": "This guide explains the scoring scale used to rate every boule. The goal is to produce consistent and comparable statistics across all players.",
+    "why": {
+      "title": "Why rate boules?",
+      "text": "The application does not judge a player's technical ability. It measures the actual impact of every boule on the end in order to generate meaningful statistics."
+    },
+    "commonScale": {
+      "title": "A shared scoring scale",
+      "text": "For statistics to be meaningful, every player should use the same scale. With a little practice, rating boules becomes quick and natural."
+    },
+    "scale": {
+      "title": "The scoring scale",
+      "minus2": {
+        "title": "🟥 -2 · Harmful boule",
+        "description": "The boule clearly makes the situation worse for your team.",
+        "example1": "A point that pushes one of your own boules away.",
+        "example2": "A missed shot that completely opens the game for the opponents.",
+        "example3": "Any boule that causes your team to lose a significant advantage.",
+        "summary": "A -2 boule clearly hurts your team."
+      },
+
+      "minus1": {
+        "title": "🟧 -1 · Useless boule",
+        "description": "The boule brings no benefit to your team.",
+        "example1": "A complete miss.",
+        "example2": "A point far too long or too short.",
+        "example3": "A boule that is completely out of play.",
+        "example4": "A missed shot with no real consequence.",
+        "summary": "The boule provides no useful contribution."
+      },
+
+      "zero": {
+        "title": "⚪ 0 · Average boule",
+        "description": "The boule has only a limited impact on the end.",
+        "example1": "A point that is fairly close but not good enough.",
+        "example2": "A shot that narrowly misses.",
+        "example3": "A boule that applies some pressure without really changing the game.",
+        "summary": "The boule has only a minor influence."
+      },
+
+      "plus1": {
+        "title": "🟩 +1 · Good boule",
+        "description": "The boule achieves its objective.",
+        "example1": "A good point.",
+        "example2": "A successful shot.",
+        "example3": "Winning the point back.",
+        "example4": "An effective blocker.",
+        "summary": "A solid boule that does exactly what was expected."
+      },
+
+      "plus2": {
+        "title": "🟦 +2 · Outstanding boule",
+        "description": "The boule gives your team a major advantage.",
+        "example1": "A carreau.",
+        "example2": "An almost unbeatable point.",
+        "example3": "A blocker that completely locks the game.",
+        "example4": "Any boule that dramatically changes the outcome of the end.",
+        "summary": "A +2 boule has a much greater impact than an ordinary good boule."
+      }
+    },
+
+    "faq": {
+      "title": "Frequently Asked Questions",
+
+      "carreau": {
+        "title": "Is a carreau always worth +2?",
+        "answer": "No. The rating always depends on the boule's actual impact. Most carreaux deserve +2, but a very easy or low-impact shot may simply be rated +1."
+      },
+
+      "palet": {
+        "title": "Is a palet worth +2?",
+        "answer": "No. A palet is usually rated +1 because it perfectly achieves its objective. It only deserves +2 when it provides an exceptional advantage."
+      },
+
+      "firstPoint": {
+        "title": "Can the first point of an end be worth +2?",
+        "answer": "Yes. A first point that is almost impossible to beat or that immediately locks the end may deserve +2. A simply good first point remains +1."
+      },
+
+      "difficulty": {
+        "title": "Is the difficulty of the throw taken into account?",
+        "answer": "No. The rating does not measure technical difficulty. It only measures the value the boule brings to the team when it is played."
+      },
+
+      "beautiful": {
+        "title": "Can a technically beautiful boule receive a low rating?",
+        "answer": "Yes. A technically impressive boule with little real impact may receive an average rating. On the other hand, a less spectacular boule may deserve +2 if its impact is exceptional."
+      }
+    },
+
+    "philosophy": {
+      "title": "The philosophy behind the system",
+      "text1": "A rating does not reward a beautiful throw. It only measures the value the boule brings to the team.",
+      "text2": "When everyone uses the same scale, statistics become comparable between players and across matches.",
+      "quote": "Don't ask yourself whether the boule was beautiful. Ask yourself how much it brought to your team."
+    }
   }
 }
