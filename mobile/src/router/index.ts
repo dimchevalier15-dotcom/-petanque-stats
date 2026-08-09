@@ -19,6 +19,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/matches/guidelines', name: 'guidelines', component: GuidelinessView },
   { path: '/matches/:id/score', name: 'matchScore', component: () => import('../views/MatchPlayView.vue') },
   { path: '/matches/:id/summary', name: 'matchSummary', component: () => import('../views/MatchSummaryView.vue') },
+  { path: '/matches/:id/context', name: 'matchContext', component: () => import('../views/MatchContextView.vue') },
 ]
 
 const router = createRouter({

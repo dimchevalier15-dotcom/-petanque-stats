@@ -11,6 +11,8 @@ use App\Service\MatchRecordingService;
 use App\Service\MatchSummaryService;
 use App\Service\MatchValidationException;
 use App\Service\MatchHistoryService;
+use App\Service\MatchContextService;
+use App\Dto\Request\UpdateMatchContextRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +29,7 @@ final class MatchController extends AbstractController
         private ValidatorInterface $validator,
         private MatchSummaryService $summary,
         private MatchHistoryService $history,
+        private MatchContextService $context,
     ) {}
 
     /**
@@ -87,6 +90,40 @@ final class MatchController extends AbstractController
     public function summary(int $id): JsonResponse
     {
         $res = $this->summary->getSummary($id);
+        if ($res === null) {
+            return new JsonResponse(['message' => 'Not found'], 404);
+        }
+        $json = $this->serializer->serialize($res, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/matches/{id}/context', name: 'api_matches_context_get', methods: ['GET'])]
+    public function getContext(int $id): JsonResponse
+    {
+        $res = $this->context->getContext($id);
+        if ($res === null) {
+            return new JsonResponse(['message' => 'Not found'], 404);
+        }
+        $json = $this->serializer->serialize($res, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/matches/{id}/context', name: 'api_matches_context_update', methods: ['PUT'])]
+    public function updateContext(int $id, Request $request): JsonResponse
+    {
+        /** @var UpdateMatchContextRequest $input */
+        $input = $this->serializer->deserialize($request->getContent(), UpdateMatchContextRequest::class, 'json');
+        $violations = $this->validator->validate($input);
+        if (\count($violations) > 0) {
+            $errors = [];
+            foreach ($violations as $v) {
+                $field = $v->getPropertyPath();
+                $errors[$field] = $v->getMessage();
+            }
+            return new JsonResponse(['errors' => $errors], 400);
+        }
+
+        $res = $this->context->updateContext($id, $input);
         if ($res === null) {
             return new JsonResponse(['message' => 'Not found'], 404);
         }

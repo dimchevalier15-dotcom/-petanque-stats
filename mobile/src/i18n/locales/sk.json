@@ -17,6 +17,51 @@
     },
     "actions": { "backHome": "Späť na úvod" }
   },
+  "context": {
+    "titleAdd": "Pridať kontext",
+    "titleEdit": "Upraviť kontext",
+    "summaryTitle": "Kontext",
+    "hint": "Všetky informácie sú voliteľné.",
+    "placeholders": { "select": "Vybrať" },
+    "fields": {
+      "comment": "Komentár",
+      "teamAName": "Názov tímu A",
+      "teamBName": "Názov tímu B",
+      "nature": "Povaha zápasu",
+      "competitionName": "Názov súťaže",
+      "competitionStage": "Fáza súťaže",
+      "terrainType": "Typ terénu"
+    },
+    "nature": {
+      "friendly": "Priateľský",
+      "training": "Tréning",
+      "competition": "Súťaž",
+      "official": "Oficiálny"
+    },
+    "competitionStage": {
+      "group": "Skupiny",
+      "swiss": "Švajčiarsky systém",
+      "top64": "Top 64",
+      "top32": "Top 32",
+      "top16": "Top 16",
+      "quarterFinal": "Štvrťfinále",
+      "semiFinal": "Semifinále",
+      "final": "Finále",
+      "other": "Iné"
+    },
+    "terrain": {
+      "gravel": "Štrk",
+      "stabilized": "Stabilizovaný",
+      "indoor": "Hala",
+      "other": "Iné"
+    },
+    "actions": {
+      "add": "Pridať kontext",
+      "edit": "Upraviť kontext",
+      "save": "Uložiť",
+      "skip": "Späť na zhrnutie"
+    }
+  },
   "home": {
     "welcome": "Vitajte!",
     "connectedAs": "Prihlásený ako {email}",

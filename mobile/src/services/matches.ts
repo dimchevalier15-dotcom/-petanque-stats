@@ -6,6 +6,22 @@ import type { MatchSummaryResponseDto } from '../dto/match/MatchSummaryResponse'
 import type { MatchSummary } from '../models/MatchSummary'
 import type { MatchHistoryResponseDto, MatchHistoryItemDto } from '../dto/match/MatchHistoryResponse'
 import type { MatchHistoryItem, MatchHistoryPage } from '../models/MatchHistory'
+import type { MatchContextResponseDto } from '../dto/match/MatchContextResponse'
+import type { UpdateMatchContextRequestDto } from '../dto/match/UpdateMatchContextRequest'
+import type { MatchContext } from '../models/MatchContext'
+
+function mapMatchContext(dto: MatchContextResponseDto): MatchContext {
+  return {
+    matchId: dto.matchId,
+    comment: dto.comment,
+    teamAName: dto.teamAName,
+    teamBName: dto.teamBName,
+    nature: dto.nature,
+    competitionName: dto.competitionName,
+    competitionStage: dto.competitionStage,
+    terrainType: dto.terrainType,
+  }
+}
 
 function mapHistoryItem(dto: MatchHistoryItemDto): MatchHistoryItem {
   return {
@@ -37,5 +53,13 @@ export const matchesService = {
     const { data } = await api.get<MatchHistoryResponseDto>('/matches/history', { params: { page, size } })
     const items = data.items.map(mapHistoryItem)
     return { page: data.page, pageSize: data.pageSize, total: data.total, items }
+  },
+  async getContext(matchId: number): Promise<MatchContext> {
+    const { data } = await api.get<MatchContextResponseDto>(`/matches/${matchId}/context`)
+    return mapMatchContext(data)
+  },
+  async updateContext(matchId: number, payload: UpdateMatchContextRequestDto): Promise<MatchContext> {
+    const { data } = await api.put<MatchContextResponseDto>(`/matches/${matchId}/context`, payload)
+    return mapMatchContext(data)
   },
 }

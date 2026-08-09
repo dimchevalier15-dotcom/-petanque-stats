@@ -17,6 +17,51 @@
     },
     "actions": { "backHome": "Retour à l'accueil" }
   },
+  "context": {
+    "titleAdd": "Ajouter du contexte",
+    "titleEdit": "Modifier le contexte",
+    "summaryTitle": "Contexte",
+    "hint": "Toutes les informations sont facultatives.",
+    "placeholders": { "select": "Sélectionner" },
+    "fields": {
+      "comment": "Commentaire",
+      "teamAName": "Nom de l'équipe A",
+      "teamBName": "Nom de l'équipe B",
+      "nature": "Nature du match",
+      "competitionName": "Nom de la compétition",
+      "competitionStage": "Stade de la compétition",
+      "terrainType": "Type de terrain"
+    },
+    "nature": {
+      "friendly": "Amical",
+      "training": "Entraînement",
+      "competition": "Compétition",
+      "official": "Officiel"
+    },
+    "competitionStage": {
+      "group": "Poules",
+      "swiss": "Système suisse",
+      "top64": "Top 64",
+      "top32": "Top 32",
+      "top16": "Top 16",
+      "quarterFinal": "Quart de finale",
+      "semiFinal": "Demi-finale",
+      "final": "Finale",
+      "other": "Autre"
+    },
+    "terrain": {
+      "gravel": "Gravier",
+      "stabilized": "Stabilisé",
+      "indoor": "Couvert",
+      "other": "Autre"
+    },
+    "actions": {
+      "add": "Ajouter du contexte",
+      "edit": "Modifier le contexte",
+      "save": "Enregistrer",
+      "skip": "Retour au résumé"
+    }
+  },
   "home": {
     "welcome": "Bienvenue !",
     "connectedAs": "Connecté en tant que {email}",

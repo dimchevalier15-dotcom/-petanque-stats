@@ -17,6 +17,51 @@
     },
     "actions": { "backHome": "Back to home" }
   },
+  "context": {
+    "titleAdd": "Add context",
+    "titleEdit": "Edit context",
+    "summaryTitle": "Context",
+    "hint": "All fields are optional.",
+    "placeholders": { "select": "Select" },
+    "fields": {
+      "comment": "Comment",
+      "teamAName": "Team A name",
+      "teamBName": "Team B name",
+      "nature": "Match nature",
+      "competitionName": "Competition name",
+      "competitionStage": "Competition stage",
+      "terrainType": "Terrain type"
+    },
+    "nature": {
+      "friendly": "Friendly",
+      "training": "Training",
+      "competition": "Competition",
+      "official": "Official"
+    },
+    "competitionStage": {
+      "group": "Group stage",
+      "swiss": "Swiss system",
+      "top64": "Top 64",
+      "top32": "Top 32",
+      "top16": "Top 16",
+      "quarterFinal": "Quarter-final",
+      "semiFinal": "Semi-final",
+      "final": "Final",
+      "other": "Other"
+    },
+    "terrain": {
+      "gravel": "Gravel",
+      "stabilized": "Stabilized",
+      "indoor": "Indoor",
+      "other": "Other"
+    },
+    "actions": {
+      "add": "Add context",
+      "edit": "Edit context",
+      "save": "Save",
+      "skip": "Back to summary"
+    }
+  },
   "home": {
     "welcome": "Welcome!",
     "connectedAs": "Signed in as {email}",
