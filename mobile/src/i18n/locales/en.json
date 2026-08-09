@@ -238,6 +238,10 @@
     },
     "overallAverage": "Overall average",
     "ballsTracked": "{n} balls tracked",
+    "details": {
+      "title": "Details",
+      "balls": "{n} balls"
+    },
     "sections": {
       "evolution": "Trend",
       "distribution": "Rating distribution",

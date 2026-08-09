@@ -247,6 +247,10 @@
     },
     "overallAverage": "Celkový priemer",
     "ballsTracked": "{n} analyzovaných gúl",
+    "details": {
+      "title": "Detaily",
+      "balls": "{n} gúl"
+    },
     "sections": {
       "evolution": "Vývoj",
       "distribution": "Rozdelenie známok",

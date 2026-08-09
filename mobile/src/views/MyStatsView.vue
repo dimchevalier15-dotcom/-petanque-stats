@@ -78,6 +78,36 @@
             :severity="avgSeverity(stats.overall.average)"
           />
           <span class="hero-meta">{{ t('stats.ballsTracked', { n: stats.summary.totalBalls }) }}</span>
+
+          <details v-if="showAverageDetails" class="avg-details">
+            <summary>{{ t('stats.details.title') }}</summary>
+            <div class="avg-details-body">
+              <div v-if="stats.point" class="avg-detail-row">
+                <span class="avg-detail-label">{{ t('play.shots.point') }}</span>
+                <div class="avg-detail-values">
+                  <Tag
+                    :value="formatAvg(stats.point.average)"
+                    :severity="avgSeverity(stats.point.average)"
+                  />
+                  <span class="avg-detail-meta">
+                    {{ t('stats.details.balls', { n: breakdownBallCount(stats.point) }) }}
+                  </span>
+                </div>
+              </div>
+              <div v-if="stats.tir" class="avg-detail-row">
+                <span class="avg-detail-label">{{ t('play.shots.tir') }}</span>
+                <div class="avg-detail-values">
+                  <Tag
+                    :value="formatAvg(stats.tir.average)"
+                    :severity="avgSeverity(stats.tir.average)"
+                  />
+                  <span class="avg-detail-meta">
+                    {{ t('stats.details.balls', { n: breakdownBallCount(stats.tir) }) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
 
         <section v-if="showEvolution && evolutionChart" class="panel app-card">
@@ -156,6 +186,7 @@ import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
 import {
   avgSeverity,
+  breakdownBallCount,
   formatAvg,
   natureLabel,
   usePlayerStatsCharts,
@@ -221,6 +252,8 @@ const emptyActionRoute = computed<RouteLocationRaw | null>(() => {
       return null
   }
 })
+
+const showAverageDetails = computed(() => !!(stats.value?.point || stats.value?.tir))
 
 async function load() {
   loading.value = true
@@ -351,6 +384,76 @@ onMounted(load)
 .hero-meta {
   font-size: 0.85rem;
   opacity: 0.7;
+}
+
+.avg-details {
+  width: 100%;
+  margin-top: 0.25rem;
+  border-top: 1px solid rgba(99, 102, 241, 0.15);
+  padding-top: 0.625rem;
+}
+
+.avg-details summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--app-primary, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  user-select: none;
+}
+
+.avg-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.avg-details summary::after {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+  margin-top: -0.15rem;
+}
+
+.avg-details[open] summary::after {
+  transform: rotate(-135deg);
+  margin-top: 0.15rem;
+}
+
+.avg-details-body {
+  display: grid;
+  gap: 0.625rem;
+  padding-top: 0.75rem;
+}
+
+.avg-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avg-detail-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.avg-detail-values {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avg-detail-meta {
+  font-size: 0.75rem;
+  opacity: 0.65;
+  white-space: nowrap;
 }
 
 .panel {

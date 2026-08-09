@@ -20,6 +20,10 @@ function breakdownToCounts(b: MatchSummaryShotBreakdown): number[] {
   return [b.m2, b.m1, b.p0, b.p1, b.p2]
 }
 
+export function breakdownBallCount(b: MatchSummaryShotBreakdown): number {
+  return b.p2 + b.p1 + b.p0 + b.m1 + b.m2
+}
+
 export function usePlayerStatsCharts(
   stats: Ref<PlayerStats | null>,
   t: ComposerTranslation,

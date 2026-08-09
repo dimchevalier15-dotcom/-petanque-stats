@@ -247,6 +247,10 @@
     },
     "overallAverage": "Moyenne globale",
     "ballsTracked": "{n} boules analysées",
+    "details": {
+      "title": "Détails",
+      "balls": "{n} boules"
+    },
     "sections": {
       "evolution": "Évolution",
       "distribution": "Répartition des notes",
