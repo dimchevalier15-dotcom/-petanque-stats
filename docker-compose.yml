@@ -30,8 +30,6 @@ services:
       APP_ENV: dev
       APP_DEBUG: 1
       DATABASE_URL: "mysql://petanque:petanque@mysql:3306/petanque?serverVersion=8.0&charset=utf8mb4"
-    volumes:
-      - ./api:/app
     ports:
       - "8080:8000"
 
@@ -41,7 +39,7 @@ services:
       dockerfile: Dockerfile
     container_name: petanque_mobile
     environment:
-      - NODE_ENV=development
+      NODE_ENV: development
     ports:
       - "5173:5173"
     volumes:
