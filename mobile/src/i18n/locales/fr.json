@@ -199,20 +199,24 @@
     }
   },
   "matches": {
-    "create": { "title": "Nouveau match" },
-    "teams": { "a": "Équipe A", "b": "Équipe B" },
+    "create": {
+      "title": "Nouveau match",
+      "subtitle": "Composez les équipes et c'est parti",
+      "typeSection": "Type de partie",
+      "versus": "VS",
+      "teamNameHint": "Nom d'équipe (facultatif)",
+      "addPlayer": "Ajouter un joueur",
+      "role": "Rôle",
+      "trackPlayer": "Analyser"
+    },
+    "teams": { "a": "Équipe A", "b": "Équipe B", "aShort": "A", "bShort": "B" },
     "types": {
       "teteATete": "Tête-à-tête",
       "doublette": "Doublette",
       "triplette": "Triplette"
     },
     "fields": {
-      "playerN": "Joueur {n}",
-      "type": "Type",
-      "target": "Score cible",
-      "teamAName": "Nom de l'équipe A",
-      "teamBName": "Nom de l'équipe B",
-      "teamNameOptional": "Facultatif"
+      "playerN": "Joueur {n}"
     },
     "stats": {
       "sectionTitle": "Statistiques",
@@ -221,7 +225,7 @@
       "tracked": { "title": "Joueurs suivis" }
     },
     "roles": { "pointeur": "Pointeur", "milieu": "Milieu", "tireur": "Tireur" },
-    "actions": { "start": "Commencer le match", "cancel": "Annuler" },
+    "actions": { "start": "Commencer le match" },
     "validations": {
       "required": "Champ obligatoire",
       "duplicates": "Un joueur ne peut pas être sélectionné deux fois.",

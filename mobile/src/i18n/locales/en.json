@@ -199,20 +199,24 @@
     }
   },
   "matches": {
-    "create": { "title": "New match" },
-    "teams": { "a": "Team A", "b": "Team B" },
+    "create": {
+      "title": "New match",
+      "subtitle": "Pick your teams and start playing",
+      "typeSection": "Match type",
+      "versus": "VS",
+      "teamNameHint": "Team name (optional)",
+      "addPlayer": "Add player",
+      "role": "Role",
+      "trackPlayer": "Track stats"
+    },
+    "teams": { "a": "Team A", "b": "Team B", "aShort": "A", "bShort": "B" },
     "types": {
       "teteATete": "Head-to-head",
       "doublette": "Doublette",
       "triplette": "Triplette"
     },
     "fields": {
-      "playerN": "Player {n}",
-      "type": "Type",
-      "target": "Target score",
-      "teamAName": "Team A name",
-      "teamBName": "Team B name",
-      "teamNameOptional": "Optional"
+      "playerN": "Player {n}"
     },
     "stats": {
       "sectionTitle": "Statistics",
@@ -221,7 +225,7 @@
       "tracked": { "title": "Tracked players" }
     },
     "roles": { "pointeur": "Pointer", "milieu": "Middle", "tireur": "Shooter" },
-    "actions": { "start": "Start match", "cancel": "Cancel" },
+    "actions": { "start": "Start match" },
     "validations": {
       "required": "Required field",
       "duplicates": "A player cannot be selected twice.",

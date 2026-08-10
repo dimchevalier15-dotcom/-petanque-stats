@@ -173,7 +173,7 @@ import InputText from 'primevue/inputtext'
 import SelectButton from 'primevue/selectbutton'
 import Tag from 'primevue/tag'
 import type { TeamSide } from '../models/MatchPlay'
-import type { MatchType, ShotType, StatisticsMode } from '../models/Match'
+import { DEFAULT_TARGET_SCORE, type MatchType, type ShotType, type StatisticsMode } from '../models/Match'
 import { useMatchPlay } from '../composables/useMatchPlay'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import { formatFormAvg, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
@@ -192,7 +192,7 @@ const matchId = Number(route.params.id)
 const q = route.query as Record<string, string | undefined>
 const type = (q.type as MatchType) || 'doublette'
 const statisticsMode = (q.statisticsMode as StatisticsMode) || 'standard'
-const targetScore = q.targetScore ? Number(q.targetScore) : 13
+const targetScore = DEFAULT_TARGET_SCORE
 const teamA = q.teamA ? q.teamA.split(',').map((x) => Number(x)) : []
 const teamB = q.teamB ? q.teamB.split(',').map((x) => Number(x)) : []
 const trackedPlayers = q.tracked ? q.tracked.split(',').map((x) => Number(x)) : [...teamA, ...teamB]

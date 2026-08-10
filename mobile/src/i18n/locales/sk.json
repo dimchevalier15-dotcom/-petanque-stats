@@ -199,20 +199,24 @@
     }
   },
   "matches": {
-    "create": { "title": "Nový zápas" },
-    "teams": { "a": "Tím A", "b": "Tím B" },
+    "create": {
+      "title": "Nový zápas",
+      "subtitle": "Zostavte tímy a môžete hrať",
+      "typeSection": "Typ zápasu",
+      "versus": "VS",
+      "teamNameHint": "Názov tímu (voliteľné)",
+      "addPlayer": "Pridať hráča",
+      "role": "Rola",
+      "trackPlayer": "Analyzovať"
+    },
+    "teams": { "a": "Tím A", "b": "Tím B", "aShort": "A", "bShort": "B" },
     "types": {
       "teteATete": "Hra jeden na jedného",
       "doublette": "Doublette",
       "triplette": "Triplette"
     },
     "fields": {
-      "playerN": "Hráč {n}",
-      "type": "Typ",
-      "target": "Cieľové skóre",
-      "teamAName": "Názov tímu A",
-      "teamBName": "Názov tímu B",
-      "teamNameOptional": "Voliteľné"
+      "playerN": "Hráč {n}"
     },
     "stats": {
       "sectionTitle": "Štatistiky",
@@ -221,7 +225,7 @@
       "tracked": { "title": "Sledovaní hráči" }
     },
     "roles": { "pointeur": "Plac", "milieu": "Ucko", "tireur": "Strelba" },
-    "actions": { "start": "Začať zápas", "cancel": "Zrušiť" },
+    "actions": { "start": "Začať zápas" },
     "validations": {
       "required": "Povinné pole",
       "duplicates": "Hráča nie je možné vybrať dvakrát.",
