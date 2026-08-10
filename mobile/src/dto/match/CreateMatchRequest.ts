@@ -10,6 +10,8 @@ export interface CreateMatchRequestDto {
   targetScore: number
   teamA: number[]
   teamB: number[]
+  teamAName?: string | null
+  teamBName?: string | null
   statisticsMode: StatisticsMode
   trackedPlayers: number[]
   defaultShotTypes?: DefaultShotTypeDto[]

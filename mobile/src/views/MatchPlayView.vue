@@ -12,7 +12,7 @@
 
     <div class="teams">
       <div class="team app-card">
-        <h3>{{ t('matches.teams.a') }}</h3>
+        <h3>{{ teamALabel }}</h3>
         <div v-for="pid in setup.teamA" :key="pid" class="player">
           <button
             type="button"
@@ -32,6 +32,7 @@
               text
               rounded
               class="ball"
+              :disabled="!canEnterBall(pid, i - 1)"
               @click="openNote($event, pid, i - 1)"
             />
           </div>
@@ -39,7 +40,7 @@
       </div>
 
       <div class="team app-card">
-        <h3>{{ t('matches.teams.b') }}</h3>
+        <h3>{{ teamBLabel }}</h3>
         <div v-for="pid in setup.teamB" :key="pid" class="player">
           <button
             type="button"
@@ -59,6 +60,7 @@
               text
               rounded
               class="ball"
+              :disabled="!canEnterBall(pid, i - 1)"
               @click="openNote($event, pid, i - 1)"
             />
           </div>
@@ -109,6 +111,7 @@
 
     <Dialog v-model:visible="scoreDialog" :modal="false" :dismissableMask="true" :header="t('play.endScore.title')" :closable="true">
       <div class="end-score">
+        <p v-if="!currentEndComplete" class="end-score-hint">{{ t('play.endScore.earlyHint') }}</p>
         <div class="winner">
           <SelectButton v-model="winner" :options="winnerOptions" optionLabel="label" optionValue="value" />
         </div>
@@ -121,11 +124,11 @@
       </div>
     </Dialog>
 
-    <div class="validate-end" v-if="currentEndComplete && !scoreDialog && !isFinished">
+    <div class="validate-end" v-if="canValidateEnd && !scoreDialog">
       <Button class="validate-end-btn" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
     </div>
 
-    <div class="cancel-end" v-if="!isFinished && !currentEnd.winner && !currentEnd.points">
+    <div class="cancel-end" v-if="canValidateEnd && !scoreDialog">
       <Button class="cancel-end-btn" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" @click="openCancelDialog" />
     </div>
 
@@ -172,8 +175,10 @@ import Tag from 'primevue/tag'
 import type { TeamSide } from '../models/MatchPlay'
 import type { MatchType, ShotType, StatisticsMode } from '../models/Match'
 import { useMatchPlay } from '../composables/useMatchPlay'
+import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import { formatFormAvg, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
 import { avgSeverity } from '../composables/usePlayerStatsCharts'
+import type { MatchContext } from '../models/MatchContext'
 import { matchesService } from '../services/matches'
 import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
 import { playersService } from '../services/players'
@@ -205,6 +210,9 @@ if (defaultsParam) {
 
 const setup = { id: matchId, type, targetScore, statisticsMode, teamA, teamB, trackedPlayers, defaultShotTypes }
 
+const context = ref<MatchContext | null>(null)
+const { teamALabel, teamBLabel } = useMatchTeamLabels(context, t)
+
 const {
   currentEndIndex,
   currentEnd,
@@ -219,7 +227,8 @@ const {
   setEndScore,
   notesOptions,
   currentEndComplete,
-  colorFor,
+  canValidateEnd,
+  canPlayBallSlot,
   toSubmission,
   cancelCurrentEnd,
 } = useMatchPlay(setup)
@@ -266,6 +275,9 @@ function shotAt(playerId: number, idx: number): ShotType | undefined {
 }
 
 function openNote(event: Event, playerId: number, noteIndex: number) {
+  if (!canEnterBall(playerId, noteIndex)) {
+    return
+  }
   noteCtx.value = { playerId, noteIndex }
   // initialize shot type from existing note or default map
   const existing = shotAt(playerId, noteIndex)
@@ -316,13 +328,20 @@ function isTracked(playerId: number): boolean {
   return setup.trackedPlayers.includes(playerId)
 }
 
+function canEnterBall(playerId: number, noteIndex: number): boolean {
+  if (isFinished.value) {
+    return false
+  }
+  return canPlayBallSlot(currentEnd.value, playerId, noteIndex)
+}
+
 const scoreDialog = ref(false)
 const winner = ref<TeamSide | null>(null)
 const points = ref<number | null>(null)
 
 const winnerOptions = computed(() => [
-  { label: t('matches.teams.a'), value: 'A' as TeamSide },
-  { label: t('matches.teams.b'), value: 'B' as TeamSide },
+  { label: teamALabel.value, value: 'A' as TeamSide },
+  { label: teamBLabel.value, value: 'B' as TeamSide },
 ])
 
 watch(currentEndComplete, (v) => {
@@ -381,11 +400,15 @@ onMounted(async () => {
     router.replace({ name: 'home' })
     return
   }
-  // Fetch names for all players displayed on screen for clarity during entry
+
   const ids = Array.from(new Set([...teamA, ...teamB]))
   try {
-    const results = await Promise.all(ids.map((id) => playersService.getById(id)))
-    for (const p of results) {
+    const [contextData, ...playerResults] = await Promise.all([
+      matchesService.getContext(matchId),
+      ...ids.map((id) => playersService.getById(id)),
+    ])
+    context.value = contextData
+    for (const p of playerResults) {
       const full = `${p.firstName} ${p.lastName}`.trim()
       names.value[p.id] = p.nickname ? `${p.nickname} (${full})` : full
     }
@@ -473,6 +496,13 @@ onMounted(async () => {
 .ball { min-width: 2.75rem; min-height: 2.75rem; }
 .note-picker { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .end-score { display: grid; gap: var(--app-space-md); }
+.end-score-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+  text-align: center;
+  line-height: 1.4;
+}
 .end-score .winner { display: flex; justify-content: center; }
 .end-score .points { display: grid; gap: 0.25rem; justify-items: center; }
 .validate-end {

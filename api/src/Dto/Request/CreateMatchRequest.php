@@ -31,6 +31,12 @@ final class CreateMatchRequest
     #[Assert\Count(min: 1, max: 3)]
     public array $teamB = [];
 
+    #[Assert\Length(max: 100)]
+    public ?string $teamAName = null;
+
+    #[Assert\Length(max: 100)]
+    public ?string $teamBName = null;
+
     /**
      * @var list<int> Player ids that will have their individual statistics tracked
      * Optional; when empty, defaults to all selected players server-side.

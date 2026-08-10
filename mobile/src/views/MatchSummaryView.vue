@@ -119,6 +119,7 @@ import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
 import type { MatchContext } from '../models/MatchContext'
 import { hasMatchContextData } from '../models/MatchContext'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
+import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import {
   buildPlayerComparisonChart,
   buildTeamDistributionChart,
@@ -136,12 +137,10 @@ const router = useRouter()
 const matchId = Number(route.params.id)
 const summary = ref<MatchSummary>({ matchId, scoreA: 0, scoreB: 0, winner: 'A', ends: 0, players: [] })
 const context = ref<MatchContext | null>(null)
+const { teamALabel, teamBLabel, labelForTeam } = useMatchTeamLabels(context, t)
 
 const teamA = computed<MatchSummaryPlayer[]>(() => summary.value.players.filter((p) => p.team === 'A'))
 const teamB = computed<MatchSummaryPlayer[]>(() => summary.value.players.filter((p) => p.team === 'B'))
-
-const teamALabel = computed(() => context.value?.teamAName?.trim() || t('matches.teams.a'))
-const teamBLabel = computed(() => context.value?.teamBName?.trim() || t('matches.teams.b'))
 
 const hasData = computed(() => hasTrackedData(summary.value))
 
@@ -184,7 +183,7 @@ const contextSummary = computed<string[]>(() => {
   return lines
 })
 
-const winnerText = computed(() => (summary.value.winner === 'A' ? t('summary.winnerA') : t('summary.winnerB')))
+const winnerText = computed(() => t('summary.winner', { team: labelForTeam(summary.value.winner) }))
 const winnerClass = computed(() => (summary.value.winner === 'A' ? 'hero-a' : 'hero-b'))
 
 async function load() {

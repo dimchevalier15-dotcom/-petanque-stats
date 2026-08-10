@@ -16,8 +16,7 @@
   },
   "summary": {
     "title": "Résumé du match",
-    "winnerA": "Victoire Équipe A",
-    "winnerB": "Victoire Équipe B",
+    "winner": "Victoire {team}",
     "ends": "{n} mènes",
     "teamAverage": "Moyenne équipe",
     "sections": {
@@ -207,7 +206,14 @@
       "doublette": "Doublette",
       "triplette": "Triplette"
     },
-    "fields": { "playerN": "Joueur {n}", "type": "Type", "target": "Score cible" },
+    "fields": {
+      "playerN": "Joueur {n}",
+      "type": "Type",
+      "target": "Score cible",
+      "teamAName": "Nom de l'équipe A",
+      "teamBName": "Nom de l'équipe B",
+      "teamNameOptional": "Facultatif"
+    },
     "stats": {
       "sectionTitle": "Statistiques",
       "mode": { "title": "Mode de notation" },
@@ -226,7 +232,10 @@
   "play": {
     "end": "Mène",
     "score": "Score",
-    "endScore": { "title": "Fin de mène" },
+    "endScore": {
+      "title": "Fin de mène",
+      "earlyHint": "Les boules non jouées ne seront pas comptabilisées."
+    },
     "shots": { "point": "Point", "tir": "Tir" },
     "formChart": {
       "title": "Forme sur le match",

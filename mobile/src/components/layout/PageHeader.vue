@@ -40,6 +40,7 @@ const { t } = useI18n()
 const router = useRouter()
 
 function onBack() {
+  console.log("props.backTo", props.backTo)
   if (props.backTo) {
     router.push(props.backTo)
     return

@@ -5,6 +5,14 @@
       <div class="teams">
         <div class="team app-card">
           <h3>{{ t('matches.teams.a') }}</h3>
+          <label class="app-field team-name">
+            <span>{{ t('matches.fields.teamAName') }}</span>
+            <InputText
+              v-model="teamAName"
+              :placeholder="t('matches.fields.teamNameOptional')"
+              maxlength="100"
+            />
+          </label>
           <div class="player-row" v-for="slot in teamASlots" :key="slot">
             <div>
               <AutoComplete
@@ -46,6 +54,14 @@
 
         <div class="team app-card">
           <h3>{{ t('matches.teams.b') }}</h3>
+          <label class="app-field team-name">
+            <span>{{ t('matches.fields.teamBName') }}</span>
+            <InputText
+              v-model="teamBName"
+              :placeholder="t('matches.fields.teamNameOptional')"
+              maxlength="100"
+            />
+          </label>
           <div class="player-row" v-for="slot in teamBSlots" :key="slot">
             <div>
               <AutoComplete
@@ -143,6 +159,8 @@ const router = useRouter()
 const type = ref<MatchType>('doublette')
 const targetScore = ref<number>(13)
 const statisticsMode = ref<StatisticsMode>('standard')
+const teamAName = ref('')
+const teamBName = ref('')
 // tracked[playerId] = true if stats tracked for that player
 const tracked = reactive<Record<number, boolean>>({})
 
@@ -405,11 +423,16 @@ async function onSubmit() {
     teamA.forEach((pid, idx) => defaults.push({ playerId: pid, defaultShotType: toShot(teamARoles[idx] ?? 'pointeur') }))
     teamB.forEach((pid, idx) => defaults.push({ playerId: pid, defaultShotType: toShot(teamBRoles[idx] ?? 'pointeur') }))
 
+    const trimmedTeamAName = teamAName.value.trim()
+    const trimmedTeamBName = teamBName.value.trim()
+
     const { id } = await matchesService.create({
       type: type.value,
       targetScore: targetScore.value,
       teamA,
       teamB,
+      teamAName: trimmedTeamAName || null,
+      teamBName: trimmedTeamBName || null,
       statisticsMode: statisticsMode.value,
       trackedPlayers,
       defaultShotTypes: defaults,
@@ -444,6 +467,7 @@ function onCancel() {
 .new-match { display: grid; gap: var(--app-space-md); }
 .teams { display: flex; flex-direction: column; gap: var(--app-space-md); }
 .team { display: grid; gap: var(--app-space-sm); padding: var(--app-space-md); }
+.team-name { margin-bottom: var(--app-space-xs); }
 .info, .stats { padding: var(--app-space-md); display: grid; gap: var(--app-space-md); }
 .player-row {
   display: flex;

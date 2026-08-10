@@ -16,8 +16,7 @@
   },
   "summary": {
     "title": "Match summary",
-    "winnerA": "Team A wins",
-    "winnerB": "Team B wins",
+    "winner": "{team} wins",
     "ends": "{n} ends",
     "teamAverage": "Team average",
     "sections": {
@@ -207,7 +206,14 @@
       "doublette": "Doublette",
       "triplette": "Triplette"
     },
-    "fields": { "playerN": "Player {n}", "type": "Type", "target": "Target score" },
+    "fields": {
+      "playerN": "Player {n}",
+      "type": "Type",
+      "target": "Target score",
+      "teamAName": "Team A name",
+      "teamBName": "Team B name",
+      "teamNameOptional": "Optional"
+    },
     "stats": {
       "sectionTitle": "Statistics",
       "mode": { "title": "Scoring mode" },
@@ -226,7 +232,10 @@
   "play": {
     "end": "End",
     "score": "Score",
-    "endScore": { "title": "End score" },
+    "endScore": {
+      "title": "End score",
+      "earlyHint": "Unplayed balls will not be counted in statistics."
+    },
     "shots": { "point": "Point", "tir": "Shot" },
     "formChart": {
       "title": "Match form",

@@ -9,6 +9,7 @@ use App\Dto\Response\CreateMatchResponse;
 use App\Entity\Game;
 use App\Entity\GameParticipant;
 use App\Entity\GameTracked;
+use App\Entity\Player;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -74,6 +75,8 @@ final class MatchService
         }
 
         $game = new Game($req->type, $req->targetScore, $req->statisticsMode);
+        $game->setTeamAName($this->resolveTeamName($req->teamAName, $map[(int) $req->teamA[0]]));
+        $game->setTeamBName($this->resolveTeamName($req->teamBName, $map[(int) $req->teamB[0]]));
         $this->em->persist($game);
 
         // Build default shot type map from DTO if provided
@@ -110,6 +113,16 @@ final class MatchService
         $this->em->flush();
 
         return new CreateMatchResponse((int) $game->getId());
+    }
+
+    private function resolveTeamName(?string $provided, Player $firstPlayer): string
+    {
+        $trimmed = $provided !== null ? trim($provided) : '';
+        if ($trimmed !== '') {
+            return $trimmed;
+        }
+
+        return trim($firstPlayer->getLastName());
     }
 }
 
