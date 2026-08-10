@@ -11,15 +11,11 @@ export default defineConfig({
       'petanque.liegermaster.fr',
     ],
 
-    hmr: {
-      host: 'petanque.liegermaster.fr',
-      protocol: 'wss',
-      clientPort: 443,
-    },
+    hmr: false,
 
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://api:8000',
         changeOrigin: true,
       },
     },
