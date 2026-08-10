@@ -14,7 +14,15 @@
       <div class="team app-card">
         <h3>{{ t('matches.teams.a') }}</h3>
         <div v-for="pid in setup.teamA" :key="pid" class="player">
-          <div class="player-name">{{ nameFor(pid) }}</div>
+          <button
+            type="button"
+            class="player-name"
+            :class="{ 'player-name--clickable': isTracked(pid) }"
+            :disabled="!isTracked(pid)"
+            @click="openFormChart(pid)"
+          >
+            {{ nameFor(pid) }}
+          </button>
           <div class="balls" v-if="isTracked(pid)">
             <Button
               v-for="i in ballsPerPlayer"
@@ -33,7 +41,15 @@
       <div class="team app-card">
         <h3>{{ t('matches.teams.b') }}</h3>
         <div v-for="pid in setup.teamB" :key="pid" class="player">
-          <div class="player-name">{{ nameFor(pid) }}</div>
+          <button
+            type="button"
+            class="player-name"
+            :class="{ 'player-name--clickable': isTracked(pid) }"
+            :disabled="!isTracked(pid)"
+            @click="openFormChart(pid)"
+          >
+            {{ nameFor(pid) }}
+          </button>
           <div class="balls" v-if="isTracked(pid)">
             <Button
               v-for="i in ballsPerPlayer"
@@ -49,6 +65,31 @@
         </div>
       </div>
     </div>
+
+    <Dialog
+      v-model:visible="formChartDialog"
+      :header="formChartTitle"
+      :modal="true"
+      :dismissableMask="true"
+      class="form-chart-dialog"
+    >
+      <div v-if="formChart" class="form-chart-content">
+        <div class="form-chart-box">
+          <Chart type="line" :data="formChart.data" :options="formChart.options" />
+        </div>
+        <div v-if="formChartSeries && (formChartSeries.pointAverage !== null || formChartSeries.tirAverage !== null)" class="form-chart-stats">
+          <div v-if="formChartSeries.pointAverage !== null" class="form-chart-stat">
+            <span>{{ t('play.formChart.pointAverage') }}</span>
+            <Tag :value="formatFormAvg(formChartSeries.pointAverage)" :severity="avgSeverity(formChartSeries.pointAverage)" />
+          </div>
+          <div v-if="formChartSeries.tirAverage !== null" class="form-chart-stat">
+            <span>{{ t('play.formChart.tirAverage') }}</span>
+            <Tag :value="formatFormAvg(formChartSeries.tirAverage)" :severity="avgSeverity(formChartSeries.tirAverage)" />
+          </div>
+        </div>
+      </div>
+      <p v-else class="form-chart-empty">{{ t('play.formChart.empty') }}</p>
+    </Dialog>
 
     <OverlayPanel ref="op">
       <div class="shot-type">
@@ -122,13 +163,17 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
+import Chart from 'primevue/chart'
 import OverlayPanel from 'primevue/overlaypanel'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import SelectButton from 'primevue/selectbutton'
+import Tag from 'primevue/tag'
 import type { TeamSide } from '../models/MatchPlay'
 import type { MatchType, ShotType, StatisticsMode } from '../models/Match'
 import { useMatchPlay } from '../composables/useMatchPlay'
+import { formatFormAvg, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
+import { avgSeverity } from '../composables/usePlayerStatsCharts'
 import { matchesService } from '../services/matches'
 import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
 import { playersService } from '../services/players'
@@ -180,6 +225,32 @@ const {
 } = useMatchPlay(setup)
 
 const op = ref<InstanceType<typeof OverlayPanel> | null>(null)
+const formChartDialog = ref(false)
+const selectedChartPlayerId = ref<number | null>(null)
+
+const formChartTitle = computed(() => {
+  if (selectedChartPlayerId.value === null) {
+    return t('play.formChart.title')
+  }
+  return t('play.formChart.titleFor', { name: nameFor(selectedChartPlayerId.value) })
+})
+
+const endsSnapshot = computed(() => [...ends])
+const { series: formChartSeries, chart: formChart } = usePlayerEndFormChart(
+  endsSnapshot,
+  currentEndIndex,
+  selectedChartPlayerId,
+  t,
+)
+
+function openFormChart(playerId: number) {
+  if (!isTracked(playerId)) {
+    return
+  }
+  selectedChartPlayerId.value = playerId
+  formChartDialog.value = true
+}
+
 const noteCtx = ref<{ playerId: number; noteIndex: number } | null>(null)
 const shotType = ref<ShotType>('point')
 const shotOptions = computed(() => [
@@ -343,7 +414,61 @@ onMounted(async () => {
 .teams { display: grid; gap: var(--app-space-md); }
 .team { padding: var(--app-space-md); display: grid; gap: var(--app-space-sm); }
 .player { display: grid; gap: 0.25rem; padding: 0.25rem 0; }
-.player-name { font-weight: 600; font-size: 0.9375rem; }
+.player-name {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-align: left;
+  color: inherit;
+}
+.player-name--clickable {
+  cursor: pointer;
+  color: var(--app-primary, #6366f1);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.player-name:disabled {
+  cursor: default;
+  text-decoration: none;
+  color: inherit;
+}
+.form-chart-content {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.form-chart-box {
+  height: 220px;
+  position: relative;
+}
+
+.form-chart-stats {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--app-border);
+}
+
+.form-chart-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.form-chart-empty {
+  margin: 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+  padding: 1rem 0;
+}
 .balls { display: flex; gap: 0.375rem; flex-wrap: wrap; }
 .ball { min-width: 2.75rem; min-height: 2.75rem; }
 .note-picker { display: flex; gap: 0.5rem; flex-wrap: wrap; }

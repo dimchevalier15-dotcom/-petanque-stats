@@ -19,6 +19,23 @@
     "winnerA": "Víťazstvo Tím A",
     "winnerB": "Víťazstvo Tím B",
     "ends": "{n} mèn",
+    "teamAverage": "Priemer tímu",
+    "sections": {
+      "comparison": "Porovnanie hráčov",
+      "teamDistribution": "Rozdelenie tímu",
+      "distribution": "Rozdelenie známok"
+    },
+    "comparison": {
+      "hint": "Celkový priemer každého hráča v tomto zápase."
+    },
+    "charts": {
+      "average": "Priemer"
+    },
+    "empty": {
+      "noTrackedDataTitle": "Žiadne analyzované gule",
+      "noTrackedData": "Štatistiky hry nie sú pre tento zápas k dispozícii.",
+      "noPlayerData": "Pre tohto hráča nie sú zaznamenané žiadne gule."
+    },
     "table": {
       "player": "Hráč",
       "avg": "Priemer"
@@ -211,6 +228,15 @@
     "score": "Skóre",
     "endScore": { "title": "Koniec mèny" },
     "shots": { "point": "Bod", "tir": "Strela" },
+    "formChart": {
+      "title": "Forma v zápase",
+      "titleFor": "Forma — {name}",
+      "empty": "Zatiaľ žiadna ukončená mèna na zobrazenie grafu.",
+      "total": "Súčet za mènu",
+      "pointAverage": "Priemer bod",
+      "tirAverage": "Priemer strela",
+      "endLabel": "M{n}"
+    },
     "actions": { "saveEnd": "Uložiť mènu", "validateEnd": "Potvrdiť mènu", "cancelEnd": "Zrušiť mènu", "finish": "Ukončiť zápas" },
     "cancel": {
       "title": "Mèna zrušená",

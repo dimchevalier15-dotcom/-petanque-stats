@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Dto\Request\CompleteMatchRequest;
+use App\Dto\Request\CompleteMatchEndDto;
 use App\Dto\Response\CompleteMatchResponse;
 use App\Entity\Game;
 use App\Entity\GameBall;
@@ -52,55 +53,73 @@ final class MatchRecordingService
             $defaultMap = $participantRepo->mapDefaultShotTypeByGame($game);
 
             foreach ($req->ends as $endDto) {
-                // Basic guards
                 $isCanceled = property_exists($endDto, 'canceled') ? (bool) $endDto->canceled : false;
-                $winner = in_array($endDto->winner, ['A','B'], true) ? $endDto->winner : 'A';
+                $winner = in_array($endDto->winner, ['A', 'B'], true) ? $endDto->winner : 'A';
                 $points = (int) $endDto->points;
+
                 if ($isCanceled) {
-                    // For a canceled end, force points to 0 and do not persist balls
                     $points = 0;
-                    $end = new GameEnd($game, $endDto->index, $winner, $points, true);
-                    $this->em->persist($end);
+                } elseif ($points <= 0) {
                     continue;
                 }
-                if (!in_array($winner, ['A', 'B'], true)) {
-                    continue;
-                }
-                if ($points <= 0) {
-                    continue;
-                }
-                $end = new GameEnd($game, $endDto->index, $winner, $points, false);
+
+                $end = new GameEnd($game, $endDto->index, $winner, $points, $isCanceled);
                 $this->em->persist($end);
 
-                foreach ($endDto->balls as $ballDto) {
-                    $pid = (int) $ballDto->playerId;
-                    if (!isset($matchPlayerSet[$pid])) {
-                        // ignore balls for players not in this match
-                        continue;
-                    }
-                    if (!isset($trackedSet[$pid])) {
-                        // ignore untracked players
-                        continue;
-                    }
-                    $notes = array_values($ballDto->notes);
-                    $shots = array_values($ballDto->shotTypes ?? []);
-                    $max = min($allowedPerPlayer, count($notes));
-                    for ($i = 0; $i < $max; $i++) {
-                        $note = (int) $notes[$i];
-                        if ($note < -2 || $note > 2) {
-                            continue;
-                        }
-                        $shot = isset($shots[$i]) && in_array($shots[$i], ['point','tir'], true) ? (string) $shots[$i] : ((string) ($defaultMap[$pid] ?? 'point'));
-                        $player = $this->players->find($pid);
-                        if ($player === null) {
-                            continue;
-                        }
-                        $this->em->persist(new GameBall($end, $player, $i, $note, $shot));
-                    }
-                }
+                $this->persistEndBalls(
+                    end: $end,
+                    endDto: $endDto,
+                    matchPlayerSet: $matchPlayerSet,
+                    trackedSet: $trackedSet,
+                    allowedPerPlayer: $allowedPerPlayer,
+                    defaultMap: $defaultMap,
+                );
             }
         });
 
         return new CompleteMatchResponse((int) $game->getId());
+    }
+
+    /**
+     * @param array<int, true> $matchPlayerSet
+     * @param array<int, true> $trackedSet
+     * @param array<int, string> $defaultMap
+     */
+    private function persistEndBalls(
+        GameEnd $end,
+        CompleteMatchEndDto $endDto,
+        array $matchPlayerSet,
+        array $trackedSet,
+        int $allowedPerPlayer,
+        array $defaultMap,
+    ): void {
+        foreach ($endDto->balls as $ballDto) {
+            $pid = (int) $ballDto->playerId;
+            if (!isset($matchPlayerSet[$pid]) || !isset($trackedSet[$pid])) {
+                continue;
+            }
+
+            $notes = array_values($ballDto->notes);
+            $shots = array_values($ballDto->shotTypes ?? []);
+            $max = min($allowedPerPlayer, count($notes));
+
+            for ($i = 0; $i < $max; $i++) {
+                $note = (int) $notes[$i];
+                if ($note < -2 || $note > 2) {
+                    continue;
+                }
+
+                $shot = isset($shots[$i]) && in_array($shots[$i], ['point', 'tir'], true)
+                    ? (string) $shots[$i]
+                    : ((string) ($defaultMap[$pid] ?? 'point'));
+
+                $player = $this->players->find($pid);
+                if ($player === null) {
+                    continue;
+                }
+
+                $this->em->persist(new GameBall($end, $player, $i, $note, $shot));
+            }
+        }
     }
 }

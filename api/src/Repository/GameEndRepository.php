@@ -36,6 +36,7 @@ final class GameEndRepository extends ServiceEntityRepository
         $rows = $this->createQueryBuilder('e')
             ->select('e.winner as team, SUM(e.points) as pts')
             ->where('e.game = :g')
+            ->andWhere('e.canceled = false')
             ->setParameter('g', $game)
             ->groupBy('e.winner')
             ->getQuery()->getArrayResult();

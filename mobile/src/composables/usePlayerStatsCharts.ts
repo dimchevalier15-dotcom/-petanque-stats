@@ -24,6 +24,59 @@ export function breakdownBallCount(b: MatchSummaryShotBreakdown): number {
   return b.p2 + b.p1 + b.p0 + b.m1 + b.m2
 }
 
+export function buildNoteDistributionChart(
+  breakdown: MatchSummaryShotBreakdown | null,
+  t: ComposerTranslation,
+): ChartBundle | null {
+  if (!breakdown) {
+    return null
+  }
+  const total = breakdownBallCount(breakdown)
+  if (total === 0) {
+    return null
+  }
+
+  const noteLabels = [
+    t('stats.notes.m2'),
+    t('stats.notes.m1'),
+    t('stats.notes.p0'),
+    t('stats.notes.p1'),
+    t('stats.notes.p2'),
+  ]
+
+  return {
+    data: {
+      labels: noteLabels,
+      datasets: [
+        {
+          data: breakdownToCounts(breakdown),
+          backgroundColor: [NOTE_COLORS.m2, NOTE_COLORS.m1, NOTE_COLORS.p0, NOTE_COLORS.p1, NOTE_COLORS.p2],
+          borderRadius: 6,
+          barThickness: 14,
+        },
+      ],
+    },
+    options: {
+      indexAxis: 'y' as const,
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: { precision: 0 },
+          grid: { display: false },
+        },
+        y: {
+          grid: { display: false },
+        },
+      },
+    },
+  }
+}
+
 export function usePlayerStatsCharts(
   stats: Ref<PlayerStats | null>,
   t: ComposerTranslation,
@@ -38,32 +91,9 @@ export function usePlayerStatsCharts(
   const showEvolution = computed(() => (stats.value?.evolution.length ?? 0) >= 2)
   const showDistribution = computed(() => (stats.value?.overall?.p2 ?? 0) + (stats.value?.overall?.p1 ?? 0) + (stats.value?.overall?.p0 ?? 0) + (stats.value?.overall?.m1 ?? 0) + (stats.value?.overall?.m2 ?? 0) > 0)
 
-  const noteLabels = computed(() => [
-    t('stats.notes.m2'),
-    t('stats.notes.m1'),
-    t('stats.notes.p0'),
-    t('stats.notes.p1'),
-    t('stats.notes.p2'),
-  ])
-
-  const baseBarOptions = computed(() => ({
-    indexAxis: 'y' as const,
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-    },
-    scales: {
-      x: {
-        beginAtZero: true,
-        ticks: { precision: 0 },
-        grid: { display: false },
-      },
-      y: {
-        grid: { display: false },
-      },
-    },
-  }))
+  function buildDistributionChart(breakdown: MatchSummaryShotBreakdown | null): ChartBundle | null {
+    return buildNoteDistributionChart(breakdown, t)
+  }
 
   const evolutionChart = computed<ChartBundle | null>(() => {
     const points = stats.value?.evolution ?? []
@@ -106,27 +136,6 @@ export function usePlayerStatsCharts(
       },
     }
   })
-
-  function buildDistributionChart(breakdown: MatchSummaryShotBreakdown | null): ChartBundle | null {
-    if (!breakdown) return null
-    const total = breakdown.p2 + breakdown.p1 + breakdown.p0 + breakdown.m1 + breakdown.m2
-    if (total === 0) return null
-
-    return {
-      data: {
-        labels: noteLabels.value,
-        datasets: [
-          {
-            data: breakdownToCounts(breakdown),
-            backgroundColor: [NOTE_COLORS.m2, NOTE_COLORS.m1, NOTE_COLORS.p0, NOTE_COLORS.p1, NOTE_COLORS.p2],
-            borderRadius: 6,
-            barThickness: 14,
-          },
-        ],
-      },
-      options: baseBarOptions.value,
-    }
-  }
 
   const distributionChart = computed(() => buildDistributionChart(stats.value?.overall ?? null))
   const pointDistributionChart = computed(() => buildDistributionChart(stats.value?.point ?? null))

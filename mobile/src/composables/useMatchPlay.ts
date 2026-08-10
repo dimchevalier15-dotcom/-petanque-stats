@@ -146,17 +146,10 @@ export function useMatchPlay(setup: MatchSetup) {
   function cancelCurrentEnd(): void {
     if (isFinished.value) return
     const end = currentEnd.value
-    // Mark as canceled and reset scoring-related data
     end.canceled = true
-    end.winner = undefined
+    end.winner = 'A'
     end.points = 0
-    // Clear notes to reflect interruption
-    for (const entry of end.balls) {
-      entry.notes = []
-      entry.shotTypes = []
-    }
     recomputeGlobalScore()
-    // Immediately start next end
     addEndIfNeeded()
     currentEndIndex.value += 1
   }
@@ -194,7 +187,7 @@ export function useMatchPlay(setup: MatchSetup) {
           winner: (e.winner as TeamSide) ?? 'A',
           points: e.canceled ? 0 : ((e.points as number) ?? 0),
           canceled: e.canceled === true,
-          balls: e.canceled ? [] : e.balls.map((b) => ({ playerId: b.playerId, notes: b.notes, shotTypes: b.shotTypes })),
+          balls: e.balls.map((b) => ({ playerId: b.playerId, notes: b.notes, shotTypes: b.shotTypes })),
         })),
     }
   }

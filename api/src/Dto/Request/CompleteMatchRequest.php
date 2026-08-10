@@ -45,6 +45,7 @@ final class CompleteMatchEndDto
 
     /**
      * When canceled=true, points must be 0; otherwise >=1.
+     * Canceled ends still carry played balls for statistics.
      */
     #[Assert\GreaterThanOrEqual(value: 0)]
     public int $points;

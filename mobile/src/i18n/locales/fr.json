@@ -19,6 +19,23 @@
     "winnerA": "Victoire Équipe A",
     "winnerB": "Victoire Équipe B",
     "ends": "{n} mènes",
+    "teamAverage": "Moyenne équipe",
+    "sections": {
+      "comparison": "Comparaison des joueurs",
+      "teamDistribution": "Répartition équipe",
+      "distribution": "Répartition des notes"
+    },
+    "comparison": {
+      "hint": "Moyenne globale de chaque joueur sur ce match."
+    },
+    "charts": {
+      "average": "Moyenne"
+    },
+    "empty": {
+      "noTrackedDataTitle": "Aucune boule analysée",
+      "noTrackedData": "Les statistiques de jeu ne sont pas disponibles pour ce match.",
+      "noPlayerData": "Aucune boule enregistrée pour ce joueur."
+    },
     "table": {
       "player": "Joueur",
       "avg": "Moyenne"
@@ -211,6 +228,15 @@
     "score": "Score",
     "endScore": { "title": "Fin de mène" },
     "shots": { "point": "Point", "tir": "Tir" },
+    "formChart": {
+      "title": "Forme sur le match",
+      "titleFor": "Forme — {name}",
+      "empty": "Pas encore de mène terminée pour afficher la courbe.",
+      "total": "Total par mène",
+      "pointAverage": "Moyenne point",
+      "tirAverage": "Moyenne tir",
+      "endLabel": "M{n}"
+    },
     "actions": { "saveEnd": "Enregistrer la mène", "validateEnd": "Valider la mène", "cancelEnd": "Annuler la mène", "finish": "Terminer le match" },
     "cancel": {
       "title": "Mène annulée",

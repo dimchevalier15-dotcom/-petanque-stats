@@ -1,124 +1,131 @@
 <template>
-  <PageHeader :title="t('summary.title')" :back-to="{ name: 'home' }" />
+  <AppPage>
+    <PageHeader :title="t('summary.title')" :back-to="{ name: 'home' }" />
 
-  <section class="summary">
-    <div class="banner app-card">
-      <div class="winner" :class="winnerClass">{{ winnerText }}</div>
-      <div class="final-score">{{ summary.scoreA }} - {{ summary.scoreB }}</div>
-      <div class="ends">{{ t('summary.ends', { n: summary.ends }) }}</div>
-    </div>
-
-    <div class="teams">
-      <div class="team app-card">
-        <h3>{{ teamALabel }}</h3>
-        <div v-for="p in teamA" :key="p.playerId" class="player-block">
-          <div class="player-header">{{ fullName(p) }}</div>
-          <div class="line">
-            <div class="counts counts-header">
-              <Tag value="Moy" severity="secondary" class="counts-moy-header" />
-              <Tag :value="'+2'" severity="secondary" />
-              <Tag :value="'+1'" severity="secondary" />
-              <Tag :value="'0'" severity="secondary" />
-              <Tag :value="'-1'" severity="secondary" />
-              <Tag :value="'-2'" severity="secondary" />
-            </div>
+    <section class="summary">
+      <div class="hero-banner app-card" :class="winnerClass">
+        <span class="winner-badge">{{ winnerText }}</span>
+        <div class="score-row">
+          <div class="score-team" :class="{ 'score-team--win': summary.winner === 'A' }">
+            <span class="score-label">{{ teamALabel }}</span>
+            <strong>{{ summary.scoreA }}</strong>
           </div>
-          <div class="line">
-            <span class="label">{{ t('play.shots.point') }}</span>
-            <Tag class="avg" :value="formatAvg(p.point?.average ?? 0)" :severity="avgSeverity(p.point?.average ?? 0)" />
-            <div class="counts">
-              <Tag :value="String(p.point?.p2 ?? 0)" severity="help" />
-              <Tag :value="String(p.point?.p1 ?? 0)" severity="success" />
-              <Tag :value="String(p.point?.p0 ?? 0)" severity="secondary" />
-              <Tag :value="String(p.point?.m1 ?? 0)" severity="warn" />
-              <Tag :value="String(p.point?.m2 ?? 0)" severity="danger" />
-            </div>
-          </div>
-          <div class="line">
-            <span class="label">{{ t('play.shots.tir') }}</span>
-            <Tag class="avg" :value="formatAvg(p.tir?.average ?? 0)" :severity="avgSeverity(p.tir?.average ?? 0)" />
-            <div class="counts">
-              <Tag :value="String(p.tir?.p2 ?? 0)" severity="help" />
-              <Tag :value="String(p.tir?.p1 ?? 0)" severity="success" />
-              <Tag :value="String(p.tir?.p0 ?? 0)" severity="secondary" />
-              <Tag :value="String(p.tir?.m1 ?? 0)" severity="warn" />
-              <Tag :value="String(p.tir?.m2 ?? 0)" severity="danger" />
-            </div>
+          <span class="score-sep">–</span>
+          <div class="score-team" :class="{ 'score-team--win': summary.winner === 'B' }">
+            <span class="score-label">{{ teamBLabel }}</span>
+            <strong>{{ summary.scoreB }}</strong>
           </div>
         </div>
+        <span class="ends-meta">{{ t('summary.ends', { n: summary.ends }) }}</span>
       </div>
 
-      <div class="team app-card">
-        <h3>{{ teamBLabel }}</h3>
-        <div v-for="p in teamB" :key="p.playerId" class="player-block">
-          <div class="player-header">{{ fullName(p) }}</div>
-          <div class="line">
-            <div class="counts counts-header">
-              <Tag value="Moy" severity="secondary" class="counts-moy-header"/>
-              <Tag :value="'+2'" severity="secondary" />
-              <Tag :value="'+1'" severity="secondary" />
-              <Tag :value="'0'" severity="secondary" />
-              <Tag :value="'-1'" severity="secondary" />
-              <Tag :value="'-2'" severity="secondary" />
-            </div>
-          </div>
-          <div class="line">
-            <span class="label">{{ t('play.shots.point') }}</span>
-            <Tag class="avg" :value="formatAvg(p.point?.average ?? 0)" :severity="avgSeverity(p.point?.average ?? 0)" />
-            <div class="counts">
-              <Tag :value="String(p.point?.p2 ?? 0)" severity="help" />
-              <Tag :value="String(p.point?.p1 ?? 0)" severity="success" />
-              <Tag :value="String(p.point?.p0 ?? 0)" severity="secondary" />
-              <Tag :value="String(p.point?.m1 ?? 0)" severity="warn" />
-              <Tag :value="String(p.point?.m2 ?? 0)" severity="danger" />
-            </div>
-          </div>
-          <div class="line">
-            <span class="label">{{ t('play.shots.tir') }}</span>
-            <Tag class="avg" :value="formatAvg(p.tir?.average ?? 0)" :severity="avgSeverity(p.tir?.average ?? 0)" />
-            <div class="counts">
-              <Tag :value="String(p.tir?.p2 ?? 0)" severity="help" />
-              <Tag :value="String(p.tir?.p1 ?? 0)" severity="success" />
-              <Tag :value="String(p.tir?.p0 ?? 0)" severity="secondary" />
-              <Tag :value="String(p.tir?.m1 ?? 0)" severity="warn" />
-              <Tag :value="String(p.tir?.m2 ?? 0)" severity="danger" />
-            </div>
-          </div>
+      <section v-if="comparisonChart" class="panel app-card">
+        <h3>{{ t('summary.sections.comparison') }}</h3>
+        <p class="panel-hint">{{ t('summary.comparison.hint') }}</p>
+        <div class="chart-box chart-comparison">
+          <Chart type="bar" :data="comparisonChart.data" :options="comparisonChart.options" />
         </div>
+      </section>
+
+      <section v-if="!hasData" class="panel app-card notice">
+        <p class="notice-title">{{ t('summary.empty.noTrackedDataTitle') }}</p>
+        <p class="panel-hint">{{ t('summary.empty.noTrackedData') }}</p>
+      </section>
+
+      <template v-else>
+        <section class="team-section">
+          <div class="team-header app-card team-a">
+            <div>
+              <h3>{{ teamALabel }}</h3>
+              <p v-if="teamAAverage !== null" class="team-meta">
+                {{ t('summary.teamAverage') }}
+                <Tag :value="formatAvg(teamAAverage)" :severity="avgSeverity(teamAAverage)" />
+              </p>
+            </div>
+          </div>
+
+          <div v-if="teamAChart" class="panel app-card">
+            <h4>{{ t('summary.sections.teamDistribution') }}</h4>
+            <div class="chart-box">
+              <Chart type="bar" :data="teamAChart.data" :options="teamAChart.options" />
+            </div>
+          </div>
+
+          <MatchSummaryPlayerCard
+            v-for="player in teamA"
+            :key="player.playerId"
+            :player="player"
+          />
+        </section>
+
+        <section class="team-section">
+          <div class="team-header app-card team-b">
+            <div>
+              <h3>{{ teamBLabel }}</h3>
+              <p v-if="teamBAverage !== null" class="team-meta">
+                {{ t('summary.teamAverage') }}
+                <Tag :value="formatAvg(teamBAverage)" :severity="avgSeverity(teamBAverage)" />
+              </p>
+            </div>
+          </div>
+
+          <div v-if="teamBChart" class="panel app-card">
+            <h4>{{ t('summary.sections.teamDistribution') }}</h4>
+            <div class="chart-box">
+              <Chart type="bar" :data="teamBChart.data" :options="teamBChart.options" />
+            </div>
+          </div>
+
+          <MatchSummaryPlayerCard
+            v-for="player in teamB"
+            :key="player.playerId"
+            :player="player"
+          />
+        </section>
+      </template>
+
+      <section v-if="contextSummary.length > 0" class="panel app-card context-panel">
+        <h3>{{ t('context.summaryTitle') }}</h3>
+        <ul class="context-list">
+          <li v-for="line in contextSummary" :key="line">{{ line }}</li>
+        </ul>
+      </section>
+
+      <div class="app-actions">
+        <Button
+          :label="contextActionLabel"
+          severity="secondary"
+          outlined
+          class="w-full"
+          @click="openContext"
+        />
+        <Button class="w-full" :label="t('summary.actions.backHome')" @click="goHome" />
       </div>
-    </div>
-
-    <div v-if="contextSummary.length > 0" class="context-summary app-card">
-      <h3>{{ t('context.summaryTitle') }}</h3>
-      <ul>
-        <li v-for="line in contextSummary" :key="line">{{ line }}</li>
-      </ul>
-    </div>
-
-    <div class="app-actions">
-      <Button
-        :label="contextActionLabel"
-        severity="secondary"
-        outlined
-        class="w-full"
-        @click="openContext"
-      />
-      <Button class="w-full" :label="t('summary.actions.backHome')" @click="goHome" />
-    </div>
-  </section>
+    </section>
+  </AppPage>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import Tag from 'primevue/tag'
 import Button from 'primevue/button'
+import Chart from 'primevue/chart'
+import Tag from 'primevue/tag'
+import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
+import MatchSummaryPlayerCard from '../components/match/MatchSummaryPlayerCard.vue'
 import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
 import type { MatchContext } from '../models/MatchContext'
 import { hasMatchContextData } from '../models/MatchContext'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
+import {
+  buildPlayerComparisonChart,
+  buildTeamDistributionChart,
+  hasTrackedData,
+  mergeTeamBreakdown,
+} from '../composables/useMatchSummaryCharts'
+import { avgSeverity, formatAvg } from '../composables/usePlayerStatsCharts'
 import { matchesService } from '../services/matches'
 
 const { t } = useI18n()
@@ -135,6 +142,15 @@ const teamB = computed<MatchSummaryPlayer[]>(() => summary.value.players.filter(
 
 const teamALabel = computed(() => context.value?.teamAName?.trim() || t('matches.teams.a'))
 const teamBLabel = computed(() => context.value?.teamBName?.trim() || t('matches.teams.b'))
+
+const hasData = computed(() => hasTrackedData(summary.value))
+
+const comparisonChart = computed(() => buildPlayerComparisonChart(summary.value.players, t))
+const teamAChart = computed(() => buildTeamDistributionChart(teamA.value, t))
+const teamBChart = computed(() => buildTeamDistributionChart(teamB.value, t))
+
+const teamAAverage = computed(() => mergeTeamBreakdown(teamA.value)?.average ?? null)
+const teamBAverage = computed(() => mergeTeamBreakdown(teamB.value)?.average ?? null)
 
 const contextActionLabel = computed(() =>
   context.value && hasMatchContextData(context.value)
@@ -169,23 +185,7 @@ const contextSummary = computed<string[]>(() => {
 })
 
 const winnerText = computed(() => (summary.value.winner === 'A' ? t('summary.winnerA') : t('summary.winnerB')))
-const winnerClass = computed(() => (summary.value.winner === 'A' ? 'win-a' : 'win-b'))
-
-function formatAvg(n: number): string {
-  return (n ?? 0).toFixed(2)
-}
-function avgSeverity(n?: number): 'danger' | 'warn' | 'secondary' | 'success' | 'help' | undefined {
-  const v = n ?? 0
-  if (v >= 1) return 'help'
-  if (v > 0) return 'success'
-  if (v === 0) return 'secondary'
-  if (v > -1) return 'warn'
-  return 'danger'
-}
-function fullName(row: MatchSummary['players'][number]): string {
-  const base = `${row.firstName} ${row.lastName}`.trim()
-  return row.nickname ? `${row.nickname} (${base})` : base
-}
+const winnerClass = computed(() => (summary.value.winner === 'A' ? 'hero-a' : 'hero-b'))
 
 async function load() {
   if (!matchId) {
@@ -216,25 +216,160 @@ onMounted(load)
 </script>
 
 <style scoped>
-.summary { display: grid; gap: var(--app-space-md); }
-.banner { padding: var(--app-space-lg); display: grid; gap: 0.25rem; text-align: center; }
-.winner { font-weight: 700; }
-.final-score { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; }
-.ends { color: var(--app-text-muted); font-size: 0.875rem; }
-.teams { display: grid; gap: var(--app-space-md); }
-.team { padding: var(--app-space-md); display: grid; gap: var(--app-space-sm); }
-.player-block { border-top: 1px solid var(--app-border); padding-top: var(--app-space-sm); }
-.player-block:first-of-type { border-top: none; padding-top: 0; }
-.player-header { font-weight: 700; margin-bottom: 0.25rem; }
-.line { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.125rem 0; }
-.line .label { font-size: 0.75rem; text-transform: uppercase; color: var(--app-text-muted); min-width: 48px; }
-.avg :deep(.p-tag) { font-weight: 700; }
-:deep(.p-tag) { width: 38px; }
-.counts { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
-.counts-header { margin-left: 56px; }
-.counts-moy-header { margin-right: 4px; }
-.context-summary { padding: var(--app-space-md); display: grid; gap: 0.25rem; }
-.context-summary h3 { margin: 0; font-size: 0.95rem; }
-.context-summary ul { margin: 0; padding-left: 1rem; display: grid; gap: 0.125rem; font-size: 0.875rem; }
-.w-full { width: 100%; }
+.summary {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.hero-banner {
+  padding: var(--app-space-lg);
+  display: grid;
+  gap: var(--app-space-sm);
+  text-align: center;
+  border-width: 1px;
+}
+
+.hero-a {
+  border-color: #bbf7d0;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.hero-b {
+  border-color: #bfdbfe;
+  background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%);
+}
+
+.winner-badge {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--app-space-md);
+}
+
+.score-team {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 5rem;
+  opacity: 0.75;
+}
+
+.score-team--win {
+  opacity: 1;
+}
+
+.score-team strong {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.score-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+}
+
+.score-sep {
+  font-size: 1.5rem;
+  font-weight: 300;
+  opacity: 0.45;
+}
+
+.ends-meta {
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+}
+
+.panel {
+  padding: var(--app-space-md);
+  display: grid;
+  gap: var(--app-space-sm);
+}
+
+.panel h3,
+.panel h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.panel-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+}
+
+.panel.notice {
+  border-style: dashed;
+  background: #fafafa;
+}
+
+.notice-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.chart-box {
+  position: relative;
+  height: 180px;
+}
+
+.chart-comparison {
+  height: 200px;
+}
+
+.team-section {
+  display: grid;
+  gap: var(--app-space-sm);
+}
+
+.team-header {
+  padding: var(--app-space-md);
+}
+
+.team-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.team-a {
+  border-left: 4px solid #22c55e;
+}
+
+.team-b {
+  border-left: 4px solid #3b82f6;
+}
+
+.team-meta {
+  margin: 0.375rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+}
+
+.context-panel {
+  gap: 0.375rem;
+}
+
+.context-list {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.w-full {
+  width: 100%;
+}
 </style>

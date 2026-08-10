@@ -19,6 +19,23 @@
     "winnerA": "Team A wins",
     "winnerB": "Team B wins",
     "ends": "{n} ends",
+    "teamAverage": "Team average",
+    "sections": {
+      "comparison": "Player comparison",
+      "teamDistribution": "Team distribution",
+      "distribution": "Note distribution"
+    },
+    "comparison": {
+      "hint": "Overall average for each player in this match."
+    },
+    "charts": {
+      "average": "Average"
+    },
+    "empty": {
+      "noTrackedDataTitle": "No balls tracked",
+      "noTrackedData": "Game statistics are not available for this match.",
+      "noPlayerData": "No balls recorded for this player."
+    },
     "table": {
       "player": "Player",
       "avg": "Average"
@@ -211,6 +228,15 @@
     "score": "Score",
     "endScore": { "title": "End score" },
     "shots": { "point": "Point", "tir": "Shot" },
+    "formChart": {
+      "title": "Match form",
+      "titleFor": "Form — {name}",
+      "empty": "No completed end yet to display the chart.",
+      "total": "Total per end",
+      "pointAverage": "Point average",
+      "tirAverage": "Shot average",
+      "endLabel": "E{n}"
+    },
     "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "finish": "Finish match" },
     "finish": {
       "title": "Finish match",
