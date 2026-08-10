@@ -10,7 +10,7 @@ services:
       MYSQL_USER: petanque
       MYSQL_PASSWORD: petanque
     ports:
-      - "3306:3306"
+      - "3310:3310"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -29,7 +29,7 @@ services:
     environment:
       APP_ENV: dev
       APP_DEBUG: 1
-      DATABASE_URL: "mysql://petanque:petanque@mysql:3306/petanque?serverVersion=8.0&charset=utf8mb4"
+      DATABASE_URL: "mysql://petanque:petanque@mysql:3310/petanque?serverVersion=8.0&charset=utf8mb4"
     volumes:
       - ./api:/app
     ports:
