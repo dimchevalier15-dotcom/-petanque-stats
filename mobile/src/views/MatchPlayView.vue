@@ -151,7 +151,7 @@
           <SelectButton v-model="winner" :options="winnerOptions" optionLabel="label" optionValue="value" />
         </div>
         <div class="points">
-          <InputText v-model.number="points" type="number" min="1" max="13" />
+          <InputText v-model.number="points" type="number" min="1" :max="pointsMax" />
         </div>
         <div class="actions">
           <Button :label="t('play.actions.saveEnd')" @click="confirmEndScore" :disabled="!winner || !points" />
@@ -210,6 +210,7 @@ import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import { formatFormAvg, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
 import { avgSeverity } from '../composables/usePlayerStatsCharts'
 import type { MatchContext } from '../models/MatchContext'
+import { clampEndPoints, maxPointsForWinner, suggestEndScore } from '../models/EndScoreSuggestion'
 import { matchesService } from '../services/matches'
 import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
 import { playersService } from '../services/players'
@@ -375,12 +376,49 @@ const winnerOptions = computed(() => [
   { label: teamBLabel.value, value: 'B' as TeamSide },
 ])
 
-watch(currentEndComplete, (v) => {
-  if (v && !currentEnd.value.points) {
-    winner.value = null
-    points.value = 1
+const pointsMax = computed(() => {
+  if (!winner.value) {
+    return 13
+  }
+  return maxPointsForWinner(winner.value, scoreA.value, scoreB.value, setup.targetScore)
+})
+
+function applyScoreDialogDefaults(): void {
+  const suggestion = suggestEndScore({
+    end: currentEnd.value,
+    teamA: setup.teamA,
+    teamB: setup.teamB,
+    scoreA: scoreA.value,
+    scoreB: scoreB.value,
+    targetScore: setup.targetScore,
+  })
+  winner.value = suggestion.winner
+  points.value = suggestion.points
+}
+
+watch(scoreDialog, (visible, wasVisible) => {
+  if (visible && !wasVisible) {
+    applyScoreDialogDefaults()
+  }
+})
+
+watch(currentEndComplete, (complete) => {
+  if (complete && !currentEnd.value.points) {
     scoreDialog.value = true
   }
+})
+
+watch(winner, (selectedWinner) => {
+  if (!selectedWinner || points.value === null) {
+    return
+  }
+  points.value = clampEndPoints(
+    selectedWinner,
+    points.value,
+    scoreA.value,
+    scoreB.value,
+    setup.targetScore,
+  )
 })
 
 const cancelDialog = ref(false)
@@ -399,14 +437,18 @@ async function confirmFinish() {
 
 function confirmEndScore() {
   if (!winner.value || !points.value) return
-  setEndScore(winner.value, points.value)
+  const clamped = clampEndPoints(
+    winner.value,
+    points.value,
+    scoreA.value,
+    scoreB.value,
+    setup.targetScore,
+  )
+  setEndScore(winner.value, clamped)
   scoreDialog.value = false
 }
 
 function reopenEndDialog() {
-  // Reopen the non-blocking dialog when user taps the bottom action
-  winner.value = winner.value ?? null
-  points.value = points.value ?? 1
   scoreDialog.value = true
 }
 
