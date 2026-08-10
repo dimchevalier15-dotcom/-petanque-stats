@@ -240,6 +240,10 @@
       "title": "Fin de mène",
       "earlyHint": "Les boules non jouées ne seront pas comptabilisées."
     },
+    "nav": {
+      "prevEnd": "Mène précédente",
+      "nextEnd": "Mène suivante"
+    },
     "shots": { "point": "Point", "tir": "Tir" },
     "formChart": {
       "title": "Forme sur le match",

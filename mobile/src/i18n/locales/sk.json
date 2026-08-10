@@ -240,6 +240,10 @@
       "title": "Koniec mèny",
       "earlyHint": "Neodohrané gule sa do štatistík nezapočítajú."
     },
+    "nav": {
+      "prevEnd": "Predchádzajúca mèna",
+      "nextEnd": "Ďalšia mèna"
+    },
     "shots": { "point": "Bod", "tir": "Strela" },
     "formChart": {
       "title": "Forma v zápase",

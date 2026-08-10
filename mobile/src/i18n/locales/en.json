@@ -240,6 +240,10 @@
       "title": "End score",
       "earlyHint": "Unplayed balls will not be counted in statistics."
     },
+    "nav": {
+      "prevEnd": "Previous end",
+      "nextEnd": "Next end"
+    },
     "shots": { "point": "Point", "tir": "Shot" },
     "formChart": {
       "title": "Match form",

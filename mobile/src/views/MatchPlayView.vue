@@ -1,19 +1,41 @@
 <template>
   <section class="play">
-    <header class="banner app-card">
-      <Button icon="pi pi-chevron-left" text @click="goPrev" :disabled="currentEndIndex === 0" aria-label="prev" />
-      <div class="info">
-        <span>{{ t('play.end') }} {{ currentEnd.index }}</span>
-        <span>·</span>
-        <span>{{ t('play.score') }} {{ scoreA }} - {{ scoreB }}</span>
+    <header class="scoreboard">
+      <Button
+        class="scoreboard-nav"
+        icon="pi pi-chevron-left"
+        text
+        rounded
+        @click="goPrev"
+        :disabled="currentEndIndex === 0"
+        :aria-label="t('play.nav.prevEnd')"
+      />
+      <div class="scoreboard-main">
+        <span class="end-pill">{{ t('play.end') }} {{ currentEnd.index }}</span>
+        <div class="score-row">
+          <span class="score-label">{{ t('play.score') }}</span>
+          <div class="score-values">
+            <strong class="score-value score-value--a">{{ scoreA }}</strong>
+            <span class="score-sep">–</span>
+            <strong class="score-value score-value--b">{{ scoreB }}</strong>
+          </div>
+        </div>
       </div>
-      <Button icon="pi pi-chevron-right" text @click="goNext" :disabled="currentEndIndex >= ends.length - 1" aria-label="next" />
+      <Button
+        class="scoreboard-nav"
+        icon="pi pi-chevron-right"
+        text
+        rounded
+        @click="goNext"
+        :disabled="currentEndIndex >= ends.length - 1"
+        :aria-label="t('play.nav.nextEnd')"
+      />
     </header>
 
     <div class="teams">
-      <div class="team app-card">
-        <h3>{{ teamALabel }}</h3>
-        <div v-for="pid in setup.teamA" :key="pid" class="player">
+      <section class="team team--a">
+        <h3 class="team-title">{{ teamALabel }}</h3>
+        <article v-for="pid in setup.teamA" :key="pid" class="player">
           <button
             type="button"
             class="player-name"
@@ -23,7 +45,7 @@
           >
             {{ nameFor(pid) }}
           </button>
-          <div class="balls" v-if="isTracked(pid)">
+          <div v-if="isTracked(pid)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
             <Button
               v-for="i in ballsPerPlayer"
               :key="i"
@@ -32,16 +54,17 @@
               text
               rounded
               class="ball"
+              :class="{ 'ball--played': noteAt(pid, i - 1) !== undefined, 'ball--empty': noteAt(pid, i - 1) === undefined }"
               :disabled="!canEnterBall(pid, i - 1)"
               @click="openNote($event, pid, i - 1)"
             />
           </div>
-        </div>
-      </div>
+        </article>
+      </section>
 
-      <div class="team app-card">
-        <h3>{{ teamBLabel }}</h3>
-        <div v-for="pid in setup.teamB" :key="pid" class="player">
+      <section class="team team--b">
+        <h3 class="team-title">{{ teamBLabel }}</h3>
+        <article v-for="pid in setup.teamB" :key="pid" class="player">
           <button
             type="button"
             class="player-name"
@@ -51,7 +74,7 @@
           >
             {{ nameFor(pid) }}
           </button>
-          <div class="balls" v-if="isTracked(pid)">
+          <div v-if="isTracked(pid)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
             <Button
               v-for="i in ballsPerPlayer"
               :key="i"
@@ -60,12 +83,13 @@
               text
               rounded
               class="ball"
+              :class="{ 'ball--played': noteAt(pid, i - 1) !== undefined, 'ball--empty': noteAt(pid, i - 1) === undefined }"
               :disabled="!canEnterBall(pid, i - 1)"
               @click="openNote($event, pid, i - 1)"
             />
           </div>
-        </div>
-      </div>
+        </article>
+      </section>
     </div>
 
     <Dialog
@@ -73,7 +97,7 @@
       :header="formChartTitle"
       :modal="true"
       :dismissableMask="true"
-      class="form-chart-dialog"
+      class="play-dialog form-chart-dialog"
     >
       <div v-if="formChart" class="form-chart-content">
         <div class="form-chart-box">
@@ -93,23 +117,34 @@
       <p v-else class="form-chart-empty">{{ t('play.formChart.empty') }}</p>
     </Dialog>
 
-    <OverlayPanel ref="op">
-      <div class="shot-type">
-        <SelectButton v-model="shotType" :options="shotOptions" optionLabel="label" optionValue="value" size="small" />
-      </div>
-      <div class="note-picker">
-        <Button
-          v-for="opt in notesOptions()"
-          :key="String(opt)"
-          :label="formatNote(opt)"
-          :severity="severityFor(opt)"
-          size="small"
-          @click="applyNote(opt)"
-        />
+    <OverlayPanel ref="op" class="note-overlay-panel">
+      <div class="note-overlay">
+        <div class="shot-type">
+          <SelectButton v-model="shotType" :options="shotOptions" optionLabel="label" optionValue="value" size="small" />
+        </div>
+        <div class="note-picker" :class="{ 'note-picker--simple': setup.statisticsMode === 'simple' }">
+          <Button
+            v-for="opt in notesOptions()"
+            :key="String(opt)"
+            :label="formatNote(opt)"
+            :severity="severityFor(opt)"
+            size="small"
+            class="note-btn"
+            @click="applyNote(opt)"
+          />
+        </div>
       </div>
     </OverlayPanel>
 
-    <Dialog v-model:visible="scoreDialog" :modal="false" :dismissableMask="true" :header="t('play.endScore.title')" :closable="true">
+    <Dialog
+      v-model:visible="scoreDialog"
+      :modal="false"
+      :dismissableMask="true"
+      :header="t('play.endScore.title')"
+      :closable="true"
+      class="play-dialog end-score-dialog"
+      position="bottom"
+    >
       <div class="end-score">
         <p v-if="!currentEndComplete" class="end-score-hint">{{ t('play.endScore.earlyHint') }}</p>
         <div class="winner">
@@ -124,15 +159,15 @@
       </div>
     </Dialog>
 
-    <div class="validate-end" v-if="canValidateEnd && !scoreDialog">
-      <Button class="validate-end-btn" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
-    </div>
+    <footer class="play-actions">
+      <div v-if="canValidateEnd && !scoreDialog" class="play-actions-primary">
+        <Button class="validate-end-btn" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
+        <Button class="cancel-end-btn" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" outlined @click="openCancelDialog" />
+      </div>
+      <Button class="finish-btn" :label="t('play.actions.finish')" icon="pi pi-flag" severity="secondary" text @click="openFinishDialog" />
+    </footer>
 
-    <div class="cancel-end" v-if="canValidateEnd && !scoreDialog">
-      <Button class="cancel-end-btn" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" @click="openCancelDialog" />
-    </div>
-
-    <Dialog v-model:visible="cancelDialog" :modal="true" :header="t('play.cancel.title')" :closable="false">
+    <Dialog v-model:visible="cancelDialog" :modal="true" :header="t('play.cancel.title')" :closable="false" class="play-dialog">
       <div class="cancel-content">
         <p>{{ t('play.cancel.message1') }}</p>
         <p>{{ t('play.cancel.message2') }}</p>
@@ -144,11 +179,7 @@
       </div>
     </Dialog>
 
-    <div class="finish">
-      <Button class="finish-btn" :label="t('play.actions.finish')" icon="pi pi-check" @click="openFinishDialog" />
-    </div>
-
-    <Dialog v-model:visible="finishDialog" :modal="true" :header="t('play.finish.title')" :closable="false">
+    <Dialog v-model:visible="finishDialog" :modal="true" :header="t('play.finish.title')" :closable="false" class="play-dialog">
       <div class="finish-content">
         <p>{{ t('play.finish.message1') }}</p>
         <p>{{ t('play.finish.message2') }}</p>
@@ -420,45 +451,411 @@ onMounted(async () => {
 
 <style scoped>
 .play {
+  --play-team-a: #15803d;
+  --play-team-a-soft: #ecfdf3;
+  --play-team-a-border: #86efac;
+  --play-team-b: #1d4ed8;
+  --play-team-b-soft: #eff6ff;
+  --play-team-b-border: #93c5fd;
+  --play-note-bad: #b91c1c;
+  --play-note-bad-bg: #fef2f2;
+  --play-note-warn: #c2410c;
+  --play-note-warn-bg: #fff7ed;
+  --play-note-neutral: #52525b;
+  --play-note-neutral-bg: #f4f4f5;
+  --play-note-good: #15803d;
+  --play-note-good-bg: #ecfdf3;
+  --play-note-great: #1d4ed8;
+  --play-note-great-bg: #eff6ff;
+
   max-width: var(--app-page-max);
   margin: 0 auto;
-  padding: var(--app-space-md) var(--app-space-lg) calc(env(safe-area-inset-bottom, 0px) + var(--app-space-lg));
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--app-space-md);
+  padding: var(--app-space-sm) var(--app-space-lg) calc(var(--app-nav-h) + env(safe-area-inset-bottom, 0px) + var(--app-space-sm));
+  background:
+    radial-gradient(circle at 0% 0%, rgba(31, 107, 88, 0.07), transparent 38%),
+    radial-gradient(circle at 100% 0%, rgba(184, 146, 58, 0.06), transparent 34%),
+    var(--app-bg);
+}
+
+.scoreboard {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 2.5rem;
+  align-items: center;
+  gap: var(--app-space-xs);
+  padding: var(--app-space-md);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow-sm);
+}
+
+.scoreboard-nav {
+  color: var(--app-text);
+}
+
+.scoreboard-main {
+  display: grid;
+  gap: 0.375rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.end-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 999px;
+  background: var(--app-primary-soft);
+  color: var(--app-primary-dark);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.score-row {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.score-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--app-text-subtle);
+}
+
+.score-values {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+}
+
+.score-value {
+  font-size: clamp(2rem, 9vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-value--a {
+  color: var(--play-team-a);
+}
+
+.score-value--b {
+  color: var(--play-team-b);
+}
+
+.score-sep {
+  font-size: 1.375rem;
+  font-weight: 300;
+  color: var(--app-text-subtle);
+  opacity: 0.7;
+}
+
+.teams {
   display: grid;
   gap: var(--app-space-md);
+  align-content: start;
 }
-.banner {
+
+.team {
+  padding: var(--app-space-md);
+  border-radius: var(--app-radius);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 0.25rem;
-  padding: var(--app-space-sm) var(--app-space-md);
+  gap: 0;
+  overflow: hidden;
 }
-.banner .info { justify-self: center; display: flex; gap: 0.5rem; font-weight: 700; font-size: 0.9375rem; }
-.teams { display: grid; gap: var(--app-space-md); }
-.team { padding: var(--app-space-md); display: grid; gap: var(--app-space-sm); }
-.player { display: grid; gap: 0.25rem; padding: 0.25rem 0; }
+
+.team--a {
+  border-left: 4px solid var(--play-team-a-border);
+  background: linear-gradient(90deg, var(--play-team-a-soft) 0%, var(--app-surface) 18%);
+}
+
+.team--b {
+  border-left: 4px solid var(--play-team-b-border);
+  background: linear-gradient(90deg, var(--play-team-b-soft) 0%, var(--app-surface) 18%);
+}
+
+.team-title {
+  margin: 0 0 var(--app-space-sm);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+}
+
+.team--a .team-title {
+  color: var(--play-team-a);
+}
+
+.team--b .team-title {
+  color: var(--play-team-b);
+}
+
+.player {
+  display: grid;
+  gap: var(--app-space-sm);
+  padding: var(--app-space-sm) 0;
+  border-top: 1px solid var(--app-border);
+}
+
+.player:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
 .player-name {
   margin: 0;
   padding: 0;
   border: none;
   background: none;
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9375rem;
+  letter-spacing: -0.01em;
   text-align: left;
-  color: inherit;
+  color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
 .player-name--clickable {
   cursor: pointer;
-  color: var(--app-primary, #6366f1);
+  color: var(--app-primary);
   text-decoration: underline;
-  text-underline-offset: 0.15em;
+  text-underline-offset: 0.18em;
+  text-decoration-color: rgba(31, 107, 88, 0.35);
 }
+
 .player-name:disabled {
   cursor: default;
   text-decoration: none;
-  color: inherit;
+  color: var(--app-text-muted);
+  font-weight: 600;
 }
+
+.balls {
+  display: grid;
+  grid-template-columns: repeat(var(--ball-count, 3), minmax(0, 1fr));
+  gap: var(--app-space-xs);
+}
+
+.balls :deep(.ball.p-button) {
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: 2.875rem;
+  max-height: 3.5rem;
+  padding: 0;
+  border-radius: 999px;
+  border: 2px solid var(--app-border-strong);
+  background: var(--app-surface-muted);
+  box-shadow: inset 0 1px 2px rgba(28, 36, 48, 0.04);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.balls :deep(.ball.p-button:not(:disabled):active) {
+  transform: scale(0.96);
+}
+
+.balls :deep(.ball--empty.p-button) {
+  border-style: dashed;
+  border-color: var(--app-border);
+  background: transparent;
+  color: var(--app-text-subtle);
+  font-size: 1.125rem;
+}
+
+.balls :deep(.ball--empty.p-button:not(:disabled)) {
+  border-color: var(--app-primary);
+  background: var(--app-primary-soft);
+  box-shadow: 0 0 0 2px rgba(31, 107, 88, 0.12);
+}
+
+.balls :deep(.ball.p-button:disabled) {
+  opacity: 0.42;
+  cursor: default;
+  box-shadow: none;
+}
+
+.balls :deep(.ball.p-button.p-button-danger) {
+  background: var(--play-note-bad-bg);
+  border-color: #fca5a5;
+  color: var(--play-note-bad);
+}
+
+.balls :deep(.ball.p-button.p-button-warn) {
+  background: var(--play-note-warn-bg);
+  border-color: #fdba74;
+  color: var(--play-note-warn);
+}
+
+.balls :deep(.ball.p-button.p-button-secondary) {
+  background: var(--play-note-neutral-bg);
+  border-color: #d4d4d8;
+  color: var(--play-note-neutral);
+}
+
+.balls :deep(.ball.p-button.p-button-success) {
+  background: var(--play-note-good-bg);
+  border-color: var(--play-team-a-border);
+  color: var(--play-note-good);
+}
+
+.balls :deep(.ball.p-button.p-button-help) {
+  background: var(--play-note-great-bg);
+  border-color: var(--play-team-b-border);
+  color: var(--play-note-great);
+}
+
+.balls :deep(.ball--played .p-button-label) {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.play-actions {
+  position: sticky;
+  bottom: calc(var(--app-nav-h) + env(safe-area-inset-bottom, 0px));
+  z-index: 15;
+  display: grid;
+  gap: var(--app-space-xs);
+  padding-top: var(--app-space-xs);
+  background: linear-gradient(to top, var(--app-bg) 78%, transparent);
+}
+
+.play-actions-primary {
+  display: grid;
+  gap: var(--app-space-xs);
+}
+
+.validate-end-btn,
+.cancel-end-btn,
+.finish-btn {
+  width: 100%;
+  min-height: var(--app-touch-min);
+}
+
+.validate-end-btn {
+  min-height: 3rem;
+  font-weight: 700;
+}
+
+.note-overlay {
+  display: grid;
+  gap: var(--app-space-md);
+  min-width: min(92vw, 20rem);
+  padding: var(--app-space-xs);
+}
+
+.shot-type :deep(.p-selectbutton) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+.shot-type :deep(.p-togglebutton) {
+  justify-content: center;
+  min-height: 2.5rem;
+  font-weight: 700;
+}
+
+.note-picker {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+
+.note-picker--simple {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.note-picker :deep(.note-btn.p-button) {
+  min-height: 2.75rem;
+  border-radius: var(--app-radius-sm);
+  font-weight: 800;
+  font-size: 0.9375rem;
+}
+
+.end-score {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.end-score-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+  text-align: center;
+  line-height: 1.45;
+  padding: 0 var(--app-space-sm);
+}
+
+.end-score .winner :deep(.p-selectbutton) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+.end-score .winner :deep(.p-togglebutton) {
+  justify-content: center;
+  min-height: 2.5rem;
+  font-weight: 600;
+}
+
+.end-score .points {
+  display: grid;
+  gap: var(--app-space-xs);
+  justify-items: center;
+}
+
+.end-score .points :deep(.p-inputtext) {
+  width: 5rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.end-score .actions :deep(.p-button) {
+  width: 100%;
+  min-height: var(--app-touch-min);
+  font-weight: 700;
+}
+
+.cancel-content,
+.finish-content {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.cancel-content p,
+.finish-content p {
+  margin: 0;
+  line-height: 1.45;
+  color: var(--app-text-muted);
+}
+
+.cancel-content .actions,
+.finish-content .actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-sm);
+}
+
 .form-chart-content {
   display: grid;
   gap: var(--app-space-md);
@@ -472,7 +869,7 @@ onMounted(async () => {
 .form-chart-stats {
   display: grid;
   gap: 0.5rem;
-  padding-top: 0.25rem;
+  padding-top: var(--app-space-sm);
   border-top: 1px solid var(--app-border);
 }
 
@@ -492,29 +889,41 @@ onMounted(async () => {
   color: var(--app-text-muted);
   padding: 1rem 0;
 }
-.balls { display: flex; gap: 0.375rem; flex-wrap: wrap; }
-.ball { min-width: 2.75rem; min-height: 2.75rem; }
-.note-picker { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-.end-score { display: grid; gap: var(--app-space-md); }
-.end-score-hint {
+</style>
+
+<style>
+.note-overlay-panel.p-overlaypanel {
+  border-radius: var(--app-radius-lg);
+  border: 1px solid var(--app-border);
+  box-shadow: var(--app-shadow-md);
+  max-width: calc(100vw - 2rem);
+}
+
+.note-overlay-panel.p-overlaypanel::before,
+.note-overlay-panel.p-overlaypanel::after {
+  display: none;
+}
+
+.play-dialog.p-dialog {
+  border-radius: var(--app-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--app-shadow-md);
+}
+
+.play-dialog .p-dialog-header {
+  padding: var(--app-space-md) var(--app-space-lg);
+  border-bottom: 1px solid var(--app-border);
+}
+
+.play-dialog .p-dialog-content {
+  padding: var(--app-space-lg);
+}
+
+.end-score-dialog.p-dialog {
   margin: 0;
-  font-size: 0.8125rem;
-  color: var(--app-text-muted);
-  text-align: center;
-  line-height: 1.4;
+  width: 100%;
+  max-width: var(--app-page-max);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
-.end-score .winner { display: flex; justify-content: center; }
-.end-score .points { display: grid; gap: 0.25rem; justify-items: center; }
-.validate-end {
-  position: sticky;
-  bottom: 0;
-  background: var(--app-bg);
-  border-top: 1px solid var(--app-border);
-  padding: var(--app-space-sm) 0;
-  display: grid;
-}
-.validate-end-btn { width: 100%; }
-.finish { display: grid; margin-top: 0.25rem; }
-.finish-btn { width: 100%; }
-.cancel-end-btn { width: 100%; }
 </style>
