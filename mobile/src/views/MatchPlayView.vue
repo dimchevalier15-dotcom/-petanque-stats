@@ -92,6 +92,22 @@
       </section>
     </div>
 
+    <div class="distance-estimate">
+      <span class="distance-estimate-label">{{ t('play.distanceEstimate') }}</span>
+      <InputText
+        v-model.number="distanceEstimateInput"
+        type="number"
+        inputmode="decimal"
+        step="0.05"
+        min="6"
+        max="20"
+        class="distance-estimate-input"
+      />
+      <span class="distance-estimate-unit">m</span>
+    </div>
+
+    
+
     <Dialog
       v-model:visible="formChartDialog"
       :header="formChartTitle"
@@ -257,6 +273,8 @@ const {
   goNextEnd,
   setNoteWithShot,
   setEndScore,
+  distanceEstimate,
+  setDistanceEstimate,
   notesOptions,
   currentEndComplete,
   canValidateEnd,
@@ -264,6 +282,11 @@ const {
   toSubmission,
   cancelCurrentEnd,
 } = useMatchPlay(setup)
+
+const distanceEstimateInput = computed<number | null>({
+  get: () => distanceEstimate.value,
+  set: (v) => setDistanceEstimate(v === undefined || Number.isNaN(v as number) ? null : v),
+})
 
 const op = ref<InstanceType<typeof OverlayPanel> | null>(null)
 const formChartDialog = ref(false)
@@ -603,6 +626,39 @@ onMounted(async () => {
   font-weight: 300;
   color: var(--app-text-subtle);
   opacity: 0.7;
+}
+
+.distance-estimate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0;
+  color: var(--app-text-subtle);
+}
+
+.distance-estimate-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.distance-estimate-input {
+  width: 4.5rem;
+}
+
+.distance-estimate-input :deep(.p-inputtext),
+.distance-estimate-input.p-inputtext {
+  text-align: center;
+  padding: 0.25rem 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.distance-estimate-unit {
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .teams {

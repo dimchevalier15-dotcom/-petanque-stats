@@ -66,4 +66,12 @@ final class CompleteMatchEndBallDto
 
     /** @var list<string> shot types aligned with notes: values 'point' | 'tir' */
     public array $shotTypes = [];
+
+    /**
+     * Optional distance in meters for each ball, aligned with notes by index.
+     * A ball can be recorded without a distance; the value is then null.
+     *
+     * @var list<float|null>
+     */
+    public array $distances = [];
 }

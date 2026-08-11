@@ -17,6 +17,7 @@ function endWithBalls(entries: Array<{ playerId: number; notes: number[] }>): En
       playerId: entry.playerId,
       notes: entry.notes as EndRecord['balls'][number]['notes'],
       shotTypes: entry.notes.map(() => 'point' as const),
+      distances: entry.notes.map(() => null),
     })),
   }
 }

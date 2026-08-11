@@ -5,6 +5,8 @@ export interface EndBallDto {
   playerId: number
   notes: BallNote[]
   shotTypes: ('point' | 'tir')[]
+  // Optional distance in meters per ball, aligned with notes by index.
+  distances?: (number | null)[]
 }
 
 export interface EndDto {

@@ -101,6 +101,7 @@ final class MatchRecordingService
 
             $notes = array_values($ballDto->notes);
             $shots = array_values($ballDto->shotTypes ?? []);
+            $distances = array_values($ballDto->distances ?? []);
             $max = min($allowedPerPlayer, count($notes));
 
             for ($i = 0; $i < $max; $i++) {
@@ -113,12 +114,22 @@ final class MatchRecordingService
                     ? (string) $shots[$i]
                     : ((string) ($defaultMap[$pid] ?? 'point'));
 
+                // Distance is purely informational and optional: an invalid value is simply
+                // dropped, it never blocks recording the ball itself.
+                $distance = null;
+                if (isset($distances[$i]) && $distances[$i] !== null && is_numeric($distances[$i])) {
+                    $d = (float) $distances[$i];
+                    if ($d >= 0) {
+                        $distance = $d;
+                    }
+                }
+
                 $player = $this->players->find($pid);
                 if ($player === null) {
                     continue;
                 }
 
-                $this->em->persist(new GameBall($end, $player, $i, $note, $shot));
+                $this->em->persist(new GameBall($end, $player, $i, $note, $shot, $distance));
             }
         }
     }

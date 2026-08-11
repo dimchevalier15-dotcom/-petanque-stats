@@ -246,6 +246,8 @@
       "nextEnd": "Ďalšia mèna"
     },
     "shots": { "point": "Bod", "tir": "Strela" },
+    "distancePlaceholder": "Vzdialenosť v metroch",
+    "distanceEstimate": "Odhadovaná vzdialenosť",
     "formChart": {
       "title": "Forma v zápase",
       "titleFor": "Forma — {name}",

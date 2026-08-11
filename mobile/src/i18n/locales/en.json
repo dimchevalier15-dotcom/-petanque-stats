@@ -246,6 +246,8 @@
       "nextEnd": "Next end"
     },
     "shots": { "point": "Point", "tir": "Shot" },
+    "distancePlaceholder": "Distance in meters",
+    "distanceEstimate": "Estimated distance",
     "formChart": {
       "title": "Match form",
       "titleFor": "Form — {name}",

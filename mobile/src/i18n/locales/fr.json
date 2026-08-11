@@ -246,6 +246,8 @@
       "nextEnd": "Mène suivante"
     },
     "shots": { "point": "Point", "tir": "Tir" },
+    "distancePlaceholder": "Distance en mètres",
+    "distanceEstimate": "Distance estimée",
     "formChart": {
       "title": "Forme sur le match",
       "titleFor": "Forme — {name}",

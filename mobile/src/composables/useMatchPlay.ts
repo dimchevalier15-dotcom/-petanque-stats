@@ -30,7 +30,12 @@ export function useMatchPlay(setup: MatchSetup) {
       // initialize entries for tracked players only
       end.balls = allPlayers.value
         .filter((id) => trackedSet.value.has(id))
-        .map((playerId) => ({ playerId, notes: [] as BallNote[], shotTypes: [] as ('point'|'tir')[] }))
+        .map((playerId) => ({
+          playerId,
+          notes: [] as BallNote[],
+          shotTypes: [] as ('point'|'tir')[],
+          distances: [] as (number | null)[],
+        }))
     }
     // clamp length of arrays
     for (const entry of end.balls) {
@@ -39,6 +44,12 @@ export function useMatchPlay(setup: MatchSetup) {
       }
       if (entry.shotTypes.length > ballsPerPlayer.value) {
         entry.shotTypes = entry.shotTypes.slice(0, ballsPerPlayer.value)
+      }
+      if (!entry.distances) {
+        entry.distances = []
+      }
+      if (entry.distances.length > ballsPerPlayer.value) {
+        entry.distances = entry.distances.slice(0, ballsPerPlayer.value)
       }
     }
   }
@@ -105,7 +116,19 @@ export function useMatchPlay(setup: MatchSetup) {
     return noteIndex <= entry.notes.length
   }
 
-  function setNoteWithShot(playerId: number, noteIndex: number, value: BallNote | null, shotType?: 'point' | 'tir'): void {
+  // Optional "estimated distance" shown permanently on the play screen (not persisted on the
+  // end). Its current value is copied into every newly played ball; it never blocks anything.
+  const distanceEstimate = ref<number | null>(null)
+  function setDistanceEstimate(value: number | null): void {
+    distanceEstimate.value = value
+  }
+
+  function setNoteWithShot(
+    playerId: number,
+    noteIndex: number,
+    value: BallNote | null,
+    shotType?: 'point' | 'tir',
+  ): void {
     if (isFinished.value) return
     const end = ends[currentEndIndex.value]
     ensureEndStructure(end)
@@ -120,6 +143,7 @@ export function useMatchPlay(setup: MatchSetup) {
       if (noteIndex < entry.notes.length) {
         entry.notes.splice(noteIndex, 1)
         entry.shotTypes.splice(noteIndex, 1)
+        entry.distances.splice(noteIndex, 1)
       }
       return
     }
@@ -133,6 +157,7 @@ export function useMatchPlay(setup: MatchSetup) {
     if (noteIndex === entry.notes.length) {
       entry.notes.push(value)
       entry.shotTypes.push(defaultShot)
+      entry.distances.push(distanceEstimate.value)
     }
   }
 
@@ -162,6 +187,7 @@ export function useMatchPlay(setup: MatchSetup) {
     if (!isFinished.value) {
       addEndIfNeeded()
       currentEndIndex.value += 1
+      distanceEstimate.value = null
     }
   }
 
@@ -174,6 +200,7 @@ export function useMatchPlay(setup: MatchSetup) {
     recomputeGlobalScore()
     addEndIfNeeded()
     currentEndIndex.value += 1
+    distanceEstimate.value = null
   }
 
   function colorFor(note: BallNote | undefined): string {
@@ -209,7 +236,7 @@ export function useMatchPlay(setup: MatchSetup) {
           winner: (e.winner as TeamSide) ?? 'A',
           points: e.canceled ? 0 : ((e.points as number) ?? 0),
           canceled: e.canceled === true,
-          balls: e.balls.map((b) => ({ playerId: b.playerId, notes: b.notes, shotTypes: b.shotTypes })),
+          balls: e.balls.map((b) => ({ playerId: b.playerId, notes: b.notes, shotTypes: b.shotTypes, distances: b.distances })),
         })),
     }
   }
@@ -229,6 +256,8 @@ export function useMatchPlay(setup: MatchSetup) {
     setNote,
     setNoteWithShot,
     setEndScore,
+    distanceEstimate,
+    setDistanceEstimate,
     // helpers
     notesOptions,
     currentEndComplete,

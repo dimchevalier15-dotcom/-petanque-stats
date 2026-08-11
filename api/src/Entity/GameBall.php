@@ -35,14 +35,23 @@ class GameBall
     #[ORM\Column(name: 'shot_type', type: 'string', length: 6)]
     private string $shotType;
 
-    public function __construct(GameEnd $end, Player $player, int $index, int $note, string $shotType = 'point')
+    // Optional distance in meters, estimated at the time the ball was played. No statistical use yet.
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $distance = null;
+
+    public function __construct(GameEnd $end, Player $player, int $index, int $note, string $shotType = 'point', ?float $distance = null)
     {
         $this->end = $end;
         $this->player = $player;
         $this->index = $index;
         $this->note = $note;
         $this->shotType = in_array($shotType, ['point','tir'], true) ? $shotType : 'point';
+        $this->distance = $distance;
     }
 
     public function getId(): ?int { return $this->id; }
+    public function getIndex(): int { return $this->index; }
+    public function getNote(): int { return $this->note; }
+    public function getShotType(): string { return $this->shotType; }
+    public function getDistance(): ?float { return $this->distance; }
 }
