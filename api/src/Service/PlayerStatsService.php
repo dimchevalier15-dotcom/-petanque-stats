@@ -15,6 +15,7 @@ use App\Repository\GameEndRepository;
 use App\Repository\GameParticipantRepository;
 use App\Repository\GameRepository;
 use App\Service\Auth\CurrentUserService;
+use App\ValueObject\DateRange;
 
 final class PlayerStatsService
 {
@@ -27,7 +28,7 @@ final class PlayerStatsService
     ) {
     }
 
-    public function statsForToken(string $token): PlayerStatsResponse
+    public function statsForToken(string $token, ?DateRange $dateRange = null): PlayerStatsResponse
     {
         $me = $this->currentUser->meFromToken($token);
         $playerId = $me->playerId;
@@ -37,11 +38,17 @@ final class PlayerStatsService
         }
 
         $displayName = $this->buildDisplayName($me->nickname, $me->firstName, $me->lastName);
-        $games = $this->games->findCompletedGamesForPlayer((int) $playerId);
+        $games = $this->games->findCompletedGamesForPlayer((int) $playerId, $dateRange);
 
         if ($games === []) {
+            if ($dateRange !== null && $this->games->countCompletedGamesForPlayer((int) $playerId) > 0) {
+                return $this->emptyResponse('no_data_in_period', (int) $playerId, $displayName);
+            }
+
             return $this->emptyResponse('no_matches', (int) $playerId, $displayName);
         }
+
+        $gameIds = array_map(static fn (Game $game): int => (int) $game->getId(), $games);
 
         $victories = 0;
         $defeats = 0;
@@ -56,9 +63,9 @@ final class PlayerStatsService
         $matchesPlayed = count($games);
         $winRate = $matchesPlayed > 0 ? round(($victories / $matchesPlayed) * 100, 1) : null;
 
-        $overallRaw = $this->balls->aggregateByPlayer((int) $playerId);
-        $shotRaw = $this->balls->aggregateByPlayerPerShot((int) $playerId);
-        $perGameRaw = $this->balls->aggregateByPlayerPerGame((int) $playerId);
+        $overallRaw = $this->balls->aggregateByPlayerForGames((int) $playerId, $gameIds);
+        $shotRaw = $this->balls->aggregateByPlayerPerShotForGames((int) $playerId, $gameIds);
+        $perGameRaw = $this->balls->aggregateByPlayerPerGame((int) $playerId, $gameIds);
 
         $totalBalls = $overallRaw['count'];
         $trackedMatches = count($perGameRaw);

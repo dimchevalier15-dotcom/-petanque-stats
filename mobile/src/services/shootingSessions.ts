@@ -4,12 +4,16 @@ import type {
   ShootingSessionHistoryResponseDto,
   ShootingSessionStartedResponseDto,
   ShootingSessionSummaryResponseDto,
+  UpdateShootingSessionContextRequestDto,
 } from '../dto/shooting/ShootingSessionResponse'
+import type { ShootingStatsResponseDto } from '../dto/shooting/ShootingStatsResponse'
 import type {
   ShootingSessionHistoryPage,
   ShootingSessionStarted,
   ShootingSessionSummary,
+  ShootingStats,
 } from '../models/Shooting'
+import type { StatsDateRangeParams } from '../composables/useStatsDateRange'
 
 function mapStarted(dto: ShootingSessionStartedResponseDto): ShootingSessionStarted {
   return { id: dto.id, createdAt: dto.createdAt }
@@ -21,7 +25,24 @@ function mapSummary(dto: ShootingSessionSummaryResponseDto): ShootingSessionSumm
     createdAt: dto.createdAt,
     finishedAt: dto.finishedAt,
     totalScore: dto.totalScore,
+    title: dto.title,
+    description: dto.description,
     workshops: dto.workshops,
+  }
+}
+
+function mapStats(dto: ShootingStatsResponseDto): ShootingStats {
+  return {
+    status: dto.status,
+    summary: { ...dto.summary },
+    evolution: dto.evolution.map((p) => ({ ...p })),
+    byWorkshop: dto.byWorkshop.map((w) => ({ ...w })),
+    byDistance: dto.byDistance.map((d) => ({ ...d })),
+    byResult: dto.byResult.map((r) => ({
+      result: r.result as ShootingStats['byResult'][number]['result'],
+      count: r.count,
+    })),
+    heatmap: dto.heatmap.map((c) => ({ ...c })),
   }
 }
 
@@ -50,5 +71,15 @@ export const shootingSessionsService = {
   },
   async abandon(id: number): Promise<void> {
     await api.delete(`/shooting-sessions/${id}`)
+  },
+  async updateContext(id: number, payload: UpdateShootingSessionContextRequestDto): Promise<ShootingSessionSummary> {
+    const { data } = await api.put<ShootingSessionSummaryResponseDto>(`/shooting-sessions/${id}/context`, payload)
+    return mapSummary(data)
+  },
+  async getStats(range: StatsDateRangeParams): Promise<ShootingStats> {
+    const { data } = await api.get<ShootingStatsResponseDto>('/shooting-sessions/stats', {
+      params: range,
+    })
+    return mapStats(data)
   },
 }

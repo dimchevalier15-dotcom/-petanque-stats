@@ -6,6 +6,11 @@
     "hello": "Hello World",
     "comingSoon": "Už čoskoro"
   },
+  "dateRange": {
+    "label": "Obdobie",
+    "from": "Od",
+    "to": "Do"
+  },
   "nav": {
     "aria": "Hlavná navigácia",
     "home": "Domov",
@@ -287,6 +292,7 @@
       "title": "Presná streľba",
       "subtitle": "Absolvujte 5 oficiálnych disciplín",
       "newSession": "Nové kolo",
+      "stats": "Štatistiky",
       "historyTitle": "História kôl",
       "empty": "Zatiaľ žiadne kolo streľby.",
       "scoreOn100": "{score} / 100"
@@ -335,8 +341,77 @@
     "summary": {
       "title": "Zhrnutie kola",
       "sessionFinished": "Kolo ukončené",
+      "performanceMap": {
+        "title": "Mapa výkonnosti",
+        "hint": "Každá bunka zodpovedá jednej strele z tohto kola."
+      },
       "actions": {
         "backHome": "Späť na presnú streľbu"
+      }
+    },
+    "context": {
+      "titleAdd": "Pridať názov",
+      "titleEdit": "Upraviť názov",
+      "hint": "Nepovinné: pridajte názov a popis tohto kola.",
+      "fields": {
+        "title": "Názov",
+        "description": "Popis"
+      },
+      "actions": {
+        "add": "Pridať názov",
+        "edit": "Upraviť názov",
+        "save": "Uložiť",
+        "skip": "Preskočiť"
+      }
+    },
+    "stats": {
+      "title": "Štatistiky streľby",
+      "subtitle": "Výkonnosť podľa disciplíny a vzdialenosti",
+      "kpi": {
+        "sessions": "Kolá",
+        "best": "Rekord",
+        "average": "Priemer"
+      },
+      "hero": {
+        "averageSession": "Priemerné skóre kola",
+        "shotsTracked": "{n} analyzovaných striel"
+      },
+      "insights": {
+        "strength": "Silná stránka",
+        "toWork": "Na zlepšenie"
+      },
+      "sections": {
+        "evolution": "Pokrok",
+        "workshops": "Podľa disciplíny",
+        "distances": "Podľa vzdialenosti",
+        "results": "Typy výsledkov",
+        "heatmap": "Mapa výkonnosti"
+      },
+      "evolution": {
+        "hint": "Trend celkového skóre na posledných kolách."
+      },
+      "workshops": {
+        "hint": "Priemerné skóre na strelu pre každú disciplínu (max 5 bodov)."
+      },
+      "distances": {
+        "hint": "Priemerné skóre na strelu podľa vzdialenosti.",
+        "best": "Najlepšia: {n} m",
+        "weakest": "Na zlepšenie: {n} m"
+      },
+      "results": {
+        "hint": "Rozdelenie všetkých vašich výsledkov."
+      },
+      "heatmap": {
+        "hint": "Intenzita farby = priemerné skóre. Číslo = počet striel."
+      },
+      "empty": {
+        "loadErrorTitle": "Nepodarilo sa načítať štatistiky",
+        "retry": "Skúsiť znova",
+        "noSessionsTitle": "Žiadne ukončené kolo",
+        "noSessionsHint": "Dokončite prvé kolo, aby ste videli štatistiky streľby.",
+        "startSession": "Začať kolo",
+        "noDataInPeriodTitle": "Žiadne kolá v tomto období",
+        "noDataInPeriodHint": "Rozšírte rozsah dátumov, aby sa zobrazili štatistiky streľby."
       }
     }
   },
@@ -382,6 +457,8 @@
       "noPlayerHint": "Váš účet zatiaľ nie je prepojený s hráčom. Štatistiky budú dostupné po prepojení.",
       "noMatchesTitle": "Zatiaľ žiadne zápasy",
       "noMatchesHint": "Odohrajte prvý zápas a začnite sledovať svoju formu.",
+      "noDataInPeriodTitle": "Žiadne zápasy v tomto období",
+      "noDataInPeriodHint": "Rozšírte rozsah dátumov, aby sa zobrazili štatistiky.",
       "noDataTitle": "Nedostatok dát",
       "noDataHint": "Pokračujte v hraní a obohaťte svoje štatistiky.",
       "noTrackedDataTitle": "Štatistiky z gúl nedostupné",

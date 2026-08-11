@@ -302,19 +302,30 @@ final class GameBallRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<int>|null $gameIds
+     *
      * @return array<int, array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}>
      */
-    public function aggregateByPlayerPerGame(int $playerId): array
+    public function aggregateByPlayerPerGame(int $playerId, ?array $gameIds = null): array
     {
+        if ($gameIds !== null && $gameIds === []) {
+            return [];
+        }
+
         $map = [];
 
-        $rows = $this->createQueryBuilder('b')
+        $rowsQb = $this->createQueryBuilder('b')
             ->select('IDENTITY(e.game) as gid, COUNT(b.id) as cnt, SUM(b.note) as s')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
             ->setParameter('pid', $playerId)
-            ->groupBy('gid')
-            ->getQuery()->getArrayResult();
+            ->groupBy('gid');
+
+        if ($gameIds !== null) {
+            $rowsQb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
+        }
+
+        $rows = $rowsQb->getQuery()->getArrayResult();
 
         foreach ($rows as $r) {
             $gid = (int) $r['gid'];
@@ -329,13 +340,18 @@ final class GameBallRepository extends ServiceEntityRepository
             ];
         }
 
-        $noteRows = $this->createQueryBuilder('b')
+        $noteQb = $this->createQueryBuilder('b')
             ->select('IDENTITY(e.game) as gid, b.note as n, COUNT(b.id) as c')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
             ->setParameter('pid', $playerId)
-            ->groupBy('gid, n')
-            ->getQuery()->getArrayResult();
+            ->groupBy('gid, n');
+
+        if ($gameIds !== null) {
+            $noteQb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
+        }
+
+        $noteRows = $noteQb->getQuery()->getArrayResult();
 
         foreach ($noteRows as $r) {
             $gid = (int) $r['gid'];

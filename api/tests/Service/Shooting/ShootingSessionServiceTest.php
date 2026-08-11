@@ -6,6 +6,7 @@ namespace App\Tests\Service\Shooting;
 
 use App\Dto\Request\CompleteShootingSessionRequest;
 use App\Dto\Request\ShootingShotInputDto;
+use App\Dto\Request\UpdateShootingSessionContextRequest;
 use App\Entity\Player;
 use App\Entity\User;
 use App\Service\Shooting\InvalidShootingSessionStructureException;
@@ -143,6 +144,35 @@ final class ShootingSessionServiceTest extends KernelTestCase
         self::assertNull($this->service->current($token));
         $this->expectException(ShootingSessionNotFoundException::class);
         $this->service->getSummary($token, $started->id);
+    }
+
+    public function testContextCanBeAddedOnceASessionIsFinished(): void
+    {
+        [$token] = $this->createUserWithLinkedPlayer();
+        $started = $this->service->start($token);
+        $this->service->complete($token, $started->id, $this->buildRequest(fn () => 'touched'));
+
+        $req = new UpdateShootingSessionContextRequest();
+        $req->title = 'Entraînement du soir';
+        $req->description = 'Bon ressenti.';
+
+        $summary = $this->service->updateContext($token, $started->id, $req);
+
+        self::assertSame('Entraînement du soir', $summary->title);
+        self::assertSame('Bon ressenti.', $summary->description);
+    }
+
+    public function testContextCannotBeAddedByAnotherPlayer(): void
+    {
+        [$ownerToken] = $this->createUserWithLinkedPlayer();
+        [$otherToken] = $this->createUserWithLinkedPlayer();
+        $started = $this->service->start($ownerToken);
+
+        $req = new UpdateShootingSessionContextRequest();
+        $req->title = 'Tentative';
+
+        $this->expectException(ShootingSessionAccessDeniedException::class);
+        $this->service->updateContext($otherToken, $started->id, $req);
     }
 
     public function testAPlayerCanHaveSeveralSessionsInTheirHistory(): void

@@ -1,5 +1,6 @@
 import api from './http'
 import type { PlayerStatsResponseDto } from '../dto/player/PlayerStatsResponse'
+import type { StatsDateRangeParams } from '../composables/useStatsDateRange'
 import type { PlayerStats } from '../models/PlayerStats'
 
 function mapPlayerStats(dto: PlayerStatsResponseDto): PlayerStats {
@@ -17,8 +18,10 @@ function mapPlayerStats(dto: PlayerStatsResponseDto): PlayerStats {
 }
 
 export const statsService = {
-  async getMyStats(): Promise<PlayerStats> {
-    const { data } = await api.get<PlayerStatsResponseDto>('/players/me/stats')
+  async getMyStats(range: StatsDateRangeParams): Promise<PlayerStats> {
+    const { data } = await api.get<PlayerStatsResponseDto>('/players/me/stats', {
+      params: range,
+    })
     return mapPlayerStats(data)
   },
 }

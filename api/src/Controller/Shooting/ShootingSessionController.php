@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controller\Shooting;
 
 use App\Dto\Request\CompleteShootingSessionRequest;
+use App\Dto\Request\UpdateShootingSessionContextRequest;
+use App\Http\StatsDateRangeResolver;
 use App\Service\Auth\InvalidTokenException;
 use App\Service\Shooting\InvalidShootingSessionStructureException;
 use App\Service\Shooting\NoLinkedPlayerException;
@@ -12,6 +14,7 @@ use App\Service\Shooting\ShootingSessionAccessDeniedException;
 use App\Service\Shooting\ShootingSessionAlreadyFinishedException;
 use App\Service\Shooting\ShootingSessionNotFoundException;
 use App\Service\Shooting\ShootingSessionService;
+use App\Service\Shooting\ShootingStatsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +26,7 @@ final class ShootingSessionController extends AbstractController
 {
     public function __construct(
         private ShootingSessionService $service,
+        private ShootingStatsService $statsService,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {
@@ -45,6 +49,20 @@ final class ShootingSessionController extends AbstractController
             if ($res === null) {
                 return new JsonResponse('null', 200, [], true);
             }
+            return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
+        });
+    }
+
+    #[Route('/api/shooting-sessions/stats', name: 'api_shooting_sessions_stats', methods: ['GET'])]
+    public function stats(Request $request): JsonResponse
+    {
+        return $this->withToken($request, function (string $token) use ($request) {
+            try {
+                $dateRange = StatsDateRangeResolver::fromRequest($request);
+            } catch (\InvalidArgumentException $e) {
+                return new JsonResponse(['message' => $e->getMessage()], 400);
+            }
+            $res = $this->statsService->stats($token, $dateRange);
             return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
         });
     }
@@ -101,6 +119,32 @@ final class ShootingSessionController extends AbstractController
                 return new JsonResponse(['message' => 'Session already finished.'], 409);
             } catch (InvalidShootingSessionStructureException $e) {
                 return new JsonResponse(['errors' => $e->errors], 400);
+            }
+        });
+    }
+
+    #[Route('/api/shooting-sessions/{id}/context', name: 'api_shooting_sessions_update_context', methods: ['PUT'])]
+    public function updateContext(int $id, Request $request): JsonResponse
+    {
+        return $this->withToken($request, function (string $token) use ($id, $request) {
+            /** @var UpdateShootingSessionContextRequest $input */
+            $input = $this->serializer->deserialize($request->getContent(), UpdateShootingSessionContextRequest::class, 'json');
+            $violations = $this->validator->validate($input);
+            if (\count($violations) > 0) {
+                $errors = [];
+                foreach ($violations as $v) {
+                    $errors[$v->getPropertyPath()] = $v->getMessage();
+                }
+                return new JsonResponse(['errors' => $errors], 400);
+            }
+
+            try {
+                $res = $this->service->updateContext($token, $id, $input);
+                return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
+            } catch (ShootingSessionNotFoundException) {
+                return new JsonResponse(['message' => 'Not found'], 404);
+            } catch (ShootingSessionAccessDeniedException) {
+                return new JsonResponse(['message' => 'Forbidden'], 403);
             }
         });
     }

@@ -184,7 +184,7 @@ async function finishSession(): Promise<void> {
   try {
     await shootingSessionsService.complete(sessionId, toCompletionPayload())
     clearShootingDraft(sessionId)
-    router.push({ name: 'shootingSessionSummary', params: { id: sessionId } })
+    router.push({ name: 'shootingSessionContext', params: { id: sessionId } })
   } finally {
     finishing.value = false
   }

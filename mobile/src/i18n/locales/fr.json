@@ -6,6 +6,11 @@
     "hello": "Hello World",
     "comingSoon": "À venir"
   },
+  "dateRange": {
+    "label": "Période",
+    "from": "Du",
+    "to": "Au"
+  },
   "nav": {
     "aria": "Navigation principale",
     "home": "Accueil",
@@ -287,6 +292,7 @@
       "title": "Tir de précision",
       "subtitle": "Enchaînez les 5 ateliers officiels",
       "newSession": "Nouvelle séance",
+      "stats": "Statistiques",
       "historyTitle": "Historique des séances",
       "empty": "Aucune séance de tir pour le moment.",
       "scoreOn100": "{score} / 100"
@@ -335,8 +341,77 @@
     "summary": {
       "title": "Résumé de la séance",
       "sessionFinished": "Séance terminée",
+      "performanceMap": {
+        "title": "Carte de performance",
+        "hint": "Chaque cellule correspond à un tir de cette séance."
+      },
       "actions": {
         "backHome": "Retour au tir de précision"
+      }
+    },
+    "context": {
+      "titleAdd": "Ajouter un titre",
+      "titleEdit": "Modifier le titre",
+      "hint": "Optionnel : donnez un titre et une description à cette séance.",
+      "fields": {
+        "title": "Titre",
+        "description": "Description"
+      },
+      "actions": {
+        "add": "Ajouter un titre",
+        "edit": "Modifier le titre",
+        "save": "Enregistrer",
+        "skip": "Passer"
+      }
+    },
+    "stats": {
+      "title": "Statistiques tir",
+      "subtitle": "Vos performances par atelier et distance",
+      "kpi": {
+        "sessions": "Séances",
+        "best": "Record",
+        "average": "Moyenne"
+      },
+      "hero": {
+        "averageSession": "Score moyen par séance",
+        "shotsTracked": "{n} tirs analysés"
+      },
+      "insights": {
+        "strength": "Point fort",
+        "toWork": "À travailler"
+      },
+      "sections": {
+        "evolution": "Progression",
+        "workshops": "Par atelier",
+        "distances": "Par distance",
+        "results": "Types de résultats",
+        "heatmap": "Carte de performance"
+      },
+      "evolution": {
+        "hint": "Évolution de votre score total sur vos dernières séances."
+      },
+      "workshops": {
+        "hint": "Score moyen par tir pour chaque atelier (sur 5 pts max)."
+      },
+      "distances": {
+        "hint": "Score moyen par tir selon la distance.",
+        "best": "Meilleure : {n} m",
+        "weakest": "À travailler : {n} m"
+      },
+      "results": {
+        "hint": "Répartition de vos résultats sur tous les tirs."
+      },
+      "heatmap": {
+        "hint": "Intensité = score moyen par tir. Le nombre indique le volume de tirs."
+      },
+      "empty": {
+        "loadErrorTitle": "Impossible de charger les statistiques",
+        "retry": "Réessayer",
+        "noSessionsTitle": "Aucune séance terminée",
+        "noSessionsHint": "Complétez une première séance pour voir vos statistiques de tir.",
+        "startSession": "Commencer une séance",
+        "noDataInPeriodTitle": "Aucune séance sur cette période",
+        "noDataInPeriodHint": "Élargissez la plage de dates pour afficher vos statistiques de tir."
       }
     }
   },
@@ -382,6 +457,8 @@
       "noPlayerHint": "Votre compte n'est pas encore lié à un joueur. Les statistiques seront disponibles une fois ce lien établi.",
       "noMatchesTitle": "Pas encore de matchs",
       "noMatchesHint": "Jouez votre premier match pour commencer à suivre vos performances.",
+      "noDataInPeriodTitle": "Aucun match sur cette période",
+      "noDataInPeriodHint": "Élargissez la plage de dates pour afficher vos statistiques.",
       "noDataTitle": "Données insuffisantes",
       "noDataHint": "Continuez à jouer pour enrichir vos statistiques.",
       "noTrackedDataTitle": "Statistiques de jeu indisponibles",

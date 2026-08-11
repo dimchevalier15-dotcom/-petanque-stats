@@ -8,6 +8,7 @@ use App\Dto\Request\CreatePlayerRequest;
 use App\Dto\Request\SearchPlayersQuery;
 use App\Dto\Response\CreatePlayerResponse;
 use App\Dto\Response\PlayerItem;
+use App\Http\StatsDateRangeResolver;
 use App\Service\PlayerService;
 use App\Service\PlayerStatsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -67,7 +68,12 @@ final class PlayerController extends AbstractController
             return new JsonResponse(['message' => 'Invalid credentials.'], 401);
         }
         $token = substr($authHeader, 7);
-        $res = $this->playerStatsService->statsForToken($token);
+        try {
+            $dateRange = StatsDateRangeResolver::fromRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 400);
+        }
+        $res = $this->playerStatsService->statsForToken($token, $dateRange);
         $json = $this->serializer->serialize($res, 'json');
         return new JsonResponse($json, 200, [], true);
     }

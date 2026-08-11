@@ -51,6 +51,8 @@ export interface ShootingSessionSummary {
   createdAt: string
   finishedAt: string | null
   totalScore: number | null
+  title: string | null
+  description: string | null
   workshops: ShootingWorkshopSummary[]
 }
 
@@ -64,6 +66,12 @@ export interface ShootingSessionHistoryItem {
   createdAt: string
   finishedAt: string
   totalScore: number
+  title: string | null
+}
+
+export interface ShootingSessionContextForm {
+  title: string
+  description: string
 }
 
 export interface ShootingSessionHistoryPage {
@@ -71,4 +79,51 @@ export interface ShootingSessionHistoryPage {
   pageSize: number
   total: number
   items: ShootingSessionHistoryItem[]
+}
+
+export interface ShootingStatsSummary {
+  sessionsCount: number
+  totalShots: number
+  averageSessionScore: number | null
+  bestSessionScore: number | null
+}
+
+export interface ShootingStatsEvolutionPoint {
+  sessionId: number
+  date: string
+  totalScore: number
+}
+
+export interface ShootingStatsWorkshop {
+  workshop: number
+  shotCount: number
+  averageScore: number
+}
+
+export interface ShootingStatsDistance {
+  distance: number
+  shotCount: number
+  averageScore: number
+}
+
+export interface ShootingStatsResult {
+  result: ShootingShotResult
+  count: number
+}
+
+export interface ShootingStatsCell {
+  workshop: number
+  distance: number
+  shotCount: number
+  averageScore: number
+}
+
+export interface ShootingStats {
+  status: 'ok' | 'no_sessions' | 'no_data_in_period'
+  summary: ShootingStatsSummary
+  evolution: ShootingStatsEvolutionPoint[]
+  byWorkshop: ShootingStatsWorkshop[]
+  byDistance: ShootingStatsDistance[]
+  byResult: ShootingStatsResult[]
+  heatmap: ShootingStatsCell[]
 }

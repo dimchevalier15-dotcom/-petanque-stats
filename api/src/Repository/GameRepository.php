@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Game;
+use App\ValueObject\DateRange;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -56,18 +57,37 @@ final class GameRepository extends ServiceEntityRepository
      *
      * @return list<Game>
      */
-    public function findCompletedGamesForPlayer(int $playerId): array
+    public function findCompletedGamesForPlayer(int $playerId, ?DateRange $range = null): array
     {
-        /** @var list<Game> $items */
-        $items = $this->createQueryBuilder('g')
+        $qb = $this->createQueryBuilder('g')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
             ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
             ->setParameter('pid', $playerId)
             ->groupBy('g.id')
-            ->orderBy('g.createdAt', 'ASC')
-            ->getQuery()->getResult();
+            ->orderBy('g.createdAt', 'ASC');
+
+        if ($range !== null) {
+            $qb->andWhere('g.createdAt >= :rangeFrom')
+                ->andWhere('g.createdAt <= :rangeTo')
+                ->setParameter('rangeFrom', $range->from)
+                ->setParameter('rangeTo', $range->to);
+        }
+
+        /** @var list<Game> $items */
+        $items = $qb->getQuery()->getResult();
 
         return $items;
+    }
+
+    public function countCompletedGamesForPlayer(int $playerId): int
+    {
+        return (int) $this->createQueryBuilder('g')
+            ->select('COUNT(DISTINCT g.id)')
+            ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
+            ->where('gp.player = :pid')
+            ->setParameter('pid', $playerId)
+            ->getQuery()->getSingleScalarResult();
     }
 }

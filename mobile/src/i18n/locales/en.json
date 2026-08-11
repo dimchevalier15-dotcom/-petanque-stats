@@ -6,6 +6,11 @@
     "hello": "Hello World",
     "comingSoon": "Coming soon"
   },
+  "dateRange": {
+    "label": "Period",
+    "from": "From",
+    "to": "To"
+  },
   "nav": {
     "aria": "Main navigation",
     "home": "Home",
@@ -278,6 +283,7 @@
       "title": "Precision shooting",
       "subtitle": "Complete the 5 official workshops",
       "newSession": "New session",
+      "stats": "Statistics",
       "historyTitle": "Session history",
       "empty": "No shooting session yet.",
       "scoreOn100": "{score} / 100"
@@ -326,8 +332,77 @@
     "summary": {
       "title": "Session summary",
       "sessionFinished": "Session finished",
+      "performanceMap": {
+        "title": "Performance map",
+        "hint": "Each cell represents one shot from this session."
+      },
       "actions": {
         "backHome": "Back to precision shooting"
+      }
+    },
+    "context": {
+      "titleAdd": "Add a title",
+      "titleEdit": "Edit title",
+      "hint": "Optional: give this session a title and a description.",
+      "fields": {
+        "title": "Title",
+        "description": "Description"
+      },
+      "actions": {
+        "add": "Add a title",
+        "edit": "Edit title",
+        "save": "Save",
+        "skip": "Skip"
+      }
+    },
+    "stats": {
+      "title": "Shooting stats",
+      "subtitle": "Performance by workshop and distance",
+      "kpi": {
+        "sessions": "Sessions",
+        "best": "Best",
+        "average": "Average"
+      },
+      "hero": {
+        "averageSession": "Average session score",
+        "shotsTracked": "{n} shots analyzed"
+      },
+      "insights": {
+        "strength": "Strength",
+        "toWork": "To improve"
+      },
+      "sections": {
+        "evolution": "Progress",
+        "workshops": "By workshop",
+        "distances": "By distance",
+        "results": "Result types",
+        "heatmap": "Performance map"
+      },
+      "evolution": {
+        "hint": "Your total score trend across recent sessions."
+      },
+      "workshops": {
+        "hint": "Average score per shot for each workshop (max 5 pts)."
+      },
+      "distances": {
+        "hint": "Average score per shot by distance.",
+        "best": "Best: {n} m",
+        "weakest": "To work on: {n} m"
+      },
+      "results": {
+        "hint": "Breakdown of all your shot results."
+      },
+      "heatmap": {
+        "hint": "Color intensity = average score per shot. Number = shot count."
+      },
+      "empty": {
+        "loadErrorTitle": "Could not load statistics",
+        "retry": "Retry",
+        "noSessionsTitle": "No completed sessions",
+        "noSessionsHint": "Complete a first session to see your shooting statistics.",
+        "startSession": "Start a session",
+        "noDataInPeriodTitle": "No sessions in this period",
+        "noDataInPeriodHint": "Widen the date range to display your shooting statistics."
       }
     }
   },
@@ -373,6 +448,8 @@
       "noPlayerHint": "Your account is not linked to a player yet. Statistics will appear once that link exists.",
       "noMatchesTitle": "No matches yet",
       "noMatchesHint": "Play your first match to start tracking your performance.",
+      "noDataInPeriodTitle": "No matches in this period",
+      "noDataInPeriodHint": "Widen the date range to display your statistics.",
       "noDataTitle": "Not enough data",
       "noDataHint": "Keep playing to build your statistics.",
       "noTrackedDataTitle": "No ball statistics",

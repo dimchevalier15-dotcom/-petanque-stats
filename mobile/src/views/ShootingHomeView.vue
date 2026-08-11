@@ -1,12 +1,20 @@
 <template>
   <AppPage :title="t('shooting.home.title')" :subtitle="t('shooting.home.subtitle')">
-    <div class="app-actions">
+    <div class="home-actions">
       <Button
-        class="w-full"
+        class="action-primary"
         :label="t('shooting.home.newSession')"
         icon="pi pi-bullseye"
         :loading="starting"
         @click="startNewSession"
+      />
+      <Button
+        class="action-secondary"
+        :label="t('shooting.home.stats')"
+        icon="pi pi-chart-bar"
+        severity="secondary"
+        outlined
+        @click="goStats"
       />
     </div>
 
@@ -23,9 +31,10 @@
         <li v-for="s in items" :key="s.id">
           <button type="button" class="session-card app-card" @click="openSummary(s.id)">
             <div class="head">
-              <span class="date">{{ formatDate(s.finishedAt) }}</span>
+              <span class="date">{{ formatShortDate(s.finishedAt) }}</span>
               <Tag :value="t('shooting.home.scoreOn100', { score: s.totalScore })" severity="info" />
             </div>
+            <span v-if="s.title" class="session-title">{{ s.title }}</span>
           </button>
         </li>
       </ul>
@@ -68,10 +77,12 @@ import Dialog from 'primevue/dialog'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
+import { useDateFormat } from '../composables/useDateFormat'
 import { shootingSessionsService } from '../services/shootingSessions'
 import type { ShootingSessionHistoryItem, ShootingSessionStarted } from '../models/Shooting'
 
-const { t, d } = useI18n()
+const { t } = useI18n()
+const { formatShortDate } = useDateFormat()
 const router = useRouter()
 
 const items = ref<ShootingSessionHistoryItem[]>([])
@@ -86,14 +97,6 @@ const canLoadMore = computed(() => items.value.length < total.value)
 
 const resumeDialog = ref(false)
 const currentSession = ref<ShootingSessionStarted | null>(null)
-
-function formatDate(iso: string): string {
-  try {
-    return d(new Date(iso), 'short') as string
-  } catch {
-    return new Date(iso).toLocaleDateString()
-  }
-}
 
 async function loadHistory(): Promise<void> {
   loading.value = true
@@ -146,6 +149,10 @@ function openSummary(id: number): void {
   router.push({ name: 'shootingSessionSummary', params: { id } })
 }
 
+function goStats(): void {
+  router.push({ name: 'shootingStats' })
+}
+
 onMounted(async () => {
   try {
     currentSession.value = await shootingSessionsService.current()
@@ -162,6 +169,18 @@ onMounted(async () => {
 <style scoped>
 .w-full {
   width: 100%;
+}
+
+.home-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-sm);
+}
+
+.action-primary,
+.action-secondary {
+  min-height: 2.75rem;
+  font-weight: 700;
 }
 
 .history-section {
@@ -214,6 +233,11 @@ onMounted(async () => {
 .date {
   font-size: 0.8125rem;
   color: var(--app-text-muted);
+}
+
+.session-title {
+  font-weight: 700;
+  font-size: 0.9375rem;
 }
 
 .resume-content {

@@ -41,6 +41,16 @@ class ShootingSession
     #[ORM\Column(name: 'total_score', type: 'smallint', nullable: true)]
     private ?int $totalScore = null;
 
+    /**
+     * Optional free-form context added by the player, typically once the
+     * session is finished (e.g. "Entraînement club", "Avant compétition").
+     */
+    #[ORM\Column(name: 'title', length: 100, nullable: true)]
+    private ?string $title = null;
+
+    #[ORM\Column(name: 'description', length: 2000, nullable: true)]
+    private ?string $description = null;
+
     public function __construct(Player $player)
     {
         $this->player = $player;
@@ -72,6 +82,16 @@ class ShootingSession
         return $this->totalScore;
     }
 
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
     public function isFinished(): bool
     {
         return $this->finishedAt !== null;
@@ -94,5 +114,11 @@ class ShootingSession
 
         $this->finishedAt = new DateTimeImmutable();
         $this->totalScore = $totalScore;
+    }
+
+    public function setContext(?string $title, ?string $description): void
+    {
+        $this->title = $title;
+        $this->description = $description;
     }
 }

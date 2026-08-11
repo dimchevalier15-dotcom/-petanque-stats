@@ -1,6 +1,6 @@
 import type { MatchSummaryShotBreakdown } from './MatchSummary'
 
-export type PlayerStatsStatus = 'ok' | 'no_player' | 'no_matches' | 'no_tracked_data'
+export type PlayerStatsStatus = 'ok' | 'no_player' | 'no_matches' | 'no_tracked_data' | 'no_data_in_period'
 
 export interface PlayerStatsSummary {
   matchesPlayed: number

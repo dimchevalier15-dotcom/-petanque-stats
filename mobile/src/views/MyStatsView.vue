@@ -1,6 +1,14 @@
 <template>
   <AppPage :title="t('stats.title')" :subtitle="stats?.displayName ?? undefined">
-    <div v-if="loading" class="loading">
+    <StatsDateRangeFilter
+      v-if="showDateFilter"
+      v-model:date-from="dateFrom"
+      v-model:date-to="dateTo"
+      :max-date="maxDate"
+      @change="onDateRangeChange"
+    />
+
+    <div v-if="loading && !stats" class="loading">
       <ProgressSpinner stroke-width="4" />
     </div>
 
@@ -12,9 +20,14 @@
     </div>
 
     <template v-else-if="stats">
+      <div v-if="refreshing" class="refreshing">
+        <ProgressSpinner stroke-width="4" />
+      </div>
+
       <div
-        v-if="stats.status === 'no_player' || stats.status === 'no_matches'"
+        v-if="stats.status === 'no_player' || stats.status === 'no_matches' || stats.status === 'no_data_in_period'"
         class="empty-state"
+        :class="{ dimmed: refreshing }"
       >
         <i class="pi pi-chart-line empty-icon" aria-hidden="true" />
         <p class="empty-title">{{ t(emptyTitleKey) }}</p>
@@ -26,7 +39,7 @@
         />
       </div>
 
-        <div v-else-if="stats.status === 'no_tracked_data'" class="panel app-card notice">
+        <div v-else-if="stats.status === 'no_tracked_data'" class="panel app-card notice" :class="{ dimmed: refreshing }">
         <p class="notice-title">{{ t('stats.empty.noTrackedDataTitle') }}</p>
         <p class="panel-hint">{{ t('stats.empty.noTrackedData') }}</p>
         <div class="kpi-grid compact">
@@ -50,6 +63,7 @@
       </div>
 
       <template v-else>
+        <div :class="{ dimmed: refreshing }">
         <div class="kpi-grid">
           <div class="kpi-card app-card">
             <span class="kpi-label">{{ t('stats.kpi.matches') }}</span>
@@ -169,6 +183,7 @@
             </li>
           </ul>
         </section>
+        </div>
       </template>
     </template>
   </AppPage>
@@ -184,6 +199,7 @@ import ProgressSpinner from 'primevue/progressspinner'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
+import StatsDateRangeFilter from '../components/stats/StatsDateRangeFilter.vue'
 import {
   avgSeverity,
   breakdownBallCount,
@@ -191,6 +207,7 @@ import {
   natureLabel,
   usePlayerStatsCharts,
 } from '../composables/usePlayerStatsCharts'
+import { useStatsDateRange } from '../composables/useStatsDateRange'
 import type { PlayerStats } from '../models/PlayerStats'
 import { statsService } from '../services/stats'
 
@@ -198,8 +215,12 @@ const { t } = useI18n()
 const router = useRouter()
 
 const loading = ref(true)
+const refreshing = ref(false)
 const loadError = ref(false)
 const stats = ref<PlayerStats | null>(null)
+const { dateFrom, dateTo, maxDate, normalizeRange, queryParams } = useStatsDateRange()
+
+const showDateFilter = computed(() => stats.value !== null && stats.value.status !== 'no_player')
 
 const {
   showEvolution,
@@ -216,6 +237,8 @@ const emptyTitleKey = computed(() => {
       return 'stats.empty.noPlayerTitle'
     case 'no_matches':
       return 'stats.empty.noMatchesTitle'
+    case 'no_data_in_period':
+      return 'stats.empty.noDataInPeriodTitle'
     default:
       return 'stats.empty.noDataTitle'
   }
@@ -227,6 +250,8 @@ const emptyHintKey = computed(() => {
       return 'stats.empty.noPlayerHint'
     case 'no_matches':
       return 'stats.empty.noMatchesHint'
+    case 'no_data_in_period':
+      return 'stats.empty.noDataInPeriodHint'
     default:
       return 'stats.empty.noDataHint'
   }
@@ -248,6 +273,8 @@ const emptyActionRoute = computed<RouteLocationRaw | null>(() => {
     case 'no_player':
     case 'no_tracked_data':
       return { name: 'home' }
+    case 'no_data_in_period':
+      return null
     default:
       return null
   }
@@ -255,15 +282,28 @@ const emptyActionRoute = computed<RouteLocationRaw | null>(() => {
 
 const showAverageDetails = computed(() => !!(stats.value?.point || stats.value?.tir))
 
-async function load() {
-  loading.value = true
+async function load(options: { refresh?: boolean } = {}) {
+  const isRefresh = options.refresh === true
+  if (isRefresh) {
+    refreshing.value = true
+  } else {
+    loading.value = true
+  }
   loadError.value = false
   try {
-    stats.value = await statsService.getMyStats()
+    stats.value = await statsService.getMyStats(queryParams())
   } catch {
     loadError.value = true
   } finally {
     loading.value = false
+    refreshing.value = false
+  }
+}
+
+function onDateRangeChange(): void {
+  normalizeRange()
+  if (stats.value) {
+    load({ refresh: true })
   }
 }
 
@@ -275,6 +315,17 @@ onMounted(load)
   display: grid;
   place-items: center;
   min-height: 12rem;
+}
+
+.refreshing {
+  display: grid;
+  place-items: center;
+  min-height: 2rem;
+}
+
+.dimmed {
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .empty-state {

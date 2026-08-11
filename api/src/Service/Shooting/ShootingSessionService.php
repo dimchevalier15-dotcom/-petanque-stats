@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Shooting;
 
 use App\Dto\Request\CompleteShootingSessionRequest;
+use App\Dto\Request\UpdateShootingSessionContextRequest;
 use App\Dto\Response\ShootingSessionHistoryItemResponse;
 use App\Dto\Response\ShootingSessionHistoryResponse;
 use App\Dto\Response\ShootingSessionStartedResponse;
@@ -121,6 +122,27 @@ final class ShootingSessionService
     }
 
     /**
+     * Optional free-form context (title/description) added by the player,
+     * typically once the session is finished.
+     *
+     * @throws NoLinkedPlayerException
+     * @throws ShootingSessionNotFoundException
+     * @throws ShootingSessionAccessDeniedException
+     */
+    public function updateContext(string $token, int $sessionId, UpdateShootingSessionContextRequest $req): ShootingSessionSummaryResponse
+    {
+        $session = $this->getOwnedSession($token, $sessionId);
+
+        $session->setContext(
+            $this->normalizeOptionalString($req->title),
+            $this->normalizeOptionalString($req->description),
+        );
+        $this->em->flush();
+
+        return $this->toSummaryResponse($session);
+    }
+
+    /**
      * @throws NoLinkedPlayerException
      */
     public function history(string $token, int $page = 1, int $pageSize = 20): ShootingSessionHistoryResponse
@@ -134,6 +156,7 @@ final class ShootingSessionService
                 createdAt: $s->getCreatedAt()->format(DATE_ATOM),
                 finishedAt: (string) $s->getFinishedAt()?->format(DATE_ATOM),
                 totalScore: (int) $s->getTotalScore(),
+                title: $s->getTitle(),
             ),
             $sessions,
         );
@@ -276,8 +299,21 @@ final class ShootingSessionService
             createdAt: $session->getCreatedAt()->format(DATE_ATOM),
             finishedAt: $session->getFinishedAt()?->format(DATE_ATOM),
             totalScore: $session->getTotalScore(),
+            title: $session->getTitle(),
+            description: $session->getDescription(),
             workshops: $workshops,
         );
+    }
+
+    private function normalizeOptionalString(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 }
 

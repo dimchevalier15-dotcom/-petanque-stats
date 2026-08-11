@@ -69,4 +69,22 @@ final class ShootingSessionTest extends TestCase
         $this->expectException(LogicException::class);
         $session->markFinished(10);
     }
+
+    public function testANewSessionHasNoContext(): void
+    {
+        $session = new ShootingSession(new Player('Jean', 'Bernard', 'Jeannot'));
+
+        self::assertNull($session->getTitle());
+        self::assertNull($session->getDescription());
+    }
+
+    public function testContextCanBeSetOnASession(): void
+    {
+        $session = new ShootingSession(new Player('Jean', 'Bernard', 'Jeannot'));
+
+        $session->setContext('Entraînement du soir', 'Bon ressenti, terrain sec.');
+
+        self::assertSame('Entraînement du soir', $session->getTitle());
+        self::assertSame('Bon ressenti, terrain sec.', $session->getDescription());
+    }
 }

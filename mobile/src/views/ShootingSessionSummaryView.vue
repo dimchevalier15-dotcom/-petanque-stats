@@ -9,23 +9,45 @@
         <span class="hero-date">{{ formatDate(summary.finishedAt) }}</span>
       </div>
 
-      <section class="workshops">
-        <article v-for="w in summary.workshops" :key="w.workshop" class="workshop-panel app-card">
-          <div class="workshop-panel-head">
-            <h3>{{ workshopLabel(w.workshop) }}</h3>
-            <Tag :value="`+${w.totalScore}`" severity="info" />
+      <section v-if="summary.title || summary.description" class="panel app-card context-panel">
+        <h3 v-if="summary.title">{{ summary.title }}</h3>
+        <p v-if="summary.description" class="context-description">{{ summary.description }}</p>
+      </section>
+
+      <section class="panel app-card heatmap-panel">
+        <h3>{{ t('shooting.summary.performanceMap.title') }}</h3>
+        <p class="panel-hint">{{ t('shooting.summary.performanceMap.hint') }}</p>
+        <div class="heatmap">
+          <div class="heatmap-corner" />
+          <div v-for="distance in distances" :key="distance" class="heatmap-col-label">
+            {{ t('shooting.distanceMeters', { n: distance }) }}
           </div>
-          <div class="shots">
-            <div v-for="shot in w.shots" :key="shot.distance" class="shot-row">
-              <span class="shot-distance">{{ t('shooting.distanceMeters', { n: shot.distance }) }}</span>
-              <Tag :value="resultLabel(shot.result)" :severity="severityFor(shot.result)" />
-              <span class="shot-score">+{{ shot.score }}</span>
+          <template v-for="workshop in workshops" :key="workshop">
+            <div class="heatmap-row-label">
+              <span class="row-name">{{ workshopLabel(t, workshop) }}</span>
+              <span class="row-total">+{{ workshopTotal(workshop) }}</span>
             </div>
-          </div>
-        </article>
+            <div
+              v-for="distance in distances"
+              :key="`${workshop}-${distance}`"
+              class="heatmap-cell"
+              :style="{ backgroundColor: heatmapCellColor(shotAt(workshop, distance)?.score ?? 0) }"
+            >
+              <span class="cell-score">+{{ shotAt(workshop, distance)?.score ?? 0 }}</span>
+              <span class="cell-result">{{ resultLabel(shotAt(workshop, distance)?.result) }}</span>
+            </div>
+          </template>
+        </div>
       </section>
 
       <div class="app-actions">
+        <Button
+          class="w-full"
+          severity="secondary"
+          outlined
+          :label="contextActionLabel"
+          @click="openContext"
+        />
         <Button class="w-full" :label="t('shooting.summary.actions.backHome')" @click="goHome" />
       </div>
     </section>
@@ -33,58 +55,67 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
-import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
+import { useDateFormat } from '../composables/useDateFormat'
+import { heatmapCellColor, workshopLabel } from '../composables/useShootingStatsCharts'
 import { shootingSessionsService } from '../services/shootingSessions'
-import type { ShootingSessionSummary, ShootingShotResult } from '../models/Shooting'
+import {
+  SHOOTING_DISTANCES,
+  SHOOTING_WORKSHOPS,
+  type ShootingSessionSummary,
+  type ShootingShotResult,
+  type ShootingShotSummary,
+} from '../models/Shooting'
 
-const { t, d } = useI18n()
+const { t } = useI18n()
+const { formatShortDate } = useDateFormat()
 const route = useRoute()
 const router = useRouter()
 
 const sessionId = Number(route.params.id)
 const summary = ref<ShootingSessionSummary | null>(null)
 
-function workshopLabel(workshop: number): string {
-  const keys = ['ballAlone', 'ballBehindJack', 'betweenTwoBalls', 'jumpedBall', 'jack']
-  return t(`shooting.workshops.${keys[workshop - 1]}`)
+const workshops = SHOOTING_WORKSHOPS
+const distances = SHOOTING_DISTANCES
+
+const contextActionLabel = computed(() =>
+  summary.value && (summary.value.title || summary.value.description)
+    ? t('shooting.context.actions.edit')
+    : t('shooting.context.actions.add'),
+)
+
+function shotAt(workshop: number, distance: number): ShootingShotSummary | undefined {
+  if (!summary.value) return undefined
+  const workshopData = summary.value.workshops.find((w) => w.workshop === workshop)
+  return workshopData?.shots.find((s) => s.distance === distance)
 }
 
-function resultLabel(result: string): string {
+function workshopTotal(workshop: number): number {
+  if (!summary.value) return 0
+  const workshopData = summary.value.workshops.find((w) => w.workshop === workshop)
+  return workshopData?.totalScore ?? 0
+}
+
+function resultLabel(result: ShootingShotResult | undefined): string {
+  if (!result) return '—'
   return t(`shooting.results.${result}`)
 }
 
-function severityFor(result: ShootingShotResult): 'secondary' | 'danger' | 'warn' | 'success' | 'help' {
-  switch (result) {
-    case 'missed':
-      return 'danger'
-    case 'touched':
-      return 'warn'
-    case 'successful':
-      return 'success'
-    case 'carreau':
-      return 'help'
-    default:
-      return 'secondary'
-  }
-}
-
 function formatDate(iso: string | null): string {
-  if (!iso) return ''
-  try {
-    return d(new Date(iso), 'short') as string
-  } catch {
-    return new Date(iso).toLocaleDateString()
-  }
+  return iso ? formatShortDate(iso) : ''
 }
 
 function goHome(): void {
   router.push({ name: 'shootingHome' })
+}
+
+function openContext(): void {
+  router.push({ name: 'shootingSessionContext', params: { id: sessionId } })
 }
 
 onMounted(async () => {
@@ -142,49 +173,107 @@ onMounted(async () => {
   color: var(--app-text-muted);
 }
 
-.workshops {
-  display: grid;
-  gap: var(--app-space-sm);
-}
-
-.workshop-panel {
+.panel {
   padding: var(--app-space-md);
   display: grid;
   gap: var(--app-space-sm);
 }
 
-.workshop-panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.workshop-panel-head h3 {
+.panel h3 {
   margin: 0;
   font-size: 0.9375rem;
 }
 
-.shots {
-  display: grid;
-  gap: 0.375rem;
-}
-
-.shot-row {
-  display: grid;
-  grid-template-columns: 3.5rem 1fr auto;
-  align-items: center;
-  gap: var(--app-space-sm);
-  font-size: 0.875rem;
-}
-
-.shot-distance {
-  font-weight: 700;
+.panel-hint {
+  margin: 0;
+  font-size: 0.8125rem;
   color: var(--app-text-muted);
 }
 
-.shot-score {
+.context-panel {
+  gap: 0.375rem;
+}
+
+.context-panel h3 {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.context-description {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.heatmap {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, 1.2fr) repeat(4, 1fr);
+  gap: 0.375rem;
+  align-items: stretch;
+}
+
+.heatmap-corner {
+  min-height: 1.5rem;
+}
+
+.heatmap-col-label,
+.heatmap-row-label {
+  font-size: 0.6875rem;
   font-weight: 700;
-  text-align: right;
+  color: var(--app-text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.heatmap-col-label {
+  justify-content: center;
+  text-align: center;
+}
+
+.heatmap-row-label {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  line-height: 1.2;
+}
+
+.row-name {
+  font-size: 0.6875rem;
+}
+
+.row-total {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--app-primary-dark);
+}
+
+.heatmap-cell {
+  border-radius: 8px;
+  min-height: 3.25rem;
+  display: grid;
+  place-items: center;
+  gap: 0.125rem;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  padding: 0.25rem;
+}
+
+.cell-score {
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+
+.cell-result {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.95;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 100%;
 }
 
 .w-full {
