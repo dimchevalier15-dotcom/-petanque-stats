@@ -7,6 +7,7 @@ namespace App\Service\Auth;
 use App\Dto\Request\LoginRequest;
 use App\Dto\Response\LoginResponse;
 use App\Repository\UserRepository;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 
@@ -16,6 +17,8 @@ final class LoginService
         private UserRepository $users,
         private UserPasswordHasherInterface $passwordHasher,
         private JWTEncoderInterface $jwtEncoder,
+        #[Autowire(param: 'lexik_jwt_authentication.token_ttl')]
+        private int $tokenTtl,
     ) {}
 
     /**
@@ -35,7 +38,7 @@ final class LoginService
             'username' => $user->getEmail(),
             'sub' => (string) $user->getId(),
             'roles' => [],
-            'exp' => time() + 3600,
+            'exp' => time() + $this->tokenTtl,
             'iat' => time(),
         ]);
 

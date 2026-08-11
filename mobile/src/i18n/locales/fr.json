@@ -97,7 +97,8 @@
       "history": "Historique des matchs",
       "myStats": "Mes statistiques",
       "settings": "Paramètres",
-      "logout": "Déconnexion"
+      "logout": "Déconnexion",
+      "shooting": "Tir de précision"
     }
   },
   "placeholders": {
@@ -278,6 +279,64 @@
     "loadMore": "Charger plus",
     "victory": "Victoire",
     "defeat": "Défaite"
+  },
+  "shooting": {
+    "home": {
+      "title": "Tir de précision",
+      "subtitle": "Enchaînez les 5 ateliers officiels",
+      "newSession": "Nouvelle séance",
+      "historyTitle": "Historique des séances",
+      "empty": "Aucune séance de tir pour le moment.",
+      "scoreOn100": "{score} / 100"
+    },
+    "resume": {
+      "title": "Séance en cours",
+      "message": "Vous avez une séance de tir de précision non terminée. Voulez-vous la reprendre ?",
+      "continue": "Reprendre",
+      "abandon": "Abandonner"
+    },
+    "progress": "Atelier {current} / {total}",
+    "workshopHint": "Enregistrez le résultat de chaque boule pour valider l'atelier.",
+    "distanceMeters": "{n} m",
+    "score": {
+      "total": "Score total",
+      "workshop": "Score de l'atelier"
+    },
+    "workshops": {
+      "ballAlone": "Boule seule",
+      "ballBehindJack": "Boule derrière but",
+      "betweenTwoBalls": "Entre deux boules",
+      "jumpedBall": "Sautée",
+      "jack": "But"
+    },
+    "results": {
+      "missed": "Manqué",
+      "touched": "Touché",
+      "successful": "Réussi",
+      "carreau": "Carreau"
+    },
+    "nav": {
+      "prevWorkshop": "Atelier précédent",
+      "nextWorkshop": "Atelier suivant"
+    },
+    "actions": {
+      "nextWorkshop": "Atelier suivant",
+      "finishSession": "Terminer la séance",
+      "abandon": "Abandonner la séance"
+    },
+    "abandon": {
+      "title": "Abandonner la séance ?",
+      "message": "Les résultats déjà saisis seront perdus. Cette action est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Abandonner"
+    },
+    "summary": {
+      "title": "Résumé de la séance",
+      "sessionFinished": "Séance terminée",
+      "actions": {
+        "backHome": "Retour au tir de précision"
+      }
+    }
   },
   "stats": {
     "title": "Mes statistiques",

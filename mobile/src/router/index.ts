@@ -9,6 +9,7 @@ import MatchHistoryView from '../views/MatchHistoryView.vue'
 import GuidelinessView from "../views/GuidelinessView.vue";
 import MyStatsView from '../views/MyStatsView.vue'
 import AccountSettingsView from '../views/AccountSettingsView.vue'
+import ShootingHomeView from '../views/ShootingHomeView.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: { name: 'home' } },
@@ -24,6 +25,9 @@ const routes: RouteRecordRaw[] = [
   { path: '/matches/:id/summary', name: 'matchSummary', component: () => import('../views/MatchSummaryView.vue'), meta: { layout: 'focus' } },
   { path: '/matches/:id/context', name: 'matchContext', component: () => import('../views/MatchContextView.vue'), meta: { layout: 'focus' } },
   { path: '/stats', name: 'myStats', component: MyStatsView, meta: { layout: 'main' } },
+  { path: '/shooting', name: 'shootingHome', component: ShootingHomeView, meta: { layout: 'main' } },
+  { path: '/shooting/:id', name: 'shootingSession', component: () => import('../views/ShootingSessionView.vue'), meta: { layout: 'play' } },
+  { path: '/shooting/:id/summary', name: 'shootingSessionSummary', component: () => import('../views/ShootingSessionSummaryView.vue'), meta: { layout: 'focus' } },
 ]
 
 const router = createRouter({

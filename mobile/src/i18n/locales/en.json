@@ -97,7 +97,8 @@
       "history": "Match history",
       "myStats": "My statistics",
       "settings": "Settings",
-      "logout": "Logout"
+      "logout": "Logout",
+      "shooting": "Precision shooting"
     }
   },
   "placeholders": {
@@ -269,6 +270,64 @@
     "loadMore": "Load more",
     "victory": "Victory",
     "defeat": "Defeat"
+  },
+  "shooting": {
+    "home": {
+      "title": "Precision shooting",
+      "subtitle": "Complete the 5 official workshops",
+      "newSession": "New session",
+      "historyTitle": "Session history",
+      "empty": "No shooting session yet.",
+      "scoreOn100": "{score} / 100"
+    },
+    "resume": {
+      "title": "Session in progress",
+      "message": "You have an unfinished precision shooting session. Do you want to resume it?",
+      "continue": "Resume",
+      "abandon": "Abandon"
+    },
+    "progress": "Workshop {current} / {total}",
+    "workshopHint": "Record the result of each ball to complete the workshop.",
+    "distanceMeters": "{n} m",
+    "score": {
+      "total": "Total score",
+      "workshop": "Workshop score"
+    },
+    "workshops": {
+      "ballAlone": "Ball alone",
+      "ballBehindJack": "Ball behind jack",
+      "betweenTwoBalls": "Between two balls",
+      "jumpedBall": "Jumped ball",
+      "jack": "Jack"
+    },
+    "results": {
+      "missed": "Missed",
+      "touched": "Touched",
+      "successful": "Successful",
+      "carreau": "Carreau"
+    },
+    "nav": {
+      "prevWorkshop": "Previous workshop",
+      "nextWorkshop": "Next workshop"
+    },
+    "actions": {
+      "nextWorkshop": "Next workshop",
+      "finishSession": "Finish session",
+      "abandon": "Abandon session"
+    },
+    "abandon": {
+      "title": "Abandon session?",
+      "message": "Results already entered will be lost. This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Abandon"
+    },
+    "summary": {
+      "title": "Session summary",
+      "sessionFinished": "Session finished",
+      "actions": {
+        "backHome": "Back to precision shooting"
+      }
+    }
   },
   "stats": {
     "title": "My statistics",

@@ -18,6 +18,10 @@
           <i class="pi pi-user-plus" aria-hidden="true" />
           <span>{{ t('home.actions.addPlayer') }}</span>
         </button>
+        <button type="button" class="quick-item app-card" @click="goShooting">
+          <i class="pi pi-bullseye" aria-hidden="true" />
+          <span>{{ t('home.actions.shooting') }}</span>
+        </button>
         <button type="button" class="quick-item app-card" @click="goGuidelines">
           <i class="pi pi-book" aria-hidden="true" />
           <span>{{ t('doc.title') }}</span>
@@ -54,6 +58,9 @@ const auth = useAuthStore()
 
 function goAddPlayer(): void {
   router.push({ name: 'addPlayer' })
+}
+function goShooting(): void {
+  router.push({ name: 'shootingHome' })
 }
 function goSettings(): void {
   router.push({ name: 'settings' })

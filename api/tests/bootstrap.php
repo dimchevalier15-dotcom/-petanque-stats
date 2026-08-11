@@ -4,6 +4,11 @@ use Symfony\Component\Dotenv\Dotenv;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
+// The test suite must always run against the "test" environment/database,
+// regardless of how phpunit is invoked (its <php><server> override is not
+// reliably applied before this file loads with all phpunit/Dotenv versions).
+$_SERVER['APP_ENV'] = $_ENV['APP_ENV'] = 'test';
+
 if (method_exists(Dotenv::class, 'bootEnv')) {
     (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
 }

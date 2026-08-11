@@ -16,6 +16,7 @@ use App\Service\Account\PlayerNotFoundException;
 use App\Service\Account\UserAlreadyHasPlayerException;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -29,6 +30,8 @@ final class RegistrationService
         private ValidatorInterface $validator,
         private PlayerLinkService $playerLinkService,
         private JWTEncoderInterface $jwtEncoder,
+        #[Autowire(param: 'lexik_jwt_authentication.token_ttl')]
+        private int $tokenTtl,
     ) {
     }
 
@@ -89,7 +92,7 @@ final class RegistrationService
             'username' => $user->getEmail(),
             'sub' => (string) $user->getId(),
             'roles' => [],
-            'exp' => time() + 3600,
+            'exp' => time() + $this->tokenTtl,
             'iat' => time(),
         ]);
 
