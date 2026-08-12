@@ -13,6 +13,7 @@ use App\Entity\User;
 use App\Repository\GameBallRepository;
 use App\Service\MatchRecordingService;
 use App\Service\MatchService;
+use App\Tests\Support\MatchTestHelpers;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -23,9 +24,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 final class MatchRecordingServiceTest extends KernelTestCase
 {
-    private EntityManagerInterface $em;
-    private MatchService $matchService;
-    private MatchRecordingService $recording;
+    use MatchTestHelpers;
+
     private GameBallRepository $balls;
 
     protected function setUp(): void
@@ -36,6 +36,7 @@ final class MatchRecordingServiceTest extends KernelTestCase
         $this->matchService = $container->get(MatchService::class);
         $this->recording = $container->get(MatchRecordingService::class);
         $this->balls = $container->get(GameBallRepository::class);
+        $this->jwtEncoder = $container->get(\Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface::class);
     }
 
     public function testABallCanBeRecordedWithoutADistance(): void
@@ -217,6 +218,99 @@ final class MatchRecordingServiceTest extends KernelTestCase
         self::assertSame(8.0, $saved[1]->getDistance());
     }
 
+    public function testTripletteCapsBallsAtTwoPerPlayerEvenWhenThreeNotesAreSent(): void
+    {
+        $suffix = bin2hex(random_bytes(4));
+        $owner = new User('owner'.$suffix.'@test.local');
+        $owner->setPassword('hash');
+        $this->em->persist($owner);
+
+        $players = [];
+        for ($i = 0; $i < 6; $i++) {
+            $p = new Player('P'.$i, 'Test'.$suffix, 'P'.$i);
+            $this->em->persist($p);
+            $players[] = $p;
+        }
+        $this->em->flush();
+
+        $teamA = array_map(static fn (Player $p): int => (int) $p->getId(), array_slice($players, 0, 3));
+        $teamB = array_map(static fn (Player $p): int => (int) $p->getId(), array_slice($players, 3, 3));
+        $tracked = array_merge($teamA, $teamB);
+
+        $createReq = new CreateMatchRequest();
+        $createReq->type = 'triplette';
+        $createReq->targetScore = 13;
+        $createReq->statisticsMode = 'standard';
+        $createReq->teamA = $teamA;
+        $createReq->teamB = $teamB;
+        $createReq->trackedPlayers = $tracked;
+
+        $matchId = $this->matchService->create($createReq, $owner)->id;
+        $playerAId = $teamA[0];
+
+        $req = new CompleteMatchRequest();
+        $req->type = 'triplette';
+        $req->targetScore = 13;
+        $req->statisticsMode = 'standard';
+        $req->teamA = $teamA;
+        $req->teamB = $teamB;
+        $req->trackedPlayers = $tracked;
+
+        $end = new CompleteMatchEndDto();
+        $end->index = 1;
+        $end->winner = 'A';
+        $end->points = 2;
+        $end->canceled = false;
+
+        $ball = new CompleteMatchEndBallDto();
+        $ball->playerId = $playerAId;
+        $ball->notes = [1, 0, 2];
+        $ball->shotTypes = ['point', 'point', 'tir'];
+        $end->balls = [$ball];
+        $req->ends = [$end];
+
+        $this->recording->complete($matchId, $req);
+
+        $saved = $this->fetchBalls($matchId, $playerAId);
+        self::assertCount(2, $saved);
+        self::assertSame(1, $saved[0]->getNote());
+        self::assertSame(0, $saved[1]->getNote());
+    }
+
+    public function testInvalidNotesAreSkipped(): void
+    {
+        [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
+
+        $req = $this->baseRequest($playerAId, $playerBId);
+        $ball = new CompleteMatchEndBallDto();
+        $ball->playerId = $playerAId;
+        $ball->notes = [3, -3, 1];
+        $ball->shotTypes = ['point', 'point', 'point'];
+        $req->ends[0]->balls = [$ball];
+
+        $this->recording->complete($matchId, $req);
+
+        $saved = $this->fetchBalls($matchId, $playerAId);
+        self::assertCount(1, $saved);
+        self::assertSame(1, $saved[0]->getNote());
+    }
+
+    public function testANonCanceledEndWithZeroPointsIsNotPersisted(): void
+    {
+        [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
+
+        $req = $this->baseRequest($playerAId, $playerBId);
+        $req->ends[0]->points = 0;
+        $req->ends[0]->canceled = false;
+
+        $this->recording->complete($matchId, $req);
+
+        $game = $this->em->getRepository(\App\Entity\Game::class)->find($matchId);
+        self::assertNotNull($game);
+        $endCount = $this->em->getRepository(\App\Entity\GameEnd::class)->count(['game' => $game]);
+        self::assertSame(0, $endCount);
+    }
+
     /**
      * @return list<\App\Entity\GameBall>
      */
@@ -238,51 +332,6 @@ final class MatchRecordingServiceTest extends KernelTestCase
 
     private function baseRequest(int $playerAId, int $playerBId): CompleteMatchRequest
     {
-        $req = new CompleteMatchRequest();
-        $req->type = 'tete_a_tete';
-        $req->targetScore = 13;
-        $req->statisticsMode = 'standard';
-        $req->teamA = [$playerAId];
-        $req->teamB = [$playerBId];
-        $req->trackedPlayers = [$playerAId, $playerBId];
-
-        $end = new CompleteMatchEndDto();
-        $end->index = 1;
-        $end->winner = 'A';
-        $end->points = 1;
-        $end->canceled = false;
-        $end->balls = [];
-        $req->ends = [$end];
-
-        return $req;
-    }
-
-    /**
-     * @return array{0:int,1:int,2:int} matchId, playerAId, playerBId
-     */
-    private function createHeadToHead(): array
-    {
-        $suffix = bin2hex(random_bytes(4));
-        $owner = new User('owner'.$suffix.'@test.local');
-        $owner->setPassword('hash');
-        $this->em->persist($owner);
-
-        $playerA = new Player('Alice', 'Test'.$suffix, 'Ali'.$suffix);
-        $playerB = new Player('Bob', 'Test'.$suffix, 'Bob'.$suffix);
-        $this->em->persist($playerA);
-        $this->em->persist($playerB);
-        $this->em->flush();
-
-        $createReq = new CreateMatchRequest();
-        $createReq->type = 'tete_a_tete';
-        $createReq->targetScore = 13;
-        $createReq->statisticsMode = 'standard';
-        $createReq->teamA = [$playerA->getId()];
-        $createReq->teamB = [$playerB->getId()];
-        $createReq->trackedPlayers = [$playerA->getId(), $playerB->getId()];
-
-        $created = $this->matchService->create($createReq, $owner);
-
-        return [$created->id, (int) $playerA->getId(), (int) $playerB->getId()];
+        return $this->baseCompleteRequest($playerAId, $playerBId);
     }
 }

@@ -269,14 +269,23 @@
       "tirAverage": "Shot average",
       "endLabel": "E{n}"
     },
-    "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "finish": "Finish match" },
+    "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "cancelEnd": "Cancel end", "finish": "Finish match" },
+    "cancel": {
+      "title": "End canceled",
+      "message1": "The jack is out.",
+      "message2": "This end will be canceled.",
+      "question": "Continue?",
+      "confirm": "Confirm",
+      "abort": "Cancel"
+    },
     "finish": {
       "title": "Finish match",
       "message1": "Finish the match now?",
       "message2": "The current score will be kept.",
       "confirm": "Finish",
       "abort": "Back"
-    }
+    },
+    "endCanceled": "End canceled"
   },
   "history": {
     "title": "Match history",

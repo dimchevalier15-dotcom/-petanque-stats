@@ -31,10 +31,11 @@ final class GameRepository extends ServiceEntityRepository
         $pageSize = max(1, $pageSize);
         $offset = ($page - 1) * $pageSize;
 
-        // total
+        // total — only games with at least one recorded end
         $total = (int) $this->createQueryBuilder('g')
             ->select('COUNT(DISTINCT g.id)')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
             ->setParameter('pid', $playerId)
             ->getQuery()->getSingleScalarResult();
@@ -43,8 +44,10 @@ final class GameRepository extends ServiceEntityRepository
         /** @var list<Game> $items */
         $items = $this->createQueryBuilder('g')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
             ->setParameter('pid', $playerId)
+            ->groupBy('g.id')
             ->orderBy('g.createdAt', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($pageSize)
