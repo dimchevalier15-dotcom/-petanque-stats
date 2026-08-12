@@ -153,11 +153,13 @@ final class ShootingSessionServiceTest extends KernelTestCase
         $this->service->complete($token, $started->id, $this->buildRequest(fn () => 'touched'));
 
         $req = new UpdateShootingSessionContextRequest();
+        $req->contextNature = 'training';
         $req->title = 'Entraînement du soir';
         $req->description = 'Bon ressenti.';
 
         $summary = $this->service->updateContext($token, $started->id, $req);
 
+        self::assertSame('training', $summary->contextNature);
         self::assertSame('Entraînement du soir', $summary->title);
         self::assertSame('Bon ressenti.', $summary->description);
     }

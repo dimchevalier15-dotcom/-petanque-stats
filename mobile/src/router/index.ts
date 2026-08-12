@@ -10,6 +10,7 @@ import GuidelinessView from "../views/GuidelinessView.vue";
 import MyStatsView from '../views/MyStatsView.vue'
 import AccountSettingsView from '../views/AccountSettingsView.vue'
 import ShootingHomeView from '../views/ShootingHomeView.vue'
+import TrainingHomeView from '../views/TrainingHomeView.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: { name: 'home' } },
@@ -30,6 +31,10 @@ const routes: RouteRecordRaw[] = [
   { path: '/shooting/:id', name: 'shootingSession', component: () => import('../views/ShootingSessionView.vue'), meta: { layout: 'play' } },
   { path: '/shooting/:id/summary', name: 'shootingSessionSummary', component: () => import('../views/ShootingSessionSummaryView.vue'), meta: { layout: 'focus' } },
   { path: '/shooting/:id/context', name: 'shootingSessionContext', component: () => import('../views/ShootingSessionContextView.vue'), meta: { layout: 'focus' } },
+  { path: '/training', name: 'trainingHome', component: TrainingHomeView, meta: { layout: 'main' } },
+  { path: '/training/stats', name: 'trainingStats', component: () => import('../views/TrainingStatsView.vue'), meta: { layout: 'main' } },
+  { path: '/training/:id', name: 'trainingSession', component: () => import('../views/TrainingSessionView.vue'), meta: { layout: 'play' } },
+  { path: '/training/:id/summary', name: 'trainingSessionSummary', component: () => import('../views/TrainingSessionSummaryView.vue'), meta: { layout: 'focus' } },
 ]
 
 const router = createRouter({

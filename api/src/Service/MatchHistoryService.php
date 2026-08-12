@@ -50,7 +50,7 @@ final class MatchHistoryService
             $items[] = new MatchHistoryItemResponse(
                 id: (int) $g->getId(),
                 date: $g->getCreatedAt()->format(DATE_ATOM),
-                type: $g->getType(),
+                type: $g->getType()->value,
                 scoreA: $scoreA,
                 scoreB: $scoreB,
                 winner: $winner,

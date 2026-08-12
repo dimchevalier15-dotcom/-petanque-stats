@@ -6,6 +6,7 @@
 export type ShootingWorkshop = 1 | 2 | 3 | 4 | 5
 export type ShootingDistance = 6 | 7 | 8 | 9
 export type ShootingShotResult = 'missed' | 'touched' | 'successful' | 'carreau'
+export type ShootingContextNature = 'training' | 'competition'
 
 export const SHOOTING_WORKSHOPS: readonly ShootingWorkshop[] = [1, 2, 3, 4, 5]
 export const SHOOTING_DISTANCES: readonly ShootingDistance[] = [6, 7, 8, 9]
@@ -51,6 +52,7 @@ export interface ShootingSessionSummary {
   createdAt: string
   finishedAt: string | null
   totalScore: number | null
+  contextNature: ShootingContextNature | null
   title: string | null
   description: string | null
   workshops: ShootingWorkshopSummary[]
@@ -66,10 +68,12 @@ export interface ShootingSessionHistoryItem {
   createdAt: string
   finishedAt: string
   totalScore: number
+  contextNature: ShootingContextNature | null
   title: string | null
 }
 
 export interface ShootingSessionContextForm {
+  contextNature: ShootingContextNature
   title: string
   description: string
 }

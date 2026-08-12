@@ -7,6 +7,7 @@ namespace App\Service;
 use App\Dto\Request\UpdateMatchContextRequest;
 use App\Dto\Response\MatchContextResponse;
 use App\Entity\Game;
+use App\Enum\MatchNature;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -40,9 +41,9 @@ final class MatchContextService
         $game->setComment($this->normalizeOptionalString($req->comment));
         $game->setTeamAName($this->normalizeOptionalString($req->teamAName));
         $game->setTeamBName($this->normalizeOptionalString($req->teamBName));
-        $game->setNature($req->nature);
+        $game->setNature($this->resolveNature($req->nature));
 
-        if ($req->nature === 'competition') {
+        if ($req->nature === MatchNature::COMPETITION->value) {
             $game->setCompetitionName($this->normalizeOptionalString($req->competitionName));
             $game->setCompetitionStage($req->competitionStage);
         } else {
@@ -64,7 +65,7 @@ final class MatchContextService
             comment: $game->getComment(),
             teamAName: $game->getTeamAName(),
             teamBName: $game->getTeamBName(),
-            nature: $game->getNature(),
+            nature: $game->getNature()?->value,
             competitionName: $game->getCompetitionName(),
             competitionStage: $game->getCompetitionStage(),
             terrainType: $game->getTerrainType(),
@@ -80,5 +81,14 @@ final class MatchContextService
         $trimmed = trim($value);
 
         return $trimmed === '' ? null : $trimmed;
+    }
+
+    private function resolveNature(?string $value): ?MatchNature
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return MatchNature::from($value);
     }
 }

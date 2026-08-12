@@ -10,6 +10,7 @@ use App\Dto\Response\CompleteMatchResponse;
 use App\Entity\Game;
 use App\Entity\GameBall;
 use App\Entity\GameEnd;
+use App\Enum\GameType;
 use App\Repository\GameParticipantRepository;
 use App\Repository\GameRepository;
 use App\Repository\PlayerRepository;
@@ -35,7 +36,7 @@ final class MatchRecordingService
         }
 
         // Validate coherence with created match
-        $allowedPerPlayer = $req->type === 'triplette' ? 2 : 3;
+        $allowedPerPlayer = $req->type === GameType::TRIPLETTE->value ? 2 : 3;
         $matchPlayerIds = $this->participants->findAllPlayerIdsByGame($game);
         $matchPlayerSet = array_fill_keys($matchPlayerIds, true);
 

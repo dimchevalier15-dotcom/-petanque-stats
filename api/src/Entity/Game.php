@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\GameType;
+use App\Enum\MatchNature;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -16,9 +18,8 @@ class Game
     #[ORM\Column]
     private ?int $id = null;
 
-    // Allowed values: tete_a_tete, doublette, triplette
-    #[ORM\Column(type: 'string', length: 20)]
-    private string $type;
+    #[ORM\Column(type: 'string', length: 20, enumType: GameType::class)]
+    private GameType $type;
 
     #[ORM\Column(name: 'target_score', type: 'integer')]
     private int $targetScore = 13;
@@ -39,9 +40,8 @@ class Game
     #[ORM\Column(name: 'team_b_name', type: 'string', length: 100, nullable: true)]
     private ?string $teamBName = null;
 
-    // friendly | training | competition | official
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
-    private ?string $nature = null;
+    #[ORM\Column(type: 'string', length: 20, nullable: true, enumType: MatchNature::class)]
+    private ?MatchNature $nature = null;
 
     #[ORM\Column(name: 'competition_name', type: 'string', length: 255, nullable: true)]
     private ?string $competitionName = null;
@@ -52,7 +52,7 @@ class Game
     #[ORM\Column(name: 'terrain_type', type: 'string', length: 50, nullable: true)]
     private ?string $terrainType = null;
 
-    public function __construct(string $type, int $targetScore = 13, string $statisticsMode = 'standard')
+    public function __construct(GameType $type, int $targetScore = 13, string $statisticsMode = 'standard')
     {
         $this->type = $type;
         $this->targetScore = $targetScore;
@@ -61,14 +61,14 @@ class Game
     }
 
     public function getId(): ?int { return $this->id; }
-    public function getType(): string { return $this->type; }
+    public function getType(): GameType { return $this->type; }
     public function getTargetScore(): int { return $this->targetScore; }
     public function getStatisticsMode(): string { return $this->statisticsMode; }
     public function getCreatedAt(): DateTimeImmutable { return $this->createdAt; }
     public function getComment(): ?string { return $this->comment; }
     public function getTeamAName(): ?string { return $this->teamAName; }
     public function getTeamBName(): ?string { return $this->teamBName; }
-    public function getNature(): ?string { return $this->nature; }
+    public function getNature(): ?MatchNature { return $this->nature; }
     public function getCompetitionName(): ?string { return $this->competitionName; }
     public function getCompetitionStage(): ?string { return $this->competitionStage; }
     public function getTerrainType(): ?string { return $this->terrainType; }
@@ -76,7 +76,7 @@ class Game
     public function setComment(?string $comment): void { $this->comment = $comment; }
     public function setTeamAName(?string $teamAName): void { $this->teamAName = $teamAName; }
     public function setTeamBName(?string $teamBName): void { $this->teamBName = $teamBName; }
-    public function setNature(?string $nature): void { $this->nature = $nature; }
+    public function setNature(?MatchNature $nature): void { $this->nature = $nature; }
     public function setCompetitionName(?string $competitionName): void { $this->competitionName = $competitionName; }
     public function setCompetitionStage(?string $competitionStage): void { $this->competitionStage = $competitionStage; }
     public function setTerrainType(?string $terrainType): void { $this->terrainType = $terrainType; }

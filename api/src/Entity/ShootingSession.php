@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\ShootingContextNature;
 use App\Repository\ShootingSessionRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
@@ -51,6 +52,9 @@ class ShootingSession
     #[ORM\Column(name: 'description', length: 2000, nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(name: 'context_nature', type: 'string', length: 11, enumType: ShootingContextNature::class, nullable: true)]
+    private ?ShootingContextNature $contextNature = null;
+
     public function __construct(Player $player)
     {
         $this->player = $player;
@@ -92,6 +96,11 @@ class ShootingSession
         return $this->description;
     }
 
+    public function getContextNature(): ?ShootingContextNature
+    {
+        return $this->contextNature;
+    }
+
     public function isFinished(): bool
     {
         return $this->finishedAt !== null;
@@ -116,8 +125,9 @@ class ShootingSession
         $this->totalScore = $totalScore;
     }
 
-    public function setContext(?string $title, ?string $description): void
+    public function setContext(?ShootingContextNature $contextNature, ?string $title, ?string $description): void
     {
+        $this->contextNature = $contextNature;
         $this->title = $title;
         $this->description = $description;
     }

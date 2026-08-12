@@ -15,6 +15,7 @@ use App\Dto\Response\ShootingWorkshopSummary;
 use App\Entity\Player;
 use App\Entity\ShootingSession;
 use App\Entity\ShootingShot;
+use App\Enum\ShootingContextNature;
 use App\Enum\ShootingDistance;
 use App\Enum\ShootingShotResult;
 use App\Enum\ShootingWorkshop;
@@ -134,6 +135,7 @@ final class ShootingSessionService
         $session = $this->getOwnedSession($token, $sessionId);
 
         $session->setContext(
+            $this->resolveContextNature($req->contextNature),
             $this->normalizeOptionalString($req->title),
             $this->normalizeOptionalString($req->description),
         );
@@ -156,6 +158,7 @@ final class ShootingSessionService
                 createdAt: $s->getCreatedAt()->format(DATE_ATOM),
                 finishedAt: (string) $s->getFinishedAt()?->format(DATE_ATOM),
                 totalScore: (int) $s->getTotalScore(),
+                contextNature: $s->getContextNature()?->value,
                 title: $s->getTitle(),
             ),
             $sessions,
@@ -299,6 +302,7 @@ final class ShootingSessionService
             createdAt: $session->getCreatedAt()->format(DATE_ATOM),
             finishedAt: $session->getFinishedAt()?->format(DATE_ATOM),
             totalScore: $session->getTotalScore(),
+            contextNature: $session->getContextNature()?->value,
             title: $session->getTitle(),
             description: $session->getDescription(),
             workshops: $workshops,
@@ -314,6 +318,15 @@ final class ShootingSessionService
         $trimmed = trim($value);
 
         return $trimmed === '' ? null : $trimmed;
+    }
+
+    private function resolveContextNature(?string $value): ?ShootingContextNature
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return ShootingContextNature::from($value);
     }
 }
 

@@ -64,8 +64,7 @@
     "nature": {
       "friendly": "Priateľský",
       "training": "Tréning",
-      "competition": "Súťaž",
-      "official": "Oficiálny"
+      "competition": "Súťaž"
     },
     "competitionStage": {
       "group": "Skupiny",
@@ -103,7 +102,8 @@
       "myStats": "Moje štatistiky",
       "settings": "Nastavenia",
       "logout": "Odhlásiť sa",
-      "shooting": "Presná streľba"
+      "shooting": "Presná streľba",
+      "training": "Tréning"
     }
   },
   "placeholders": {
@@ -352,10 +352,15 @@
     "context": {
       "titleAdd": "Pridať názov",
       "titleEdit": "Upraviť názov",
-      "hint": "Nepovinné: pridajte názov a popis tohto kola.",
+      "hint": "Voliteľné: uveďte kontext tohto kola.",
       "fields": {
+        "nature": "Kontext",
         "title": "Názov",
         "description": "Popis"
+      },
+      "nature": {
+        "training": "Tréning",
+        "competition": "Súťaž"
       },
       "actions": {
         "add": "Pridať názov",
@@ -367,6 +372,9 @@
     "stats": {
       "title": "Štatistiky streľby",
       "subtitle": "Výkonnosť podľa disciplíny a vzdialenosti",
+      "filters": {
+        "all": "Všetko"
+      },
       "kpi": {
         "sessions": "Kolá",
         "best": "Rekord",
@@ -418,6 +426,9 @@
   "stats": {
     "title": "Moje štatistiky",
     "actions": { "back": "Späť" },
+    "filters": {
+      "all": "Všetko"
+    },
     "kpi": {
       "matches": "Zápasy",
       "victories": "Víťazstvá",
@@ -574,6 +585,108 @@
       "text1": "Hodnotenie neodmeňuje pekný hod. Hodnotí iba hodnotu, ktorú guľa priniesla tímu.",
       "text2": "Ak všetci používajú rovnakú stupnicu, štatistiky sú porovnateľné medzi hráčmi aj medzi zápasmi.",
       "quote": "Nepýtaj sa, či bola guľa pekná. Opýtaj sa, koľko priniesla svojmu tímu."
+    }
+  },
+  "training": {
+    "home": {
+      "title": "Tréning",
+      "subtitle": "Bod alebo streľba, za pár sekúnd",
+      "stats": "Štatistiky",
+      "historyTitle": "História tréningov",
+      "empty": "Zatiaľ žiadne tréningové sezóny.",
+      "successRate": "{rate} %"
+    },
+    "config": {
+      "type": "Typ",
+      "distance": "Vzdialenosť",
+      "balls": "Počet gúl",
+      "start": "Začať"
+    },
+    "types": {
+      "point": "Bod",
+      "tir": "Streľba"
+    },
+    "distanceMeters": "{n} m",
+    "scoreLabel": "Skóre: {score}",
+    "resume": {
+      "title": "Prebiehajúca sezóna",
+      "message": "Máte nedokončený tréning. Chcete ho pokračovať?",
+      "continue": "Pokračovať",
+      "abandon": "Opustiť"
+    },
+    "play": {
+      "ballProgress": "Guľa {current} / {total}",
+      "hint": "Zaznamenajte výsledok tejto gule."
+    },
+    "results": {
+      "perfect": "Perfektný",
+      "very_good": "Veľmi dobrý",
+      "good": "Dobrý",
+      "acceptable": "Akceptovateľný",
+      "bad": "Zlý",
+      "useless": "Nepoužiteľný",
+      "missed": "Neúspešný",
+      "touched": "Dotknutý",
+      "successful": "Zasiahnutý",
+      "palet": "Palet",
+      "carreau": "Kotúč"
+    },
+    "actions": {
+      "abandon": "Opustiť sezónu"
+    },
+    "abandon": {
+      "title": "Opustiť sezónu?",
+      "message": "Zaznamenané pokusy budú stratené, ak opustíte sezónu.",
+      "cancel": "Zrušiť",
+      "confirm": "Opustiť"
+    },
+    "summary": {
+      "title": "Zhrnutie sezóny",
+      "sessionFinished": "Sezóna ukončená",
+      "attempts": "Detail gúl",
+      "actions": {
+        "stats": "Zobraziť štatistiky",
+        "newSession": "Nová sezóna"
+      }
+    },
+    "stats": {
+      "title": "Štatistiky tréningu",
+      "subtitle": "Vaše výkony podľa typu a vzdialenosti",
+      "filters": {
+        "all": "Všetko"
+      },
+      "kpi": {
+        "sessions": "Sezóny",
+        "balls": "Gule",
+        "success": "Úspešnosť",
+        "best": "Najlepšie skóre"
+      },
+      "hero": {
+        "averageScore": "Priemerné skóre"
+      },
+      "sections": {
+        "evolution": "Pokrok",
+        "byType": "Bod vs Streľba",
+        "distances": "Podľa vzdialenosti"
+      },
+      "evolution": {
+        "hint": "Trend úspešnosti na vašich posledných sezónach."
+      },
+      "byType": {
+        "hint": "Úspešnosť podľa typu tréningu."
+      },
+      "distances": {
+        "hint": "Úspešnosť podľa vzdialenosti."
+      },
+      "empty": {
+        "loadErrorTitle": "Nepodarilo sa načítať štatistiky",
+        "retry": "Skúsiť znova",
+        "noSessionsTitle": "Žiadne tréningové sezóny",
+        "noSessionsHint": "Začnite sezónu, aby ste videli štatistiky.",
+        "startSession": "Začať sezónu",
+        "noDataInPeriodTitle": "Žiadne dáta v tomto období",
+        "noDataInPeriodHint": "Rozšírte obdobie alebo začnite novú sezónu."
+      }
     }
   }
 }

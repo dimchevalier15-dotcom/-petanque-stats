@@ -22,6 +22,10 @@
           <i class="pi pi-bullseye" aria-hidden="true" />
           <span>{{ t('home.actions.shooting') }}</span>
         </button>
+        <button type="button" class="quick-item app-card" @click="goTraining">
+          <i class="pi pi-flag" aria-hidden="true" />
+          <span>{{ t('home.actions.training') }}</span>
+        </button>
         <button type="button" class="quick-item app-card" @click="goGuidelines">
           <i class="pi pi-book" aria-hidden="true" />
           <span>{{ t('doc.title') }}</span>
@@ -61,6 +65,9 @@ function goAddPlayer(): void {
 }
 function goShooting(): void {
   router.push({ name: 'shootingHome' })
+}
+function goTraining(): void {
+  router.push({ name: 'trainingHome' })
 }
 function goSettings(): void {
   router.push({ name: 'settings' })

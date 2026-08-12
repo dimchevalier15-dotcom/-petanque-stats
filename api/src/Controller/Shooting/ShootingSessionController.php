@@ -6,6 +6,7 @@ namespace App\Controller\Shooting;
 
 use App\Dto\Request\CompleteShootingSessionRequest;
 use App\Dto\Request\UpdateShootingSessionContextRequest;
+use App\Enum\ShootingContextNature;
 use App\Http\StatsDateRangeResolver;
 use App\Service\Auth\InvalidTokenException;
 use App\Service\Shooting\InvalidShootingSessionStructureException;
@@ -62,7 +63,17 @@ final class ShootingSessionController extends AbstractController
             } catch (\InvalidArgumentException $e) {
                 return new JsonResponse(['message' => $e->getMessage()], 400);
             }
-            $res = $this->statsService->stats($token, $dateRange);
+
+            $natureParam = $request->query->get('nature');
+            $contextNature = null;
+            if ($natureParam !== null && $natureParam !== '' && $natureParam !== 'all') {
+                $contextNature = ShootingContextNature::tryFrom((string) $natureParam);
+                if ($contextNature === null) {
+                    return new JsonResponse(['message' => 'Invalid nature filter.'], 400);
+                }
+            }
+
+            $res = $this->statsService->stats($token, $contextNature, $dateRange);
             return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
         });
     }

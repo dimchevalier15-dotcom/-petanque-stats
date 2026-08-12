@@ -1,5 +1,18 @@
 <template>
   <AppPage :title="t('stats.title')" :subtitle="stats?.displayName ?? undefined">
+    <div v-if="showDateFilter" class="nature-filter">
+      <button
+        v-for="opt in natureFilterOptions"
+        :key="opt.value"
+        type="button"
+        class="filter-btn"
+        :class="{ active: natureFilter === opt.value }"
+        @click="setNatureFilter(opt.value)"
+      >
+        {{ opt.label }}
+      </button>
+    </div>
+
     <StatsDateRangeFilter
       v-if="showDateFilter"
       v-model:date-from="dateFrom"
@@ -208,6 +221,7 @@ import {
   usePlayerStatsCharts,
 } from '../composables/usePlayerStatsCharts'
 import { useStatsDateRange } from '../composables/useStatsDateRange'
+import type { MatchNature } from '../models/MatchContext'
 import type { PlayerStats } from '../models/PlayerStats'
 import { statsService } from '../services/stats'
 
@@ -218,7 +232,15 @@ const loading = ref(true)
 const refreshing = ref(false)
 const loadError = ref(false)
 const stats = ref<PlayerStats | null>(null)
+const natureFilter = ref<MatchNature | 'all'>('all')
 const { dateFrom, dateTo, maxDate, normalizeRange, queryParams } = useStatsDateRange()
+
+const natureFilterOptions = computed(() => [
+  { value: 'all' as const, label: t('stats.filters.all') },
+  { value: 'friendly' as const, label: t('context.nature.friendly') },
+  { value: 'training' as const, label: t('context.nature.training') },
+  { value: 'competition' as const, label: t('context.nature.competition') },
+])
 
 const showDateFilter = computed(() => stats.value !== null && stats.value.status !== 'no_player')
 
@@ -282,6 +304,13 @@ const emptyActionRoute = computed<RouteLocationRaw | null>(() => {
 
 const showAverageDetails = computed(() => !!(stats.value?.point || stats.value?.tir))
 
+function setNatureFilter(value: MatchNature | 'all'): void {
+  natureFilter.value = value
+  if (stats.value) {
+    load({ refresh: true })
+  }
+}
+
 async function load(options: { refresh?: boolean } = {}) {
   const isRefresh = options.refresh === true
   if (isRefresh) {
@@ -291,7 +320,7 @@ async function load(options: { refresh?: boolean } = {}) {
   }
   loadError.value = false
   try {
-    stats.value = await statsService.getMyStats(queryParams())
+    stats.value = await statsService.getMyStats(queryParams(), natureFilter.value)
   } catch {
     loadError.value = true
   } finally {
@@ -311,6 +340,31 @@ onMounted(load)
 </script>
 
 <style scoped>
+.nature-filter {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--app-space-xs);
+  margin-bottom: var(--app-space-sm);
+}
+
+.filter-btn {
+  min-height: 2.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: #fff;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  border-color: var(--app-primary);
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
+}
+
 .loading {
   display: grid;
   place-items: center;

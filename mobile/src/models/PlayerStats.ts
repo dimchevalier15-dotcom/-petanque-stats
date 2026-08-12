@@ -1,4 +1,5 @@
 import type { MatchSummaryShotBreakdown } from './MatchSummary'
+import type { MatchNature } from './MatchContext'
 
 export type PlayerStatsStatus = 'ok' | 'no_player' | 'no_matches' | 'no_tracked_data' | 'no_data_in_period'
 
@@ -19,7 +20,7 @@ export interface PlayerStatsEvolutionPoint {
 }
 
 export interface PlayerStatsByNature {
-  nature: string
+  nature: MatchNature
   matchCount: number
   ballCount: number
   average: number

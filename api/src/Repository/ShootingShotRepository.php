@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\ShootingSession;
 use App\Entity\ShootingShot;
+use App\Enum\ShootingContextNature;
 use App\Enum\ShootingDistance;
 use App\Enum\ShootingShotResult;
 use App\Enum\ShootingWorkshop;
@@ -43,7 +44,7 @@ final class ShootingShotRepository extends ServiceEntityRepository
     /**
      * @return list<array{workshop:int,shotCount:int,sumScore:int}>
      */
-    public function aggregateByWorkshopForPlayer(int $playerId, ?DateRange $range = null): array
+    public function aggregateByWorkshopForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
     {
         $qb = $this->createQueryBuilder('sh')
             ->select('sh.workshop as workshop, COUNT(sh.id) as shotCount, SUM(sh.score) as sumScore')
@@ -54,7 +55,7 @@ final class ShootingShotRepository extends ServiceEntityRepository
             ->groupBy('sh.workshop')
             ->orderBy('sh.workshop', 'ASC');
 
-        $this->applySessionDateRange($qb, 's', $range);
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
 
         $rows = $qb->getQuery()->getArrayResult();
 
@@ -71,7 +72,7 @@ final class ShootingShotRepository extends ServiceEntityRepository
     /**
      * @return list<array{distance:int,shotCount:int,sumScore:int}>
      */
-    public function aggregateByDistanceForPlayer(int $playerId, ?DateRange $range = null): array
+    public function aggregateByDistanceForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
     {
         $qb = $this->createQueryBuilder('sh')
             ->select('sh.distance as distance, COUNT(sh.id) as shotCount, SUM(sh.score) as sumScore')
@@ -82,7 +83,7 @@ final class ShootingShotRepository extends ServiceEntityRepository
             ->groupBy('sh.distance')
             ->orderBy('sh.distance', 'ASC');
 
-        $this->applySessionDateRange($qb, 's', $range);
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
 
         $rows = $qb->getQuery()->getArrayResult();
 
@@ -99,7 +100,7 @@ final class ShootingShotRepository extends ServiceEntityRepository
     /**
      * @return list<array{result:string,count:int}>
      */
-    public function aggregateByResultForPlayer(int $playerId, ?DateRange $range = null): array
+    public function aggregateByResultForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
     {
         $qb = $this->createQueryBuilder('sh')
             ->select('sh.result as result, COUNT(sh.id) as count')
@@ -109,7 +110,7 @@ final class ShootingShotRepository extends ServiceEntityRepository
             ->setParameter('pid', $playerId)
             ->groupBy('sh.result');
 
-        $this->applySessionDateRange($qb, 's', $range);
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
 
         $rows = $qb->getQuery()->getArrayResult();
 
@@ -125,7 +126,7 @@ final class ShootingShotRepository extends ServiceEntityRepository
     /**
      * @return list<array{workshop:int,distance:int,shotCount:int,sumScore:int}>
      */
-    public function aggregateByWorkshopAndDistanceForPlayer(int $playerId, ?DateRange $range = null): array
+    public function aggregateByWorkshopAndDistanceForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
     {
         $qb = $this->createQueryBuilder('sh')
             ->select('sh.workshop as workshop, sh.distance as distance, COUNT(sh.id) as shotCount, SUM(sh.score) as sumScore')
@@ -137,7 +138,7 @@ final class ShootingShotRepository extends ServiceEntityRepository
             ->orderBy('sh.workshop', 'ASC')
             ->addOrderBy('sh.distance', 'ASC');
 
-        $this->applySessionDateRange($qb, 's', $range);
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
 
         $rows = $qb->getQuery()->getArrayResult();
 
@@ -152,7 +153,7 @@ final class ShootingShotRepository extends ServiceEntityRepository
         );
     }
 
-    public function countShotsForPlayer(int $playerId, ?DateRange $range = null): int
+    public function countShotsForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): int
     {
         $qb = $this->createQueryBuilder('sh')
             ->select('COUNT(sh.id)')
@@ -161,20 +162,23 @@ final class ShootingShotRepository extends ServiceEntityRepository
             ->andWhere('s.finishedAt IS NOT NULL')
             ->setParameter('pid', $playerId);
 
-        $this->applySessionDateRange($qb, 's', $range);
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    private function applySessionDateRange(QueryBuilder $qb, string $sessionAlias, ?DateRange $range): void
+    private function applySessionFilters(QueryBuilder $qb, string $sessionAlias, ?ShootingContextNature $contextNature, ?DateRange $range): void
     {
-        if ($range === null) {
-            return;
+        if ($contextNature !== null) {
+            $qb->andWhere($sessionAlias.'.contextNature = :contextNature')
+                ->setParameter('contextNature', $contextNature);
         }
 
-        $qb->andWhere($sessionAlias.'.finishedAt >= :rangeFrom')
-            ->andWhere($sessionAlias.'.finishedAt <= :rangeTo')
-            ->setParameter('rangeFrom', $range->from)
-            ->setParameter('rangeTo', $range->to);
+        if ($range !== null) {
+            $qb->andWhere($sessionAlias.'.finishedAt >= :rangeFrom')
+                ->andWhere($sessionAlias.'.finishedAt <= :rangeTo')
+                ->setParameter('rangeFrom', $range->from)
+                ->setParameter('rangeTo', $range->to);
+        }
     }
 }
