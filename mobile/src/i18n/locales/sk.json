@@ -215,6 +215,13 @@
       "role": "Rola",
       "trackPlayer": "Analyzovať"
     },
+    "resume": {
+      "title": "Prebiehajúci zápas",
+      "message": "Máte nedokončený zápas. Chcete ho pokračovať alebo začať nový?",
+      "continue": "Pokračovať",
+      "abandon": "Zahodiť",
+      "score": "Aktuálne skóre: {scoreA} – {scoreB}"
+    },
     "teams": { "a": "Tím A", "b": "Tím B", "aShort": "A", "bShort": "B" },
     "types": {
       "teteATete": "Hra jeden na jedného",

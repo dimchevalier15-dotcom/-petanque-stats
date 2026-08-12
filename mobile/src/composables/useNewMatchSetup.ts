@@ -3,6 +3,9 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { playersService } from '../services/players'
 import { matchesService } from '../services/matches'
+import { saveMatchDraft } from '../services/matchDraftStorage'
+import { useAuthStore } from '../stores/auth'
+import type { MatchSetup } from '../models/MatchDraft'
 import { playerToSearchOption, type PlayerSearchOption } from './usePlayerSearch'
 import type { Player } from '../models/Player'
 import {
@@ -75,6 +78,7 @@ function roleToShot(role: PlayerRole): ShotType {
 export function useNewMatchSetup(): UseNewMatchSetupReturn {
   const { t } = useI18n()
   const router = useRouter()
+  const auth = useAuthStore()
 
   const type = ref<MatchType>('doublette')
   const statisticsMode = ref<StatisticsMode>('standard')
@@ -344,17 +348,35 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
         defaultShotTypes: defaults,
       })
 
+      const defaultShotTypesMap: Record<number, 'point' | 'tir'> = {}
+      for (const item of defaults) {
+        defaultShotTypesMap[item.playerId] = item.defaultShotType
+      }
+
+      const setup: MatchSetup = {
+        id,
+        type: type.value,
+        targetScore: DEFAULT_TARGET_SCORE,
+        statisticsMode: statisticsMode.value,
+        teamA,
+        teamB,
+        trackedPlayers,
+        defaultShotTypes: defaultShotTypesMap,
+      }
+
+      saveMatchDraft(
+        setup,
+        {
+          currentEndIndex: 0,
+          ends: [{ index: 1, balls: [], winner: undefined, points: undefined, canceled: false }],
+          distanceEstimate: null,
+        },
+        auth.user?.id ?? null,
+      )
+
       router.push({
         name: 'matchScore',
         params: { id },
-        query: {
-          type: type.value,
-          teamA: teamA.join(','),
-          teamB: teamB.join(','),
-          statisticsMode: statisticsMode.value,
-          tracked: trackedPlayers.join(','),
-          defaults: defaults.map((item) => `${item.playerId}:${item.defaultShotType}`).join(','),
-        },
       })
     } catch {
       errors['A1'] = errors['A1'] || t('matches.validations.generic')

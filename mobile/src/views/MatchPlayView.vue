@@ -1,5 +1,5 @@
 <template>
-  <section class="play">
+  <section v-if="session" class="play">
     <header class="scoreboard">
       <Button
         class="scoreboard-nav"
@@ -230,33 +230,105 @@ import { clampEndPoints, maxPointsForWinner, suggestEndScore } from '../models/E
 import { matchesService } from '../services/matches'
 import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
 import { playersService } from '../services/players'
+import { useAuthStore } from '../stores/auth'
+import type { MatchPlayState, MatchSetup } from '../models/MatchDraft'
+import { clearMatchDraft, loadMatchDraft, saveMatchDraft } from '../services/matchDraftStorage'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 
-// The setup is reconstructed from query params provided by NewMatchView navigation after creation
 const matchId = Number(route.params.id)
-const q = route.query as Record<string, string | undefined>
-const type = (q.type as MatchType) || 'doublette'
-const statisticsMode = (q.statisticsMode as StatisticsMode) || 'standard'
-const targetScore = DEFAULT_TARGET_SCORE
-const teamA = q.teamA ? q.teamA.split(',').map((x) => Number(x)) : []
-const teamB = q.teamB ? q.teamB.split(',').map((x) => Number(x)) : []
-const trackedPlayers = q.tracked ? q.tracked.split(',').map((x) => Number(x)) : [...teamA, ...teamB]
 
-// Parse default shot types map from query (format: "pid:type,pid:type")
-const defaultsParam = q.defaults || ''
-const defaultShotTypes: Record<number, 'point' | 'tir'> = {}
-if (defaultsParam) {
-  for (const pair of defaultsParam.split(',')) {
-    const [pidStr, st] = pair.split(':')
-    const pid = Number(pidStr)
-    if (pid && (st === 'point' || st === 'tir')) defaultShotTypes[pid] = st
+function parseSetupFromQuery(): MatchSetup | null {
+  const q = route.query as Record<string, string | undefined>
+  const teamA = q.teamA ? q.teamA.split(',').map((x) => Number(x)) : []
+  const teamB = q.teamB ? q.teamB.split(',').map((x) => Number(x)) : []
+  if (teamA.length === 0 || teamB.length === 0) return null
+
+  const type = (q.type as MatchType) || 'doublette'
+  const statisticsMode = (q.statisticsMode as StatisticsMode) || 'standard'
+  const trackedPlayers = q.tracked ? q.tracked.split(',').map((x) => Number(x)) : [...teamA, ...teamB]
+
+  const defaultShotTypes: Record<number, 'point' | 'tir'> = {}
+  const defaultsParam = q.defaults || ''
+  if (defaultsParam) {
+    for (const pair of defaultsParam.split(',')) {
+      const [pidStr, st] = pair.split(':')
+      const pid = Number(pidStr)
+      if (pid && (st === 'point' || st === 'tir')) defaultShotTypes[pid] = st
+    }
+  }
+
+  return {
+    id: matchId,
+    type,
+    targetScore: DEFAULT_TARGET_SCORE,
+    statisticsMode,
+    teamA,
+    teamB,
+    trackedPlayers,
+    defaultShotTypes,
   }
 }
 
-const setup = { id: matchId, type, targetScore, statisticsMode, teamA, teamB, trackedPlayers, defaultShotTypes }
+function setupFromDraft(draft: NonNullable<ReturnType<typeof loadMatchDraft>>): MatchSetup {
+  return {
+    id: draft.id,
+    type: draft.type,
+    targetScore: draft.targetScore,
+    statisticsMode: draft.statisticsMode,
+    teamA: draft.teamA,
+    teamB: draft.teamB,
+    trackedPlayers: draft.trackedPlayers,
+    defaultShotTypes: draft.defaultShotTypes,
+  }
+}
+
+const storedDraft = loadMatchDraft(auth.user?.id ?? null)
+const draftForMatch = storedDraft !== null && storedDraft.id === matchId ? storedDraft : null
+const querySetup = parseSetupFromQuery()
+
+function resolvePlaySession(): { setup: MatchSetup; initial?: MatchPlayState } | null {
+  if (!matchId) return null
+  if (draftForMatch) {
+    return {
+      setup: setupFromDraft(draftForMatch),
+      initial: {
+        currentEndIndex: draftForMatch.currentEndIndex,
+        ends: draftForMatch.ends,
+        distanceEstimate: draftForMatch.distanceEstimate,
+      },
+    }
+  }
+  if (querySetup && querySetup.teamA.length > 0 && querySetup.teamB.length > 0) {
+    return { setup: querySetup }
+  }
+  return null
+}
+
+const session = resolvePlaySession()
+if (!session) {
+  void router.replace({ name: 'home' })
+}
+
+const setup = session?.setup ?? {
+  id: 0,
+  type: 'doublette' as MatchType,
+  targetScore: DEFAULT_TARGET_SCORE,
+  statisticsMode: 'standard' as StatisticsMode,
+  teamA: [0],
+  teamB: [0],
+  trackedPlayers: [0],
+}
+
+const initialPlayState = session?.initial
+
+function persistPlayState(state: MatchPlayState): void {
+  if (!session) return
+  saveMatchDraft(session.setup, state, auth.user?.id ?? null)
+}
 
 const context = ref<MatchContext | null>(null)
 const { teamALabel, teamBLabel } = useMatchTeamLabels(context, t)
@@ -281,7 +353,7 @@ const {
   canPlayBallSlot,
   toSubmission,
   cancelCurrentEnd,
-} = useMatchPlay(setup)
+} = useMatchPlay(setup, initialPlayState, persistPlayState)
 
 const distanceEstimateInput = computed<number | null>({
   get: () => distanceEstimate.value,
@@ -481,6 +553,7 @@ function goNext() { goNextEnd() }
 async function onFinish() {
   const payload: CompleteMatchRequestDto = toSubmission()
   await matchesService.complete(matchId, payload)
+  clearMatchDraft()
   router.push({ name: 'matchSummary', params: { id: matchId } })
 }
 
@@ -491,13 +564,9 @@ function nameFor(pid: number): string {
 }
 
 onMounted(async () => {
-  // If essential data missing, go back
-  if (!matchId || teamA.length === 0 || teamB.length === 0) {
-    router.replace({ name: 'home' })
-    return
-  }
+  if (!session) return
 
-  const ids = Array.from(new Set([...teamA, ...teamB]))
+  const ids = Array.from(new Set([...setup.teamA, ...setup.teamB]))
   try {
     const [contextData, ...playerResults] = await Promise.all([
       matchesService.getContext(matchId),

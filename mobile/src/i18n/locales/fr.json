@@ -215,6 +215,13 @@
       "role": "Rôle",
       "trackPlayer": "Analyser"
     },
+    "resume": {
+      "title": "Partie en cours",
+      "message": "Vous avez une partie non terminée. Voulez-vous la reprendre ou démarrer un nouveau match ?",
+      "continue": "Reprendre",
+      "abandon": "Abandonner",
+      "score": "Score actuel : {scoreA} – {scoreB}"
+    },
     "teams": { "a": "Équipe A", "b": "Équipe B", "aShort": "A", "bShort": "B" },
     "types": {
       "teteATete": "Tête-à-tête",

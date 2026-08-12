@@ -215,6 +215,13 @@
       "role": "Role",
       "trackPlayer": "Track stats"
     },
+    "resume": {
+      "title": "Match in progress",
+      "message": "You have an unfinished match. Resume it or start a new one?",
+      "continue": "Resume",
+      "abandon": "Discard",
+      "score": "Current score: {scoreA} – {scoreB}"
+    },
     "teams": { "a": "Team A", "b": "Team B", "aShort": "A", "bShort": "B" },
     "types": {
       "teteATete": "Head-to-head",
