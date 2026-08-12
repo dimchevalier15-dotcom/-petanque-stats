@@ -9,6 +9,7 @@ use App\Dto\Request\CompleteMatchEndDto;
 use App\Dto\Request\CompleteMatchRequest;
 use App\Dto\Request\CreateMatchRequest;
 use App\Entity\Player;
+use App\Entity\User;
 use App\Repository\GameBallRepository;
 use App\Service\MatchRecordingService;
 use App\Service\MatchService;
@@ -187,6 +188,35 @@ final class MatchRecordingServiceTest extends KernelTestCase
         self::assertNull($saved[0]->getDistance());
     }
 
+    public function testCompletingTheSameMatchTwiceDoesNotDuplicateEndsOrBalls(): void
+    {
+        [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
+
+        $req = $this->baseRequest($playerAId, $playerBId);
+        $ball = new CompleteMatchEndBallDto();
+        $ball->playerId = $playerAId;
+        $ball->notes = [1, 0];
+        $ball->shotTypes = ['point', 'tir'];
+        $ball->distances = [7.0, 8.0];
+        $req->ends[0]->balls = [$ball];
+
+        $this->recording->complete($matchId, $req);
+        $this->recording->complete($matchId, $req);
+
+        $game = $this->em->getRepository(\App\Entity\Game::class)->find($matchId);
+        self::assertNotNull($game);
+
+        $endCount = $this->em->getRepository(\App\Entity\GameEnd::class)->count(['game' => $game]);
+        self::assertSame(1, $endCount);
+
+        $saved = $this->fetchBalls($matchId, $playerAId);
+        self::assertCount(2, $saved);
+        self::assertSame(1, $saved[0]->getNote());
+        self::assertSame(0, $saved[1]->getNote());
+        self::assertSame(7.0, $saved[0]->getDistance());
+        self::assertSame(8.0, $saved[1]->getDistance());
+    }
+
     /**
      * @return list<\App\Entity\GameBall>
      */
@@ -233,6 +263,10 @@ final class MatchRecordingServiceTest extends KernelTestCase
     private function createHeadToHead(): array
     {
         $suffix = bin2hex(random_bytes(4));
+        $owner = new User('owner'.$suffix.'@test.local');
+        $owner->setPassword('hash');
+        $this->em->persist($owner);
+
         $playerA = new Player('Alice', 'Test'.$suffix, 'Ali'.$suffix);
         $playerB = new Player('Bob', 'Test'.$suffix, 'Bob'.$suffix);
         $this->em->persist($playerA);
@@ -247,7 +281,7 @@ final class MatchRecordingServiceTest extends KernelTestCase
         $createReq->teamB = [$playerB->getId()];
         $createReq->trackedPlayers = [$playerA->getId(), $playerB->getId()];
 
-        $created = $this->matchService->create($createReq);
+        $created = $this->matchService->create($createReq, $owner);
 
         return [$created->id, (int) $playerA->getId(), (int) $playerB->getId()];
     }

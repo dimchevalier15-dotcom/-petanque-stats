@@ -52,6 +52,10 @@ class Game
     #[ORM\Column(name: 'terrain_type', type: 'string', length: 50, nullable: true)]
     private ?string $terrainType = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'created_by_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?User $createdBy = null;
+
     public function __construct(GameType $type, int $targetScore = 13, string $statisticsMode = 'standard')
     {
         $this->type = $type;
@@ -80,4 +84,14 @@ class Game
     public function setCompetitionName(?string $competitionName): void { $this->competitionName = $competitionName; }
     public function setCompetitionStage(?string $competitionStage): void { $this->competitionStage = $competitionStage; }
     public function setTerrainType(?string $terrainType): void { $this->terrainType = $terrainType; }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(User $createdBy): void
+    {
+        $this->createdBy = $createdBy;
+    }
 }

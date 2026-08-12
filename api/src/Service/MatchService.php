@@ -10,6 +10,7 @@ use App\Entity\Game;
 use App\Entity\GameParticipant;
 use App\Entity\GameTracked;
 use App\Entity\Player;
+use App\Entity\User;
 use App\Enum\GameType;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,7 +26,7 @@ final class MatchService
      * @return CreateMatchResponse
      * @throws MatchValidationException
      */
-    public function create(CreateMatchRequest $req): CreateMatchResponse
+    public function create(CreateMatchRequest $req, User $createdBy): CreateMatchResponse
     {
         // Dynamic validations to keep exact behavior/messages
         $type = GameType::tryFrom($req->type);
@@ -76,6 +77,7 @@ final class MatchService
         }
 
         $game = new Game($type, $req->targetScore, $req->statisticsMode);
+        $game->setCreatedBy($createdBy);
         $game->setTeamAName($this->resolveTeamName($req->teamAName, $map[(int) $req->teamA[0]]));
         $game->setTeamBName($this->resolveTeamName($req->teamBName, $map[(int) $req->teamB[0]]));
         $this->em->persist($game);
