@@ -30,6 +30,7 @@ services:
       APP_ENV: dev
       APP_DEBUG: 1
       DATABASE_URL: "mysql://petanque:petanque@mysql:3306/petanque?serverVersion=8.0&charset=utf8mb4"
+      CORS_ALLOW_ORIGIN: "http://localhost:5173"
     ports:
       - "8080:8000"
 

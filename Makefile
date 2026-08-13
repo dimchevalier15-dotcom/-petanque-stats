@@ -1,9 +1,18 @@
-.PHONY: up down build logs api mobile lint fix test sync
+.PHONY: up down build logs api mobile lint fix test sync up-prod setup-jwt deploy
 
 COMPOSE = docker compose
 
 up:
 	$(COMPOSE) up -d --build
+
+up-prod:
+	$(COMPOSE) -f docker-compose.prod.yml up -d --build
+
+setup-jwt:
+	./scripts/setup-jwt.sh
+
+deploy:
+	./scripts/deploy.sh
 
 down:
 	$(COMPOSE) down

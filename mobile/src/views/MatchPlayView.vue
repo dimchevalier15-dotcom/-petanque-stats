@@ -195,13 +195,31 @@
       </div>
     </Dialog>
 
-    <Dialog v-model:visible="finishDialog" :modal="true" :header="t('play.finish.title')" :closable="false" class="play-dialog">
-      <div class="finish-content">
+    <Dialog v-model:visible="finishDialog" :modal="true" :header="t('play.finish.title')" :closable="!finishSubmitting" class="play-dialog">
+      <div v-if="finishError" class="finish-content finish-content--error">
+        <p class="finish-error-title">{{ t('play.finish.errorTitle') }}</p>
+        <p>{{ t('play.finish.errorHint') }}</p>
+        <div class="actions">
+          <Button :label="t('play.finish.abort')" severity="secondary" :disabled="finishSubmitting" @click="closeFinishDialog" />
+          <Button
+            :label="t('play.finish.retry')"
+            icon="pi pi-refresh"
+            :loading="finishSubmitting"
+            @click="onFinish"
+          />
+        </div>
+      </div>
+      <div v-else class="finish-content">
         <p>{{ t('play.finish.message1') }}</p>
         <p>{{ t('play.finish.message2') }}</p>
         <div class="actions">
-          <Button :label="t('play.finish.abort')" severity="secondary" @click="finishDialog = false" />
-          <Button :label="t('play.finish.confirm')" icon="pi pi-check" @click="confirmFinish" />
+          <Button :label="t('play.finish.abort')" severity="secondary" :disabled="finishSubmitting" @click="closeFinishDialog" />
+          <Button
+            :label="t('play.finish.confirm')"
+            icon="pi pi-check"
+            :loading="finishSubmitting"
+            @click="confirmFinish"
+          />
         </div>
       </div>
     </Dialog>
@@ -524,10 +542,22 @@ function confirmCancelEnd() {
 }
 
 const finishDialog = ref(false)
-function openFinishDialog() { finishDialog.value = true }
+const finishSubmitting = ref(false)
+const finishError = ref(false)
+
+function openFinishDialog() {
+  finishError.value = false
+  finishDialog.value = true
+}
+
 async function confirmFinish() {
-  finishDialog.value = false
   await onFinish()
+}
+
+function closeFinishDialog() {
+  if (finishSubmitting.value) return
+  finishDialog.value = false
+  finishError.value = false
 }
 
 function confirmEndScore() {
@@ -551,10 +581,20 @@ function goPrev() { goPrevEnd() }
 function goNext() { goNextEnd() }
 
 async function onFinish() {
-  const payload: CompleteMatchRequestDto = toSubmission()
-  await matchesService.complete(matchId, payload)
-  clearMatchDraft()
-  router.push({ name: 'matchSummary', params: { id: matchId } })
+  finishSubmitting.value = true
+  finishError.value = false
+  try {
+    const payload: CompleteMatchRequestDto = toSubmission()
+    await matchesService.complete(matchId, payload)
+    clearMatchDraft()
+    finishDialog.value = false
+    router.push({ name: 'matchSummary', params: { id: matchId } })
+  } catch {
+    finishError.value = true
+    finishDialog.value = true
+  } finally {
+    finishSubmitting.value = false
+  }
 }
 
 const names = ref<Record<number, string>>({})
@@ -1021,6 +1061,12 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--app-space-sm);
+}
+
+.finish-error-title {
+  margin: 0;
+  font-weight: 700;
+  color: var(--app-text);
 }
 
 .form-chart-content {

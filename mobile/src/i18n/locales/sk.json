@@ -283,7 +283,10 @@
       "message1": "Ukončiť zápas teraz?",
       "message2": "Aktuálne skóre zostane zachované.",
       "confirm": "Ukončiť",
-      "abort": "Späť"
+      "abort": "Späť",
+      "errorTitle": "Nepodarilo sa uložiť zápas",
+      "errorHint": "Skontrolujte pripojenie a skúste to znova. Váš zápas je stále uložený lokálne.",
+      "retry": "Skúsiť znova"
     },
     "endCanceled": "Mèna zrušená"
   },

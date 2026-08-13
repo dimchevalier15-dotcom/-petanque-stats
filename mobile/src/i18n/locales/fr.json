@@ -283,7 +283,10 @@
       "message1": "Terminer le match maintenant ?",
       "message2": "Le score actuel sera conservé.",
       "confirm": "Terminer",
-      "abort": "Retour"
+      "abort": "Retour",
+      "errorTitle": "Enregistrement impossible",
+      "errorHint": "Vérifiez votre connexion et réessayez. Votre partie est toujours sauvegardée localement.",
+      "retry": "Réessayer"
     },
     "endCanceled": "Mène annulée"
   },

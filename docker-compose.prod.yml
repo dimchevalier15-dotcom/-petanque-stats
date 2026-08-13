@@ -1,0 +1,59 @@
+# Production-like stack: static front (nginx) + API + MySQL.
+# Usage: docker compose -f docker-compose.prod.yml up -d --build
+#
+# Front: http://localhost (port 80)
+# API health: http://localhost/api/health
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: petanque_mysql_prod
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-petanque}
+      MYSQL_USER: ${MYSQL_USER:-petanque}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-petanque}
+    volumes:
+      - mysql_data_prod:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_PASSWORD:-petanque}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./api
+    container_name: petanque_api_prod
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: 0
+      APP_SECRET: ${APP_SECRET:-change-me-in-production}
+      DATABASE_URL: "mysql://${MYSQL_USER:-petanque}:${MYSQL_PASSWORD:-petanque}@mysql:3306/${MYSQL_DATABASE:-petanque}?serverVersion=8.0&charset=utf8mb4"
+      JWT_SECRET_KEY: /app/config/jwt/private.pem
+      JWT_PUBLIC_KEY: /app/config/jwt/public.pem
+      JWT_PASSPHRASE: ${JWT_PASSPHRASE:-change-me}
+      CORS_ALLOW_ORIGIN: ${CORS_ALLOW_ORIGIN:-http://localhost}
+    volumes:
+      - ./api/config/jwt:/app/config/jwt:ro
+    command: >
+      sh -c "php bin/console doctrine:migrations:migrate --no-interaction &&
+             php -S 0.0.0.0:8000 -t public"
+
+  mobile:
+    build:
+      context: ./mobile
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: /api
+    container_name: petanque_mobile_prod
+    depends_on:
+      - api
+    ports:
+      - "${FRONT_PORT:-80}:80"
+
+volumes:
+  mysql_data_prod:

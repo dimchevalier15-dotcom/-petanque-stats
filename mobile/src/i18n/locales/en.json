@@ -283,7 +283,10 @@
       "message1": "Finish the match now?",
       "message2": "The current score will be kept.",
       "confirm": "Finish",
-      "abort": "Back"
+      "abort": "Back",
+      "errorTitle": "Could not save the match",
+      "errorHint": "Check your connection and try again. Your game is still saved locally.",
+      "retry": "Retry"
     },
     "endCanceled": "End canceled"
   },

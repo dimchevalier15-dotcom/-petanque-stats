@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  api:
+    name: API (PHPUnit)
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: petanque
+          MYSQL_USER: petanque
+          MYSQL_PASSWORD: petanque
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -ppetanque"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      APP_ENV: test
+      APP_SECRET: ci_test_secret
+      DATABASE_URL: mysql://petanque:petanque@127.0.0.1:3306/petanque_test?serverVersion=8.0&charset=utf8mb4
+      JWT_PASSPHRASE: ci_test_passphrase
+      CORS_ALLOW_ORIGIN: http://localhost:5173
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+      MAILER_DSN: null://null
+      DEFAULT_URI: http://localhost
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: pdo_mysql, intl, zip
+          coverage: none
+
+      - name: Install Composer dependencies
+        working-directory: api
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Generate JWT keys
+        working-directory: api
+        run: |
+          mkdir -p config/jwt
+          openssl genrsa -aes256 -out config/jwt/private.pem -passout pass:"$JWT_PASSPHRASE" 4096
+          openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem -passin pass:"$JWT_PASSPHRASE"
+
+      - name: Prepare environment
+        working-directory: api
+        run: cp .env.example .env
+
+      - name: Run migrations (test)
+        working-directory: api
+        run: |
+          for i in $(seq 1 30); do
+            if php bin/console doctrine:migrations:migrate --no-interaction --env=test; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Migrations failed: database not ready"
+          exit 1
+
+      - name: PHPUnit
+        working-directory: api
+        run: php bin/phpunit
+
+  mobile:
+    name: Mobile (build + Vitest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: npm ci
+
+      - name: Production build
+        working-directory: mobile
+        run: npm run build
+
+      - name: Vitest
+        working-directory: mobile
+        run: npm test

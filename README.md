@@ -25,7 +25,7 @@ Backend
 - PHP 8.4
 - Symfony 7
 - Doctrine ORM (MySQL 8)
-- Lexik JWT (installé mais non activé pour le moment)
+- Lexik JWT (auth sur les routes match)
 - PHPUnit, PHPStan
 
 Frontend (mobile/web)
@@ -53,7 +53,8 @@ make down
 ```
 
 ## Commandes Make utiles
-- make up: build + start des services
+- make up: build + start des services (dev)
+- make up-prod: stack recette/prod (`docker-compose.prod.yml`)
 - make down: arrêt
 - make build: rebuild sans cache
 - make logs: suivre les logs
@@ -65,7 +66,8 @@ make down
 - make sync: docker compose pull
 
 ## Notes techniques
-- JWT: le bundle Lexik est installé mais désactivé. TODO: générer les clés (openssl), activer le bundle et la sécurité quand le besoin arrive.
+- JWT: Lexik activé (`security.yaml`), clés dans `api/config/jwt/` (voir `api/.env.example`).
+- API URL front: `VITE_API_URL` (défaut `/api`) — voir `mobile/.env.example` et `docs/deployment.md`.
 - Doctrine: configuré pour MySQL via DATABASE_URL (voir docker-compose.yml).
 - i18n: fr, en, sk. Aucun texte en dur dans les composants.
 - TypeScript: mode strict, any interdit.
@@ -89,8 +91,11 @@ Frontend (mobile/src)
 ## Tests & Qualité
 - Front: Vitest, Biome
 - Back: PHPUnit, PHPStan (`composer phpstan` dans le conteneur API)
+- CI: GitHub Actions (`.github/workflows/ci.yml`) — PHPUnit + build front + Vitest
 
-## TODO
-- Générer et configurer les clés JWT (Lexik) avant toute auth.
-- Ajouter les premiers tests fonctionnels Symfony.
-- Compléter la CI (non incluse ici).
+## Configuration
+- `api/.env.example` — variables Symfony, JWT, CORS, base de données
+- `mobile/.env.example` — `VITE_API_URL` pour le build production
+- `scripts/setup-jwt.sh` — génération des clés JWT
+- `scripts/deploy.sh` — déploiement prod complet (JWT + `.env` + Docker)
+- Déploiement: `docs/deployment.md`
