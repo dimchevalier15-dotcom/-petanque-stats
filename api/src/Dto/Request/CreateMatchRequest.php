@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Dto\Request;
 
+use App\Enum\GameType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class CreateMatchRequest
 {
     #[Assert\NotBlank]
-    #[Assert\Choice(choices: ['tete_a_tete','doublette','triplette'])]
+    #[Assert\Choice(callback: [GameType::class, 'values'])]
     public string $type = 'doublette';
 
     #[Assert\Positive]

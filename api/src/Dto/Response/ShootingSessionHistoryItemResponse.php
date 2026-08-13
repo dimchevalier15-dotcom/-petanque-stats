@@ -11,6 +11,7 @@ final class ShootingSessionHistoryItemResponse
         public string $createdAt,
         public string $finishedAt,
         public int $totalScore,
+        public ?string $contextNature,
         public ?string $title,
     ) {
     }

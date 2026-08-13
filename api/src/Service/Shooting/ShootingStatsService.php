@@ -11,6 +11,7 @@ use App\Dto\Response\ShootingStatsResponse;
 use App\Dto\Response\ShootingStatsResultResponse;
 use App\Dto\Response\ShootingStatsSummaryResponse;
 use App\Dto\Response\ShootingStatsWorkshopResponse;
+use App\Enum\ShootingContextNature;
 use App\Repository\PlayerRepository;
 use App\Repository\ShootingSessionRepository;
 use App\Repository\ShootingShotRepository;
@@ -30,7 +31,7 @@ final class ShootingStatsService
     /**
      * @throws NoLinkedPlayerException
      */
-    public function stats(string $token, ?DateRange $dateRange = null): ShootingStatsResponse
+    public function stats(string $token, ?ShootingContextNature $contextNature = null, ?DateRange $dateRange = null): ShootingStatsResponse
     {
         $user = $this->currentUser->getUserFromToken($token);
         $player = $this->players->findOneByUserId((int) $user->getId());
@@ -39,19 +40,23 @@ final class ShootingStatsService
         }
 
         $playerId = (int) $player->getId();
-        $sessionsCount = $this->sessions->countCompletedForPlayer($playerId, $dateRange);
+        $sessionsCount = $this->sessions->countCompletedForPlayer($playerId, $contextNature, $dateRange);
 
         if ($sessionsCount === 0) {
-            if ($dateRange !== null && $this->sessions->countCompletedForPlayer($playerId) > 0) {
+            if ($dateRange !== null && $this->sessions->countCompletedForPlayer($playerId, $contextNature) > 0) {
+                return $this->emptyResponse('no_data_in_period');
+            }
+
+            if ($contextNature !== null && $this->sessions->countCompletedForPlayer($playerId, null, $dateRange) > 0) {
                 return $this->emptyResponse('no_data_in_period');
             }
 
             return $this->emptyResponse();
         }
 
-        $totalShots = $this->shots->countShotsForPlayer($playerId, $dateRange);
-        $bestScore = $this->sessions->bestTotalScoreForPlayer($playerId, $dateRange);
-        $averageSessionScore = $this->sessions->averageTotalScoreForPlayer($playerId, $dateRange);
+        $totalShots = $this->shots->countShotsForPlayer($playerId, $contextNature, $dateRange);
+        $bestScore = $this->sessions->bestTotalScoreForPlayer($playerId, $contextNature, $dateRange);
+        $averageSessionScore = $this->sessions->averageTotalScoreForPlayer($playerId, $contextNature, $dateRange);
 
         $evolution = array_map(
             static fn (array $row): ShootingStatsEvolutionPointResponse => new ShootingStatsEvolutionPointResponse(
@@ -59,7 +64,7 @@ final class ShootingStatsService
                 date: $row['finishedAt']->format(DATE_ATOM),
                 totalScore: $row['totalScore'],
             ),
-            $this->sessions->findEvolutionForPlayer($playerId, $dateRange),
+            $this->sessions->findEvolutionForPlayer($playerId, $contextNature, $dateRange),
         );
 
         $byWorkshop = array_map(
@@ -68,7 +73,7 @@ final class ShootingStatsService
                 shotCount: $row['shotCount'],
                 averageScore: round($row['sumScore'] / $row['shotCount'], 2),
             ),
-            $this->shots->aggregateByWorkshopForPlayer($playerId, $dateRange),
+            $this->shots->aggregateByWorkshopForPlayer($playerId, $contextNature, $dateRange),
         );
 
         $byDistance = array_map(
@@ -77,7 +82,7 @@ final class ShootingStatsService
                 shotCount: $row['shotCount'],
                 averageScore: round($row['sumScore'] / $row['shotCount'], 2),
             ),
-            $this->shots->aggregateByDistanceForPlayer($playerId, $dateRange),
+            $this->shots->aggregateByDistanceForPlayer($playerId, $contextNature, $dateRange),
         );
 
         $byResult = array_map(
@@ -85,7 +90,7 @@ final class ShootingStatsService
                 result: $row['result'],
                 count: $row['count'],
             ),
-            $this->shots->aggregateByResultForPlayer($playerId, $dateRange),
+            $this->shots->aggregateByResultForPlayer($playerId, $contextNature, $dateRange),
         );
 
         $heatmap = array_map(
@@ -95,7 +100,7 @@ final class ShootingStatsService
                 shotCount: $row['shotCount'],
                 averageScore: round($row['sumScore'] / $row['shotCount'], 2),
             ),
-            $this->shots->aggregateByWorkshopAndDistanceForPlayer($playerId, $dateRange),
+            $this->shots->aggregateByWorkshopAndDistanceForPlayer($playerId, $contextNature, $dateRange),
         );
 
         return new ShootingStatsResponse(

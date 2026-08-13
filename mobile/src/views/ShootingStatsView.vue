@@ -6,6 +6,19 @@
       :back-to="{ name: 'shootingHome' }"
     />
 
+    <div class="nature-filter">
+      <button
+        v-for="opt in natureFilterOptions"
+        :key="opt.value"
+        type="button"
+        class="filter-btn"
+        :class="{ active: natureFilter === opt.value }"
+        @click="setNatureFilter(opt.value)"
+      >
+        {{ opt.label }}
+      </button>
+    </div>
+
     <StatsDateRangeFilter
       v-if="showDateFilter"
       v-model:date-from="dateFrom"
@@ -189,7 +202,7 @@ import {
   workshopLabel,
 } from '../composables/useShootingStatsCharts'
 import { useStatsDateRange } from '../composables/useStatsDateRange'
-import { SHOOTING_DISTANCES, SHOOTING_WORKSHOPS, type ShootingStats } from '../models/Shooting'
+import { SHOOTING_DISTANCES, SHOOTING_WORKSHOPS, type ShootingContextNature, type ShootingStats } from '../models/Shooting'
 import { shootingSessionsService } from '../services/shootingSessions'
 
 const { t } = useI18n()
@@ -199,7 +212,14 @@ const loading = ref(true)
 const refreshing = ref(false)
 const loadError = ref(false)
 const stats = ref<ShootingStats | null>(null)
+const natureFilter = ref<ShootingContextNature | 'all'>('all')
 const { dateFrom, dateTo, maxDate, normalizeRange, queryParams } = useStatsDateRange()
+
+const natureFilterOptions = computed(() => [
+  { value: 'all' as const, label: t('shooting.stats.filters.all') },
+  { value: 'training' as const, label: t('shooting.context.nature.training') },
+  { value: 'competition' as const, label: t('shooting.context.nature.competition') },
+])
 
 const showDateFilter = computed(() => stats.value !== null)
 
@@ -246,6 +266,13 @@ function resultPercent(count: number): string {
   return ((count / totalResults.value) * 100).toFixed(0)
 }
 
+function setNatureFilter(value: ShootingContextNature | 'all'): void {
+  natureFilter.value = value
+  if (stats.value) {
+    load({ refresh: true })
+  }
+}
+
 function goHome(): void {
   router.push({ name: 'shootingHome' })
 }
@@ -259,7 +286,7 @@ async function load(options: { refresh?: boolean } = {}): Promise<void> {
   }
   loadError.value = false
   try {
-    stats.value = await shootingSessionsService.getStats(queryParams())
+    stats.value = await shootingSessionsService.getStats(queryParams(), natureFilter.value)
   } catch {
     loadError.value = true
   } finally {
@@ -279,6 +306,31 @@ onMounted(load)
 </script>
 
 <style scoped>
+.nature-filter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--app-space-xs);
+  margin-bottom: var(--app-space-sm);
+}
+
+.filter-btn {
+  min-height: 2.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: #fff;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  cursor: pointer;
+}
+
+.filter-btn.active {
+  border-color: var(--app-primary);
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
+}
+
 .loading {
   display: grid;
   place-items: center;

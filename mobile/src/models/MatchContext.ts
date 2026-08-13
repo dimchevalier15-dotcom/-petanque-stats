@@ -1,4 +1,4 @@
-export type MatchNature = 'friendly' | 'training' | 'competition' | 'official'
+export type MatchNature = 'friendly' | 'training' | 'competition'
 
 export type CompetitionStage =
   | 'group'

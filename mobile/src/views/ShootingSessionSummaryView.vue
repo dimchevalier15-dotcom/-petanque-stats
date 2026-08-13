@@ -9,7 +9,12 @@
         <span class="hero-date">{{ formatDate(summary.finishedAt) }}</span>
       </div>
 
-      <section v-if="summary.title || summary.description" class="panel app-card context-panel">
+      <section v-if="summary.contextNature || summary.title || summary.description" class="panel app-card context-panel">
+        <Tag
+          v-if="summary.contextNature"
+          :value="t(`shooting.context.nature.${summary.contextNature}`)"
+          severity="info"
+        />
         <h3 v-if="summary.title">{{ summary.title }}</h3>
         <p v-if="summary.description" class="context-description">{{ summary.description }}</p>
       </section>
@@ -59,6 +64,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
+import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import { useDateFormat } from '../composables/useDateFormat'
@@ -84,7 +90,7 @@ const workshops = SHOOTING_WORKSHOPS
 const distances = SHOOTING_DISTANCES
 
 const contextActionLabel = computed(() =>
-  summary.value && (summary.value.title || summary.value.description)
+  summary.value && (summary.value.contextNature || summary.value.title || summary.value.description)
     ? t('shooting.context.actions.edit')
     : t('shooting.context.actions.add'),
 )

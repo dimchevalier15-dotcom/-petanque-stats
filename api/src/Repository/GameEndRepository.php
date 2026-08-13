@@ -29,6 +29,19 @@ final class GameEndRepository extends ServiceEntityRepository
     }
 
     /**
+     * Removes all ends for a match. Related balls are deleted via DB ON DELETE CASCADE.
+     */
+    public function deleteByGame(Game $game): void
+    {
+        $this->createQueryBuilder('e')
+            ->delete()
+            ->where('e.game = :game')
+            ->setParameter('game', $game)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
      * @return array{A:int,B:int}
      */
     public function sumPointsByTeam(Game $game): array

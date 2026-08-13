@@ -6,8 +6,10 @@ namespace App\Tests\Service\Shooting;
 
 use App\Dto\Request\CompleteShootingSessionRequest;
 use App\Dto\Request\ShootingShotInputDto;
+use App\Dto\Request\UpdateShootingSessionContextRequest;
 use App\Entity\Player;
 use App\Entity\User;
+use App\Enum\ShootingContextNature;
 use App\Service\Shooting\NoLinkedPlayerException;
 use App\Service\Shooting\ShootingSessionService;
 use App\Service\Shooting\ShootingStatsService;
@@ -68,6 +70,32 @@ final class ShootingStatsServiceTest extends KernelTestCase
         self::assertCount(2, $res->byResult);
         self::assertCount(20, $res->heatmap);
         self::assertCount(1, $res->evolution);
+    }
+
+    public function testStatsCanBeFilteredByContextNature(): void
+    {
+        [$token] = $this->createUserWithLinkedPlayer();
+
+        $training = $this->sessions->start($token);
+        $this->sessions->complete($token, $training->id, $this->buildRequest(fn () => 'touched'));
+        $trainingReq = new UpdateShootingSessionContextRequest();
+        $trainingReq->contextNature = ShootingContextNature::TRAINING->value;
+        $this->sessions->updateContext($token, $training->id, $trainingReq);
+
+        $competition = $this->sessions->start($token);
+        $this->sessions->complete($token, $competition->id, $this->buildRequest(fn (int $w) => $w === 5 ? 'successful' : 'carreau'));
+        $competitionReq = new UpdateShootingSessionContextRequest();
+        $competitionReq->contextNature = ShootingContextNature::COMPETITION->value;
+        $this->sessions->updateContext($token, $competition->id, $competitionReq);
+
+        $all = $this->stats->stats($token);
+        $trainingOnly = $this->stats->stats($token, ShootingContextNature::TRAINING);
+        $competitionOnly = $this->stats->stats($token, ShootingContextNature::COMPETITION);
+
+        self::assertSame(2, $all->summary->sessionsCount);
+        self::assertSame(1, $trainingOnly->summary->sessionsCount);
+        self::assertSame(1, $competitionOnly->summary->sessionsCount);
+        self::assertSame(100, $competitionOnly->summary->bestSessionScore);
     }
 
     /**

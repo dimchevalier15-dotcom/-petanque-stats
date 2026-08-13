@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\ShootingSession;
+use App\Enum\ShootingContextNature;
 use App\ValueObject\DateRange;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -67,7 +68,7 @@ final class ShootingSessionRepository extends ServiceEntityRepository
      *
      * @return list<array{id:int,finishedAt:\DateTimeImmutable,totalScore:int}>
      */
-    public function findEvolutionForPlayer(int $playerId, ?DateRange $range = null): array
+    public function findEvolutionForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
     {
         $qb = $this->createQueryBuilder('s')
             ->where('s.player = :pid')
@@ -75,7 +76,7 @@ final class ShootingSessionRepository extends ServiceEntityRepository
             ->setParameter('pid', $playerId)
             ->orderBy('s.finishedAt', 'ASC');
 
-        $this->applyFinishedAtRange($qb, 's', $range);
+        $this->applyFilters($qb, 's', $contextNature, $range);
 
         /** @var list<ShootingSession> $sessions */
         $sessions = $qb->getQuery()->getResult();
@@ -90,7 +91,7 @@ final class ShootingSessionRepository extends ServiceEntityRepository
         );
     }
 
-    public function countCompletedForPlayer(int $playerId, ?DateRange $range = null): int
+    public function countCompletedForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): int
     {
         $qb = $this->createQueryBuilder('s')
             ->select('COUNT(s.id)')
@@ -98,12 +99,12 @@ final class ShootingSessionRepository extends ServiceEntityRepository
             ->andWhere('s.finishedAt IS NOT NULL')
             ->setParameter('pid', $playerId);
 
-        $this->applyFinishedAtRange($qb, 's', $range);
+        $this->applyFilters($qb, 's', $contextNature, $range);
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    public function bestTotalScoreForPlayer(int $playerId, ?DateRange $range = null): ?int
+    public function bestTotalScoreForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): ?int
     {
         $qb = $this->createQueryBuilder('s')
             ->select('MAX(s.totalScore)')
@@ -111,14 +112,14 @@ final class ShootingSessionRepository extends ServiceEntityRepository
             ->andWhere('s.finishedAt IS NOT NULL')
             ->setParameter('pid', $playerId);
 
-        $this->applyFinishedAtRange($qb, 's', $range);
+        $this->applyFilters($qb, 's', $contextNature, $range);
 
         $value = $qb->getQuery()->getSingleScalarResult();
 
         return $value !== null ? (int) $value : null;
     }
 
-    public function averageTotalScoreForPlayer(int $playerId, ?DateRange $range = null): ?float
+    public function averageTotalScoreForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): ?float
     {
         $qb = $this->createQueryBuilder('s')
             ->select('AVG(s.totalScore)')
@@ -126,22 +127,25 @@ final class ShootingSessionRepository extends ServiceEntityRepository
             ->andWhere('s.finishedAt IS NOT NULL')
             ->setParameter('pid', $playerId);
 
-        $this->applyFinishedAtRange($qb, 's', $range);
+        $this->applyFilters($qb, 's', $contextNature, $range);
 
         $value = $qb->getQuery()->getSingleScalarResult();
 
         return $value !== null ? round((float) $value, 1) : null;
     }
 
-    private function applyFinishedAtRange(\Doctrine\ORM\QueryBuilder $qb, string $alias, ?DateRange $range): void
+    private function applyFilters(\Doctrine\ORM\QueryBuilder $qb, string $alias, ?ShootingContextNature $contextNature, ?DateRange $range): void
     {
-        if ($range === null) {
-            return;
+        if ($contextNature !== null) {
+            $qb->andWhere($alias.'.contextNature = :contextNature')
+                ->setParameter('contextNature', $contextNature);
         }
 
-        $qb->andWhere($alias.'.finishedAt >= :rangeFrom')
-            ->andWhere($alias.'.finishedAt <= :rangeTo')
-            ->setParameter('rangeFrom', $range->from)
-            ->setParameter('rangeTo', $range->to);
+        if ($range !== null) {
+            $qb->andWhere($alias.'.finishedAt >= :rangeFrom')
+                ->andWhere($alias.'.finishedAt <= :rangeTo')
+                ->setParameter('rangeFrom', $range->from)
+                ->setParameter('rangeTo', $range->to);
+        }
     }
 }

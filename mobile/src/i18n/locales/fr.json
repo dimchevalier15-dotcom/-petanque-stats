@@ -64,8 +64,7 @@
     "nature": {
       "friendly": "Amical",
       "training": "Entraînement",
-      "competition": "Compétition",
-      "official": "Officiel"
+      "competition": "Compétition"
     },
     "competitionStage": {
       "group": "Poules",
@@ -103,7 +102,8 @@
       "myStats": "Mes statistiques",
       "settings": "Paramètres",
       "logout": "Déconnexion",
-      "shooting": "Tir de précision"
+      "shooting": "Tir de précision",
+      "training": "Entraînement"
     }
   },
   "placeholders": {
@@ -214,6 +214,13 @@
       "addPlayer": "Ajouter un joueur",
       "role": "Rôle",
       "trackPlayer": "Analyser"
+    },
+    "resume": {
+      "title": "Partie en cours",
+      "message": "Vous avez une partie non terminée. Voulez-vous la reprendre ou démarrer un nouveau match ?",
+      "continue": "Reprendre",
+      "abandon": "Abandonner",
+      "score": "Score actuel : {scoreA} – {scoreB}"
     },
     "teams": { "a": "Équipe A", "b": "Équipe B", "aShort": "A", "bShort": "B" },
     "types": {
@@ -352,10 +359,15 @@
     "context": {
       "titleAdd": "Ajouter un titre",
       "titleEdit": "Modifier le titre",
-      "hint": "Optionnel : donnez un titre et une description à cette séance.",
+      "hint": "Optionnel : indiquez le contexte de cette séance.",
       "fields": {
+        "nature": "Contexte",
         "title": "Titre",
         "description": "Description"
+      },
+      "nature": {
+        "training": "Entraînement",
+        "competition": "Compétition"
       },
       "actions": {
         "add": "Ajouter un titre",
@@ -367,6 +379,9 @@
     "stats": {
       "title": "Statistiques tir",
       "subtitle": "Vos performances par atelier et distance",
+      "filters": {
+        "all": "Tous"
+      },
       "kpi": {
         "sessions": "Séances",
         "best": "Record",
@@ -418,6 +433,9 @@
   "stats": {
     "title": "Mes statistiques",
     "actions": { "back": "Retour" },
+    "filters": {
+      "all": "Tous"
+    },
     "kpi": {
       "matches": "Matchs",
       "victories": "Victoires",
@@ -594,6 +612,108 @@
       "En utilisant tous le même barème, les statistiques deviennent comparables d'un joueur à l'autre et d'un match à l'autre.",
       "quote":
       "Ne te demande pas si la boule était belle. Demande-toi combien elle a apporté à ton équipe."
+    }
+  },
+  "training": {
+    "home": {
+      "title": "Entraînement",
+      "subtitle": "Point ou tir, en quelques secondes",
+      "stats": "Statistiques",
+      "historyTitle": "Historique des séances",
+      "empty": "Aucune séance d'entraînement pour le moment.",
+      "successRate": "{rate} %"
+    },
+    "config": {
+      "type": "Type",
+      "distance": "Distance",
+      "balls": "Nombre de boules",
+      "start": "Commencer"
+    },
+    "types": {
+      "point": "Point",
+      "tir": "Tir"
+    },
+    "distanceMeters": "{n} m",
+    "scoreLabel": "Score : {score}",
+    "resume": {
+      "title": "Séance en cours",
+      "message": "Vous avez une séance d'entraînement non terminée. Voulez-vous la reprendre ?",
+      "continue": "Reprendre",
+      "abandon": "Abandonner"
+    },
+    "play": {
+      "ballProgress": "Boule {current} / {total}",
+      "hint": "Enregistrez le résultat de cette boule."
+    },
+    "results": {
+      "perfect": "Parfait",
+      "very_good": "Très bon",
+      "good": "Bon",
+      "acceptable": "Acceptable",
+      "bad": "Mauvais",
+      "useless": "Inutile",
+      "missed": "Manqué",
+      "touched": "Touché",
+      "successful": "Frappé",
+      "palet": "Palet",
+      "carreau": "Carreau"
+    },
+    "actions": {
+      "abandon": "Abandonner la séance"
+    },
+    "abandon": {
+      "title": "Abandonner la séance ?",
+      "message": "Les tentatives déjà enregistrées seront perdues si vous abandonnez.",
+      "cancel": "Annuler",
+      "confirm": "Abandonner"
+    },
+    "summary": {
+      "title": "Résumé de la séance",
+      "sessionFinished": "Séance terminée",
+      "attempts": "Détail des boules",
+      "actions": {
+        "stats": "Voir mes statistiques",
+        "newSession": "Nouvelle séance"
+      }
+    },
+    "stats": {
+      "title": "Statistiques d'entraînement",
+      "subtitle": "Vos performances par type et distance",
+      "filters": {
+        "all": "Tous"
+      },
+      "kpi": {
+        "sessions": "Séances",
+        "balls": "Boules",
+        "success": "Réussite",
+        "best": "Meilleur score"
+      },
+      "hero": {
+        "averageScore": "Score moyen"
+      },
+      "sections": {
+        "evolution": "Progression",
+        "byType": "Point vs Tir",
+        "distances": "Par distance"
+      },
+      "evolution": {
+        "hint": "Évolution du taux de réussite sur vos dernières séances."
+      },
+      "byType": {
+        "hint": "Taux de réussite par type d'entraînement."
+      },
+      "distances": {
+        "hint": "Taux de réussite selon la distance."
+      },
+      "empty": {
+        "loadErrorTitle": "Impossible de charger les statistiques",
+        "retry": "Réessayer",
+        "noSessionsTitle": "Aucune séance d'entraînement",
+        "noSessionsHint": "Commencez une séance pour voir vos statistiques.",
+        "startSession": "Commencer une séance",
+        "noDataInPeriodTitle": "Aucune donnée sur cette période",
+        "noDataInPeriodHint": "Élargissez la période ou commencez une nouvelle séance."
+      }
     }
   }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Dto\Request;
 
+use App\Enum\GameType;
+use App\Enum\MatchNature;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class UpdateMatchContextRequest
@@ -17,7 +19,7 @@ final class UpdateMatchContextRequest
     #[Assert\Length(max: 100)]
     public ?string $teamBName = null;
 
-    #[Assert\Choice(choices: ['friendly', 'training', 'competition', 'official'])]
+    #[Assert\Choice(callback: [MatchNature::class, 'values'])]
     public ?string $nature = null;
 
     #[Assert\Length(max: 255)]

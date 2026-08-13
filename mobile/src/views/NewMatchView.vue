@@ -165,20 +165,64 @@
       </div>
     </form>
   </section>
+
+  <Dialog
+    v-model:visible="resumeDialog"
+    :modal="true"
+    :closable="false"
+    :header="t('matches.resume.title')"
+    class="match-resume-dialog"
+  >
+    <div class="resume-content">
+      <p>{{ t('matches.resume.message') }}</p>
+      <p v-if="draft" class="resume-score">
+        {{ t('matches.resume.score', { scoreA: currentScore.scoreA, scoreB: currentScore.scoreB }) }}
+      </p>
+      <div class="resume-actions">
+        <Button
+          :label="t('matches.resume.abandon')"
+          severity="secondary"
+          outlined
+          @click="abandonAndClose"
+        />
+        <Button :label="t('matches.resume.continue')" icon="pi pi-arrow-right" @click="resumeCurrent" />
+      </div>
+    </div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import SelectButton from 'primevue/selectbutton'
 import ToggleSwitch from 'primevue/toggleswitch'
 import PageHeader from '../components/layout/PageHeader.vue'
+import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
 import { useNewMatchSetup } from '../composables/useNewMatchSetup'
 import type { PlayerRole } from '../models/Match'
 
 const { t } = useI18n()
+const { draft, resume, abandon } = useMatchDraftResume()
+const resumeDialog = ref(draft.value !== null)
+
+const currentScore = computed(() => {
+  if (!draft.value) return { scoreA: 0, scoreB: 0 }
+  return draftScore(draft.value)
+})
+
+function resumeCurrent(): void {
+  resumeDialog.value = false
+  resume()
+}
+
+function abandonAndClose(): void {
+  abandon()
+  resumeDialog.value = false
+}
 
 const {
   type,
@@ -219,6 +263,23 @@ const {
 .setup-form {
   display: grid;
   gap: var(--app-space-lg);
+}
+
+.resume-content {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.resume-score {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.resume-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-sm);
 }
 
 .type-bar {

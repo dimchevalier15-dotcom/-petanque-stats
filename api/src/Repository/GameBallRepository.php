@@ -31,6 +31,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('IDENTITY(b.player) as pid, COUNT(b.id) as cnt, SUM(b.note) as s')
             ->join('b.end', 'e')
             ->where('e.game = :g')
+            ->andWhere('e.canceled = false')
             ->setParameter('g', $game)
             ->groupBy('pid')
             ->getQuery()->getArrayResult();
@@ -52,6 +53,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('IDENTITY(b.player) as pid, b.note as n, COUNT(b.id) as c')
             ->join('b.end', 'e')
             ->where('e.game = :g')
+            ->andWhere('e.canceled = false')
             ->setParameter('g', $game)
             ->groupBy('pid, n')
             ->getQuery()->getArrayResult();
@@ -93,6 +95,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('IDENTITY(b.player) as pid, b.shotType as st, COUNT(b.id) as cnt, SUM(b.note) as s')
             ->join('b.end', 'e')
             ->where('e.game = :g')
+            ->andWhere('e.canceled = false')
             ->setParameter('g', $game)
             ->groupBy('pid, st')
             ->getQuery()->getArrayResult();
@@ -117,6 +120,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('IDENTITY(b.player) as pid, b.shotType as st, b.note as n, COUNT(b.id) as c')
             ->join('b.end', 'e')
             ->where('e.game = :g')
+            ->andWhere('e.canceled = false')
             ->setParameter('g', $game)
             ->groupBy('pid, st, n')
             ->getQuery()->getArrayResult();
@@ -177,6 +181,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('COUNT(b.id) as cnt, SUM(b.note) as s')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
+            ->andWhere('e.canceled = false')
             ->setParameter('pid', $playerId);
 
         if ($gameIds !== null) {
@@ -197,6 +202,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('b.note as n, COUNT(b.id) as c')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
+            ->andWhere('e.canceled = false')
             ->setParameter('pid', $playerId)
             ->groupBy('n');
 
@@ -240,6 +246,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('b.shotType as st, COUNT(b.id) as cnt, SUM(b.note) as s')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
+            ->andWhere('e.canceled = false')
             ->setParameter('pid', $playerId)
             ->groupBy('st');
 
@@ -267,6 +274,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('b.shotType as st, b.note as n, COUNT(b.id) as c')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
+            ->andWhere('e.canceled = false')
             ->setParameter('pid', $playerId)
             ->groupBy('st, n');
 
@@ -318,6 +326,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('IDENTITY(e.game) as gid, COUNT(b.id) as cnt, SUM(b.note) as s')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
+            ->andWhere('e.canceled = false')
             ->setParameter('pid', $playerId)
             ->groupBy('gid');
 
@@ -344,6 +353,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('IDENTITY(e.game) as gid, b.note as n, COUNT(b.id) as c')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
+            ->andWhere('e.canceled = false')
             ->setParameter('pid', $playerId)
             ->groupBy('gid, n');
 

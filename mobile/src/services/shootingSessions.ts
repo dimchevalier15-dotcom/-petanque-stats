@@ -8,6 +8,7 @@ import type {
 } from '../dto/shooting/ShootingSessionResponse'
 import type { ShootingStatsResponseDto } from '../dto/shooting/ShootingStatsResponse'
 import type {
+  ShootingContextNature,
   ShootingSessionHistoryPage,
   ShootingSessionStarted,
   ShootingSessionSummary,
@@ -25,6 +26,7 @@ function mapSummary(dto: ShootingSessionSummaryResponseDto): ShootingSessionSumm
     createdAt: dto.createdAt,
     finishedAt: dto.finishedAt,
     totalScore: dto.totalScore,
+    contextNature: dto.contextNature,
     title: dto.title,
     description: dto.description,
     workshops: dto.workshops,
@@ -76,9 +78,12 @@ export const shootingSessionsService = {
     const { data } = await api.put<ShootingSessionSummaryResponseDto>(`/shooting-sessions/${id}/context`, payload)
     return mapSummary(data)
   },
-  async getStats(range: StatsDateRangeParams): Promise<ShootingStats> {
+  async getStats(range: StatsDateRangeParams, nature?: ShootingContextNature | 'all'): Promise<ShootingStats> {
     const { data } = await api.get<ShootingStatsResponseDto>('/shooting-sessions/stats', {
-      params: range,
+      params: {
+        ...range,
+        ...(nature && nature !== 'all' ? { nature } : {}),
+      },
     })
     return mapStats(data)
   },

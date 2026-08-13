@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Game;
+use App\Enum\MatchNature;
 use App\ValueObject\DateRange;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,10 +31,11 @@ final class GameRepository extends ServiceEntityRepository
         $pageSize = max(1, $pageSize);
         $offset = ($page - 1) * $pageSize;
 
-        // total
+        // total — only games with at least one recorded end
         $total = (int) $this->createQueryBuilder('g')
             ->select('COUNT(DISTINCT g.id)')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
             ->setParameter('pid', $playerId)
             ->getQuery()->getSingleScalarResult();
@@ -42,8 +44,10 @@ final class GameRepository extends ServiceEntityRepository
         /** @var list<Game> $items */
         $items = $this->createQueryBuilder('g')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
             ->setParameter('pid', $playerId)
+            ->groupBy('g.id')
             ->orderBy('g.createdAt', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($pageSize)
@@ -57,7 +61,7 @@ final class GameRepository extends ServiceEntityRepository
      *
      * @return list<Game>
      */
-    public function findCompletedGamesForPlayer(int $playerId, ?DateRange $range = null): array
+    public function findCompletedGamesForPlayer(int $playerId, ?MatchNature $nature = null, ?DateRange $range = null): array
     {
         $qb = $this->createQueryBuilder('g')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
@@ -67,12 +71,7 @@ final class GameRepository extends ServiceEntityRepository
             ->groupBy('g.id')
             ->orderBy('g.createdAt', 'ASC');
 
-        if ($range !== null) {
-            $qb->andWhere('g.createdAt >= :rangeFrom')
-                ->andWhere('g.createdAt <= :rangeTo')
-                ->setParameter('rangeFrom', $range->from)
-                ->setParameter('rangeTo', $range->to);
-        }
+        $this->applyFilters($qb, $nature, $range);
 
         /** @var list<Game> $items */
         $items = $qb->getQuery()->getResult();
@@ -80,14 +79,31 @@ final class GameRepository extends ServiceEntityRepository
         return $items;
     }
 
-    public function countCompletedGamesForPlayer(int $playerId): int
+    public function countCompletedGamesForPlayer(int $playerId, ?MatchNature $nature = null, ?DateRange $range = null): int
     {
-        return (int) $this->createQueryBuilder('g')
+        $qb = $this->createQueryBuilder('g')
             ->select('COUNT(DISTINCT g.id)')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
             ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
-            ->setParameter('pid', $playerId)
-            ->getQuery()->getSingleScalarResult();
+            ->setParameter('pid', $playerId);
+
+        $this->applyFilters($qb, $nature, $range);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    private function applyFilters(\Doctrine\ORM\QueryBuilder $qb, ?MatchNature $nature, ?DateRange $range): void
+    {
+        if ($nature !== null) {
+            $qb->andWhere('g.nature = :nature')->setParameter('nature', $nature);
+        }
+
+        if ($range !== null) {
+            $qb->andWhere('g.createdAt >= :rangeFrom')
+                ->andWhere('g.createdAt <= :rangeTo')
+                ->setParameter('rangeFrom', $range->from)
+                ->setParameter('rangeTo', $range->to);
+        }
     }
 }

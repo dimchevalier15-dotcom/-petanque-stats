@@ -12,6 +12,7 @@ final class ShootingSessionSummaryResponse
         public string $createdAt,
         public ?string $finishedAt,
         public ?int $totalScore,
+        public ?string $contextNature,
         public ?string $title,
         public ?string $description,
         public array $workshops,

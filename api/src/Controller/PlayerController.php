@@ -8,6 +8,7 @@ use App\Dto\Request\CreatePlayerRequest;
 use App\Dto\Request\SearchPlayersQuery;
 use App\Dto\Response\CreatePlayerResponse;
 use App\Dto\Response\PlayerItem;
+use App\Enum\MatchNature;
 use App\Http\StatsDateRangeResolver;
 use App\Service\PlayerService;
 use App\Service\PlayerStatsService;
@@ -73,7 +74,17 @@ final class PlayerController extends AbstractController
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['message' => $e->getMessage()], 400);
         }
-        $res = $this->playerStatsService->statsForToken($token, $dateRange);
+
+        $natureParam = $request->query->get('nature');
+        $nature = null;
+        if ($natureParam !== null && $natureParam !== '' && $natureParam !== 'all') {
+            $nature = MatchNature::tryFrom((string) $natureParam);
+            if ($nature === null) {
+                return new JsonResponse(['message' => 'Invalid nature filter.'], 400);
+            }
+        }
+
+        $res = $this->playerStatsService->statsForToken($token, $nature, $dateRange);
         $json = $this->serializer->serialize($res, 'json');
         return new JsonResponse($json, 200, [], true);
     }

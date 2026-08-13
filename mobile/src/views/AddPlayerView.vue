@@ -1,5 +1,5 @@
 <template>
-  <PageHeader :title="t('players.create.title')"" />
+  <PageHeader :title="t('players.create.title')" />
 
   <form @submit.prevent="onSubmit" class="app-form" novalidate>
     <div class="app-card form-card">

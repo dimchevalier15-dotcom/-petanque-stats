@@ -1,4 +1,4 @@
-import type { ShootingShotResult } from '../../models/Shooting'
+import type { ShootingContextNature, ShootingShotResult } from '../../models/Shooting'
 
 export interface ShootingSessionStartedResponseDto {
   id: number
@@ -22,6 +22,7 @@ export interface ShootingSessionSummaryResponseDto {
   createdAt: string
   finishedAt: string | null
   totalScore: number | null
+  contextNature: ShootingContextNature | null
   title: string | null
   description: string | null
   workshops: ShootingWorkshopSummaryDto[]
@@ -32,10 +33,12 @@ export interface ShootingSessionHistoryItemDto {
   createdAt: string
   finishedAt: string
   totalScore: number
+  contextNature: ShootingContextNature | null
   title: string | null
 }
 
 export interface UpdateShootingSessionContextRequestDto {
+  contextNature: ShootingContextNature | null
   title: string | null
   description: string | null
 }

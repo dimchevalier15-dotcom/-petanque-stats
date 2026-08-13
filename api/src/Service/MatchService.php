@@ -10,6 +10,8 @@ use App\Entity\Game;
 use App\Entity\GameParticipant;
 use App\Entity\GameTracked;
 use App\Entity\Player;
+use App\Entity\User;
+use App\Enum\GameType;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -24,14 +26,14 @@ final class MatchService
      * @return CreateMatchResponse
      * @throws MatchValidationException
      */
-    public function create(CreateMatchRequest $req): CreateMatchResponse
+    public function create(CreateMatchRequest $req, User $createdBy): CreateMatchResponse
     {
         // Dynamic validations to keep exact behavior/messages
-        $allowed = ['tete_a_tete' => 1, 'doublette' => 2, 'triplette' => 3];
-        if (!isset($allowed[$req->type])) {
+        $type = GameType::tryFrom($req->type);
+        if ($type === null) {
             throw MatchValidationException::withErrors(['type' => 'Invalid type.']);
         }
-        $expected = $allowed[$req->type];
+        $expected = $type->playersPerTeam();
 
         if ($req->targetScore <= 0) {
             throw MatchValidationException::withErrors(['targetScore' => 'Must be a positive integer.']);
@@ -74,7 +76,8 @@ final class MatchService
             }
         }
 
-        $game = new Game($req->type, $req->targetScore, $req->statisticsMode);
+        $game = new Game($type, $req->targetScore, $req->statisticsMode);
+        $game->setCreatedBy($createdBy);
         $game->setTeamAName($this->resolveTeamName($req->teamAName, $map[(int) $req->teamA[0]]));
         $game->setTeamBName($this->resolveTeamName($req->teamBName, $map[(int) $req->teamB[0]]));
         $this->em->persist($game);
@@ -85,25 +88,27 @@ final class MatchService
             $defaults[(int) $d->playerId] = in_array($d->defaultShotType, ['point','tir'], true) ? $d->defaultShotType : 'point';
         }
         // Helper to compute default by position if not provided
-        $computeDefault = function (int $position, string $type) {
-            // tete_a_tete: position 1 => point
-            // doublette: pos1 => point, pos2 => tir
-            // triplette: pos1 => point, pos2 => point (milieu), pos3 => tir
-            if ($type === 'doublette' && $position === 2) return 'tir';
-            if ($type === 'triplette' && $position === 3) return 'tir';
+        $computeDefault = function (int $position) use ($type): string {
+            if ($type === GameType::DOUBLETTE && $position === 2) {
+                return 'tir';
+            }
+            if ($type === GameType::TRIPLETTE && $position === 3) {
+                return 'tir';
+            }
+
             return 'point';
         };
 
         $pos = 1;
         foreach ($req->teamA as $pid) {
             $pid = (int) $pid;
-            $def = $defaults[$pid] ?? $computeDefault($pos, $req->type);
+            $def = $defaults[$pid] ?? $computeDefault($pos);
             $this->em->persist(new GameParticipant($game, $map[$pid], 'A', $pos++, $def));
         }
         $pos = 1;
         foreach ($req->teamB as $pid) {
             $pid = (int) $pid;
-            $def = $defaults[$pid] ?? $computeDefault($pos, $req->type);
+            $def = $defaults[$pid] ?? $computeDefault($pos);
             $this->em->persist(new GameParticipant($game, $map[$pid], 'B', $pos++, $def));
         }
         // Persist tracked players

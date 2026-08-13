@@ -10,6 +10,8 @@ use App\Dto\Response\CompleteMatchResponse;
 use App\Entity\Game;
 use App\Entity\GameBall;
 use App\Entity\GameEnd;
+use App\Enum\GameType;
+use App\Repository\GameEndRepository;
 use App\Repository\GameParticipantRepository;
 use App\Repository\GameRepository;
 use App\Repository\PlayerRepository;
@@ -19,6 +21,7 @@ final class MatchRecordingService
 {
     public function __construct(
         private GameRepository $games,
+        private GameEndRepository $ends,
         private GameParticipantRepository $participants,
         private PlayerRepository $players,
         private EntityManagerInterface $em,
@@ -35,7 +38,7 @@ final class MatchRecordingService
         }
 
         // Validate coherence with created match
-        $allowedPerPlayer = $req->type === 'triplette' ? 2 : 3;
+        $allowedPerPlayer = $req->type === GameType::TRIPLETTE->value ? 2 : 3;
         $matchPlayerIds = $this->participants->findAllPlayerIdsByGame($game);
         $matchPlayerSet = array_fill_keys($matchPlayerIds, true);
 
@@ -43,10 +46,9 @@ final class MatchRecordingService
         $tracked = array_values(array_unique(array_map('intval', $tracked)));
         $trackedSet = array_fill_keys($tracked, true);
 
-        // Start transaction
         $this->em->wrapInTransaction(function () use ($req, $game, $matchPlayerSet, $trackedSet, $allowedPerPlayer): void {
-            // Optional: cleanup previous completion if any (idempotency)
-            // For minimal change, we do not delete previous data.
+            // Idempotency: replace any previous completion data instead of duplicating it.
+            $this->ends->deleteByGame($game);
 
             // Preload default shot type map for participants
             $participantRepo = $this->participants;

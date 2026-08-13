@@ -8,6 +8,7 @@ use App\Entity\Game;
 use App\Entity\GameBall;
 use App\Entity\GameEnd;
 use App\Entity\Player;
+use App\Enum\GameType;
 use PHPUnit\Framework\TestCase;
 
 final class GameBallTest extends TestCase
@@ -42,7 +43,7 @@ final class GameBallTest extends TestCase
 
     private function end(): GameEnd
     {
-        $game = new Game('doublette', 13, 'standard');
+        $game = new Game(GameType::DOUBLETTE, 13, 'standard');
 
         return new GameEnd($game, 1, 'A', 0);
     }

@@ -10,6 +10,7 @@ use App\Dto\Response\PlayerStatsEvolutionPointResponse;
 use App\Dto\Response\PlayerStatsResponse;
 use App\Dto\Response\PlayerStatsSummaryResponse;
 use App\Entity\Game;
+use App\Enum\MatchNature;
 use App\Repository\GameBallRepository;
 use App\Repository\GameEndRepository;
 use App\Repository\GameParticipantRepository;
@@ -28,7 +29,7 @@ final class PlayerStatsService
     ) {
     }
 
-    public function statsForToken(string $token, ?DateRange $dateRange = null): PlayerStatsResponse
+    public function statsForToken(string $token, ?MatchNature $nature = null, ?DateRange $dateRange = null): PlayerStatsResponse
     {
         $me = $this->currentUser->meFromToken($token);
         $playerId = $me->playerId;
@@ -38,10 +39,14 @@ final class PlayerStatsService
         }
 
         $displayName = $this->buildDisplayName($me->nickname, $me->firstName, $me->lastName);
-        $games = $this->games->findCompletedGamesForPlayer((int) $playerId, $dateRange);
+        $games = $this->games->findCompletedGamesForPlayer((int) $playerId, $nature, $dateRange);
 
         if ($games === []) {
-            if ($dateRange !== null && $this->games->countCompletedGamesForPlayer((int) $playerId) > 0) {
+            if ($dateRange !== null && $this->games->countCompletedGamesForPlayer((int) $playerId, $nature) > 0) {
+                return $this->emptyResponse('no_data_in_period', (int) $playerId, $displayName);
+            }
+
+            if ($nature !== null && $this->games->countCompletedGamesForPlayer((int) $playerId, null, $dateRange) > 0) {
                 return $this->emptyResponse('no_data_in_period', (int) $playerId, $displayName);
             }
 
@@ -184,14 +189,14 @@ final class PlayerStatsService
         /** @var array<string, list<int>> $gameIdsByNature */
         $gameIdsByNature = [];
         foreach ($games as $game) {
-            $nature = $game->getNature();
-            if ($nature === null || $nature === '') {
+            $natureValue = $game->getNature()?->value;
+            if ($natureValue === null || $natureValue === '') {
                 continue;
             }
-            if (!isset($gameIdsByNature[$nature])) {
-                $gameIdsByNature[$nature] = [];
+            if (!isset($gameIdsByNature[$natureValue])) {
+                $gameIdsByNature[$natureValue] = [];
             }
-            $gameIdsByNature[$nature][] = (int) $game->getId();
+            $gameIdsByNature[$natureValue][] = (int) $game->getId();
         }
 
         $out = [];

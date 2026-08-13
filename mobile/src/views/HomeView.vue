@@ -1,5 +1,22 @@
 <template>
   <AppPage>
+    <section v-if="draft" class="resume-card app-card">
+      <h3 class="resume-title">{{ t('matches.resume.title') }}</h3>
+      <p class="resume-message">{{ t('matches.resume.message') }}</p>
+      <p class="resume-score">
+        {{ t('matches.resume.score', { scoreA: currentScore.scoreA, scoreB: currentScore.scoreB }) }}
+      </p>
+      <div class="resume-actions">
+        <Button :label="t('matches.resume.continue')" icon="pi pi-play" @click="resume" />
+        <Button
+          :label="t('matches.resume.abandon')"
+          severity="secondary"
+          outlined
+          @click="abandon"
+        />
+      </div>
+    </section>
+
     <div class="welcome-card app-card">
       <div class="brand-row">
         <span class="logo" aria-hidden="true">🥅</span>
@@ -21,6 +38,10 @@
         <button type="button" class="quick-item app-card" @click="goShooting">
           <i class="pi pi-bullseye" aria-hidden="true" />
           <span>{{ t('home.actions.shooting') }}</span>
+        </button>
+        <button type="button" class="quick-item app-card" @click="goTraining">
+          <i class="pi pi-flag" aria-hidden="true" />
+          <span>{{ t('home.actions.training') }}</span>
         </button>
         <button type="button" class="quick-item app-card" @click="goGuidelines">
           <i class="pi pi-book" aria-hidden="true" />
@@ -46,21 +67,32 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
+import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
 import { useAuthStore } from '../stores/auth'
 
 const { t, locale } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
+const { draft, resume, abandon } = useMatchDraftResume()
+
+const currentScore = computed(() => {
+  if (!draft.value) return { scoreA: 0, scoreB: 0 }
+  return draftScore(draft.value)
+})
 
 function goAddPlayer(): void {
   router.push({ name: 'addPlayer' })
 }
 function goShooting(): void {
   router.push({ name: 'shootingHome' })
+}
+function goTraining(): void {
+  router.push({ name: 'trainingHome' })
 }
 function goSettings(): void {
   router.push({ name: 'settings' })
@@ -176,5 +208,39 @@ function toggleLanguageMenu(event: Event) {
 
 .quick-item--danger i {
   color: #c24141;
+}
+
+.resume-card {
+  padding: var(--app-space-md);
+  display: grid;
+  gap: var(--app-space-sm);
+  margin-bottom: var(--app-space-sm);
+  border: 1px solid var(--app-primary-border, #86efac);
+  background: var(--app-primary-soft, #ecfdf3);
+}
+
+.resume-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.resume-message {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+}
+
+.resume-score {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.resume-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-sm);
 }
 </style>

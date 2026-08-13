@@ -1,23 +1,16 @@
 import { computed, reactive, ref, watch } from 'vue'
-import type { MatchType, StatisticsMode } from '../models/Match'
+import type { MatchPlayState, MatchSetup } from '../models/MatchDraft'
 import type { BallNote, EndRecord, TeamSide } from '../models/MatchPlay'
 
-export interface MatchSetup {
-  id: number
-  type: MatchType
-  targetScore: number
-  statisticsMode: StatisticsMode
-  teamA: number[]
-  teamB: number[]
-  trackedPlayers: number[]
-  defaultShotTypes?: Record<number, 'point' | 'tir'>
-}
+export type { MatchSetup } from '../models/MatchDraft'
 
-export function useMatchPlay(setup: MatchSetup) {
-  const currentEndIndex = ref(0) // 0-based index
-  const ends = reactive<EndRecord[]>([
-    { index: 1, balls: [], winner: undefined, points: undefined, canceled: false },
-  ])
+export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPersist?: (state: MatchPlayState) => void) {
+  const currentEndIndex = ref(initial?.currentEndIndex ?? 0)
+  const ends = reactive<EndRecord[]>(
+    initial?.ends?.length
+      ? initial.ends.map((end) => ({ ...end, balls: end.balls.map((b) => ({ ...b, distances: b.distances ?? [] })) }))
+      : [{ index: 1, balls: [], winner: undefined, points: undefined, canceled: false }],
+  )
 
   // Precompute balls per player per end depending on type
   const ballsPerPlayer = computed(() => (setup.type === 'triplette' ? 2 : 3))
@@ -55,7 +48,32 @@ export function useMatchPlay(setup: MatchSetup) {
   }
 
   // call on creation
-  ensureEndStructure(ends[0])
+  ensureEndStructure(ends[currentEndIndex.value] ?? ends[0])
+
+  const distanceEstimate = ref<number | null>(initial?.distanceEstimate ?? null)
+
+  function snapshot(): MatchPlayState {
+    return {
+      currentEndIndex: currentEndIndex.value,
+      ends: ends.map((end) => ({
+        ...end,
+        balls: end.balls.map((ball) => ({
+          ...ball,
+          notes: [...ball.notes],
+          shotTypes: [...ball.shotTypes],
+          distances: [...(ball.distances ?? [])],
+        })),
+      })),
+      distanceEstimate: distanceEstimate.value,
+    }
+  }
+
+  function persist(): void {
+    onPersist?.(snapshot())
+  }
+
+  watch([currentEndIndex, distanceEstimate], persist)
+  watch(ends, persist, { deep: true })
 
   const scoreA = ref(0)
   const scoreB = ref(0)
@@ -75,6 +93,7 @@ export function useMatchPlay(setup: MatchSetup) {
   }
 
   watch(ends, () => recomputeGlobalScore(), { deep: true })
+  recomputeGlobalScore()
 
   const isFinished = computed(() => scoreA.value >= setup.targetScore || scoreB.value >= setup.targetScore)
 
@@ -118,7 +137,6 @@ export function useMatchPlay(setup: MatchSetup) {
 
   // Optional "estimated distance" shown permanently on the play screen (not persisted on the
   // end). Its current value is copied into every newly played ball; it never blocks anything.
-  const distanceEstimate = ref<number | null>(null)
   function setDistanceEstimate(value: number | null): void {
     distanceEstimate.value = value
   }

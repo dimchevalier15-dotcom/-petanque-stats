@@ -6,6 +6,7 @@ namespace App\Tests\Entity;
 
 use App\Entity\Player;
 use App\Entity\ShootingSession;
+use App\Enum\ShootingContextNature;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 
@@ -82,8 +83,9 @@ final class ShootingSessionTest extends TestCase
     {
         $session = new ShootingSession(new Player('Jean', 'Bernard', 'Jeannot'));
 
-        $session->setContext('Entraînement du soir', 'Bon ressenti, terrain sec.');
+        $session->setContext(ShootingContextNature::TRAINING, 'Entraînement du soir', 'Bon ressenti, terrain sec.');
 
+        self::assertSame(ShootingContextNature::TRAINING, $session->getContextNature());
         self::assertSame('Entraînement du soir', $session->getTitle());
         self::assertSame('Bon ressenti, terrain sec.', $session->getDescription());
     }

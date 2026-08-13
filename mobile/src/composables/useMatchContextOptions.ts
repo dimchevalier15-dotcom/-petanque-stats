@@ -16,7 +16,6 @@ export function useMatchContextOptions(t: ComposerTranslation): {
     { label: t('context.nature.friendly'), value: 'friendly' },
     { label: t('context.nature.training'), value: 'training' },
     { label: t('context.nature.competition'), value: 'competition' },
-    { label: t('context.nature.official'), value: 'official' },
   ])
 
   const competitionStageOptions = computed<SelectOption<CompetitionStage>[]>(() => [
