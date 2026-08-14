@@ -258,6 +258,10 @@
       "nextEnd": "Mène suivante"
     },
     "shots": { "point": "Point", "tir": "Tir" },
+    "roles": {
+      "title": "Changer les rôles",
+      "hint": "Rôles pour cette mène — touchez pour changer"
+    },
     "distancePlaceholder": "Distance en mètres",
     "distanceEstimate": "Distance estimée",
     "formChart": {
@@ -434,7 +438,11 @@
     "title": "Mes statistiques",
     "actions": { "back": "Retour" },
     "filters": {
-      "all": "Tous"
+      "all": "Tous",
+      "title": "Filtres",
+      "nature": "Nature",
+      "format": "Format",
+      "distance": "Distance"
     },
     "kpi": {
       "matches": "Matchs",
@@ -452,7 +460,9 @@
       "evolution": "Évolution",
       "distribution": "Répartition des notes",
       "shots": "Point & Tir",
-      "byNature": "Par nature de match"
+      "byNature": "Par nature de match",
+      "byFormat": "Par format",
+      "byDistance": "Par distance"
     },
     "notes": {
       "m2": "-2",
@@ -469,6 +479,22 @@
     "byNature": {
       "hint": "Uniquement les matchs avec contexte renseigné.",
       "meta": "{matches} matchs · {balls} boules"
+    },
+    "byFormat": {
+      "hint": "Performance selon le format de jeu.",
+      "meta": "{matches} matchs · {victories} victoires · {balls} boules"
+    },
+    "byDistance": {
+      "hint": "Uniquement les boules avec distance renseignée.",
+      "meta": "{balls} boules",
+      "buckets": {
+        "under_6": "< 6 m",
+        "6_7": "6-7 m",
+        "7_8": "7-8 m",
+        "8_9": "8-9 m",
+        "9_10": "9-10 m",
+        "10_plus": "10+ m"
+      }
     },
     "empty": {
       "noPlayerTitle": "Aucun joueur associé",

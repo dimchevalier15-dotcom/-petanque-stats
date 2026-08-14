@@ -1,8 +1,14 @@
 import type { MatchType, ShotType, StatisticsMode } from '../../models/Match'
+import type { PlayerRole } from '../../models/Match'
 
 export interface DefaultShotTypeDto {
   playerId: number
   defaultShotType: ShotType
+}
+
+export interface StartingRoleDto {
+  playerId: number
+  role: PlayerRole
 }
 
 export interface CreateMatchRequestDto {
@@ -15,4 +21,5 @@ export interface CreateMatchRequestDto {
   statisticsMode: StatisticsMode
   trackedPlayers: number[]
   defaultShotTypes?: DefaultShotTypeDto[]
+  startingRoles?: StartingRoleDto[]
 }

@@ -1,25 +1,61 @@
 <template>
   <AppPage :title="t('stats.title')" :subtitle="stats?.displayName ?? undefined">
-    <div v-if="showDateFilter" class="nature-filter">
-      <button
-        v-for="opt in natureFilterOptions"
-        :key="opt.value"
-        type="button"
-        class="filter-btn"
-        :class="{ active: natureFilter === opt.value }"
-        @click="setNatureFilter(opt.value)"
-      >
-        {{ opt.label }}
-      </button>
-    </div>
+    <StatsCollapsibleFilters v-if="showDateFilter" :active-count="activeFilterCount">
+      <div class="filter-group">
+        <span class="filter-group-label">{{ t('stats.filters.nature') }}</span>
+        <div class="nature-filter">
+          <button
+            v-for="opt in natureFilterOptions"
+            :key="opt.value"
+            type="button"
+            class="filter-btn"
+            :class="{ active: natureFilter === opt.value }"
+            @click="setNatureFilter(opt.value)"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+      </div>
 
-    <StatsDateRangeFilter
-      v-if="showDateFilter"
-      v-model:date-from="dateFrom"
-      v-model:date-to="dateTo"
-      :max-date="maxDate"
-      @change="onDateRangeChange"
-    />
+      <div class="filter-group">
+        <span class="filter-group-label">{{ t('stats.filters.format') }}</span>
+        <div class="format-filter">
+          <button
+            v-for="opt in formatFilterOptions"
+            :key="opt.value"
+            type="button"
+            class="filter-btn"
+            :class="{ active: formatFilter === opt.value }"
+            @click="setFormatFilter(opt.value)"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-group-label">{{ t('stats.filters.distance') }}</span>
+        <div class="distance-filter">
+          <button
+            v-for="opt in distanceFilterOptions"
+            :key="opt.value"
+            type="button"
+            class="filter-btn"
+            :class="{ active: distanceFilter === opt.value }"
+            @click="setDistanceFilter(opt.value)"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+      </div>
+
+      <StatsDateRangeFilter
+        v-model:date-from="dateFrom"
+        v-model:date-to="dateTo"
+        :max-date="maxDate"
+        @change="onDateRangeChange"
+      />
+    </StatsCollapsibleFilters>
 
     <div v-if="loading && !stats" class="loading">
       <ProgressSpinner stroke-width="4" />
@@ -181,6 +217,42 @@
           </div>
         </section>
 
+        <section v-if="stats.byFormat.length > 0 && formatFilter === 'all'" class="panel app-card">
+          <h3>{{ t('stats.sections.byFormat') }}</h3>
+          <p class="panel-hint">{{ t('stats.byFormat.hint') }}</p>
+          <ul class="breakdown-list">
+            <li v-for="item in stats.byFormat" :key="item.type" class="breakdown-item">
+              <div class="breakdown-head">
+                <span>{{ formatLabel(t, item.type) }}</span>
+                <Tag :value="formatAvg(item.average)" :severity="avgSeverity(item.average)" />
+              </div>
+              <span class="breakdown-meta">
+                {{ t('stats.byFormat.meta', {
+                  matches: item.matchCount,
+                  victories: item.victories,
+                  balls: item.ballCount,
+                }) }}
+              </span>
+            </li>
+          </ul>
+        </section>
+
+        <section v-if="stats.byDistance.length > 0 && distanceFilter === 'all'" class="panel app-card">
+          <h3>{{ t('stats.sections.byDistance') }}</h3>
+          <p class="panel-hint">{{ t('stats.byDistance.hint') }}</p>
+          <ul class="breakdown-list">
+            <li v-for="item in stats.byDistance" :key="item.bucket" class="breakdown-item">
+              <div class="breakdown-head">
+                <span>{{ distanceBucketLabel(t, item.bucket) }}</span>
+                <Tag :value="formatAvg(item.average)" :severity="avgSeverity(item.average)" />
+              </div>
+              <span class="breakdown-meta">
+                {{ t('stats.byDistance.meta', { balls: item.ballCount }) }}
+              </span>
+            </li>
+          </ul>
+        </section>
+
         <section v-if="stats.byNature.length > 0" class="panel app-card">
           <h3>{{ t('stats.sections.byNature') }}</h3>
           <p class="panel-hint">{{ t('stats.byNature.hint') }}</p>
@@ -211,18 +283,21 @@ import Chart from 'primevue/chart'
 import ProgressSpinner from 'primevue/progressspinner'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
-import EmptyState from '../components/layout/EmptyState.vue'
+import StatsCollapsibleFilters from '../components/stats/StatsCollapsibleFilters.vue'
 import StatsDateRangeFilter from '../components/stats/StatsDateRangeFilter.vue'
 import {
   avgSeverity,
   breakdownBallCount,
+  distanceBucketLabel,
   formatAvg,
+  formatLabel,
   natureLabel,
   usePlayerStatsCharts,
 } from '../composables/usePlayerStatsCharts'
-import { useStatsDateRange } from '../composables/useStatsDateRange'
+import { useStatsDateRange, toInputDate } from '../composables/useStatsDateRange'
 import type { MatchNature } from '../models/MatchContext'
-import type { PlayerStats } from '../models/PlayerStats'
+import type { MatchType } from '../models/Match'
+import { DISTANCE_BUCKET_KEYS, type DistanceBucketKey, type PlayerStats } from '../models/PlayerStats'
 import { statsService } from '../services/stats'
 
 const { t } = useI18n()
@@ -233,7 +308,15 @@ const refreshing = ref(false)
 const loadError = ref(false)
 const stats = ref<PlayerStats | null>(null)
 const natureFilter = ref<MatchNature | 'all'>('all')
+const formatFilter = ref<MatchType | 'all'>('all')
+const distanceFilter = ref<DistanceBucketKey | 'all'>('all')
 const { dateFrom, dateTo, maxDate, normalizeRange, queryParams } = useStatsDateRange()
+
+const defaultDateFrom = (() => {
+  const today = new Date()
+  const from = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate())
+  return toInputDate(from)
+})()
 
 const natureFilterOptions = computed(() => [
   { value: 'all' as const, label: t('stats.filters.all') },
@@ -241,6 +324,30 @@ const natureFilterOptions = computed(() => [
   { value: 'training' as const, label: t('context.nature.training') },
   { value: 'competition' as const, label: t('context.nature.competition') },
 ])
+
+const formatFilterOptions = computed(() => [
+  { value: 'all' as const, label: t('stats.filters.all') },
+  { value: 'tete_a_tete' as const, label: t('matches.types.teteATete') },
+  { value: 'doublette' as const, label: t('matches.types.doublette') },
+  { value: 'triplette' as const, label: t('matches.types.triplette') },
+])
+
+const distanceFilterOptions = computed(() => [
+  { value: 'all' as const, label: t('stats.filters.all') },
+  ...DISTANCE_BUCKET_KEYS.map((bucket) => ({
+    value: bucket,
+    label: distanceBucketLabel(t, bucket),
+  })),
+])
+
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (natureFilter.value !== 'all') count++
+  if (formatFilter.value !== 'all') count++
+  if (distanceFilter.value !== 'all') count++
+  if (dateFrom.value !== defaultDateFrom || dateTo.value !== maxDate) count++
+  return count
+})
 
 const showDateFilter = computed(() => stats.value !== null && stats.value.status !== 'no_player')
 
@@ -311,6 +418,20 @@ function setNatureFilter(value: MatchNature | 'all'): void {
   }
 }
 
+function setFormatFilter(value: MatchType | 'all'): void {
+  formatFilter.value = value
+  if (stats.value) {
+    load({ refresh: true })
+  }
+}
+
+function setDistanceFilter(value: DistanceBucketKey | 'all'): void {
+  distanceFilter.value = value
+  if (stats.value) {
+    load({ refresh: true })
+  }
+}
+
 async function load(options: { refresh?: boolean } = {}) {
   const isRefresh = options.refresh === true
   if (isRefresh) {
@@ -320,7 +441,12 @@ async function load(options: { refresh?: boolean } = {}) {
   }
   loadError.value = false
   try {
-    stats.value = await statsService.getMyStats(queryParams(), natureFilter.value)
+    stats.value = await statsService.getMyStats(
+      queryParams(),
+      natureFilter.value,
+      formatFilter.value,
+      distanceFilter.value,
+    )
   } catch {
     loadError.value = true
   } finally {
@@ -340,11 +466,42 @@ onMounted(load)
 </script>
 
 <style scoped>
-.nature-filter {
+.filter-group {
+  display: grid;
+  gap: var(--app-space-xs);
+}
+
+.filter-group-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.nature-filter,
+.format-filter {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--app-space-xs);
-  margin-bottom: var(--app-space-sm);
+}
+
+.distance-filter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--app-space-xs);
+}
+
+.distance-filter .filter-btn {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.25rem;
+}
+
+:deep(.date-range-filter) {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 .filter-btn {
@@ -633,7 +790,8 @@ onMounted(load)
   padding: 0.5rem 0;
 }
 
-.nature-list {
+.nature-list,
+.breakdown-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -641,7 +799,8 @@ onMounted(load)
   gap: 0.5rem;
 }
 
-.nature-item {
+.nature-item,
+.breakdown-item {
   border: 1px solid #f0f0f0;
   border-radius: 10px;
   padding: 0.625rem 0.75rem;
@@ -649,14 +808,16 @@ onMounted(load)
   gap: 0.25rem;
 }
 
-.nature-head {
+.nature-head,
+.breakdown-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-weight: 600;
 }
 
-.nature-meta {
+.nature-meta,
+.breakdown-meta {
   font-size: 0.8rem;
   opacity: 0.7;
 }

@@ -311,6 +311,30 @@ final class MatchRecordingServiceTest extends KernelTestCase
         self::assertSame(0, $endCount);
     }
 
+    public function testEndPlayerRolesArePersisted(): void
+    {
+        [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
+
+        $req = $this->baseRequest($playerAId, $playerBId);
+        $roleA = new \App\Dto\Request\CompleteMatchEndRoleDto();
+        $roleA->playerId = $playerAId;
+        $roleA->role = 'pointeur';
+        $roleB = new \App\Dto\Request\CompleteMatchEndRoleDto();
+        $roleB->playerId = $playerBId;
+        $roleB->role = 'tireur';
+        $req->ends[0]->roles = [$roleA, $roleB];
+
+        $this->recording->complete($matchId, $req);
+
+        $game = $this->em->getRepository(\App\Entity\Game::class)->find($matchId);
+        self::assertNotNull($game);
+        $end = $this->em->getRepository(\App\Entity\GameEnd::class)->findOneBy(['game' => $game]);
+        self::assertNotNull($end);
+
+        $roles = $this->em->getRepository(\App\Entity\GameEndPlayerRole::class)->findBy(['end' => $end]);
+        self::assertCount(2, $roles);
+    }
+
     /**
      * @return list<\App\Entity\GameBall>
      */

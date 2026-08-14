@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\PlayerRole;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -35,15 +36,26 @@ class GameParticipant
     #[ORM\Column(name: 'default_shot_type', type: 'string', length: 6)]
     private string $defaultShotType = 'point';
 
-    public function __construct(Game $game, Player $player, string $team, int $position, string $defaultShotType = 'point')
-    {
+    #[ORM\Column(name: 'starting_role', type: 'string', length: 10, enumType: PlayerRole::class)]
+    private PlayerRole $startingRole;
+
+    public function __construct(
+        Game $game,
+        Player $player,
+        string $team,
+        int $position,
+        string $defaultShotType = 'point',
+        PlayerRole $startingRole = PlayerRole::POINTEUR,
+    ) {
         $this->game = $game;
         $this->player = $player;
         $this->team = $team;
         $this->position = $position;
-        $this->defaultShotType = in_array($defaultShotType, ['point','tir'], true) ? $defaultShotType : 'point';
+        $this->defaultShotType = in_array($defaultShotType, ['point', 'tir'], true) ? $defaultShotType : 'point';
+        $this->startingRole = $startingRole;
     }
 
     public function getId(): ?int { return $this->id; }
     public function getDefaultShotType(): string { return $this->defaultShotType; }
+    public function getStartingRole(): PlayerRole { return $this->startingRole; }
 }

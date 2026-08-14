@@ -12,6 +12,7 @@ use App\Entity\GameTracked;
 use App\Entity\Player;
 use App\Entity\User;
 use App\Enum\GameType;
+use App\Enum\PlayerRole;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -82,34 +83,48 @@ final class MatchService
         $game->setTeamBName($this->resolveTeamName($req->teamBName, $map[(int) $req->teamB[0]]));
         $this->em->persist($game);
 
-        // Build default shot type map from DTO if provided
         $defaults = [];
         foreach ($req->defaultShotTypes as $d) {
             $defaults[(int) $d->playerId] = in_array($d->defaultShotType, ['point','tir'], true) ? $d->defaultShotType : 'point';
         }
-        // Helper to compute default by position if not provided
-        $computeDefault = function (int $position) use ($type): string {
-            if ($type === GameType::DOUBLETTE && $position === 2) {
-                return 'tir';
+
+        $startingRoles = [];
+        foreach ($req->startingRoles as $roleDto) {
+            $role = PlayerRole::tryFrom($roleDto->role);
+            if ($role !== null) {
+                $startingRoles[(int) $roleDto->playerId] = $role;
             }
-            if ($type === GameType::TRIPLETTE && $position === 3) {
-                return 'tir';
+        }
+
+        $computeDefaultRole = function (int $position) use ($type): PlayerRole {
+            if ($type === GameType::DOUBLETTE && $position === 2) {
+                return PlayerRole::TIREUR;
+            }
+            if ($type === GameType::TRIPLETTE) {
+                if ($position === 2) {
+                    return PlayerRole::MILIEU;
+                }
+                if ($position === 3) {
+                    return PlayerRole::TIREUR;
+                }
             }
 
-            return 'point';
+            return PlayerRole::POINTEUR;
         };
 
         $pos = 1;
         foreach ($req->teamA as $pid) {
             $pid = (int) $pid;
-            $def = $defaults[$pid] ?? $computeDefault($pos);
-            $this->em->persist(new GameParticipant($game, $map[$pid], 'A', $pos++, $def));
+            $role = $startingRoles[$pid] ?? $computeDefaultRole($pos);
+            $def = $defaults[$pid] ?? $role->defaultShotType();
+            $this->em->persist(new GameParticipant($game, $map[$pid], 'A', $pos++, $def, $role));
         }
         $pos = 1;
         foreach ($req->teamB as $pid) {
             $pid = (int) $pid;
-            $def = $defaults[$pid] ?? $computeDefault($pos);
-            $this->em->persist(new GameParticipant($game, $map[$pid], 'B', $pos++, $def));
+            $role = $startingRoles[$pid] ?? $computeDefaultRole($pos);
+            $def = $defaults[$pid] ?? $role->defaultShotType();
+            $this->em->persist(new GameParticipant($game, $map[$pid], 'B', $pos++, $def, $role));
         }
         // Persist tracked players
         foreach ($tracked as $pid) {

@@ -24,6 +24,20 @@ export interface PlayerStatsByNatureDto {
   average: number
 }
 
+export interface PlayerStatsByFormatDto {
+  type: string
+  matchCount: number
+  victories: number
+  ballCount: number
+  average: number
+}
+
+export interface PlayerStatsByDistanceDto {
+  bucket: string
+  ballCount: number
+  average: number
+}
+
 export interface PlayerStatsResponseDto {
   status: PlayerStatsStatus
   playerId: number | null
@@ -34,4 +48,6 @@ export interface PlayerStatsResponseDto {
   tir: MatchSummaryShotBreakdownDto | null
   evolution: PlayerStatsEvolutionPointDto[]
   byNature: PlayerStatsByNatureDto[]
+  byFormat: PlayerStatsByFormatDto[]
+  byDistance: PlayerStatsByDistanceDto[]
 }

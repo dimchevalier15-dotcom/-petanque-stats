@@ -1,12 +1,17 @@
 import type { MatchType, StatisticsMode } from '../../models/Match'
+import type { PlayerRole } from '../../models/Match'
 import type { BallNote, TeamSide } from '../../models/MatchPlay'
 
 export interface EndBallDto {
   playerId: number
   notes: BallNote[]
   shotTypes: ('point' | 'tir')[]
-  // Optional distance in meters per ball, aligned with notes by index.
   distances?: (number | null)[]
+}
+
+export interface EndRoleDto {
+  playerId: number
+  role: PlayerRole
 }
 
 export interface EndDto {
@@ -15,6 +20,7 @@ export interface EndDto {
   winner: TeamSide
   points: number
   canceled?: boolean
+  roles?: EndRoleDto[]
 }
 
 export interface CompleteMatchRequestDto {

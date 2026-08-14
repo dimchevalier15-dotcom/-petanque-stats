@@ -9,6 +9,8 @@ use App\Dto\Request\CompleteMatchEndDto;
 use App\Dto\Request\CreateMatchRequest;
 use App\Entity\Player;
 use App\Entity\User;
+use App\Enum\DistanceBucket;
+use App\Enum\GameType;
 use App\Enum\MatchNature;
 use App\Service\MatchHistoryService;
 use App\Service\MatchRecordingService;
@@ -107,12 +109,105 @@ final class PlayerStatsServiceTest extends KernelTestCase
         self::assertContains('competition', $natures);
     }
 
+    public function testStatsGroupsByFormat(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+
+        $this->createAndCompleteMatch($playerId, $opponentId, winner: 'A', points: 2, ballNote: 1, type: 'tete_a_tete');
+        $this->createAndCompleteMatch($playerId, $opponentId, winner: 'A', points: 1, ballNote: 2, type: 'tete_a_tete');
+
+        $res = $this->stats->statsForToken($token);
+
+        self::assertSame('ok', $res->status);
+        self::assertCount(1, $res->byFormat);
+        self::assertSame('tete_a_tete', $res->byFormat[0]->type);
+        self::assertSame(2, $res->byFormat[0]->matchCount);
+        self::assertSame(2, $res->byFormat[0]->victories);
+    }
+
+    public function testStatsGroupsByDistanceBucket(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+
+        $this->createAndCompleteMatch(
+            $playerId,
+            $opponentId,
+            winner: 'A',
+            points: 2,
+            ballNote: 1,
+            distances: [6.5],
+        );
+        $this->createAndCompleteMatch(
+            $playerId,
+            $opponentId,
+            winner: 'A',
+            points: 1,
+            ballNote: 2,
+            distances: [10.5],
+        );
+
+        $res = $this->stats->statsForToken($token);
+
+        self::assertSame('ok', $res->status);
+        self::assertGreaterThanOrEqual(2, count($res->byDistance));
+        $buckets = array_map(static fn ($row) => $row->bucket, $res->byDistance);
+        self::assertContains('6_7', $buckets);
+        self::assertContains('10_plus', $buckets);
+    }
+
+    public function testStatsFiltersByFormat(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+
+        $this->createAndCompleteMatch($playerId, $opponentId, winner: 'A', points: 2, ballNote: 1, type: 'tete_a_tete');
+        $this->createAndCompleteMatch($playerId, $opponentId, winner: 'A', points: 1, ballNote: 2, type: 'tete_a_tete');
+
+        $res = $this->stats->statsForToken($token, null, null, GameType::DOUBLETTE);
+
+        self::assertSame('no_data_in_period', $res->status);
+    }
+
+    public function testStatsFiltersByDistanceBucket(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+
+        $this->createAndCompleteMatch(
+            $playerId,
+            $opponentId,
+            winner: 'A',
+            points: 2,
+            ballNote: 1,
+            distances: [6.5],
+        );
+        $this->createAndCompleteMatch(
+            $playerId,
+            $opponentId,
+            winner: 'A',
+            points: 1,
+            ballNote: 2,
+            distances: [10.5],
+        );
+
+        $res = $this->stats->statsForToken($token, null, null, null, DistanceBucket::FROM_6_TO_7);
+
+        self::assertSame('ok', $res->status);
+        self::assertSame(1, $res->summary->totalBalls);
+        self::assertSame(1.0, $res->overall?->average);
+        self::assertSame([], $res->byDistance);
+    }
+
     private function createAndCompleteMatch(
         int $playerAId,
         int $opponentId,
         string $winner,
         int $points,
         ?int $ballNote,
+        string $type = 'tete_a_tete',
+        array $distances = [],
     ): int {
         $suffix = bin2hex(random_bytes(4));
         $owner = new User('owner'.$suffix.'@test.local');
@@ -120,7 +215,7 @@ final class PlayerStatsServiceTest extends KernelTestCase
         $this->em->persist($owner);
 
         $createReq = new CreateMatchRequest();
-        $createReq->type = 'tete_a_tete';
+        $createReq->type = $type;
         $createReq->targetScore = 13;
         $createReq->statisticsMode = 'standard';
         $createReq->teamA = [$playerAId];
@@ -138,6 +233,7 @@ final class PlayerStatsServiceTest extends KernelTestCase
             $ball->playerId = $playerAId;
             $ball->notes = [$ballNote];
             $ball->shotTypes = ['point'];
+            $ball->distances = $distances !== [] ? $distances : [null];
             $req->ends[0]->balls = [$ball];
         }
 

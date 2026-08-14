@@ -1,4 +1,4 @@
-import type { MatchType, StatisticsMode } from './Match'
+import type { MatchType, PlayerRole, ShotType, StatisticsMode } from './Match'
 import type { EndRecord } from './MatchPlay'
 
 export interface MatchSetup {
@@ -9,13 +9,15 @@ export interface MatchSetup {
   teamA: number[]
   teamB: number[]
   trackedPlayers: number[]
-  defaultShotTypes?: Record<number, 'point' | 'tir'>
+  defaultShotTypes?: Record<number, ShotType>
+  startingRoles: Record<number, PlayerRole>
 }
 
 export interface MatchPlayState {
   currentEndIndex: number
   ends: EndRecord[]
   distanceEstimate: number | null
+  currentRoles: Record<number, PlayerRole>
 }
 
 export interface MatchDraft extends MatchSetup, MatchPlayState {

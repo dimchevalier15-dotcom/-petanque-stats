@@ -169,3 +169,22 @@ export function natureLabel(t: ComposerTranslation, nature: string): string {
   const translated = t(key)
   return translated === key ? nature : translated
 }
+
+export function formatLabel(t: ComposerTranslation, type: string): string {
+  switch (type) {
+    case 'tete_a_tete':
+      return t('matches.types.teteATete')
+    case 'doublette':
+      return t('matches.types.doublette')
+    case 'triplette':
+      return t('matches.types.triplette')
+    default:
+      return type
+  }
+}
+
+export function distanceBucketLabel(t: ComposerTranslation, bucket: string): string {
+  const key = `stats.byDistance.buckets.${bucket}`
+  const translated = t(key)
+  return translated === key ? bucket : translated
+}

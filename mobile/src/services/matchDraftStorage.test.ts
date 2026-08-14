@@ -35,10 +35,12 @@ const setup: MatchSetup = {
   teamB: [3, 4],
   trackedPlayers: [1, 2, 3, 4],
   defaultShotTypes: { 1: 'point', 2: 'tir' },
+  startingRoles: { 1: 'pointeur', 2: 'tireur', 3: 'pointeur', 4: 'tireur' },
 }
 
 const playState = {
   currentEndIndex: 1,
+  currentRoles: { 1: 'pointeur', 2: 'tireur', 3: 'pointeur', 4: 'tireur' },
   ends: [
     {
       index: 1,

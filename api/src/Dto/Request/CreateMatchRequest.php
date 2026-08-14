@@ -50,6 +50,21 @@ final class CreateMatchRequest
      * @var list<CreateMatchDefaultShotType>
      */
     public array $defaultShotTypes = [];
+
+    /**
+     * Initial role per player for this match.
+     * @var list<CreateMatchStartingRole>
+     */
+    public array $startingRoles = [];
+}
+
+final class CreateMatchStartingRole
+{
+    #[Assert\Positive]
+    public int $playerId;
+
+    #[Assert\Choice(callback: [\App\Enum\PlayerRole::class, 'values'])]
+    public string $role = 'pointeur';
 }
 
 final class CreateMatchDefaultShotType

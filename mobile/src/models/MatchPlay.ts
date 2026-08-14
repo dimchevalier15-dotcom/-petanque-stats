@@ -1,3 +1,5 @@
+import type { PlayerRole } from './Match'
+
 export type TeamSide = 'A' | 'B'
 
 // Allowed ball notes by mode: standard: -2,-1,0,1,2; simple: -1,1
@@ -17,4 +19,5 @@ export interface EndRecord {
   winner?: TeamSide
   points?: number
   canceled?: boolean
+  roles?: Record<number, PlayerRole>
 }

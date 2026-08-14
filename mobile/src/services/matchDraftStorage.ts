@@ -1,5 +1,6 @@
 import type { EndRecord } from '../models/MatchPlay'
 import type { MatchDraft, MatchPlayState, MatchSetup } from '../models/MatchDraft'
+import { inferStartingRoles } from '../utils/matchRoles'
 
 const STORAGE_KEY = 'match_draft'
 
@@ -14,9 +15,27 @@ function normalizeEnd(end: EndRecord): EndRecord {
 }
 
 function normalizeDraft(raw: MatchDraft): MatchDraft {
+  const startingRoles = inferStartingRoles(
+    raw.type,
+    raw.teamA,
+    raw.teamB,
+    raw.defaultShotTypes,
+    raw.startingRoles,
+  )
+
+  const ends = raw.ends.map(normalizeEnd)
+  const currentRoles =
+    raw.currentRoles && Object.keys(raw.currentRoles).length > 0
+      ? { ...raw.currentRoles }
+      : ends[raw.currentEndIndex]?.roles
+        ? { ...ends[raw.currentEndIndex].roles! }
+        : { ...startingRoles }
+
   return {
     ...raw,
-    ends: raw.ends.map(normalizeEnd),
+    startingRoles,
+    currentRoles,
+    ends,
   }
 }
 
@@ -70,6 +89,7 @@ export function saveMatchDraft(
       currentEndIndex: playState.currentEndIndex,
       ends: playState.ends.map(normalizeEnd),
       distanceEstimate: playState.distanceEstimate,
+      currentRoles: { ...playState.currentRoles },
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(draft))
   } catch {

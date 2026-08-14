@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Game;
+use App\Enum\GameType;
 use App\Enum\MatchNature;
 use App\ValueObject\DateRange;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -61,8 +62,12 @@ final class GameRepository extends ServiceEntityRepository
      *
      * @return list<Game>
      */
-    public function findCompletedGamesForPlayer(int $playerId, ?MatchNature $nature = null, ?DateRange $range = null): array
-    {
+    public function findCompletedGamesForPlayer(
+        int $playerId,
+        ?MatchNature $nature = null,
+        ?DateRange $range = null,
+        ?GameType $type = null,
+    ): array {
         $qb = $this->createQueryBuilder('g')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
             ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
@@ -71,7 +76,7 @@ final class GameRepository extends ServiceEntityRepository
             ->groupBy('g.id')
             ->orderBy('g.createdAt', 'ASC');
 
-        $this->applyFilters($qb, $nature, $range);
+        $this->applyFilters($qb, $nature, $range, $type);
 
         /** @var list<Game> $items */
         $items = $qb->getQuery()->getResult();
@@ -79,8 +84,12 @@ final class GameRepository extends ServiceEntityRepository
         return $items;
     }
 
-    public function countCompletedGamesForPlayer(int $playerId, ?MatchNature $nature = null, ?DateRange $range = null): int
-    {
+    public function countCompletedGamesForPlayer(
+        int $playerId,
+        ?MatchNature $nature = null,
+        ?DateRange $range = null,
+        ?GameType $type = null,
+    ): int {
         $qb = $this->createQueryBuilder('g')
             ->select('COUNT(DISTINCT g.id)')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
@@ -88,15 +97,23 @@ final class GameRepository extends ServiceEntityRepository
             ->where('gp.player = :pid')
             ->setParameter('pid', $playerId);
 
-        $this->applyFilters($qb, $nature, $range);
+        $this->applyFilters($qb, $nature, $range, $type);
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
-    private function applyFilters(\Doctrine\ORM\QueryBuilder $qb, ?MatchNature $nature, ?DateRange $range): void
-    {
+    private function applyFilters(
+        \Doctrine\ORM\QueryBuilder $qb,
+        ?MatchNature $nature,
+        ?DateRange $range,
+        ?GameType $type = null,
+    ): void {
         if ($nature !== null) {
             $qb->andWhere('g.nature = :nature')->setParameter('nature', $nature);
+        }
+
+        if ($type !== null) {
+            $qb->andWhere('g.type = :type')->setParameter('type', $type);
         }
 
         if ($range !== null) {

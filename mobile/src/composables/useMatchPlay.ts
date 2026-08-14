@@ -1,8 +1,43 @@
 import { computed, reactive, ref, watch } from 'vue'
+import type { PlayerRole } from '../models/Match'
 import type { MatchPlayState, MatchSetup } from '../models/MatchDraft'
 import type { BallNote, EndRecord, TeamSide } from '../models/MatchPlay'
+import {
+  cycleTripletteRole,
+  inferStartingRoles,
+  roleToShot,
+  snapshotEndRoles,
+  syncCurrentRolesFromEnd,
+  teamForPlayer,
+  totalBallsInEnd,
+} from '../utils/matchRoles'
 
 export type { MatchSetup } from '../models/MatchDraft'
+
+function allPlayerIds(setup: MatchSetup): number[] {
+  return [...setup.teamA, ...setup.teamB]
+}
+
+function resolveInitialCurrentRoles(setup: MatchSetup, initial?: MatchPlayState): Record<number, PlayerRole> {
+  if (initial?.currentRoles && Object.keys(initial.currentRoles).length > 0) {
+    return { ...initial.currentRoles }
+  }
+
+  const startingRoles = inferStartingRoles(
+    setup.type,
+    setup.teamA,
+    setup.teamB,
+    setup.defaultShotTypes,
+    setup.startingRoles,
+  )
+
+  if (initial?.ends?.length) {
+    const end = initial.ends[initial.currentEndIndex ?? 0]
+    return syncCurrentRolesFromEnd(end, startingRoles)
+  }
+
+  return { ...startingRoles }
+}
 
 export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPersist?: (state: MatchPlayState) => void) {
   const currentEndIndex = ref(initial?.currentEndIndex ?? 0)
@@ -12,25 +47,89 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       : [{ index: 1, balls: [], winner: undefined, points: undefined, canceled: false }],
   )
 
-  // Precompute balls per player per end depending on type
-  const ballsPerPlayer = computed(() => (setup.type === 'triplette' ? 2 : 3))
+  const startingRoles = inferStartingRoles(
+    setup.type,
+    setup.teamA,
+    setup.teamB,
+    setup.defaultShotTypes,
+    setup.startingRoles,
+  )
 
-  const allPlayers = computed<number[]>(() => [...setup.teamA, ...setup.teamB])
+  const currentRoles = reactive<Record<number, PlayerRole>>(resolveInitialCurrentRoles(setup, initial))
+
+  const ballsPerPlayer = computed(() => (setup.type === 'triplette' ? 2 : 3))
+  const allPlayers = computed<number[]>(() => allPlayerIds(setup))
   const trackedSet = computed(() => new Set<number>(setup.trackedPlayers))
+  const showRoles = computed(() => setup.type === 'doublette' || setup.type === 'triplette')
+
+  function roleFor(playerId: number): PlayerRole {
+    const end = ends[currentEndIndex.value]
+    return end?.roles?.[playerId] ?? currentRoles[playerId] ?? startingRoles[playerId] ?? 'pointeur'
+  }
+
+  function shotDefaultFor(playerId: number): 'point' | 'tir' {
+    return roleToShot(roleFor(playerId))
+  }
+
+  function ensureEndRoles(end: EndRecord): void {
+    if (!end.roles) {
+      snapshotEndRoles(end, currentRoles, allPlayers.value)
+    }
+  }
+
+  function applyRolesToCurrentEnd(): void {
+    const end = ends[currentEndIndex.value]
+    if (!end) return
+    snapshotEndRoles(end, currentRoles, allPlayers.value)
+  }
+
+  function swapDoubletteTeamRoles(team: 'A' | 'B'): void {
+    const teamIds = team === 'A' ? setup.teamA : setup.teamB
+    if (teamIds.length !== 2) return
+    const [p1, p2] = teamIds
+    const r1 = currentRoles[p1]
+    const r2 = currentRoles[p2]
+    currentRoles[p1] = r2
+    currentRoles[p2] = r1
+    applyRolesToCurrentEnd()
+  }
+
+  function maybeRotateOnFirstBall(playerId: number, end: EndRecord, ballsBefore: number): void {
+    if (setup.type !== 'doublette' || ballsBefore > 0) {
+      return
+    }
+
+    if (roleFor(playerId) !== 'tireur') {
+      return
+    }
+
+    const team = teamForPlayer(playerId, setup.teamA, setup.teamB)
+    if (team) {
+      swapDoubletteTeamRoles(team)
+    }
+  }
+
+  function setPlayerRole(playerId: number, role: PlayerRole): void {
+    currentRoles[playerId] = role
+    applyRolesToCurrentEnd()
+  }
+
+  function cyclePlayerRole(playerId: number): void {
+    if (setup.type !== 'triplette' || isFinished.value || isEndScored(currentEnd.value)) return
+    setPlayerRole(playerId, cycleTripletteRole(roleFor(playerId)))
+  }
 
   function ensureEndStructure(end: EndRecord): void {
     if (end.balls.length === 0) {
-      // initialize entries for tracked players only
       end.balls = allPlayers.value
         .filter((id) => trackedSet.value.has(id))
         .map((playerId) => ({
           playerId,
           notes: [] as BallNote[],
-          shotTypes: [] as ('point'|'tir')[],
+          shotTypes: [] as ('point' | 'tir')[],
           distances: [] as (number | null)[],
         }))
     }
-    // clamp length of arrays
     for (const entry of end.balls) {
       if (entry.notes.length > ballsPerPlayer.value) {
         entry.notes = entry.notes.slice(0, ballsPerPlayer.value)
@@ -45,9 +144,9 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
         entry.distances = entry.distances.slice(0, ballsPerPlayer.value)
       }
     }
+    ensureEndRoles(end)
   }
 
-  // call on creation
   ensureEndStructure(ends[currentEndIndex.value] ?? ends[0])
 
   const distanceEstimate = ref<number | null>(initial?.distanceEstimate ?? null)
@@ -57,6 +156,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       currentEndIndex: currentEndIndex.value,
       ends: ends.map((end) => ({
         ...end,
+        roles: end.roles ? { ...end.roles } : undefined,
         balls: end.balls.map((ball) => ({
           ...ball,
           notes: [...ball.notes],
@@ -65,6 +165,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
         })),
       })),
       distanceEstimate: distanceEstimate.value,
+      currentRoles: { ...currentRoles },
     }
   }
 
@@ -74,6 +175,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
 
   watch([currentEndIndex, distanceEstimate], persist)
   watch(ends, persist, { deep: true })
+  watch(currentRoles, persist, { deep: true })
 
   const scoreA = ref(0)
   const scoreB = ref(0)
@@ -97,16 +199,36 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
 
   const isFinished = computed(() => scoreA.value >= setup.targetScore || scoreB.value >= setup.targetScore)
 
-  function goPrevEnd(): void {
-    if (currentEndIndex.value > 0) currentEndIndex.value -= 1
+  function syncRolesForEndIndex(index: number): void {
+    const end = ends[index]
+    if (!end) return
+    const merged = syncCurrentRolesFromEnd(end, startingRoles)
+    for (const playerId of allPlayers.value) {
+      currentRoles[playerId] = merged[playerId]
+    }
   }
+
+  function goPrevEnd(): void {
+    if (currentEndIndex.value > 0) {
+      currentEndIndex.value -= 1
+      syncRolesForEndIndex(currentEndIndex.value)
+    }
+  }
+
   function goNextEnd(): void {
-    if (currentEndIndex.value < ends.length - 1) currentEndIndex.value += 1
+    if (currentEndIndex.value < ends.length - 1) {
+      currentEndIndex.value += 1
+      syncRolesForEndIndex(currentEndIndex.value)
+    }
   }
 
   function addEndIfNeeded(): void {
     if (currentEndIndex.value === ends.length - 1) {
       const e: EndRecord = { index: ends.length + 1, balls: [], winner: undefined, points: undefined, canceled: false }
+      for (const playerId of allPlayers.value) {
+        currentRoles[playerId] = currentRoles[playerId] ?? startingRoles[playerId]
+      }
+      snapshotEndRoles(e, currentRoles, allPlayers.value)
       ensureEndStructure(e)
       ends.push(e)
     }
@@ -135,8 +257,6 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     return noteIndex <= entry.notes.length
   }
 
-  // Optional "estimated distance" shown permanently on the play screen (not persisted on the
-  // end). Its current value is copied into every newly played ball; it never blocks anything.
   function setDistanceEstimate(value: number | null): void {
     distanceEstimate.value = value
   }
@@ -155,7 +275,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     const max = ballsPerPlayer.value
     if (noteIndex >= max) return
 
-    const defaultShot = shotType ?? setup.defaultShotTypes?.[playerId] ?? 'point'
+    const defaultShot = shotType ?? shotDefaultFor(playerId)
 
     if (value === null) {
       if (noteIndex < entry.notes.length) {
@@ -173,9 +293,11 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     }
 
     if (noteIndex === entry.notes.length) {
+      const ballsBefore = totalBallsInEnd(end)
       entry.notes.push(value)
       entry.shotTypes.push(defaultShot)
       entry.distances.push(distanceEstimate.value)
+      maybeRotateOnFirstBall(playerId, end, ballsBefore)
     }
   }
 
@@ -195,12 +317,16 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   const canValidateEnd = computed(
     () => !isFinished.value && !isEndScored(currentEnd.value) && hasAnyPlayedBall(currentEnd.value),
   )
+  const canEditRoles = computed(
+    () => setup.type === 'triplette' && !isFinished.value && !isEndScored(currentEnd.value),
+  )
 
   function setEndScore(winner: TeamSide, points: number): void {
     const end = currentEnd.value
     end.canceled = false
     end.winner = winner
     end.points = points
+    snapshotEndRoles(end, currentRoles, allPlayers.value)
     recomputeGlobalScore()
     if (!isFinished.value) {
       addEndIfNeeded()
@@ -215,6 +341,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     end.canceled = true
     end.winner = 'A'
     end.points = 0
+    snapshotEndRoles(end, currentRoles, allPlayers.value)
     recomputeGlobalScore()
     addEndIfNeeded()
     currentEndIndex.value += 1
@@ -248,19 +375,27 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       teamB: setup.teamB,
       trackedPlayers: setup.trackedPlayers,
       ends: ends
-        .filter((e) => (e.canceled === true) || (e.winner && e.points))
+        .filter((e) => e.canceled === true || (e.winner && e.points))
         .map((e) => ({
           index: e.index,
           winner: (e.winner as TeamSide) ?? 'A',
           points: e.canceled ? 0 : ((e.points as number) ?? 0),
           canceled: e.canceled === true,
-          balls: e.balls.map((b) => ({ playerId: b.playerId, notes: b.notes, shotTypes: b.shotTypes, distances: b.distances })),
+          balls: e.balls.map((b) => ({
+            playerId: b.playerId,
+            notes: b.notes,
+            shotTypes: b.shotTypes,
+            distances: b.distances,
+          })),
+          roles: allPlayers.value.map((playerId) => ({
+            playerId,
+            role: e.roles?.[playerId] ?? startingRoles[playerId] ?? 'pointeur',
+          })),
         })),
     }
   }
 
   return {
-    // state
     currentEndIndex,
     currentEnd,
     ends,
@@ -268,7 +403,11 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     scoreB,
     isFinished,
     ballsPerPlayer,
-    // actions
+    showRoles,
+    roleFor,
+    shotDefaultFor,
+    cyclePlayerRole,
+    canEditRoles,
     goPrevEnd,
     goNextEnd,
     setNote,
@@ -276,7 +415,6 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     setEndScore,
     distanceEstimate,
     setDistanceEstimate,
-    // helpers
     notesOptions,
     currentEndComplete,
     canValidateEnd,

@@ -9,6 +9,8 @@ final class PlayerStatsResponse
     /**
      * @param list<PlayerStatsEvolutionPointResponse> $evolution
      * @param list<PlayerStatsByNatureResponse> $byNature
+     * @param list<PlayerStatsByFormatResponse> $byFormat
+     * @param list<PlayerStatsByDistanceResponse> $byDistance
      */
     public function __construct(
         public string $status,
@@ -20,6 +22,8 @@ final class PlayerStatsResponse
         public ?MatchSummaryShotBreakdown $tir,
         public array $evolution,
         public array $byNature,
+        public array $byFormat,
+        public array $byDistance,
     ) {
     }
 }

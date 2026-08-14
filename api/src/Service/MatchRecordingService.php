@@ -10,7 +10,9 @@ use App\Dto\Response\CompleteMatchResponse;
 use App\Entity\Game;
 use App\Entity\GameBall;
 use App\Entity\GameEnd;
+use App\Entity\GameEndPlayerRole;
 use App\Enum\GameType;
+use App\Enum\PlayerRole;
 use App\Repository\GameEndRepository;
 use App\Repository\GameParticipantRepository;
 use App\Repository\GameRepository;
@@ -76,6 +78,8 @@ final class MatchRecordingService
                     allowedPerPlayer: $allowedPerPlayer,
                     defaultMap: $defaultMap,
                 );
+
+                $this->persistEndRoles($end, $endDto, $matchPlayerSet);
             }
         });
 
@@ -133,6 +137,31 @@ final class MatchRecordingService
 
                 $this->em->persist(new GameBall($end, $player, $i, $note, $shot, $distance));
             }
+        }
+    }
+
+    /**
+     * @param array<int, true> $matchPlayerSet
+     */
+    private function persistEndRoles(GameEnd $end, CompleteMatchEndDto $endDto, array $matchPlayerSet): void
+    {
+        foreach ($endDto->roles as $roleDto) {
+            $pid = (int) $roleDto->playerId;
+            if (!isset($matchPlayerSet[$pid])) {
+                continue;
+            }
+
+            $role = PlayerRole::tryFrom($roleDto->role);
+            if ($role === null) {
+                continue;
+            }
+
+            $player = $this->players->find($pid);
+            if ($player === null) {
+                continue;
+            }
+
+            $this->em->persist(new GameEndPlayerRole($end, $player, $role));
         }
     }
 }

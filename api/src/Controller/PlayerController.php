@@ -8,6 +8,8 @@ use App\Dto\Request\CreatePlayerRequest;
 use App\Dto\Request\SearchPlayersQuery;
 use App\Dto\Response\CreatePlayerResponse;
 use App\Dto\Response\PlayerItem;
+use App\Enum\DistanceBucket;
+use App\Enum\GameType;
 use App\Enum\MatchNature;
 use App\Http\StatsDateRangeResolver;
 use App\Service\PlayerService;
@@ -84,7 +86,25 @@ final class PlayerController extends AbstractController
             }
         }
 
-        $res = $this->playerStatsService->statsForToken($token, $nature, $dateRange);
+        $typeParam = $request->query->get('type');
+        $type = null;
+        if ($typeParam !== null && $typeParam !== '' && $typeParam !== 'all') {
+            $type = GameType::tryFrom((string) $typeParam);
+            if ($type === null) {
+                return new JsonResponse(['message' => 'Invalid type filter.'], 400);
+            }
+        }
+
+        $distanceParam = $request->query->get('distance');
+        $distance = null;
+        if ($distanceParam !== null && $distanceParam !== '' && $distanceParam !== 'all') {
+            $distance = DistanceBucket::tryFrom((string) $distanceParam);
+            if ($distance === null) {
+                return new JsonResponse(['message' => 'Invalid distance filter.'], 400);
+            }
+        }
+
+        $res = $this->playerStatsService->statsForToken($token, $nature, $dateRange, $type, $distance);
         $json = $this->serializer->serialize($res, 'json');
         return new JsonResponse($json, 200, [], true);
     }

@@ -44,6 +44,7 @@
             @click="openFormChart(pid)"
           >
             {{ nameFor(pid) }}
+            <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(pid)) }}</span>
           </button>
           <div v-if="isTracked(pid)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
             <Button
@@ -73,6 +74,7 @@
             @click="openFormChart(pid)"
           >
             {{ nameFor(pid) }}
+            <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(pid)) }}</span>
           </button>
           <div v-if="isTracked(pid)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
             <Button
@@ -105,8 +107,6 @@
       />
       <span class="distance-estimate-unit">m</span>
     </div>
-
-    
 
     <Dialog
       v-model:visible="formChartDialog"
@@ -175,13 +175,56 @@
       </div>
     </Dialog>
 
-    <footer class="play-actions">
-      <div v-if="canValidateEnd && !scoreDialog" class="play-actions-primary">
-        <Button class="validate-end-btn" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
-        <Button class="cancel-end-btn" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" outlined @click="openCancelDialog" />
-      </div>
-      <Button class="finish-btn" :label="t('play.actions.finish')" icon="pi pi-flag" severity="secondary" text @click="openFinishDialog" />
-    </footer>
+    <div class="play-bottom">
+      <details v-if="setup.type === 'triplette'" class="roles-drawer app-card">
+        <summary class="roles-drawer-summary">{{ t('play.roles.title') }}</summary>
+        <div class="roles-drawer-body">
+          <p class="roles-drawer-hint">{{ t('play.roles.hint') }}</p>
+          <div class="roles-teams">
+            <div class="roles-team">
+              <span class="roles-team-label">{{ teamALabel }}</span>
+              <div class="roles-chips">
+                <button
+                  v-for="pid in setup.teamA"
+                  :key="`role-a-${pid}`"
+                  type="button"
+                  class="role-chip"
+                  :disabled="!canEditRoles"
+                  @click="cyclePlayerRole(pid)"
+                >
+                  <span class="role-chip-name">{{ nameFor(pid) }}</span>
+                  <span class="role-chip-role">{{ roleLabel(roleFor(pid)) }}</span>
+                </button>
+              </div>
+            </div>
+            <div class="roles-team">
+              <span class="roles-team-label">{{ teamBLabel }}</span>
+              <div class="roles-chips">
+                <button
+                  v-for="pid in setup.teamB"
+                  :key="`role-b-${pid}`"
+                  type="button"
+                  class="role-chip"
+                  :disabled="!canEditRoles"
+                  @click="cyclePlayerRole(pid)"
+                >
+                  <span class="role-chip-name">{{ nameFor(pid) }}</span>
+                  <span class="role-chip-role">{{ roleLabel(roleFor(pid)) }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <footer class="play-actions">
+        <div v-if="canValidateEnd && !scoreDialog" class="play-actions-primary">
+          <Button class="validate-end-btn" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
+          <Button class="cancel-end-btn" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" outlined @click="openCancelDialog" />
+        </div>
+        <Button class="finish-btn" :label="t('play.actions.finish')" icon="pi pi-flag" severity="secondary" text @click="openFinishDialog" />
+      </footer>
+    </div>
 
     <Dialog v-model:visible="cancelDialog" :modal="true" :header="t('play.cancel.title')" :closable="false" class="play-dialog">
       <div class="cancel-content">
@@ -220,7 +263,8 @@ import InputText from 'primevue/inputtext'
 import SelectButton from 'primevue/selectbutton'
 import Tag from 'primevue/tag'
 import type { TeamSide } from '../models/MatchPlay'
-import { DEFAULT_TARGET_SCORE, type MatchType, type ShotType, type StatisticsMode } from '../models/Match'
+import { DEFAULT_TARGET_SCORE, type MatchType, type PlayerRole, type ShotType, type StatisticsMode } from '../models/Match'
+import { inferStartingRoles } from '../utils/matchRoles'
 import { useMatchPlay } from '../composables/useMatchPlay'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import { formatFormAvg, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
@@ -270,6 +314,7 @@ function parseSetupFromQuery(): MatchSetup | null {
     teamB,
     trackedPlayers,
     defaultShotTypes,
+    startingRoles: inferStartingRoles(type, teamA, teamB, defaultShotTypes),
   }
 }
 
@@ -283,6 +328,7 @@ function setupFromDraft(draft: NonNullable<ReturnType<typeof loadMatchDraft>>): 
     teamB: draft.teamB,
     trackedPlayers: draft.trackedPlayers,
     defaultShotTypes: draft.defaultShotTypes,
+    startingRoles: draft.startingRoles,
   }
 }
 
@@ -299,6 +345,7 @@ function resolvePlaySession(): { setup: MatchSetup; initial?: MatchPlayState } |
         currentEndIndex: draftForMatch.currentEndIndex,
         ends: draftForMatch.ends,
         distanceEstimate: draftForMatch.distanceEstimate,
+        currentRoles: draftForMatch.currentRoles,
       },
     }
   }
@@ -321,6 +368,7 @@ const setup = session?.setup ?? {
   teamA: [0],
   teamB: [0],
   trackedPlayers: [0],
+  startingRoles: {},
 }
 
 const initialPlayState = session?.initial
@@ -353,6 +401,11 @@ const {
   canPlayBallSlot,
   toSubmission,
   cancelCurrentEnd,
+  showRoles,
+  roleFor,
+  shotDefaultFor,
+  cyclePlayerRole,
+  canEditRoles,
 } = useMatchPlay(setup, initialPlayState, persistPlayState)
 
 const distanceEstimateInput = computed<number | null>({
@@ -408,8 +461,12 @@ function openNote(event: Event, playerId: number, noteIndex: number) {
   noteCtx.value = { playerId, noteIndex }
   // initialize shot type from existing note or default map
   const existing = shotAt(playerId, noteIndex)
-  shotType.value = existing ?? (setup.defaultShotTypes?.[playerId] ?? 'point')
+  shotType.value = existing ?? shotDefaultFor(playerId)
   op.value?.toggle(event)
+}
+
+function roleLabel(role: PlayerRole): string {
+  return t(`matches.roles.${role}`)
 }
 
 function applyNote(val: -2 | -1 | 0 | 1 | 2) {
@@ -730,6 +787,138 @@ onMounted(async () => {
   font-weight: 600;
 }
 
+.roles-drawer {
+  padding: 0;
+  overflow: hidden;
+}
+
+.roles-drawer-summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  user-select: none;
+}
+
+.roles-drawer-summary::-webkit-details-marker {
+  display: none;
+}
+
+.roles-drawer-summary::after {
+  content: '';
+  width: 0.35rem;
+  height: 0.35rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+  opacity: 0.6;
+}
+
+.roles-drawer[open] .roles-drawer-summary::after {
+  transform: rotate(-135deg);
+}
+
+.roles-drawer-body {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0 0.75rem 0.75rem;
+  border-top: 1px solid var(--app-border);
+}
+
+.roles-drawer-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.6875rem;
+  color: var(--app-text-muted);
+}
+
+.roles-teams {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.roles-team {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.roles-team-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--app-text-muted);
+}
+
+.roles-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.role-chip {
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: #fff;
+  padding: 0.1875rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font: inherit;
+  cursor: pointer;
+  min-height: 1.75rem;
+}
+
+.role-chip-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.role-chip-role {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--app-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.player-role {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--app-primary);
+  opacity: 0.85;
+}
+
+.role-chip:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.play-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
+  display: grid;
+  gap: var(--app-space-xs);
+  padding-top: var(--app-space-xs);
+  background: linear-gradient(to top, var(--app-bg) 85%, transparent);
+}
+
+.play-actions {
+  display: grid;
+  gap: var(--app-space-xs);
+}
+
 .teams {
   display: grid;
   gap: var(--app-space-md);
@@ -893,16 +1082,6 @@ onMounted(async () => {
   font-size: 1rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-}
-
-.play-actions {
-  position: sticky;
-  bottom: calc(var(--app-nav-h) + env(safe-area-inset-bottom, 0px));
-  z-index: 15;
-  display: grid;
-  gap: var(--app-space-xs);
-  padding-top: var(--app-space-xs);
-  background: linear-gradient(to top, var(--app-bg) 78%, transparent);
 }
 
 .play-actions-primary {

@@ -15,7 +15,7 @@ import {
   type ShotType,
   type StatisticsMode,
 } from '../models/Match'
-import type { DefaultShotTypeDto } from '../dto/match/CreateMatchRequest'
+import type { DefaultShotTypeDto, StartingRoleDto } from '../dto/match/CreateMatchRequest'
 
 export type MatchTeamSide = 'A' | 'B'
 
@@ -67,7 +67,11 @@ function slotsForType(type: MatchType): number[] {
 
 function defaultRoleFor(type: MatchType, position: number): PlayerRole {
   if (type === 'doublette') return position === 2 ? 'tireur' : 'pointeur'
-  if (type === 'triplette') return position === 3 ? 'tireur' : 'pointeur'
+  if (type === 'triplette') {
+    if (position === 2) return 'milieu'
+    if (position === 3) return 'tireur'
+    return 'pointeur'
+  }
   return 'pointeur'
 }
 
@@ -326,11 +330,19 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
         .map((player) => player.id)
 
       const defaults: DefaultShotTypeDto[] = []
+      const startingRoles: StartingRoleDto[] = []
+      const startingRolesMap: Record<number, PlayerRole> = {}
       teamA.forEach((playerId, idx) => {
-        defaults.push({ playerId, defaultShotType: roleToShot(teamARoles[idx] ?? 'pointeur') })
+        const role = teamARoles[idx] ?? 'pointeur'
+        defaults.push({ playerId, defaultShotType: roleToShot(role) })
+        startingRoles.push({ playerId, role })
+        startingRolesMap[playerId] = role
       })
       teamB.forEach((playerId, idx) => {
-        defaults.push({ playerId, defaultShotType: roleToShot(teamBRoles[idx] ?? 'pointeur') })
+        const role = teamBRoles[idx] ?? 'pointeur'
+        defaults.push({ playerId, defaultShotType: roleToShot(role) })
+        startingRoles.push({ playerId, role })
+        startingRolesMap[playerId] = role
       })
 
       const trimmedTeamAName = teamAName.value.trim()
@@ -346,6 +358,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
         statisticsMode: statisticsMode.value,
         trackedPlayers,
         defaultShotTypes: defaults,
+        startingRoles,
       })
 
       const defaultShotTypesMap: Record<number, 'point' | 'tir'> = {}
@@ -362,6 +375,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
         teamB,
         trackedPlayers,
         defaultShotTypes: defaultShotTypesMap,
+        startingRoles: startingRolesMap,
       }
 
       saveMatchDraft(
@@ -370,6 +384,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
           currentEndIndex: 0,
           ends: [{ index: 1, balls: [], winner: undefined, points: undefined, canceled: false }],
           distanceEstimate: null,
+          currentRoles: { ...startingRolesMap },
         },
         auth.user?.id ?? null,
       )

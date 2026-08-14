@@ -26,6 +26,31 @@ export interface PlayerStatsByNature {
   average: number
 }
 
+export interface PlayerStatsByFormat {
+  type: 'tete_a_tete' | 'doublette' | 'triplette'
+  matchCount: number
+  victories: number
+  ballCount: number
+  average: number
+}
+
+export type DistanceBucketKey = 'under_6' | '6_7' | '7_8' | '8_9' | '9_10' | '10_plus'
+
+export const DISTANCE_BUCKET_KEYS: DistanceBucketKey[] = [
+  'under_6',
+  '6_7',
+  '7_8',
+  '8_9',
+  '9_10',
+  '10_plus',
+]
+
+export interface PlayerStatsByDistance {
+  bucket: DistanceBucketKey
+  ballCount: number
+  average: number
+}
+
 export interface PlayerStats {
   status: PlayerStatsStatus
   playerId: number | null
@@ -36,4 +61,6 @@ export interface PlayerStats {
   tir: MatchSummaryShotBreakdown | null
   evolution: PlayerStatsEvolutionPoint[]
   byNature: PlayerStatsByNature[]
+  byFormat: PlayerStatsByFormat[]
+  byDistance: PlayerStatsByDistance[]
 }

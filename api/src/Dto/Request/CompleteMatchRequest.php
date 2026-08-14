@@ -55,6 +55,21 @@ final class CompleteMatchEndDto
 
     /** @var list<CompleteMatchEndBallDto> */
     public array $balls = [];
+
+    /**
+     * Role of each player during this end (for statistics).
+     * @var list<CompleteMatchEndRoleDto>
+     */
+    public array $roles = [];
+}
+
+final class CompleteMatchEndRoleDto
+{
+    #[Assert\Positive]
+    public int $playerId;
+
+    #[Assert\Choice(callback: [\App\Enum\PlayerRole::class, 'values'])]
+    public string $role;
 }
 
 final class CompleteMatchEndBallDto

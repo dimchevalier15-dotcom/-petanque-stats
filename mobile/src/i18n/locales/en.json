@@ -258,6 +258,10 @@
       "nextEnd": "Next end"
     },
     "shots": { "point": "Point", "tir": "Shot" },
+    "roles": {
+      "title": "Change roles",
+      "hint": "Roles for this end — tap to change"
+    },
     "distancePlaceholder": "Distance in meters",
     "distanceEstimate": "Estimated distance",
     "formChart": {
@@ -434,7 +438,11 @@
     "title": "My statistics",
     "actions": { "back": "Back" },
     "filters": {
-      "all": "All"
+      "all": "All",
+      "title": "Filters",
+      "nature": "Nature",
+      "format": "Format",
+      "distance": "Distance"
     },
     "kpi": {
       "matches": "Matches",
@@ -452,7 +460,9 @@
       "evolution": "Trend",
       "distribution": "Rating distribution",
       "shots": "Point & Shoot",
-      "byNature": "By match nature"
+      "byNature": "By match nature",
+      "byFormat": "By format",
+      "byDistance": "By distance"
     },
     "notes": {
       "m2": "-2",
@@ -469,6 +479,22 @@
     "byNature": {
       "hint": "Only matches with context filled in.",
       "meta": "{matches} matches · {balls} balls"
+    },
+    "byFormat": {
+      "hint": "Performance by game format.",
+      "meta": "{matches} matches · {victories} wins · {balls} balls"
+    },
+    "byDistance": {
+      "hint": "Only balls with a recorded distance.",
+      "meta": "{balls} balls",
+      "buckets": {
+        "under_6": "< 6 m",
+        "6_7": "6-7 m",
+        "7_8": "7-8 m",
+        "8_9": "8-9 m",
+        "9_10": "9-10 m",
+        "10_plus": "10+ m"
+      }
     },
     "empty": {
       "noPlayerTitle": "No linked player",

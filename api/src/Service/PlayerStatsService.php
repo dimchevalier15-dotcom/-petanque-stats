@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Dto\Response\MatchSummaryShotBreakdown;
+use App\Dto\Response\PlayerStatsByDistanceResponse;
+use App\Dto\Response\PlayerStatsByFormatResponse;
 use App\Dto\Response\PlayerStatsByNatureResponse;
 use App\Dto\Response\PlayerStatsEvolutionPointResponse;
 use App\Dto\Response\PlayerStatsResponse;
 use App\Dto\Response\PlayerStatsSummaryResponse;
 use App\Entity\Game;
+use App\Enum\DistanceBucket;
+use App\Enum\GameType;
 use App\Enum\MatchNature;
 use App\Repository\GameBallRepository;
 use App\Repository\GameEndRepository;
@@ -29,8 +33,13 @@ final class PlayerStatsService
     ) {
     }
 
-    public function statsForToken(string $token, ?MatchNature $nature = null, ?DateRange $dateRange = null): PlayerStatsResponse
-    {
+    public function statsForToken(
+        string $token,
+        ?MatchNature $nature = null,
+        ?DateRange $dateRange = null,
+        ?GameType $type = null,
+        ?DistanceBucket $distanceBucket = null,
+    ): PlayerStatsResponse {
         $me = $this->currentUser->meFromToken($token);
         $playerId = $me->playerId;
 
@@ -39,14 +48,10 @@ final class PlayerStatsService
         }
 
         $displayName = $this->buildDisplayName($me->nickname, $me->firstName, $me->lastName);
-        $games = $this->games->findCompletedGamesForPlayer((int) $playerId, $nature, $dateRange);
+        $games = $this->games->findCompletedGamesForPlayer((int) $playerId, $nature, $dateRange, $type);
 
         if ($games === []) {
-            if ($dateRange !== null && $this->games->countCompletedGamesForPlayer((int) $playerId, $nature) > 0) {
-                return $this->emptyResponse('no_data_in_period', (int) $playerId, $displayName);
-            }
-
-            if ($nature !== null && $this->games->countCompletedGamesForPlayer((int) $playerId, null, $dateRange) > 0) {
+            if ($this->hasDataOutsideFilters((int) $playerId, $nature, $dateRange, $type)) {
                 return $this->emptyResponse('no_data_in_period', (int) $playerId, $displayName);
             }
 
@@ -55,27 +60,33 @@ final class PlayerStatsService
 
         $gameIds = array_map(static fn (Game $game): int => (int) $game->getId(), $games);
 
-        $victories = 0;
-        $defeats = 0;
-        foreach ($games as $game) {
-            if ($this->didPlayerWin($game, (int) $playerId)) {
-                $victories++;
-            } else {
-                $defeats++;
-            }
-        }
-
-        $matchesPlayed = count($games);
-        $winRate = $matchesPlayed > 0 ? round(($victories / $matchesPlayed) * 100, 1) : null;
-
-        $overallRaw = $this->balls->aggregateByPlayerForGames((int) $playerId, $gameIds);
-        $shotRaw = $this->balls->aggregateByPlayerPerShotForGames((int) $playerId, $gameIds);
-        $perGameRaw = $this->balls->aggregateByPlayerPerGame((int) $playerId, $gameIds);
+        $overallRaw = $this->balls->aggregateByPlayerForGames((int) $playerId, $gameIds, $distanceBucket);
+        $shotRaw = $this->balls->aggregateByPlayerPerShotForGames((int) $playerId, $gameIds, $distanceBucket);
+        $perGameRaw = $this->balls->aggregateByPlayerPerGame((int) $playerId, $gameIds, $distanceBucket);
 
         $totalBalls = $overallRaw['count'];
-        $trackedMatches = count($perGameRaw);
+        $trackedMatches = count(array_filter($perGameRaw, static fn (array $raw): bool => $raw['count'] > 0));
 
         if ($totalBalls === 0) {
+            if ($distanceBucket !== null) {
+                $ballsWithoutDistanceFilter = $this->balls->aggregateByPlayerForGames((int) $playerId, $gameIds);
+                if ($ballsWithoutDistanceFilter['count'] > 0) {
+                    return $this->emptyResponse('no_data_in_period', (int) $playerId, $displayName);
+                }
+            }
+
+            $victories = 0;
+            $defeats = 0;
+            foreach ($games as $game) {
+                if ($this->didPlayerWin($game, (int) $playerId)) {
+                    $victories++;
+                } else {
+                    $defeats++;
+                }
+            }
+            $matchesPlayed = count($games);
+            $winRate = $matchesPlayed > 0 ? round(($victories / $matchesPlayed) * 100, 1) : null;
+
             return new PlayerStatsResponse(
                 status: 'no_tracked_data',
                 playerId: (int) $playerId,
@@ -93,15 +104,35 @@ final class PlayerStatsService
                 tir: null,
                 evolution: [],
                 byNature: [],
+                byFormat: [],
+                byDistance: [],
             );
         }
+
+        $summaryGames = $this->gamesForSummary($games, $perGameRaw, $distanceBucket);
+        $victories = 0;
+        $defeats = 0;
+        foreach ($summaryGames as $game) {
+            if ($this->didPlayerWin($game, (int) $playerId)) {
+                $victories++;
+            } else {
+                $defeats++;
+            }
+        }
+
+        $matchesPlayed = count($summaryGames);
+        $winRate = $matchesPlayed > 0 ? round(($victories / $matchesPlayed) * 100, 1) : null;
 
         $overall = $this->toBreakdown($overallRaw);
         $point = isset($shotRaw['point']) ? $this->toBreakdown($shotRaw['point']) : null;
         $tir = isset($shotRaw['tir']) ? $this->toBreakdown($shotRaw['tir']) : null;
 
-        $evolution = $this->buildEvolution($games, (int) $playerId, $perGameRaw);
-        $byNature = $this->buildByNature($games, (int) $playerId);
+        $evolution = $this->buildEvolution($summaryGames, (int) $playerId, $perGameRaw);
+        $byNature = $this->buildByNature($games, (int) $playerId, $distanceBucket, $perGameRaw);
+        $byFormat = $this->buildByFormat($games, (int) $playerId, $distanceBucket, $perGameRaw);
+        $byDistance = $distanceBucket === null
+            ? $this->buildByDistance((int) $playerId, $gameIds)
+            : [];
 
         return new PlayerStatsResponse(
             status: 'ok',
@@ -120,6 +151,8 @@ final class PlayerStatsService
             tir: $tir,
             evolution: $evolution,
             byNature: $byNature,
+            byFormat: $byFormat,
+            byDistance: $byDistance,
         );
     }
 
@@ -184,7 +217,7 @@ final class PlayerStatsService
      *
      * @return list<PlayerStatsByNatureResponse>
      */
-    private function buildByNature(array $games, int $playerId): array
+    private function buildByNature(array $games, int $playerId, ?DistanceBucket $distanceBucket = null, array $perGameRaw = []): array
     {
         /** @var array<string, list<int>> $gameIdsByNature */
         $gameIdsByNature = [];
@@ -201,7 +234,17 @@ final class PlayerStatsService
 
         $out = [];
         foreach ($gameIdsByNature as $nature => $gameIds) {
-            $raw = $this->balls->aggregateByPlayerForGames($playerId, $gameIds);
+            if ($distanceBucket !== null) {
+                $gameIds = array_values(array_filter(
+                    $gameIds,
+                    static fn (int $gameId): bool => ($perGameRaw[$gameId]['count'] ?? 0) > 0,
+                ));
+                if ($gameIds === []) {
+                    continue;
+                }
+            }
+
+            $raw = $this->balls->aggregateByPlayerForGames($playerId, $gameIds, $distanceBucket);
             if ($raw['count'] === 0) {
                 continue;
             }
@@ -216,6 +259,136 @@ final class PlayerStatsService
         usort($out, static fn (PlayerStatsByNatureResponse $a, PlayerStatsByNatureResponse $b): int => $b->ballCount <=> $a->ballCount);
 
         return $out;
+    }
+
+    /**
+     * @param list<Game> $games
+     *
+     * @return list<PlayerStatsByFormatResponse>
+     */
+    private function buildByFormat(array $games, int $playerId, ?DistanceBucket $distanceBucket = null, array $perGameRaw = []): array
+    {
+        /** @var array<string, list<Game>> $gamesByType */
+        $gamesByType = [];
+        foreach ($games as $game) {
+            $typeValue = $game->getType()->value;
+            if (!isset($gamesByType[$typeValue])) {
+                $gamesByType[$typeValue] = [];
+            }
+            $gamesByType[$typeValue][] = $game;
+        }
+
+        $out = [];
+        foreach ($gamesByType as $typeValue => $typeGames) {
+            if ($distanceBucket !== null) {
+                $typeGames = array_values(array_filter(
+                    $typeGames,
+                    static fn (Game $game): bool => ($perGameRaw[(int) $game->getId()]['count'] ?? 0) > 0,
+                ));
+                if ($typeGames === []) {
+                    continue;
+                }
+            }
+
+            $gameIds = array_map(static fn (Game $game): int => (int) $game->getId(), $typeGames);
+            $raw = $this->balls->aggregateByPlayerForGames($playerId, $gameIds, $distanceBucket);
+            if ($raw['count'] === 0) {
+                continue;
+            }
+
+            $victories = 0;
+            foreach ($typeGames as $game) {
+                if ($this->didPlayerWin($game, $playerId)) {
+                    $victories++;
+                }
+            }
+
+            $out[] = new PlayerStatsByFormatResponse(
+                type: $typeValue,
+                matchCount: count($typeGames),
+                victories: $victories,
+                ballCount: (int) $raw['count'],
+                average: round($raw['sum'] / $raw['count'], 2),
+            );
+        }
+
+        usort($out, static fn (PlayerStatsByFormatResponse $a, PlayerStatsByFormatResponse $b): int => $b->matchCount <=> $a->matchCount);
+
+        return $out;
+    }
+
+    /**
+     * @param list<int> $gameIds
+     *
+     * @return list<PlayerStatsByDistanceResponse>
+     */
+    private function buildByDistance(int $playerId, array $gameIds): array
+    {
+        $rawByBucket = $this->balls->aggregateByPlayerPerDistanceBucketForGames($playerId, $gameIds);
+        $out = [];
+
+        foreach ($rawByBucket as $bucket => $raw) {
+            if ($raw['count'] === 0) {
+                continue;
+            }
+            $out[] = new PlayerStatsByDistanceResponse(
+                bucket: $bucket,
+                ballCount: (int) $raw['count'],
+                average: round($raw['sum'] / $raw['count'], 2),
+            );
+        }
+
+        usort($out, static function (PlayerStatsByDistanceResponse $a, PlayerStatsByDistanceResponse $b): int {
+            $orderA = DistanceBucket::tryFrom($a->bucket)?->sortOrder() ?? 99;
+            $orderB = DistanceBucket::tryFrom($b->bucket)?->sortOrder() ?? 99;
+
+            return $orderA <=> $orderB;
+        });
+
+        return $out;
+    }
+
+    /**
+     * @param list<Game> $games
+     * @param array<int, array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}> $perGameRaw
+     *
+     * @return list<Game>
+     */
+    private function gamesForSummary(array $games, array $perGameRaw, ?DistanceBucket $distanceBucket): array
+    {
+        if ($distanceBucket === null) {
+            return $games;
+        }
+
+        return array_values(array_filter(
+            $games,
+            static function (Game $game) use ($perGameRaw): bool {
+                $gameId = (int) $game->getId();
+
+                return isset($perGameRaw[$gameId]) && $perGameRaw[$gameId]['count'] > 0;
+            },
+        ));
+    }
+
+    private function hasDataOutsideFilters(
+        int $playerId,
+        ?MatchNature $nature,
+        ?DateRange $dateRange,
+        ?GameType $type,
+    ): bool {
+        if ($dateRange !== null && $this->games->countCompletedGamesForPlayer($playerId, $nature, null, $type) > 0) {
+            return true;
+        }
+
+        if ($nature !== null && $this->games->countCompletedGamesForPlayer($playerId, null, $dateRange, $type) > 0) {
+            return true;
+        }
+
+        if ($type !== null && $this->games->countCompletedGamesForPlayer($playerId, $nature, $dateRange, null) > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     private function buildDisplayName(?string $nickname, ?string $firstName, ?string $lastName): ?string
@@ -247,6 +420,8 @@ final class PlayerStatsService
             tir: null,
             evolution: [],
             byNature: [],
+            byFormat: [],
+            byDistance: [],
         );
     }
 }

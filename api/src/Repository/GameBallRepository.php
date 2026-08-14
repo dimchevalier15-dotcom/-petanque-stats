@@ -6,7 +6,9 @@ namespace App\Repository;
 
 use App\Entity\Game;
 use App\Entity\GameBall;
+use App\Enum\DistanceBucket;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -165,7 +167,7 @@ final class GameBallRepository extends ServiceEntityRepository
      *
      * @return array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}
      */
-    public function aggregateByPlayerForGames(int $playerId, ?array $gameIds): array
+    public function aggregateByPlayerForGames(int $playerId, ?array $gameIds, ?DistanceBucket $distanceBucket = null): array
     {
         $empty = [
             'count' => 0,
@@ -177,6 +179,10 @@ final class GameBallRepository extends ServiceEntityRepository
             'm2' => 0,
         ];
 
+        if ($gameIds !== null && $gameIds === []) {
+            return $empty;
+        }
+
         $qb = $this->createQueryBuilder('b')
             ->select('COUNT(b.id) as cnt, SUM(b.note) as s')
             ->join('b.end', 'e')
@@ -184,12 +190,8 @@ final class GameBallRepository extends ServiceEntityRepository
             ->andWhere('e.canceled = false')
             ->setParameter('pid', $playerId);
 
-        if ($gameIds !== null) {
-            if ($gameIds === []) {
-                return $empty;
-            }
-            $qb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
-        }
+        $this->applyGameIdsFilter($qb, $gameIds);
+        $this->applyDistanceBucketFilter($qb, $distanceBucket);
 
         $row = $qb->getQuery()->getOneOrNullResult();
         $map = $empty;
@@ -206,9 +208,8 @@ final class GameBallRepository extends ServiceEntityRepository
             ->setParameter('pid', $playerId)
             ->groupBy('n');
 
-        if ($gameIds !== null) {
-            $noteQb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
-        }
+        $this->applyGameIdsFilter($noteQb, $gameIds);
+        $this->applyDistanceBucketFilter($noteQb, $distanceBucket);
 
         foreach ($noteQb->getQuery()->getArrayResult() as $r) {
             $n = (int) $r['n'];
@@ -238,9 +239,13 @@ final class GameBallRepository extends ServiceEntityRepository
      *
      * @return array<string, array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}>
      */
-    public function aggregateByPlayerPerShotForGames(int $playerId, ?array $gameIds): array
+    public function aggregateByPlayerPerShotForGames(int $playerId, ?array $gameIds, ?DistanceBucket $distanceBucket = null): array
     {
         $map = [];
+
+        if ($gameIds !== null && $gameIds === []) {
+            return $map;
+        }
 
         $qb = $this->createQueryBuilder('b')
             ->select('b.shotType as st, COUNT(b.id) as cnt, SUM(b.note) as s')
@@ -250,12 +255,8 @@ final class GameBallRepository extends ServiceEntityRepository
             ->setParameter('pid', $playerId)
             ->groupBy('st');
 
-        if ($gameIds !== null) {
-            if ($gameIds === []) {
-                return $map;
-            }
-            $qb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
-        }
+        $this->applyGameIdsFilter($qb, $gameIds);
+        $this->applyDistanceBucketFilter($qb, $distanceBucket);
 
         foreach ($qb->getQuery()->getArrayResult() as $r) {
             $st = (string) $r['st'];
@@ -278,9 +279,8 @@ final class GameBallRepository extends ServiceEntityRepository
             ->setParameter('pid', $playerId)
             ->groupBy('st, n');
 
-        if ($gameIds !== null) {
-            $noteQb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
-        }
+        $this->applyGameIdsFilter($noteQb, $gameIds);
+        $this->applyDistanceBucketFilter($noteQb, $distanceBucket);
 
         foreach ($noteQb->getQuery()->getArrayResult() as $r) {
             $st = (string) $r['st'];
@@ -314,7 +314,7 @@ final class GameBallRepository extends ServiceEntityRepository
      *
      * @return array<int, array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}>
      */
-    public function aggregateByPlayerPerGame(int $playerId, ?array $gameIds = null): array
+    public function aggregateByPlayerPerGame(int $playerId, ?array $gameIds = null, ?DistanceBucket $distanceBucket = null): array
     {
         if ($gameIds !== null && $gameIds === []) {
             return [];
@@ -330,9 +330,8 @@ final class GameBallRepository extends ServiceEntityRepository
             ->setParameter('pid', $playerId)
             ->groupBy('gid');
 
-        if ($gameIds !== null) {
-            $rowsQb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
-        }
+        $this->applyGameIdsFilter($rowsQb, $gameIds);
+        $this->applyDistanceBucketFilter($rowsQb, $distanceBucket);
 
         $rows = $rowsQb->getQuery()->getArrayResult();
 
@@ -357,9 +356,8 @@ final class GameBallRepository extends ServiceEntityRepository
             ->setParameter('pid', $playerId)
             ->groupBy('gid, n');
 
-        if ($gameIds !== null) {
-            $noteQb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
-        }
+        $this->applyGameIdsFilter($noteQb, $gameIds);
+        $this->applyDistanceBucketFilter($noteQb, $distanceBucket);
 
         $noteRows = $noteQb->getQuery()->getArrayResult();
 
@@ -388,5 +386,93 @@ final class GameBallRepository extends ServiceEntityRepository
         }
 
         return $map;
+    }
+
+    /**
+     * @param list<int>|null $gameIds
+     *
+     * @return array<string, array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}>
+     */
+    public function aggregateByPlayerPerDistanceBucketForGames(int $playerId, ?array $gameIds): array
+    {
+        if ($gameIds !== null && $gameIds === []) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('b')
+            ->select('b.distance as dist, b.note as n')
+            ->join('b.end', 'e')
+            ->where('b.player = :pid')
+            ->andWhere('e.canceled = false')
+            ->andWhere('b.distance IS NOT NULL')
+            ->setParameter('pid', $playerId);
+
+        if ($gameIds !== null) {
+            $qb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
+        }
+
+        $map = [];
+        foreach ($qb->getQuery()->getArrayResult() as $row) {
+            $bucket = DistanceBucket::fromDistance((float) $row['dist']);
+            if ($bucket === null) {
+                continue;
+            }
+
+            $key = $bucket->value;
+            $n = (int) $row['n'];
+            if (!isset($map[$key])) {
+                $map[$key] = [
+                    'count' => 0,
+                    'sum' => 0,
+                    'p2' => 0,
+                    'p1' => 0,
+                    'p0' => 0,
+                    'm1' => 0,
+                    'm2' => 0,
+                ];
+            }
+
+            $map[$key]['count']++;
+            $map[$key]['sum'] += $n;
+            switch ($n) {
+                case 2: $map[$key]['p2']++; break;
+                case 1: $map[$key]['p1']++; break;
+                case 0: $map[$key]['p0']++; break;
+                case -1: $map[$key]['m1']++; break;
+                case -2: $map[$key]['m2']++; break;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param list<int>|null $gameIds
+     */
+    private function applyGameIdsFilter(QueryBuilder $qb, ?array $gameIds): void
+    {
+        if ($gameIds === null) {
+            return;
+        }
+
+        $qb->andWhere('e.game IN (:games)')->setParameter('games', $gameIds);
+    }
+
+    private function applyDistanceBucketFilter(QueryBuilder $qb, ?DistanceBucket $distanceBucket): void
+    {
+        if ($distanceBucket === null) {
+            return;
+        }
+
+        $qb->andWhere('b.distance IS NOT NULL');
+
+        match ($distanceBucket) {
+            DistanceBucket::UNDER_6 => $qb->andWhere('b.distance < 6'),
+            DistanceBucket::FROM_6_TO_7 => $qb->andWhere('b.distance >= 6 AND b.distance < 7'),
+            DistanceBucket::FROM_7_TO_8 => $qb->andWhere('b.distance >= 7 AND b.distance < 8'),
+            DistanceBucket::FROM_8_TO_9 => $qb->andWhere('b.distance >= 8 AND b.distance < 9'),
+            DistanceBucket::FROM_9_TO_10 => $qb->andWhere('b.distance >= 9 AND b.distance < 10'),
+            DistanceBucket::FROM_10_PLUS => $qb->andWhere('b.distance >= 10'),
+        };
     }
 }

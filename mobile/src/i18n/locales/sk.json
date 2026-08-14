@@ -258,6 +258,10 @@
       "nextEnd": "Ďalšia mèna"
     },
     "shots": { "point": "Bod", "tir": "Strela" },
+    "roles": {
+      "title": "Zmeniť roly",
+      "hint": "Roly pre túto mušu — klepnutím zmeníte"
+    },
     "distancePlaceholder": "Vzdialenosť v metroch",
     "distanceEstimate": "Odhadovaná vzdialenosť",
     "formChart": {
@@ -434,7 +438,11 @@
     "title": "Moje štatistiky",
     "actions": { "back": "Späť" },
     "filters": {
-      "all": "Všetko"
+      "all": "Všetko",
+      "title": "Filtre",
+      "nature": "Povaha",
+      "format": "Formát",
+      "distance": "Vzdialenosť"
     },
     "kpi": {
       "matches": "Zápasy",
@@ -452,7 +460,9 @@
       "evolution": "Vývoj",
       "distribution": "Rozdelenie známok",
       "shots": "Point & Tir",
-      "byNature": "Podľa povahy zápasu"
+      "byNature": "Podľa povahy zápasu",
+      "byFormat": "Podľa formátu",
+      "byDistance": "Podľa vzdialenosti"
     },
     "notes": {
       "m2": "-2",
@@ -469,6 +479,22 @@
     "byNature": {
       "hint": "Iba zápasy s vyplneným kontextom.",
       "meta": "{matches} zápasov · {balls} gúl"
+    },
+    "byFormat": {
+      "hint": "Výkonnosť podľa herného formátu.",
+      "meta": "{matches} zápasov · {victories} víťazstiev · {balls} gúl"
+    },
+    "byDistance": {
+      "hint": "Iba gule so zadanou vzdialenosťou.",
+      "meta": "{balls} gúl",
+      "buckets": {
+        "under_6": "< 6 m",
+        "6_7": "6-7 m",
+        "7_8": "7-8 m",
+        "8_9": "8-9 m",
+        "9_10": "9-10 m",
+        "10_plus": "10+ m"
+      }
     },
     "empty": {
       "noPlayerTitle": "Žiadny priradený hráč",
