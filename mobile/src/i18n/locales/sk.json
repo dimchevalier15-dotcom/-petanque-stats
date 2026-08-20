@@ -452,6 +452,11 @@
     },
     "overallAverage": "Celkový priemer",
     "ballsTracked": "{n} analyzovaných gúl",
+    "successRate": {
+      "label": "Úspešnosť zásahov",
+      "value": "{rate} %",
+      "empty": "Žiadne dáta"
+    },
     "details": {
       "title": "Detaily",
       "balls": "{n} gúl"

@@ -18,3 +18,10 @@ nelmio_cors:
     paths:
         '^/api/':
             origin_regex: false
+
+when@prod:
+    nelmio_cors:
+        defaults:
+            allow_origin:
+                - 'https://petanque-analytics.com'
+                - 'https://www.petanque-analytics.com'

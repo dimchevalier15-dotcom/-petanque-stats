@@ -13,6 +13,7 @@ final class MatchSummaryShotBreakdown
         public int $p0,
         public int $m1,
         public int $m2,
+        public ?float $successRate = null,
     ) {
     }
 }

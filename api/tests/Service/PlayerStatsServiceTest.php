@@ -71,6 +71,10 @@ final class PlayerStatsServiceTest extends KernelTestCase
         self::assertSame(50.0, $res->summary->winRate);
         self::assertNotNull($res->overall);
         self::assertSame(1.0, $res->overall->average);
+        self::assertSame(50.0, $res->overall->successRate);
+        self::assertNotNull($res->point);
+        self::assertSame(50.0, $res->point->successRate);
+        self::assertNull($res->tir);
         self::assertSame(2, $res->summary->totalBalls);
         self::assertCount(2, $res->evolution);
     }
@@ -198,6 +202,43 @@ final class PlayerStatsServiceTest extends KernelTestCase
         self::assertSame(1, $res->summary->totalBalls);
         self::assertSame(1.0, $res->overall?->average);
         self::assertSame([], $res->byDistance);
+    }
+
+    public function testStatsSuccessRateSplitsPointAndTir(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+
+        $suffix = bin2hex(random_bytes(4));
+        $owner = new User('owner'.$suffix.'@test.local');
+        $owner->setPassword('hash');
+        $this->em->persist($owner);
+
+        $createReq = new CreateMatchRequest();
+        $createReq->type = 'tete_a_tete';
+        $createReq->targetScore = 13;
+        $createReq->statisticsMode = 'standard';
+        $createReq->teamA = [$playerId];
+        $createReq->teamB = [$opponentId];
+        $createReq->trackedPlayers = [$playerId, $opponentId];
+        $matchId = $this->matchService->create($createReq, $owner)->id;
+
+        $req = $this->baseCompleteRequest($playerId, $opponentId);
+        $req->ends = [
+            $this->scoredEnd(1, $playerId, [2, 1, 1], ['point', 'point', 'point']),
+            $this->scoredEnd(2, $playerId, [0, -1], ['point', 'point']),
+            $this->scoredEnd(3, $playerId, [2, 2, 1], ['tir', 'tir', 'tir']),
+            $this->scoredEnd(4, $playerId, [0, -2], ['tir', 'tir']),
+        ];
+        $this->recording->complete($matchId, $req);
+
+        $res = $this->stats->statsForToken($token);
+
+        self::assertSame('ok', $res->status);
+        self::assertNotNull($res->point);
+        self::assertSame(60.0, $res->point->successRate);
+        self::assertNotNull($res->tir);
+        self::assertSame(60.0, $res->tir->successRate);
     }
 
     private function createAndCompleteMatch(

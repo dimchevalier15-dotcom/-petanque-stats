@@ -327,6 +327,26 @@ Les statistiques :
 
 Cela garantit leur cohérence, même après modification d'un Match.
 
+## Pourcentage de réussite (point / tir)
+
+Une statistique dérivée est calculée à partir des notes existantes, sans les modifier.
+
+Conversion :
+
+- +2 → réussite
+- +1 → réussite
+- 0 → non-réussite
+- -1 → non-réussite
+- -2 → non-réussite
+
+Formule, séparément pour le point et pour le tir :
+
+% réussite = nombre de boules notées +1 ou +2 / nombre total de boules notées
+
+Les boules sans notation sont exclues.
+
+S'il n'existe aucune boule notée pour un type de jeu, la statistique n'est pas affichée (pas de 0 % artificiel).
+
 ---
 
 # Principe fondamental

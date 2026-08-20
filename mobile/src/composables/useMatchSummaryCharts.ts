@@ -24,6 +24,7 @@ export function playerToOverallBreakdown(player: MatchSummaryPlayer): MatchSumma
     p0: player.p0,
     m1: player.m1,
     m2: player.m2,
+    successRate: null,
   }
 }
 
@@ -64,6 +65,7 @@ export function mergeTeamBreakdown(players: MatchSummaryPlayer[]): MatchSummaryS
     p0,
     m1,
     m2,
+    successRate: null,
   }
 }
 

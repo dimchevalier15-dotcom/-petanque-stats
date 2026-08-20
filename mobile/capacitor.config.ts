@@ -1,11 +1,18 @@
-import { CapacitorConfig } from '@capacitor/cli'
+import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'com.petanque.analytics',
-  appName: 'Pétanque Analytics',
+  appId: 'com.petanquestats.app',
+  appName: 'Pétanque Stats',
   webDir: 'dist',
   server: {
     androidScheme: 'https',
+  },
+  // Native HTTP so Android can call the production API without changing Symfony CORS
+  // (WebView origin is https://localhost, which is not the API host).
+  plugins: {
+    CapacitorHttp: {
+      enabled: true,
+    },
   },
 }
 

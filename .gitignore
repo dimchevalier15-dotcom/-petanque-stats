@@ -9,5 +9,10 @@ Thumbs.db
 *.swo
 *~
 
+# Production secrets (never commit)
+.env
+.env.prod
+.env.*.local
+
 # Logs
 *.log

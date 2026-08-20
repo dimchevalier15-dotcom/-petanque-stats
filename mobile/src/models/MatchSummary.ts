@@ -5,6 +5,7 @@ export interface MatchSummaryShotBreakdown {
   p0: number
   m1: number
   m2: number
+  successRate: number | null
 }
 
 export interface MatchSummaryPlayer {

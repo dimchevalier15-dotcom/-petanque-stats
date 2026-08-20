@@ -1,0 +1,64 @@
+FROM php:8.4-cli
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    unzip \
+    openssl \
+    libicu-dev \
+    libzip-dev \
+    zip \
+    curl \
+ && docker-php-ext-install \
+    pdo_mysql \
+    intl \
+    zip \
+    opcache \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    APP_ENV=prod \
+    APP_DEBUG=0
+
+COPY composer.json composer.lock symfony.lock ./
+
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-interaction \
+    --prefer-dist \
+    --no-scripts \
+    --no-progress
+
+COPY . .
+
+COPY docker/entrypoint.prod.sh /usr/local/bin/entrypoint.prod.sh
+RUN chmod +x /usr/local/bin/entrypoint.prod.sh
+
+RUN composer dump-autoload --optimize --classmap-authoritative --no-dev \
+ && mkdir -p var/cache var/log config/jwt \
+ && openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out /tmp/jwt-private.pem \
+ && openssl pkey -in /tmp/jwt-private.pem -pubout -out /tmp/jwt-public.pem \
+ && printf '%s\n' 'APP_ENV=prod' 'APP_DEBUG=0' > /app/.env \
+ && APP_SECRET=build-only \
+    DATABASE_URL="mysql://build:build@127.0.0.1:3306/build?serverVersion=8.0&charset=utf8mb4" \
+    DEFAULT_URI="https://api.petanque-analytics.com" \
+    JWT_SECRET_KEY=/tmp/jwt-private.pem \
+    JWT_PUBLIC_KEY=/tmp/jwt-public.pem \
+    JWT_PASSPHRASE="" \
+    MAILER_DSN="null://null" \
+    MESSENGER_TRANSPORT_DSN="doctrine://default?auto_setup=0" \
+    php bin/console cache:warmup --env=prod --no-debug --no-interaction \
+ && rm -f /tmp/jwt-private.pem /tmp/jwt-public.pem \
+ && rm -rf tests/ \
+ && chmod -R a+rX /app \
+ && chmod -R a+rwX var
+
+EXPOSE 8000
+
+ENTRYPOINT ["entrypoint.prod.sh"]
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public", "public/index.php"]

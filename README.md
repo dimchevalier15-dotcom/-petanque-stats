@@ -14,8 +14,9 @@ petanque-analytics/
 ├── api/
 ├── mobile/
 ├── docs/
-├── docker/ (réservé)
+├── docker/ (Caddyfile production)
 ├── docker-compose.yml
+├── docker-compose.prod.yml
 ├── Makefile
 └── README.md
 ```
@@ -25,13 +26,13 @@ Backend
 - PHP 8.4
 - Symfony 7
 - Doctrine ORM (MySQL 8)
-- Lexik JWT (installé mais non activé pour le moment)
+- Lexik JWT
 - PHPUnit, PHPStan
 
 Frontend (mobile/web)
 - Vue 3 + Vite + TypeScript (strict)
 - Composition API, Pinia, Vue Router, Axios, PrimeVue
-- Capacitor (ouverture Android Studio possible)
+- Capacitor (Android : `com.petanquestats.app`)
 - Vitest, Biome
 
 ## Lancement rapide
@@ -62,11 +63,21 @@ make down
 - make lint: Biome (frontend)
 - make fix: Biome avec corrections (frontend)
 - make test: Vitest (frontend) + PHPUnit (API)
-- make sync: docker compose pull
+- make sync: cap sync (conteneur mobile)
+- make prod-up / prod-down / prod-logs / prod-migrate : commandes Docker de production (voir `docs/deployment.md`)
+
+## Production
+
+Configuration séparée : `docker-compose.prod.yml` (Caddy, frontend statique, API `APP_ENV=prod`, MySQL non exposé).
+
+Procédure complète (secrets, JWT, migrations) : `docs/deployment.md`.
+
+Ne pas utiliser ce fichier pour le développement local.
 
 ## Notes techniques
-- JWT: le bundle Lexik est installé mais désactivé. TODO: générer les clés (openssl), activer le bundle et la sécurité quand le besoin arrive.
-- Doctrine: configuré pour MySQL via DATABASE_URL (voir docker-compose.yml).
+- JWT: Lexik JWT. En local, clés dans `api/config/jwt` (non versionnées). En production, clés dans `./jwt` sur le VPS (voir `docs/deployment.md`).
+- Doctrine: configuré pour MySQL via `DATABASE_URL`.
+- Front production / Android: `VITE_API_URL=https://api.petanque-analytics.com/api` (`mobile/.env.production`).
 - i18n: fr, en, sk. Aucun texte en dur dans les composants.
 - TypeScript: mode strict, any interdit.
 
@@ -90,7 +101,25 @@ Frontend (mobile/src)
 - Front: Vitest, Biome
 - Back: PHPUnit, PHPStan (`composer phpstan` dans le conteneur API)
 
+## Application Android (Capacitor)
+
+Le frontend `mobile/` est la source unique (navigateur, PWA, Android).
+
+```
+cd mobile
+npm install
+npm run build
+npx cap sync android
+npx cap open android
+```
+
+Puis lancer **Pétanque Stats** depuis Android Studio sur un appareil USB (`adb devices`).
+
+Dans Android Studio, choisir un **Gradle JDK 17** (Gradle 8.2.1 de Capacitor 6).
+
+L'API Android est celle de production (`VITE_API_URL` dans `mobile/.env.production`, actuellement `https://api.petanque-analytics.com/api`). Le mode `npm run dev` continue d'utiliser le proxy `/api` vers l'API locale.
+
+Détails : `docs/deployment.md`.
+
 ## TODO
-- Générer et configurer les clés JWT (Lexik) avant toute auth.
-- Ajouter les premiers tests fonctionnels Symfony.
 - Compléter la CI (non incluse ici).

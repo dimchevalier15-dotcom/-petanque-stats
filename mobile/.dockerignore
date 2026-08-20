@@ -1,0 +1,12 @@
+.git
+.gitignore
+node_modules
+dist
+android
+.idea
+.vscode
+.DS_Store
+*.log
+coverage
+.env
+.env.local

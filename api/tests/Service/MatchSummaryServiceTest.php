@@ -62,6 +62,15 @@ final class MatchSummaryServiceTest extends KernelTestCase
         self::assertSame(1.0, $rowA->average);
         self::assertSame(1, $rowA->p2);
         self::assertSame(1, $rowA->p0);
+        self::assertNotNull($rowA->point);
+        self::assertSame(100.0, $rowA->point->successRate);
+        self::assertNotNull($rowA->tir);
+        self::assertSame(0.0, $rowA->tir->successRate);
+
+        $rowB = $this->findPlayerRow($res->players, $playerBId);
+        self::assertNotNull($rowB);
+        self::assertNull($rowB->point);
+        self::assertNull($rowB->tir);
     }
 
     public function testCanceledEndBallsAreExcludedFromSummaryAggregates(): void
@@ -105,6 +114,9 @@ final class MatchSummaryServiceTest extends KernelTestCase
         self::assertSame(1.0, $rowA->average);
         self::assertSame(1, $rowA->p1);
         self::assertSame(0, $rowA->m2);
+        self::assertNotNull($rowA->point);
+        self::assertSame(100.0, $rowA->point->successRate);
+        self::assertNull($rowA->tir);
     }
 
     public function testTieBreakGivesTeamAAsWinner(): void
@@ -130,6 +142,41 @@ final class MatchSummaryServiceTest extends KernelTestCase
         self::assertSame(1, $res->scoreA);
         self::assertSame(1, $res->scoreB);
         self::assertSame('A', $res->winner);
+    }
+
+    public function testSuccessRateIsComputedSeparatelyForPointAndTir(): void
+    {
+        [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
+
+        $req = $this->baseCompleteRequest($playerAId, $playerBId);
+        $ballB = new CompleteMatchEndBallDto();
+        $ballB->playerId = $playerBId;
+        $ballB->notes = [2, 2, 0];
+        $ballB->shotTypes = ['point', 'tir', 'tir'];
+        $req->ends = [
+            $this->scoredEnd(1, $playerAId, [2, 1, 1], ['point', 'point', 'point']),
+            $this->scoredEnd(2, $playerAId, [0, -1], ['point', 'point']),
+            $this->scoredEnd(3, $playerAId, [2, 2, 1], ['tir', 'tir', 'tir']),
+            $this->scoredEnd(4, $playerAId, [0, -2], ['tir', 'tir'], [$ballB]),
+        ];
+        $this->recording->complete($matchId, $req);
+
+        $res = $this->summary->getSummary($matchId);
+        self::assertNotNull($res);
+
+        $rowA = $this->findPlayerRow($res->players, $playerAId);
+        self::assertNotNull($rowA);
+        self::assertNotNull($rowA->point);
+        self::assertSame(60.0, $rowA->point->successRate);
+        self::assertNotNull($rowA->tir);
+        self::assertSame(60.0, $rowA->tir->successRate);
+
+        $rowB = $this->findPlayerRow($res->players, $playerBId);
+        self::assertNotNull($rowB);
+        self::assertNotNull($rowB->point);
+        self::assertSame(100.0, $rowB->point->successRate);
+        self::assertNotNull($rowB->tir);
+        self::assertSame(50.0, $rowB->tir->successRate);
     }
 
     public function testUnknownMatchReturnsNull(): void

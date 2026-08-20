@@ -30,6 +30,7 @@ final class PlayerStatsService
         private GameEndRepository $ends,
         private GameParticipantRepository $participants,
         private GameBallRepository $balls,
+        private ShotBreakdownFactory $shotBreakdowns,
     ) {
     }
 
@@ -161,16 +162,7 @@ final class PlayerStatsService
      */
     private function toBreakdown(array $raw): MatchSummaryShotBreakdown
     {
-        $avg = $raw['count'] > 0 ? round($raw['sum'] / $raw['count'], 2) : 0.0;
-
-        return new MatchSummaryShotBreakdown(
-            average: $avg,
-            p2: (int) $raw['p2'],
-            p1: (int) $raw['p1'],
-            p0: (int) $raw['p0'],
-            m1: (int) $raw['m1'],
-            m2: (int) $raw['m2'],
-        );
+        return $this->shotBreakdowns->fromAggregate($raw);
     }
 
     private function didPlayerWin(Game $game, int $playerId): bool

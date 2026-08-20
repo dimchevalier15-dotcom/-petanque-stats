@@ -11,9 +11,13 @@
     "format": "biome format --write .",
     "fix": "biome check --write .",
     "test": "vitest run",
-    "test:ui": "vitest"
+    "test:ui": "vitest",
+    "build:android": "vite build && cap sync android",
+    "android:sync": "cap sync android",
+    "android:open": "cap open android"
   },
   "dependencies": {
+    "@capacitor/android": "^6.1.2",
     "@capacitor/core": "^6.1.2",
     "@primeuix/themes": "^3.0.0",
     "axios": "^1.7.2",

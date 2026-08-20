@@ -63,6 +63,7 @@ a {
   display: flex;
   flex-direction: column;
   background: var(--app-bg);
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .app-content {
@@ -80,18 +81,21 @@ a {
 .focus-shell {
   min-height: 100dvh;
   background: var(--app-bg);
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .play-shell {
   min-height: 100dvh;
   background: var(--app-bg);
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .auth-shell {
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: var(--app-space-xl) var(--app-space-lg);
+  padding: calc(var(--app-space-xl) + env(safe-area-inset-top, 0px)) var(--app-space-lg)
+    calc(var(--app-space-xl) + env(safe-area-inset-bottom, 0px));
   background:
     radial-gradient(circle at top right, rgba(31, 107, 88, 0.12), transparent 42%),
     var(--app-bg);

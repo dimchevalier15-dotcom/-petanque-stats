@@ -25,6 +25,7 @@
             :severity="avgSeverity(player.point!.average)"
           />
         </div>
+        <ShotSuccessRate :rate="shotSuccessRate(player.point)" />
         <div class="chart-box chart-box-sm">
           <Chart type="bar" :data="pointChart.data" :options="pointChart.options" />
         </div>
@@ -38,6 +39,7 @@
             :severity="avgSeverity(player.tir!.average)"
           />
         </div>
+        <ShotSuccessRate :rate="shotSuccessRate(player.tir)" />
         <div class="chart-box chart-box-sm">
           <Chart type="bar" :data="tirChart.data" :options="tirChart.options" />
         </div>
@@ -56,12 +58,14 @@ import { useI18n } from 'vue-i18n'
 import Chart from 'primevue/chart'
 import Tag from 'primevue/tag'
 import type { MatchSummaryPlayer } from '../../models/MatchSummary'
+import { shotSuccessRate } from '../../composables/matchSuccessRate'
 import {
   buildPlayerDistributionChart,
   buildPlayerShotChart,
   playerDisplayName,
 } from '../../composables/useMatchSummaryCharts'
 import { avgSeverity, formatAvg } from '../../composables/usePlayerStatsCharts'
+import ShotSuccessRate from '../stats/ShotSuccessRate.vue'
 
 const props = defineProps<{
   player: MatchSummaryPlayer

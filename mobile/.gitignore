@@ -12,14 +12,17 @@ dist-ssr/
 .env
 .env.*
 !.env.example
+!.env.production
+!.env.development
 
 # Test / coverage
 coverage/
 
-# Capacitor native projects
-android/
+# Capacitor
 ios/
 .capacitor/
+*.keystore
+*.jks
 
 # Logs
 *.log

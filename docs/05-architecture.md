@@ -36,7 +36,7 @@ petanque-analytics/
     docker/
 
     docker-compose.yml
-
+    docker-compose.prod.yml
     Makefile
 
     README.md
@@ -215,15 +215,32 @@ Le backend :
 
 # Docker
 
-Services :
+## Développement
+
+Services (`docker-compose.yml`) :
 
 - api
 - mobile
 - mysql
 
-Le projet doit démarrer avec :
+Le projet local démarre avec :
 
+```
 docker compose up
+```
+
+ou `make up`. Caddy n'intervient pas en local.
+
+## Production
+
+Fichier distinct : `docker-compose.prod.yml`.
+
+```
+Internet → Caddy → frontend (build Vite statique)
+                 → api (Symfony, APP_ENV=prod) → mysql (volume mysql_data)
+```
+
+Détail des commandes, secrets et JWT : `docs/deployment.md`.
 
 ---
 
@@ -285,6 +302,31 @@ Capacitor est utilisé uniquement comme conteneur mobile.
 Le développement reste celui d'une application Vue classique.
 
 L'objectif est de conserver un maximum de code web.
+
+```
+Vue / Vite
+    │
+    ├── Navigateur
+    │
+    ├── PWA
+    │
+    └── Capacitor
+          │
+          └── Android
+```
+
+Le frontend `mobile/` est la seule source de vérité.
+
+Package ID Android (définitif) : `com.petanquestats.app`
+
+Nom affiché : Pétanque Stats
+
+L'URL de l'API est définie par `VITE_API_URL` (voir `mobile/.env.example`).
+
+- Développement navigateur : URL vide → proxy Vite `/api` vers l'API locale.
+- Production web et Android : `https://api.petanque-analytics.com/api` (`mobile/.env.production`).
+
+Android ne doit jamais appeler `localhost` : dans le WebView, localhost désigne le téléphone.
 
 ---
 

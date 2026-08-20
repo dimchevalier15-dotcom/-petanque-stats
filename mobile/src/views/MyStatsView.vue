@@ -152,6 +152,9 @@
                     :value="formatAvg(stats.point.average)"
                     :severity="avgSeverity(stats.point.average)"
                   />
+                  <span v-if="shotSuccessRate(stats.point) !== null" class="avg-detail-meta">
+                    {{ t('stats.successRate.value', { rate: shotSuccessRate(stats.point) }) }}
+                  </span>
                   <span class="avg-detail-meta">
                     {{ t('stats.details.balls', { n: breakdownBallCount(stats.point) }) }}
                   </span>
@@ -164,6 +167,9 @@
                     :value="formatAvg(stats.tir.average)"
                     :severity="avgSeverity(stats.tir.average)"
                   />
+                  <span v-if="shotSuccessRate(stats.tir) !== null" class="avg-detail-meta">
+                    {{ t('stats.successRate.value', { rate: shotSuccessRate(stats.tir) }) }}
+                  </span>
                   <span class="avg-detail-meta">
                     {{ t('stats.details.balls', { n: breakdownBallCount(stats.tir) }) }}
                   </span>
@@ -196,6 +202,7 @@
                 <span>{{ t('play.shots.point') }}</span>
                 <Tag :value="formatAvg(stats.point.average)" :severity="avgSeverity(stats.point.average)" />
               </div>
+              <ShotSuccessRate :rate="shotSuccessRate(stats.point)" />
               <div v-if="pointDistributionChart" class="chart-box chart-bar-sm">
                 <Chart type="bar" :data="pointDistributionChart.data" :options="pointDistributionChart.options" />
               </div>
@@ -207,6 +214,7 @@
                 <span>{{ t('play.shots.tir') }}</span>
                 <Tag :value="formatAvg(stats.tir.average)" :severity="avgSeverity(stats.tir.average)" />
               </div>
+              <ShotSuccessRate :rate="shotSuccessRate(stats.tir)" />
               <div v-if="tirDistributionChart" class="chart-box chart-bar-sm">
                 <Chart type="bar" :data="tirDistributionChart.data" :options="tirDistributionChart.options" />
               </div>
@@ -283,8 +291,10 @@ import Chart from 'primevue/chart'
 import ProgressSpinner from 'primevue/progressspinner'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
+import ShotSuccessRate from '../components/stats/ShotSuccessRate.vue'
 import StatsCollapsibleFilters from '../components/stats/StatsCollapsibleFilters.vue'
 import StatsDateRangeFilter from '../components/stats/StatsDateRangeFilter.vue'
+import { shotSuccessRate } from '../composables/matchSuccessRate'
 import {
   avgSeverity,
   breakdownBallCount,

@@ -109,6 +109,34 @@ trait MatchTestHelpers
         return $req;
     }
 
+    /**
+     * @param list<int> $notes
+     * @param list<string> $shotTypes
+     * @param list<CompleteMatchEndBallDto> $extraBalls
+     */
+    protected function scoredEnd(
+        int $index,
+        int $playerId,
+        array $notes,
+        array $shotTypes,
+        array $extraBalls = [],
+    ): CompleteMatchEndDto {
+        $end = new CompleteMatchEndDto();
+        $end->index = $index;
+        $end->winner = 'A';
+        $end->points = 1;
+        $end->canceled = false;
+
+        $ball = new CompleteMatchEndBallDto();
+        $ball->playerId = $playerId;
+        $ball->notes = $notes;
+        $ball->shotTypes = $shotTypes;
+
+        $end->balls = array_merge([$ball], $extraBalls);
+
+        return $end;
+    }
+
     protected function setMatchNature(int $matchId, MatchNature $nature): void
     {
         $game = $this->em->getRepository(\App\Entity\Game::class)->find($matchId);

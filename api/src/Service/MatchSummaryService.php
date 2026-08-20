@@ -23,6 +23,7 @@ final class MatchSummaryService
         private GameTrackedRepository $tracked,
         private GameBallRepository $balls,
         private PlayerRepository $players,
+        private ShotBreakdownFactory $shotBreakdowns,
     ) {
     }
 
@@ -69,14 +70,10 @@ final class MatchSummaryService
             $point = null;
             $tir = null;
             if (isset($shotAgg[$pid]['point'])) {
-                $ps = $shotAgg[$pid]['point'];
-                $pavg = $ps['count'] > 0 ? round($ps['sum'] / $ps['count'], 2) : 0.0;
-                $point = new \App\Dto\Response\MatchSummaryShotBreakdown($pavg, (int) $ps['p2'], (int) $ps['p1'], (int) $ps['p0'], (int) $ps['m1'], (int) $ps['m2']);
+                $point = $this->shotBreakdowns->fromAggregate($shotAgg[$pid]['point']);
             }
             if (isset($shotAgg[$pid]['tir'])) {
-                $ts = $shotAgg[$pid]['tir'];
-                $tavg = $ts['count'] > 0 ? round($ts['sum'] / $ts['count'], 2) : 0.0;
-                $tir = new \App\Dto\Response\MatchSummaryShotBreakdown($tavg, (int) $ts['p2'], (int) $ts['p1'], (int) $ts['p0'], (int) $ts['m1'], (int) $ts['m2']);
+                $tir = $this->shotBreakdowns->fromAggregate($shotAgg[$pid]['tir']);
             }
 
             $rows[] = new MatchSummaryPlayerRow(

@@ -1,0 +1,13 @@
+{
+	email {$CADDY_ACME_EMAIL}
+}
+
+petanque-analytics.com, www.petanque-analytics.com {
+	encode gzip
+	reverse_proxy frontend:80
+}
+
+api.petanque-analytics.com {
+	encode gzip
+	reverse_proxy api:8000
+}

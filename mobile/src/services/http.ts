@@ -1,9 +1,9 @@
 import axios from 'axios'
 import router from '../router'
+import { getApiBaseUrl } from '../utils/apiBaseUrl'
 
-// Use absolute API URL to target backend on port 8080 (Docker exposed)
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: getApiBaseUrl(),
 })
 
 api.interceptors.request.use((config) => {

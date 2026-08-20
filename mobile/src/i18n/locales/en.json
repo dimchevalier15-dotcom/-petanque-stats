@@ -452,6 +452,11 @@
     },
     "overallAverage": "Overall average",
     "ballsTracked": "{n} balls tracked",
+    "successRate": {
+      "label": "Success rate",
+      "value": "{rate}%",
+      "empty": "No data"
+    },
     "details": {
       "title": "Details",
       "balls": "{n} balls"

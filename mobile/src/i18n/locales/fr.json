@@ -452,6 +452,11 @@
     },
     "overallAverage": "Moyenne globale",
     "ballsTracked": "{n} boules analysées",
+    "successRate": {
+      "label": "Réussite",
+      "value": "{rate} %",
+      "empty": "Aucune donnée"
+    },
     "details": {
       "title": "Détails",
       "balls": "{n} boules"
