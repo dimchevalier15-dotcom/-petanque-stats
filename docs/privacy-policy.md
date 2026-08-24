@@ -41,7 +41,7 @@ Les données sont stockées sur le serveur d’application (`api.petanque-analyt
 
 ### Conservation
 
-Les données de compte et de jeu restent tant que le compte existe. **La suppression de compte n’est pas encore disponible dans l’application** (à implémenter avant publication store).
+Les données de compte et de jeu restent tant que le compte existe. Vous pouvez supprimer votre compte dans l’application : **Paramètres → Supprimer mon compte** (également sur `https://petanque-analytics.com/settings` après connexion). L’email et le mot de passe sont effacés. Le profil joueur peut rester dans l’historique des matchs, sans lien avec un compte.
 
 ### Transfert
 
@@ -49,7 +49,7 @@ Les échanges app ↔ API utilisent HTTPS.
 
 ### Droits
 
-Selon la loi applicable (ex. RGPD), accès, rectification, opposition, limitation, portabilité, suppression. **TODO :** indiquer comment exercer ces droits une fois le contact et la suppression de compte en place.
+Selon la loi applicable (ex. RGPD), accès, rectification, opposition, limitation, portabilité, suppression. La suppression s’effectue dans l’app (Paramètres). **TODO :** email de contact pour les autres demandes.
 
 ### Contact
 

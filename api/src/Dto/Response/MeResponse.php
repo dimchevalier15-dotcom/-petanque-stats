@@ -13,6 +13,7 @@ final class MeResponse
         public ?string $firstName,
         public ?string $lastName,
         public ?string $nickname,
+        public bool $emailVerified = false,
     ) {
     }
 }

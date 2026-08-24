@@ -86,9 +86,13 @@ Variables nécessaires (valeurs secrètes hors documentation) :
 | `JWT_SECRET_KEY` / `JWT_PUBLIC_KEY` | Chemins des clés dans le conteneur (défauts du fichier d'exemple) |
 | `CADDY_ACME_EMAIL` | Contact Let's Encrypt |
 | `VITE_API_URL` | URL API injectée au **build** du frontend (`https://api.petanque-analytics.com/api`) |
-| `DEFAULT_URI` | URI par défaut Symfony |
-| `MAILER_DSN` | Inutilisé en V1 (`null://null`) |
-| `MESSENGER_TRANSPORT_DSN` | Transport Messenger (défaut Doctrine) |
+| `DEFAULT_URI` | URI publique de l'API (`https://api.petanque-analytics.com`), utilisée pour les liens de vérification d'e-mail |
+| `FRONTEND_BASE_URL` | URL du frontend web (`https://petanque-analytics.com`), utilisée pour les liens de réinitialisation de mot de passe |
+| `MAILER_DSN` | Transport Symfony Mailer. Production : `resend+api://%env(RESEND_API_KEY)%@default` |
+| `RESEND_API_KEY` | Clé API Resend (ne jamais la committer). Doit être présente dans l'environnement du conteneur `api` si `MAILER_DSN` utilise `%env(RESEND_API_KEY)%` |
+| `MAIL_FROM` | Adresse expéditrice (`noreply@petanque-analytics.com`) |
+| `MAIL_FROM_NAME` | Nom expéditeur (`Pétanque Analytics`) |
+| `MESSENGER_TRANSPORT_DSN` | Transport Messenger (défaut Doctrine). Les e-mails transactionnels sont envoyés **de façon synchrone** (pas de worker requis) |
 | `SYMFONY_TRUSTED_PROXIES` | Confiance dans Caddy (`REMOTE_ADDR`) |
 
 Alternative : garder les secrets dans `.env.prod` et passer `--env-file .env.prod` à chaque commande `docker compose`.
@@ -154,6 +158,30 @@ docker compose -f docker-compose.prod.yml exec api php bin/console doctrine:migr
 ```
 
 Répéter cette commande après un déploiement qui ajoute des migrations.
+
+Cette version ajoute la migration `Version20260824120000` (`email_verified_at` + table `auth_tokens`). Les comptes déjà présents en base sont marqués comme vérifiés (`email_verified_at = created_at`) pour ne pas bloquer les utilisateurs existants.
+
+### 4.1 E-mails transactionnels (Resend)
+
+Les e-mails sont envoyés de façon synchrone via Symfony Mailer / Resend. Aucun worker Messenger n'est nécessaire.
+
+Dans `.env` de production (valeurs secrètes hors Git) :
+
+```
+RESEND_API_KEY=re_votre_cle
+MAILER_DSN=resend+api://%env(RESEND_API_KEY)%@default
+MAIL_FROM=noreply@petanque-analytics.com
+MAIL_FROM_NAME="Pétanque Analytics"
+FRONTEND_BASE_URL=https://petanque-analytics.com
+DEFAULT_URI=https://api.petanque-analytics.com
+```
+
+Ne jamais committer la clé Resend. Après mise à jour des variables, recréer le conteneur API pour qu'il les reçoive :
+
+```
+docker compose -f docker-compose.prod.yml up -d api
+```
+
 
 ### 5. Logs et diagnostic
 

@@ -30,6 +30,7 @@ final class RegistrationService
         private ValidatorInterface $validator,
         private PlayerLinkService $playerLinkService,
         private JWTEncoderInterface $jwtEncoder,
+        private EmailVerificationService $emailVerificationService,
         #[Autowire(param: 'lexik_jwt_authentication.token_ttl')]
         private int $tokenTtl,
     ) {
@@ -88,6 +89,8 @@ final class RegistrationService
             $this->em->flush();
         }
 
+        $this->emailVerificationService->sendForUser($user);
+
         $token = $this->jwtEncoder->encode([
             'username' => $user->getEmail(),
             'sub' => (string) $user->getId(),
@@ -105,6 +108,7 @@ final class RegistrationService
                 firstName: $player->getFirstName(),
                 lastName: $player->getLastName(),
                 nickname: $player->getNickname(),
+                emailVerified: $user->isEmailVerified(),
             ),
         );
     }

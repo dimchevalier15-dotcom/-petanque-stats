@@ -51,6 +51,9 @@ RUN composer dump-autoload --optimize --classmap-authoritative --no-dev \
     JWT_PUBLIC_KEY=/tmp/jwt-public.pem \
     JWT_PASSPHRASE="" \
     MAILER_DSN="null://null" \
+    MAIL_FROM="noreply@petanque-analytics.com" \
+    MAIL_FROM_NAME="Pétanque Analytics" \
+    FRONTEND_BASE_URL="https://petanque-analytics.com" \
     MESSENGER_TRANSPORT_DSN="doctrine://default?auto_setup=0" \
     php bin/console cache:warmup --env=prod --no-debug --no-interaction \
  && rm -f /tmp/jwt-private.pem /tmp/jwt-public.pem \

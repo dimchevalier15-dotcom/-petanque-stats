@@ -94,8 +94,9 @@ Google Play / Google Play App Signing : Google reçoit l’AAB et peut collecter
 ## Suppression
 
 - Déconnexion : supprime le JWT local, pas le compte serveur.
-- **Aucune** API ni écran de suppression de compte / export RGPD dans le code actuel.
-- **TODO bloquant Play :** fournir suppression in-app + URL web avant publication si les comptes restent.
+- Suppression de compte in-app : **Paramètres → Supprimer mon compte** (`DELETE /api/account`).
+- URL web (Play Console) : `https://petanque-analytics.com/settings` (connexion requise).
+- Effet : suppression de l’utilisateur (email, mot de passe, tokens). Le joueur lié est détaché (`user_id` à NULL) pour conserver l’historique des matchs des autres.
 
 ---
 
@@ -104,7 +105,7 @@ Google Play / Google Play App Signing : Google reçoit l’AAB et peut collecter
 - L’app collecte-t-elle des données utilisateur ? **Oui**
 - Données collectées : identifiants de compte (email), infos personnelles (nom, prénom), infos utilisateur (surnom), activité dans l’app (matchs, entraînements, tirs)
 - Données chiffrées en transit ? **Oui**
-- Les utilisateurs peuvent-ils demander la suppression ? **Non (aujourd’hui)** — à corriger
+- Les utilisateurs peuvent-ils demander la suppression ? **Oui** (Paramètres dans l’app / site)
 - Données vendues ? **Non**
 - Données partagées avec des tiers (tracking) ? **Non** (selon le code app)
 - Compte obligatoire ? **Oui**

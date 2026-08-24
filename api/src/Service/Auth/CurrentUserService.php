@@ -34,6 +34,7 @@ final class CurrentUserService
             firstName: $player?->getFirstName(),
             lastName: $player?->getLastName(),
             nickname: $player?->getNickname(),
+            emailVerified: $user->isEmailVerified(),
         );
     }
 

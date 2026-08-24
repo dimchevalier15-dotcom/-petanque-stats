@@ -30,8 +30,14 @@ services:
       APP_ENV: dev
       APP_DEBUG: 1
       DATABASE_URL: "mysql://petanque:petanque@mysql:3306/petanque?serverVersion=8.0&charset=utf8mb4"
+      DEFAULT_URI: http://localhost:8080
+      FRONTEND_BASE_URL: http://localhost:5173
+      MAIL_FROM: noreply@petanque-analytics.com
+      MAIL_FROM_NAME: "Pétanque Analytics"
     ports:
       - "8080:8000"
+    volumes:
+      - ./api:/app
 
   mobile:
     build:

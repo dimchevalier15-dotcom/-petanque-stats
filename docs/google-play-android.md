@@ -187,9 +187,7 @@ Ne pas inventer les textes marketing. Compléter les TODO avant soumission.
 | Audience cible | **TODO** (proposition : public sportif adulte ; le code ne cible pas les enfants) |
 | Pays de distribution | **TODO** |
 | Fiche développeur / compte Play | **TODO** (compte payant Google Play Console) |
-| Suppression de compte | **Bloquant** — voir ci-dessous |
-
-Google Play exige, pour une app qui crée des comptes, un chemin de **suppression de compte** in-app **et** une URL web. Le backend et l’app **n’ont pas** cette fonctionnalité (hors périmètre de cette préparation Android). À implémenter avant publication, ou la soumission risque un rejet.
+| Suppression de compte | In-app : Paramètres. URL web : `https://petanque-analytics.com/settings` |
 
 ---
 

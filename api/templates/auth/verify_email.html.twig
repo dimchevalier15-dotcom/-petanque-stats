@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vérification de l'adresse e-mail — Pétanque Analytics</title>
+    <style>
+        body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, sans-serif; background: #f4f6f5; color: #1f2933; }
+        .wrap { max-width: 28rem; margin: 3rem auto; padding: 1.5rem; background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+        h1 { margin: 0 0 .75rem; font-size: 1.25rem; color: #1F6B58; }
+        p { margin: 0; line-height: 1.5; color: #52606d; }
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        {% if status == 'verified' %}
+            <h1>Adresse confirmée</h1>
+            <p>Votre adresse e-mail a bien été vérifiée. Vous pouvez revenir à l'application Pétanque Analytics.</p>
+        {% elseif status == 'already_verified' %}
+            <h1>Adresse déjà confirmée</h1>
+            <p>Cette adresse e-mail était déjà vérifiée. Vous pouvez revenir à l'application.</p>
+        {% else %}
+            <h1>Lien invalide ou expiré</h1>
+            <p>Ce lien de confirmation n'est plus valable. Connectez-vous à l'application pour demander un nouvel e-mail de vérification.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

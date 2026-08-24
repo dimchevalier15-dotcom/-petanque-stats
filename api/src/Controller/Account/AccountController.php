@@ -6,6 +6,7 @@ namespace App\Controller\Account;
 
 use App\Dto\Request\LinkPlayerRequest;
 use App\Dto\Request\UpdatePlayerProfileRequest;
+use App\Service\Account\AccountDeletionService;
 use App\Service\Account\AccountPlayerService;
 use App\Service\Account\NoLinkedPlayerException;
 use App\Service\Account\PlayerAlreadyLinkedException;
@@ -23,6 +24,7 @@ final class AccountController extends AbstractController
 {
     public function __construct(
         private AccountPlayerService $accountPlayerService,
+        private AccountDeletionService $accountDeletionService,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {
@@ -132,6 +134,23 @@ final class AccountController extends AbstractController
         } catch (PlayerNotFoundException) {
             return new JsonResponse(['error' => 'player_not_found'], 404);
         }
+    }
+
+    #[Route('/api/account', name: 'api_account_delete', methods: ['DELETE'])]
+    public function deleteAccount(Request $request): JsonResponse
+    {
+        $token = $this->extractToken($request);
+        if ($token === null) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+
+        try {
+            $this->accountDeletionService->deleteAccount($token);
+        } catch (InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+
+        return new JsonResponse(null, 204);
     }
 
     private function extractToken(Request $request): ?string
