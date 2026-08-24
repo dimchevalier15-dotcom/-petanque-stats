@@ -27,6 +27,11 @@
         </div>
       </section>
 
+      <MatchSummaryEndGrid
+        :players="summary.players"
+        :end-indexes="summary.endIndexes ?? []"
+      />
+
       <section v-if="!hasData" class="panel app-card notice">
         <p class="notice-title">{{ t('summary.empty.noTrackedDataTitle') }}</p>
         <p class="panel-hint">{{ t('summary.empty.noTrackedData') }}</p>
@@ -34,22 +39,24 @@
 
       <template v-else>
         <section class="team-section">
-          <div class="team-header app-card team-a">
-            <div>
-              <h3>{{ teamALabel }}</h3>
-              <p v-if="teamAAverage !== null" class="team-meta">
-                {{ t('summary.teamAverage') }}
-                <Tag :value="formatAvg(teamAAverage)" :severity="avgSeverity(teamAAverage)" />
-              </p>
+          <template v-if="showTeamBlocks">
+            <div class="team-header app-card team-a">
+              <div>
+                <h3>{{ teamALabel }}</h3>
+                <p v-if="teamAAverage !== null" class="team-meta">
+                  {{ t('summary.teamAverage') }}
+                  <Tag :value="formatAvg(teamAAverage)" :severity="avgSeverity(teamAAverage)" />
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div v-if="teamAChart" class="panel app-card">
-            <h4>{{ t('summary.sections.teamDistribution') }}</h4>
-            <div class="chart-box">
-              <Chart type="bar" :data="teamAChart.data" :options="teamAChart.options" />
+            <div v-if="teamAChart" class="panel app-card">
+              <h4>{{ t('summary.sections.teamDistribution') }}</h4>
+              <div class="chart-box">
+                <Chart type="bar" :data="teamAChart.data" :options="teamAChart.options" />
+              </div>
             </div>
-          </div>
+          </template>
 
           <MatchSummaryPlayerCard
             v-for="player in teamA"
@@ -59,22 +66,24 @@
         </section>
 
         <section class="team-section">
-          <div class="team-header app-card team-b">
-            <div>
-              <h3>{{ teamBLabel }}</h3>
-              <p v-if="teamBAverage !== null" class="team-meta">
-                {{ t('summary.teamAverage') }}
-                <Tag :value="formatAvg(teamBAverage)" :severity="avgSeverity(teamBAverage)" />
-              </p>
+          <template v-if="showTeamBlocks">
+            <div class="team-header app-card team-b">
+              <div>
+                <h3>{{ teamBLabel }}</h3>
+                <p v-if="teamBAverage !== null" class="team-meta">
+                  {{ t('summary.teamAverage') }}
+                  <Tag :value="formatAvg(teamBAverage)" :severity="avgSeverity(teamBAverage)" />
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div v-if="teamBChart" class="panel app-card">
-            <h4>{{ t('summary.sections.teamDistribution') }}</h4>
-            <div class="chart-box">
-              <Chart type="bar" :data="teamBChart.data" :options="teamBChart.options" />
+            <div v-if="teamBChart" class="panel app-card">
+              <h4>{{ t('summary.sections.teamDistribution') }}</h4>
+              <div class="chart-box">
+                <Chart type="bar" :data="teamBChart.data" :options="teamBChart.options" />
+              </div>
             </div>
-          </div>
+          </template>
 
           <MatchSummaryPlayerCard
             v-for="player in teamB"
@@ -114,6 +123,7 @@ import Chart from 'primevue/chart'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
+import MatchSummaryEndGrid from '../components/match/MatchSummaryEndGrid.vue'
 import MatchSummaryPlayerCard from '../components/match/MatchSummaryPlayerCard.vue'
 import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
 import type { MatchContext } from '../models/MatchContext'
@@ -141,6 +151,12 @@ const { teamALabel, teamBLabel, labelForTeam } = useMatchTeamLabels(context, t)
 
 const teamA = computed<MatchSummaryPlayer[]>(() => summary.value.players.filter((p) => p.team === 'A'))
 const teamB = computed<MatchSummaryPlayer[]>(() => summary.value.players.filter((p) => p.team === 'B'))
+const isHeadToHead = computed(
+  () =>
+    summary.value.type === 'tete_a_tete' ||
+    (summary.value.type === undefined && teamA.value.length <= 1 && teamB.value.length <= 1),
+)
+const showTeamBlocks = computed(() => !isHeadToHead.value)
 
 const hasData = computed(() => hasTrackedData(summary.value))
 

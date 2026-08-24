@@ -1,5 +1,5 @@
 <template>
-  <article class="player-card app-card">
+  <article class="player-card app-card" :class="`player-card--${player.team}`">
     <div class="player-head">
       <h4 class="player-name">{{ displayName }}</h4>
       <Tag
@@ -16,35 +16,38 @@
       </div>
     </div>
 
-    <div v-if="pointChart || tirChart" class="shots-grid">
-      <div v-if="pointChart" class="shot-block">
-        <div class="shot-head">
-          <span>{{ t('play.shots.point') }}</span>
-          <Tag
-            :value="formatAvg(player.point!.average)"
-            :severity="avgSeverity(player.point!.average)"
-          />
+    <details v-if="pointChart || tirChart" class="shots-drawer">
+      <summary class="shots-drawer-summary">{{ t('summary.sections.shotDetails') }}</summary>
+      <div class="shots-grid">
+        <div v-if="pointChart" class="shot-block">
+          <div class="shot-head">
+            <span>{{ t('play.shots.point') }}</span>
+            <Tag
+              :value="formatAvg(player.point!.average)"
+              :severity="avgSeverity(player.point!.average)"
+            />
+          </div>
+          <ShotSuccessRate :rate="shotSuccessRate(player.point)" />
+          <div class="chart-box chart-box-sm">
+            <Chart type="bar" :data="pointChart.data" :options="pointChart.options" />
+          </div>
         </div>
-        <ShotSuccessRate :rate="shotSuccessRate(player.point)" />
-        <div class="chart-box chart-box-sm">
-          <Chart type="bar" :data="pointChart.data" :options="pointChart.options" />
-        </div>
-      </div>
 
-      <div v-if="tirChart" class="shot-block">
-        <div class="shot-head">
-          <span>{{ t('play.shots.tir') }}</span>
-          <Tag
-            :value="formatAvg(player.tir!.average)"
-            :severity="avgSeverity(player.tir!.average)"
-          />
-        </div>
-        <ShotSuccessRate :rate="shotSuccessRate(player.tir)" />
-        <div class="chart-box chart-box-sm">
-          <Chart type="bar" :data="tirChart.data" :options="tirChart.options" />
+        <div v-if="tirChart" class="shot-block">
+          <div class="shot-head">
+            <span>{{ t('play.shots.tir') }}</span>
+            <Tag
+              :value="formatAvg(player.tir!.average)"
+              :severity="avgSeverity(player.tir!.average)"
+            />
+          </div>
+          <ShotSuccessRate :rate="shotSuccessRate(player.tir)" />
+          <div class="chart-box chart-box-sm">
+            <Chart type="bar" :data="tirChart.data" :options="tirChart.options" />
+          </div>
         </div>
       </div>
-    </div>
+    </details>
 
     <p v-if="!overallChart && !pointChart && !tirChart" class="no-data">
       {{ t('summary.empty.noPlayerData') }}
@@ -86,6 +89,14 @@ const tirChart = computed(() => buildPlayerShotChart(props.player.tir, t))
   gap: var(--app-space-sm);
 }
 
+.player-card--A {
+  border-left: 4px solid #22c55e;
+}
+
+.player-card--B {
+  border-left: 4px solid #3b82f6;
+}
+
 .player-head {
   display: flex;
   justify-content: space-between;
@@ -125,6 +136,46 @@ const tirChart = computed(() => buildPlayerShotChart(props.player.tir, t))
 
 .chart-box-sm {
   height: 120px;
+}
+
+.shots-drawer {
+  overflow: hidden;
+}
+
+.shots-drawer-summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.375rem;
+  padding: 0.375rem 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--app-text-subtle);
+  user-select: none;
+}
+
+.shots-drawer-summary::-webkit-details-marker {
+  display: none;
+}
+
+.shots-drawer-summary::after {
+  content: '';
+  width: 0.35rem;
+  height: 0.35rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.shots-drawer[open] .shots-drawer-summary::after {
+  transform: rotate(-135deg);
 }
 
 .shots-grid {

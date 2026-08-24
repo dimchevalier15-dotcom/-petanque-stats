@@ -27,7 +27,14 @@
     "sections": {
       "comparison": "Porovnanie hráčov",
       "teamDistribution": "Rozdelenie tímu",
-      "distribution": "Rozdelenie známok"
+      "distribution": "Rozdelenie známok",
+      "shotDetails": "Detail point / tir",
+      "endGrid": "Vplyv podľa mèny"
+    },
+    "endGrid": {
+      "hint": "Súčet známok každého hráča v mène.",
+      "player": "Hráč",
+      "total": "Súčet"
     },
     "comparison": {
       "hint": "Celkový priemer každého hráča v tomto zápase."
@@ -251,7 +258,8 @@
     "score": "Skóre",
     "endScore": {
       "title": "Koniec mèny",
-      "earlyHint": "Neodohrané gule sa do štatistík nezapočítajú."
+      "earlyHint": "Neodohrané gule sa do štatistík nezapočítajú.",
+      "zeroHint": "0 bodov, ak sa košonka dostane mimo pri poslednej guli."
     },
     "nav": {
       "prevEnd": "Predchádzajúca mèna",

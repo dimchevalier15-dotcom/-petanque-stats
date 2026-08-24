@@ -27,7 +27,14 @@
     "sections": {
       "comparison": "Comparaison des joueurs",
       "teamDistribution": "Répartition équipe",
-      "distribution": "Répartition des notes"
+      "distribution": "Répartition des notes",
+      "shotDetails": "Détail point / tir",
+      "endGrid": "Impact par mène"
+    },
+    "endGrid": {
+      "hint": "Somme des notes de chaque joueur sur la mène.",
+      "player": "Joueur",
+      "total": "Total"
     },
     "comparison": {
       "hint": "Moyenne globale de chaque joueur sur ce match."
@@ -251,7 +258,8 @@
     "score": "Score",
     "endScore": {
       "title": "Fin de mène",
-      "earlyHint": "Les boules non jouées ne seront pas comptabilisées."
+      "earlyHint": "Les boules non jouées ne seront pas comptabilisées.",
+      "zeroHint": "0 point si le but sort à la dernière boule."
     },
     "nav": {
       "prevEnd": "Mène précédente",

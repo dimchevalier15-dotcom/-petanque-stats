@@ -375,7 +375,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       teamB: setup.teamB,
       trackedPlayers: setup.trackedPlayers,
       ends: ends
-        .filter((e) => e.canceled === true || (e.winner && e.points))
+        .filter((e) => e.canceled === true || (e.winner !== undefined && e.points !== undefined))
         .map((e) => ({
           index: e.index,
           winner: (e.winner as TeamSide) ?? 'A',

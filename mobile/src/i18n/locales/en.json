@@ -27,7 +27,14 @@
     "sections": {
       "comparison": "Player comparison",
       "teamDistribution": "Team distribution",
-      "distribution": "Note distribution"
+      "distribution": "Note distribution",
+      "shotDetails": "Point / shot details",
+      "endGrid": "Impact by end"
+    },
+    "endGrid": {
+      "hint": "Sum of each player's ball notes in the end.",
+      "player": "Player",
+      "total": "Total"
     },
     "comparison": {
       "hint": "Overall average for each player in this match."
@@ -251,7 +258,8 @@
     "score": "Score",
     "endScore": {
       "title": "End score",
-      "earlyHint": "Unplayed balls will not be counted in statistics."
+      "earlyHint": "Unplayed balls will not be counted in statistics.",
+      "zeroHint": "0 points if the jack goes out on the last ball."
     },
     "nav": {
       "prevEnd": "Previous end",

@@ -8,6 +8,11 @@ export interface MatchSummaryShotBreakdown {
   successRate: number | null
 }
 
+export interface MatchSummaryEndTotal {
+  endIndex: number
+  total: number
+}
+
 export interface MatchSummaryPlayer {
   playerId: number
   firstName: string
@@ -22,6 +27,7 @@ export interface MatchSummaryPlayer {
   m2: number
   point?: MatchSummaryShotBreakdown | null
   tir?: MatchSummaryShotBreakdown | null
+  endTotals?: MatchSummaryEndTotal[]
 }
 
 export interface MatchSummary {
@@ -30,5 +36,7 @@ export interface MatchSummary {
   scoreB: number
   winner: 'A' | 'B'
   ends: number
+  type?: 'tete_a_tete' | 'doublette' | 'triplette'
+  endIndexes?: number[]
   players: MatchSummaryPlayer[]
 }

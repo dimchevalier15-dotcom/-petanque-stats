@@ -163,14 +163,15 @@
     >
       <div class="end-score">
         <p v-if="!currentEndComplete" class="end-score-hint">{{ t('play.endScore.earlyHint') }}</p>
+        <p v-else class="end-score-hint">{{ t('play.endScore.zeroHint') }}</p>
         <div class="winner">
           <SelectButton v-model="winner" :options="winnerOptions" optionLabel="label" optionValue="value" />
         </div>
         <div class="points">
-          <InputText v-model.number="points" type="number" min="1" :max="pointsMax" />
+          <InputText v-model.number="points" type="number" :min="pointsMin" :max="pointsMax" />
         </div>
         <div class="actions">
-          <Button :label="t('play.actions.saveEnd')" @click="confirmEndScore" :disabled="!winner || !points" />
+          <Button :label="t('play.actions.saveEnd')" @click="confirmEndScore" :disabled="!canSaveEndScore" />
         </div>
       </div>
     </Dialog>
@@ -270,7 +271,7 @@ import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import { formatFormAvg, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
 import { avgSeverity } from '../composables/usePlayerStatsCharts'
 import type { MatchContext } from '../models/MatchContext'
-import { clampEndPoints, maxPointsForWinner, suggestEndScore } from '../models/EndScoreSuggestion'
+import { clampEndPoints, maxPointsForWinner, maxPointsPerEnd, suggestEndScore } from '../models/EndScoreSuggestion'
 import { matchesService } from '../services/matches'
 import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
 import { playersService } from '../services/players'
@@ -528,11 +529,23 @@ const winnerOptions = computed(() => [
   { label: teamBLabel.value, value: 'B' as TeamSide },
 ])
 
+const pointsMin = computed(() => (currentEndComplete.value ? 0 : 1))
+
 const pointsMax = computed(() => {
   if (!winner.value) {
-    return 13
+    return maxPointsPerEnd(setup.type)
   }
-  return maxPointsForWinner(winner.value, scoreA.value, scoreB.value, setup.targetScore)
+  return maxPointsForWinner(winner.value, scoreA.value, scoreB.value, setup.targetScore, setup.type)
+})
+
+const canSaveEndScore = computed(() => {
+  if (points.value === null || !Number.isFinite(points.value)) {
+    return false
+  }
+  if (points.value === 0) {
+    return currentEndComplete.value
+  }
+  return winner.value !== null && points.value >= 1
 })
 
 function applyScoreDialogDefaults(): void {
@@ -543,6 +556,7 @@ function applyScoreDialogDefaults(): void {
     scoreA: scoreA.value,
     scoreB: scoreB.value,
     targetScore: setup.targetScore,
+    type: setup.type,
   })
   winner.value = suggestion.winner
   points.value = suggestion.points
@@ -555,7 +569,7 @@ watch(scoreDialog, (visible, wasVisible) => {
 })
 
 watch(currentEndComplete, (complete) => {
-  if (complete && !currentEnd.value.points) {
+  if (complete && currentEnd.value.points === undefined && currentEnd.value.canceled !== true) {
     scoreDialog.value = true
   }
 })
@@ -570,6 +584,8 @@ watch(winner, (selectedWinner) => {
     scoreA.value,
     scoreB.value,
     setup.targetScore,
+    setup.type,
+    pointsMin.value,
   )
 })
 
@@ -588,13 +604,24 @@ async function confirmFinish() {
 }
 
 function confirmEndScore() {
-  if (!winner.value || !points.value) return
+  if (points.value === null || !Number.isFinite(points.value)) return
+
+  if (points.value === 0) {
+    if (!currentEndComplete.value) return
+    setEndScore(winner.value ?? 'A', 0)
+    scoreDialog.value = false
+    return
+  }
+
+  if (!winner.value) return
   const clamped = clampEndPoints(
     winner.value,
     points.value,
     scoreA.value,
     scoreB.value,
     setup.targetScore,
+    setup.type,
+    pointsMin.value,
   )
   setEndScore(winner.value, clamped)
   scoreDialog.value = false
