@@ -5,4 +5,5 @@ export interface AuthUserDto {
   firstName?: string
   lastName?: string
   nickname?: string
+  emailVerified?: boolean
 }

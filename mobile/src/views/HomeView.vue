@@ -26,6 +26,17 @@
         </div>
       </div>
       <p v-if="auth.user" class="connected">{{ t('home.connectedAs', { email: auth.user.email }) }}</p>
+      <div v-if="auth.user && auth.user.emailVerified === false" class="verify-banner">
+        <p>{{ t('auth.verify.banner') }}</p>
+        <Button
+          :label="t('auth.verify.resend')"
+          size="small"
+          outlined
+          :disabled="auth.loading"
+          @click="onResendVerification"
+        />
+        <Message v-if="verifyNotice" :severity="verifyNoticeSeverity">{{ verifyNotice }}</Message>
+      </div>
     </div>
 
     <section class="quick-section">
@@ -69,6 +80,7 @@
 import { computed, ref } from 'vue'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
+import Message from 'primevue/message'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
@@ -79,6 +91,8 @@ const { t, locale } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 const { draft, resume, abandon } = useMatchDraftResume()
+const verifyNotice = ref('')
+const verifyNoticeSeverity = ref<'success' | 'error'>('success')
 
 const currentScore = computed(() => {
   if (!draft.value) return { scoreA: 0, scoreB: 0 }
@@ -104,6 +118,18 @@ function goGuidelines(): void {
 function onLogout(): void {
   auth.logout()
   router.push({ name: 'login' })
+}
+
+async function onResendVerification(): Promise<void> {
+  verifyNotice.value = ''
+  const ok = await auth.resendVerification()
+  if (ok) {
+    verifyNoticeSeverity.value = 'success'
+    verifyNotice.value = t('auth.verify.resent')
+    return
+  }
+  verifyNoticeSeverity.value = 'error'
+  verifyNotice.value = auth.lastError ? t(auth.lastError) : t('auth.errors.generic')
 }
 
 const languageMenu = ref()
@@ -159,6 +185,17 @@ function toggleLanguageMenu(event: Event) {
   margin: 0;
   font-size: 0.875rem;
   color: var(--app-text-muted);
+}
+
+.verify-banner {
+  display: grid;
+  gap: var(--app-space-sm);
+  margin-top: var(--app-space-sm);
+}
+
+.verify-banner p {
+  margin: 0;
+  font-size: 0.875rem;
 }
 
 .section-label {

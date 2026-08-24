@@ -155,12 +155,34 @@
       "validation": "Please fix the highlighted fields.",
       "emailAlreadyUsed": "This email is already in use.",
       "playerAlreadyLinked": "This player is already linked to another account.",
-      "playerNotFound": "This player no longer exists or is unavailable."
+      "playerNotFound": "This player no longer exists or is unavailable.",
+      "tooManyRequests": "Too many attempts. Please try again in a few minutes."
     },
     "validations": {
       "required": "Required field",
       "emailInvalid": "Invalid email address.",
       "passwordMinLength": "Password must be at least 8 characters."
+    },
+    "forgot": {
+      "link": "Forgot password?",
+      "title": "Forgot password",
+      "submit": "Send reset link",
+      "success": "If an account exists for this email, a password reset email has been sent.",
+      "back": "Back to sign in"
+    },
+    "reset": {
+      "title": "New password",
+      "password": "New password",
+      "confirm": "Confirm password",
+      "submit": "Save password",
+      "success": "Your password has been updated. You can sign in.",
+      "invalidToken": "This link is invalid or has expired. Request a new one.",
+      "mismatch": "Passwords do not match."
+    },
+    "verify": {
+      "banner": "Your email address is not confirmed yet. Please check your inbox.",
+      "resend": "Resend email",
+      "resent": "If your address is not verified yet, a new email has been sent."
     }
   },
   "settings": {
@@ -191,7 +213,17 @@
       "linkFailed": "Unable to link this player. Please try again.",
       "playerAlreadyLinked": "This player is already linked to another account.",
       "playerNotFound": "This player no longer exists or is unavailable.",
-      "userAlreadyHasPlayer": "Your account is already linked to a player."
+      "userAlreadyHasPlayer": "Your account is already linked to a player.",
+      "deleteFailed": "Unable to delete the account. Please try again."
+    },
+    "delete": {
+      "title": "Delete account",
+      "hint": "This cannot be undone. Your email and password are removed. The player profile stays in match history, unlinked from any account.",
+      "action": "Delete my account",
+      "confirmTitle": "Confirm deletion",
+      "confirmMessage": "Do you really want to delete your account? You will be signed out and will no longer be able to sign in with this email.",
+      "cancel": "Cancel",
+      "confirm": "Delete permanently"
     }
   },
   "players": {

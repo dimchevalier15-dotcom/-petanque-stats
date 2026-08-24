@@ -39,6 +39,12 @@ function mapAuthError(error: unknown): Error {
     if (code === 'player_not_found') {
       return new Error('auth.errors.playerNotFound')
     }
+    if (code === 'too_many_requests') {
+      return new Error('auth.errors.tooManyRequests')
+    }
+    if (code === 'invalid_token') {
+      return new Error('auth.reset.invalidToken')
+    }
   }
   return new Error('auth.errors.generic')
 }
@@ -61,5 +67,27 @@ export const authService = {
   async me(): Promise<User> {
     const { data } = await api.get<AuthUserDto>('/auth/me')
     return data as unknown as User
+  },
+  async forgotPassword(email: string): Promise<void> {
+    try {
+      await api.post('/auth/forgot-password', { email })
+    } catch (error) {
+      throw mapAuthError(error)
+    }
+  },
+  async resetPassword(token: string, password: string): Promise<void> {
+    try {
+      await api.post('/auth/reset-password', { token, password })
+    } catch (error) {
+      throw mapAuthError(error)
+    }
+  },
+  async resendVerification(): Promise<{ alreadyVerified: boolean }> {
+    try {
+      const { data } = await api.post<{ alreadyVerified?: boolean }>('/auth/resend-verification')
+      return { alreadyVerified: data.alreadyVerified === true }
+    } catch (error) {
+      throw mapAuthError(error)
+    }
   },
 }

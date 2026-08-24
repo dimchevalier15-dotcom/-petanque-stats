@@ -155,12 +155,34 @@
       "validation": "Opravte prosím zvýraznené polia.",
       "emailAlreadyUsed": "Tento email sa už používa.",
       "playerAlreadyLinked": "Tento hráč je už prepojený s iným účtom.",
-      "playerNotFound": "Tento hráč už neexistuje alebo nie je dostupný."
+      "playerNotFound": "Tento hráč už neexistuje alebo nie je dostupný.",
+      "tooManyRequests": "Príliš veľa pokusov. Skúste to znova o niekoľko minút."
     },
     "validations": {
       "required": "Povinné pole",
       "emailInvalid": "Neplatná emailová adresa.",
       "passwordMinLength": "Heslo musí mať aspoň 8 znakov."
+    },
+    "forgot": {
+      "link": "Zabudnuté heslo?",
+      "title": "Zabudnuté heslo",
+      "submit": "Odoslať odkaz",
+      "success": "Ak účet s touto adresou existuje, e-mail na obnovenie hesla bol odoslaný.",
+      "back": "Späť na prihlásenie"
+    },
+    "reset": {
+      "title": "Nové heslo",
+      "password": "Nové heslo",
+      "confirm": "Potvrdiť heslo",
+      "submit": "Uložiť heslo",
+      "success": "Vaše heslo bolo zmenené. Môžete sa prihlásiť.",
+      "invalidToken": "Tento odkaz je neplatný alebo vypršal. Požiadajte o nový.",
+      "mismatch": "Heslá sa nezhodujú."
+    },
+    "verify": {
+      "banner": "Vaša e-mailová adresa ešte nie je potvrdená. Skontrolujte si schránku.",
+      "resend": "Znova odoslať e-mail",
+      "resent": "Ak vaša adresa ešte nie je overená, bol odoslaný nový e-mail."
     }
   },
   "settings": {
@@ -191,7 +213,17 @@
       "linkFailed": "Nepodarilo sa prepojiť tohto hráča. Skúste znova.",
       "playerAlreadyLinked": "Tento hráč je už prepojený s iným účtom.",
       "playerNotFound": "Tento hráč už neexistuje alebo nie je dostupný.",
-      "userAlreadyHasPlayer": "Váš účet je už prepojený s hráčom."
+      "userAlreadyHasPlayer": "Váš účet je už prepojený s hráčom.",
+      "deleteFailed": "Účet sa nepodarilo odstrániť. Skúste znova."
+    },
+    "delete": {
+      "title": "Odstrániť účet",
+      "hint": "Táto akcia je nevratná. Váš e-mail a heslo sa vymažú. Profil hráča zostane v histórii zápasov, bez väzby na účet.",
+      "action": "Odstrániť môj účet",
+      "confirmTitle": "Potvrdiť odstránenie",
+      "confirmMessage": "Naozaj chcete odstrániť svoj účet? Budete odhlásení a s týmto e-mailom sa už neprihlásite.",
+      "cancel": "Zrušiť",
+      "confirm": "Odstrániť natrvalo"
     }
   },
   "players": {

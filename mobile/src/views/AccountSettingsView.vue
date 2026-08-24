@@ -67,6 +67,43 @@
         />
       </section>
     </template>
+
+    <section class="danger-card app-card">
+      <h3 class="section-title">{{ t('settings.delete.title') }}</h3>
+      <p class="hint">{{ t('settings.delete.hint') }}</p>
+      <Message v-if="deleteError" severity="error">{{ deleteError }}</Message>
+      <Button
+        type="button"
+        :label="t('settings.delete.action')"
+        severity="danger"
+        outlined
+        class="w-full"
+        @click="deleteDialog = true"
+      />
+    </section>
+
+    <Dialog
+      v-model:visible="deleteDialog"
+      :modal="true"
+      :header="t('settings.delete.confirmTitle')"
+      :closable="!deleting"
+    >
+      <p class="hint">{{ t('settings.delete.confirmMessage') }}</p>
+      <div class="dialog-actions">
+        <Button
+          :label="t('settings.delete.cancel')"
+          severity="secondary"
+          :disabled="deleting"
+          @click="deleteDialog = false"
+        />
+        <Button
+          :label="t('settings.delete.confirm')"
+          severity="danger"
+          :loading="deleting"
+          @click="onDeleteAccount"
+        />
+      </div>
+    </Dialog>
   </AppPage>
 </template>
 
@@ -76,6 +113,8 @@ import { useI18n } from 'vue-i18n'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Message from 'primevue/message'
+import Dialog from 'primevue/dialog'
+import { useRouter } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
@@ -88,6 +127,7 @@ type ProfileErrors = { firstName?: string; lastName?: string }
 
 const { t } = useI18n()
 const auth = useAuthStore()
+const router = useRouter()
 
 const loading = ref(true)
 const linking = ref(false)
@@ -102,6 +142,9 @@ const firstName = ref('')
 const lastName = ref('')
 const nickname = ref('')
 const profileErrors = reactive<ProfileErrors>({})
+const deleteDialog = ref(false)
+const deleting = ref(false)
+const deleteError = ref('')
 
 const errorMessage = computed(() => (errorKey.value ? t(errorKey.value) : ''))
 const profileErrorMessage = computed(() => (profileErrorKey.value ? t(profileErrorKey.value) : ''))
@@ -227,16 +270,43 @@ async function onLink() {
   }
 }
 
+async function onDeleteAccount() {
+  deleting.value = true
+  deleteError.value = ''
+  try {
+    await accountService.deleteAccount()
+    deleteDialog.value = false
+    auth.logout()
+    await router.push({ name: 'login' })
+  } catch {
+    deleteError.value = t('settings.errors.deleteFailed')
+  } finally {
+    deleting.value = false
+  }
+}
+
 onMounted(loadLinkedPlayer)
 </script>
 
 <style scoped>
 .state-card,
 .profile-card,
-.link-card {
+.link-card,
+.danger-card {
   padding: var(--app-space-lg);
   display: grid;
   gap: var(--app-space-md);
+}
+
+.danger-card {
+  margin-top: var(--app-space-md);
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--app-space-sm);
+  margin-top: var(--app-space-md);
 }
 
 .section-title {

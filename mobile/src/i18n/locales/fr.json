@@ -155,12 +155,34 @@
       "validation": "Veuillez corriger les champs indiqués.",
       "emailAlreadyUsed": "Cet email est déjà utilisé.",
       "playerAlreadyLinked": "Ce joueur est déjà lié à un autre compte.",
-      "playerNotFound": "Ce joueur n'existe plus ou n'est plus disponible."
+      "playerNotFound": "Ce joueur n'existe plus ou n'est plus disponible.",
+      "tooManyRequests": "Trop de tentatives. Réessayez dans quelques minutes."
     },
     "validations": {
       "required": "Champ obligatoire",
       "emailInvalid": "Adresse email invalide.",
       "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères."
+    },
+    "forgot": {
+      "link": "Mot de passe oublié ?",
+      "title": "Mot de passe oublié",
+      "submit": "Envoyer le lien",
+      "success": "Si un compte correspondant existe, un e-mail de réinitialisation a été envoyé.",
+      "back": "Retour à la connexion"
+    },
+    "reset": {
+      "title": "Nouveau mot de passe",
+      "password": "Nouveau mot de passe",
+      "confirm": "Confirmer le mot de passe",
+      "submit": "Enregistrer le mot de passe",
+      "success": "Votre mot de passe a été modifié. Vous pouvez vous connecter.",
+      "invalidToken": "Ce lien est invalide ou a expiré. Demandez un nouveau lien.",
+      "mismatch": "Les mots de passe ne correspondent pas."
+    },
+    "verify": {
+      "banner": "Votre adresse e-mail n'est pas encore confirmée. Vérifiez votre boîte de réception.",
+      "resend": "Renvoyer l'e-mail",
+      "resent": "Si votre adresse n'est pas encore vérifiée, un nouvel e-mail a été envoyé."
     }
   },
   "settings": {
@@ -191,7 +213,17 @@
       "linkFailed": "Impossible de lier ce joueur. Veuillez réessayer.",
       "playerAlreadyLinked": "Ce joueur est déjà lié à un autre compte.",
       "playerNotFound": "Ce joueur n'existe plus ou n'est plus disponible.",
-      "userAlreadyHasPlayer": "Votre compte est déjà lié à un joueur."
+      "userAlreadyHasPlayer": "Votre compte est déjà lié à un joueur.",
+      "deleteFailed": "Impossible de supprimer le compte. Veuillez réessayer."
+    },
+    "delete": {
+      "title": "Supprimer le compte",
+      "hint": "Cette action est définitive. Votre email et mot de passe sont effacés. Le profil joueur reste dans l’historique des matchs, sans lien avec un compte.",
+      "action": "Supprimer mon compte",
+      "confirmTitle": "Confirmer la suppression",
+      "confirmMessage": "Voulez-vous vraiment supprimer votre compte ? Vous serez déconnecté et ne pourrez plus vous connecter avec cet email.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer définitivement"
     }
   },
   "players": {

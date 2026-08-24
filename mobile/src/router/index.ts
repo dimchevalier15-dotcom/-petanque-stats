@@ -3,6 +3,8 @@ import type { RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
+import ForgotPasswordView from '../views/ForgotPasswordView.vue'
+import ResetPasswordView from '../views/ResetPasswordView.vue'
 import NewMatchView from '../views/NewMatchView.vue'
 import AddPlayerView from '../views/AddPlayerView.vue'
 import MatchHistoryView from '../views/MatchHistoryView.vue'
@@ -17,6 +19,8 @@ const routes: RouteRecordRaw[] = [
   { path: '/home', name: 'home', component: HomeView, meta: { layout: 'main' } },
   { path: '/login', name: 'login', component: LoginView, meta: { layout: 'auth' } },
   { path: '/register', name: 'register', component: RegisterView, meta: { layout: 'auth' } },
+  { path: '/forgot-password', name: 'forgotPassword', component: ForgotPasswordView, meta: { layout: 'auth' } },
+  { path: '/reset-password', name: 'resetPassword', component: ResetPasswordView, meta: { layout: 'auth' } },
   { path: '/settings', name: 'settings', component: AccountSettingsView, meta: { layout: 'focus' } },
   { path: '/match/new', name: 'newMatch', component: NewMatchView, meta: { layout: 'focus' } },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView, meta: { layout: 'focus' } },
@@ -42,15 +46,17 @@ const router = createRouter({
   routes,
 })
 
-const publicRouteNames = new Set(['login', 'register'])
+const publicRouteNames = new Set(['login', 'register', 'forgotPassword', 'resetPassword'])
+const guestOnlyRouteNames = new Set(['login', 'register'])
 
 router.beforeEach((to) => {
   const isPublic = to.name && publicRouteNames.has(String(to.name))
+  const isGuestOnly = to.name && guestOnlyRouteNames.has(String(to.name))
   const token = localStorage.getItem('auth_token')
   if (!token && !isPublic) {
     return { name: 'login' }
   }
-  if (token && isPublic) {
+  if (token && isGuestOnly) {
     return { name: 'home' }
   }
   return true

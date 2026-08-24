@@ -32,4 +32,8 @@ export const accountService = {
     const { data } = await api.put<PlayerItemDto>('/account/player', payload)
     return toModel(data)
   },
+
+  async deleteAccount(): Promise<void> {
+    await api.delete('/account')
+  },
 }

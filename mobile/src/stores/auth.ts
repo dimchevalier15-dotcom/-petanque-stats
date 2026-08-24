@@ -58,10 +58,53 @@ export const useAuthStore = defineStore('auth', {
       try {
         const res: AuthSession = await authService.login(email, password)
         this.token = res.token
-        this.user = res.user
         localStorage.setItem(TOKEN_KEY, res.token)
+        this.user = await authService.me()
       } catch {
         this.lastError = 'auth.errors.invalidCredentials'
+      } finally {
+        this.loading = false
+      }
+    },
+    async forgotPassword(email: string): Promise<boolean> {
+      this.loading = true
+      this.lastError = null
+      try {
+        await authService.forgotPassword(email)
+        return true
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'auth.errors.generic'
+        this.lastError = message === 'auth.errors.tooManyRequests' ? message : 'auth.errors.generic'
+        return false
+      } finally {
+        this.loading = false
+      }
+    },
+    async resetPassword(token: string, password: string): Promise<boolean> {
+      this.loading = true
+      this.lastError = null
+      try {
+        await authService.resetPassword(token, password)
+        return true
+      } catch (error) {
+        this.lastError = error instanceof Error ? error.message : 'auth.errors.generic'
+        return false
+      } finally {
+        this.loading = false
+      }
+    },
+    async resendVerification(): Promise<boolean> {
+      this.loading = true
+      this.lastError = null
+      try {
+        const result = await authService.resendVerification()
+        if (result.alreadyVerified && this.user) {
+          this.user = { ...this.user, emailVerified: true }
+        }
+        return true
+      } catch (error) {
+        this.lastError = error instanceof Error ? error.message : 'auth.errors.generic'
+        return false
       } finally {
         this.loading = false
       }

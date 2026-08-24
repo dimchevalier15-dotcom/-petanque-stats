@@ -17,7 +17,7 @@ api.interceptors.request.use((config) => {
 
 // Login/register can legitimately fail with 401 (wrong credentials): this must
 // never be treated as an expired/invalid session.
-const authEndpoints = ['/auth/login', '/auth/register']
+const authEndpoints = ['/auth/login', '/auth/register', '/auth/forgot-password', '/auth/reset-password']
 
 function isAuthEndpointRequest(url: string | undefined): boolean {
   return url !== undefined && authEndpoints.some((endpoint) => url.endsWith(endpoint))
