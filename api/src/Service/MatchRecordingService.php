@@ -41,6 +41,7 @@ final class MatchRecordingService
 
         // Validate coherence with created match
         $allowedPerPlayer = $req->type === GameType::TRIPLETTE->value ? 2 : 3;
+        $maxPointsPerEnd = GameType::tryFrom($req->type)?->maxPointsPerEnd() ?? 6;
         $matchPlayerIds = $this->participants->findAllPlayerIdsByGame($game);
         $matchPlayerSet = array_fill_keys($matchPlayerIds, true);
 
@@ -48,7 +49,7 @@ final class MatchRecordingService
         $tracked = array_values(array_unique(array_map('intval', $tracked)));
         $trackedSet = array_fill_keys($tracked, true);
 
-        $this->em->wrapInTransaction(function () use ($req, $game, $matchPlayerSet, $trackedSet, $allowedPerPlayer): void {
+        $this->em->wrapInTransaction(function () use ($req, $game, $matchPlayerSet, $trackedSet, $allowedPerPlayer, $maxPointsPerEnd): void {
             // Idempotency: replace any previous completion data instead of duplicating it.
             $this->ends->deleteByGame($game);
 
@@ -63,8 +64,10 @@ final class MatchRecordingService
 
                 if ($isCanceled) {
                     $points = 0;
-                } elseif ($points <= 0) {
+                } elseif ($points < 0) {
                     continue;
+                } else {
+                    $points = min($points, $maxPointsPerEnd);
                 }
 
                 $end = new GameEnd($game, $endDto->index, $winner, $points, $isCanceled);

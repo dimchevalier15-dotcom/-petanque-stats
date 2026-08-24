@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\Response\MatchSummaryEndTotal;
 use App\Dto\Response\MatchSummaryPlayerRow;
 use App\Dto\Response\MatchSummaryResponse;
 use App\Entity\Game;
@@ -51,8 +52,10 @@ final class MatchSummaryService
 
         // Aggregates of notes per player (overall)
         $agg = $this->balls->aggregateByGame($game);
-        // Aggregates per shot type
         $shotAgg = $this->balls->aggregateByGamePerShot($game);
+        $notesByEnd = $this->balls->sumNotesByPlayerAndEnd($game);
+        $endIndexes = array_keys($notesByEnd);
+        sort($endIndexes);
         $playerMap = $this->players->findMapByIds($trackedIds);
 
         $rows = [];
@@ -76,6 +79,14 @@ final class MatchSummaryService
                 $tir = $this->shotBreakdowns->fromAggregate($shotAgg[$pid]['tir']);
             }
 
+            $endTotals = [];
+            foreach ($endIndexes as $endIndex) {
+                if (!isset($notesByEnd[$endIndex][$pid])) {
+                    continue;
+                }
+                $endTotals[] = new MatchSummaryEndTotal($endIndex, $notesByEnd[$endIndex][$pid]);
+            }
+
             $rows[] = new MatchSummaryPlayerRow(
                 playerId: $pid,
                 firstName: $p->getFirstName(),
@@ -90,6 +101,7 @@ final class MatchSummaryService
                 m2: (int) $s['m2'],
                 point: $point,
                 tir: $tir,
+                endTotals: $endTotals,
             );
         }
 
@@ -99,6 +111,8 @@ final class MatchSummaryService
             scoreB: $scoreB,
             winner: $winner,
             ends: $endsCount,
+            type: $game->getType()->value,
+            endIndexes: array_values($endIndexes),
             players: $rows,
         );
     }

@@ -14,5 +14,10 @@ Thumbs.db
 .env.prod
 .env.*.local
 
+# Android upload / signing secrets (never commit)
+*.jks
+*.keystore
+keystore.properties
+
 # Logs
 *.log

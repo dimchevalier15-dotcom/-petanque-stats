@@ -26,4 +26,9 @@ enum GameType: string
             self::TRIPLETTE => 3,
         };
     }
+
+    public function maxPointsPerEnd(): int
+    {
+        return $this === self::TETE_A_TETE ? 3 : 6;
+    }
 }

@@ -295,7 +295,23 @@ final class MatchRecordingServiceTest extends KernelTestCase
         self::assertSame(1, $saved[0]->getNote());
     }
 
-    public function testANonCanceledEndWithZeroPointsIsNotPersisted(): void
+    public function testHeadToHeadPointsAreCappedAtThree(): void
+    {
+        [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
+
+        $req = $this->baseRequest($playerAId, $playerBId);
+        $req->ends[0]->points = 9;
+
+        $this->recording->complete($matchId, $req);
+
+        $game = $this->em->getRepository(\App\Entity\Game::class)->find($matchId);
+        self::assertNotNull($game);
+        $end = $this->em->getRepository(\App\Entity\GameEnd::class)->findOneBy(['game' => $game]);
+        self::assertNotNull($end);
+        self::assertSame(3, $end->getPoints());
+    }
+
+    public function testANonCanceledEndWithZeroPointsIsPersisted(): void
     {
         [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
 
@@ -307,8 +323,10 @@ final class MatchRecordingServiceTest extends KernelTestCase
 
         $game = $this->em->getRepository(\App\Entity\Game::class)->find($matchId);
         self::assertNotNull($game);
-        $endCount = $this->em->getRepository(\App\Entity\GameEnd::class)->count(['game' => $game]);
-        self::assertSame(0, $endCount);
+        $end = $this->em->getRepository(\App\Entity\GameEnd::class)->findOneBy(['game' => $game]);
+        self::assertNotNull($end);
+        self::assertFalse($end->isCanceled());
+        self::assertSame(0, $end->getPoints());
     }
 
     public function testEndPlayerRolesArePersisted(): void

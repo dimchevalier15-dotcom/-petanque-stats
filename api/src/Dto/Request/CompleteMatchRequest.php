@@ -45,7 +45,8 @@ final class CompleteMatchEndDto
     public string $winner;
 
     /**
-     * When canceled=true, points must be 0; otherwise >=1.
+     * When canceled=true, points must be 0.
+     * A non-canceled 0-point end is valid (jack out on the last ball).
      * Canceled ends still carry played balls for statistics.
      */
     #[Assert\GreaterThanOrEqual(value: 0)]

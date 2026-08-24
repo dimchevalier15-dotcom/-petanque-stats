@@ -16,6 +16,9 @@ final class MatchSummaryResponse
         public int $scoreB,
         public string $winner, // 'A' | 'B'
         public int $ends,
+        public string $type, // tete_a_tete | doublette | triplette
+        /** @param list<int> $endIndexes */
+        public array $endIndexes,
         public array $players,
     ) {
     }

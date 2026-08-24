@@ -155,6 +155,34 @@ final class GameBallRepository extends ServiceEntityRepository
     }
 
     /**
+     * Sum of ball notes per player in each non-canceled end.
+     *
+     * @return array<int, array<int, int>> endIndex => playerId => total
+     */
+    public function sumNotesByPlayerAndEnd(Game $game): array
+    {
+        $rows = $this->createQueryBuilder('b')
+            ->select('e.index as endIndex, IDENTITY(b.player) as pid, SUM(b.note) as s')
+            ->join('b.end', 'e')
+            ->where('e.game = :g')
+            ->andWhere('e.canceled = false')
+            ->setParameter('g', $game)
+            ->groupBy('e.index, b.player')
+            ->orderBy('e.index', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        $map = [];
+        foreach ($rows as $r) {
+            $endIndex = (int) $r['endIndex'];
+            $pid = (int) $r['pid'];
+            $map[$endIndex][$pid] = (int) $r['s'];
+        }
+
+        return $map;
+    }
+
+    /**
      * @return array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}
      */
     public function aggregateByPlayer(int $playerId): array

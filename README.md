@@ -5,7 +5,7 @@ Bootstrap technique du projet. Voir le dossier `docs/` pour la source de vérit�
 ## Prérequis
 - Docker et Docker Compose récents
 - Make (optionnel mais recommandé)
-- Node.js 20+ (si vous souhaitez lancer le front sans Docker)
+- Node.js 22+ (si vous souhaitez lancer le front / Capacitor 8 sans Docker)
 
 ## Architecture (monorepo)
 ```
@@ -115,7 +115,7 @@ npx cap open android
 
 Puis lancer **Pétanque Stats** depuis Android Studio sur un appareil USB (`adb devices`).
 
-Dans Android Studio, choisir un **Gradle JDK 17** (Gradle 8.2.1 de Capacitor 6).
+Dans Android Studio, choisir un **Gradle JDK 17 ou 21** (Capacitor 8 / Android API 36). Publication Play : `docs/google-play-android.md`.
 
 L'API Android est celle de production (`VITE_API_URL` dans `mobile/.env.production`, actuellement `https://api.petanque-analytics.com/api`). Le mode `npm run dev` continue d'utiliser le proxy `/api` vers l'API locale.
 
@@ -123,3 +123,4 @@ Détails : `docs/deployment.md`.
 
 ## TODO
 - Compléter la CI (non incluse ici).
+- Politique de confidentialité publique et suppression de compte avant publication Play Store (`docs/google-play-android.md`).

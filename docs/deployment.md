@@ -221,11 +221,12 @@ npx cap open android
 ### Lancement sur un appareil physique
 
 1. Relier le téléphone en USB, activer le débogage USB, vérifier avec `adb devices`.
-2. Dans Android Studio : Gradle JDK **17** (Capacitor 6 / Gradle 8.2.1 ne compile pas avec le JDK 25 d'Android Studio).
+2. Dans Android Studio : Gradle JDK **17 ou 21** (Capacitor 8 / AGP 8.13). Éviter le JBR 25 si la compilation échoue.
 3. Sélectionner l'appareil, puis Run.
 4. Le package installé est `com.petanquestats.app` (Pétanque Stats).
+5. Release Play : `npm run android:bundle` (voir `docs/google-play-android.md`).
 
-Cette étape prépare uniquement un build local. Signature release et Play Store sont hors périmètre.
+Signature, AAB et Data Safety : `docs/google-play-android.md`, `docs/google-play-data-safety.md`.
 
 ### Environnement API (Android)
 
