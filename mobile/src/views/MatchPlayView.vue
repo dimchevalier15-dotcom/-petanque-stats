@@ -388,7 +388,6 @@ const {
   ends,
   scoreA,
   scoreB,
-  isFinished,
   ballsPerPlayer,
   goPrevEnd,
   goNextEnd,
@@ -514,9 +513,6 @@ function isTracked(playerId: number): boolean {
 }
 
 function canEnterBall(playerId: number, noteIndex: number): boolean {
-  if (isFinished.value) {
-    return false
-  }
   return canPlayBallSlot(currentEnd.value, playerId, noteIndex)
 }
 
@@ -529,13 +525,30 @@ const winnerOptions = computed(() => [
   { label: teamBLabel.value, value: 'B' as TeamSide },
 ])
 
+const scoreForEndCap = computed(() => {
+  const end = currentEnd.value
+  let a = scoreA.value
+  let b = scoreB.value
+  if (end && end.canceled !== true && end.winner && end.points !== undefined) {
+    if (end.winner === 'A') a -= end.points
+    else b -= end.points
+  }
+  return { scoreA: Math.max(0, a), scoreB: Math.max(0, b) }
+})
+
 const pointsMin = computed(() => (currentEndComplete.value ? 0 : 1))
 
 const pointsMax = computed(() => {
   if (!winner.value) {
     return maxPointsPerEnd(setup.type)
   }
-  return maxPointsForWinner(winner.value, scoreA.value, scoreB.value, setup.targetScore, setup.type)
+  return maxPointsForWinner(
+    winner.value,
+    scoreForEndCap.value.scoreA,
+    scoreForEndCap.value.scoreB,
+    setup.targetScore,
+    setup.type,
+  )
 })
 
 const canSaveEndScore = computed(() => {
@@ -549,12 +562,19 @@ const canSaveEndScore = computed(() => {
 })
 
 function applyScoreDialogDefaults(): void {
+  const end = currentEnd.value
+  if (end.canceled !== true && end.winner && end.points !== undefined) {
+    winner.value = end.winner
+    points.value = end.points
+    return
+  }
+
   const suggestion = suggestEndScore({
-    end: currentEnd.value,
+    end,
     teamA: setup.teamA,
     teamB: setup.teamB,
-    scoreA: scoreA.value,
-    scoreB: scoreB.value,
+    scoreA: scoreForEndCap.value.scoreA,
+    scoreB: scoreForEndCap.value.scoreB,
     targetScore: setup.targetScore,
     type: setup.type,
   })
@@ -581,8 +601,8 @@ watch(winner, (selectedWinner) => {
   points.value = clampEndPoints(
     selectedWinner,
     points.value,
-    scoreA.value,
-    scoreB.value,
+    scoreForEndCap.value.scoreA,
+    scoreForEndCap.value.scoreB,
     setup.targetScore,
     setup.type,
     pointsMin.value,
@@ -617,8 +637,8 @@ function confirmEndScore() {
   const clamped = clampEndPoints(
     winner.value,
     points.value,
-    scoreA.value,
-    scoreB.value,
+    scoreForEndCap.value.scoreA,
+    scoreForEndCap.value.scoreB,
     setup.targetScore,
     setup.type,
     pointsMin.value,

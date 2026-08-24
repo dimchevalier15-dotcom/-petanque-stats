@@ -115,7 +115,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   }
 
   function cyclePlayerRole(playerId: number): void {
-    if (setup.type !== 'triplette' || isFinished.value || isEndScored(currentEnd.value)) return
+    if (setup.type !== 'triplette') return
     setPlayerRole(playerId, cycleTripletteRole(roleFor(playerId)))
   }
 
@@ -223,14 +223,29 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   }
 
   function addEndIfNeeded(): void {
-    if (currentEndIndex.value === ends.length - 1) {
-      const e: EndRecord = { index: ends.length + 1, balls: [], winner: undefined, points: undefined, canceled: false }
-      for (const playerId of allPlayers.value) {
-        currentRoles[playerId] = currentRoles[playerId] ?? startingRoles[playerId]
-      }
-      snapshotEndRoles(e, currentRoles, allPlayers.value)
-      ensureEndStructure(e)
-      ends.push(e)
+    const last = ends[ends.length - 1]
+    if (last && !isEndScored(last)) {
+      return
+    }
+    const e: EndRecord = { index: ends.length + 1, balls: [], winner: undefined, points: undefined, canceled: false }
+    for (const playerId of allPlayers.value) {
+      currentRoles[playerId] = currentRoles[playerId] ?? startingRoles[playerId]
+    }
+    snapshotEndRoles(e, currentRoles, allPlayers.value)
+    ensureEndStructure(e)
+    ends.push(e)
+  }
+
+  function continueMatchAfterEndChange(): void {
+    const wasOnLastEnd = currentEndIndex.value === ends.length - 1
+    recomputeGlobalScore()
+    if (isFinished.value) {
+      return
+    }
+    addEndIfNeeded()
+    if (wasOnLastEnd) {
+      currentEndIndex.value += 1
+      distanceEstimate.value = null
     }
   }
 
@@ -247,9 +262,6 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   }
 
   function canPlayBallSlot(end: EndRecord, playerId: number, noteIndex: number): boolean {
-    if (isEndScored(end)) {
-      return false
-    }
     const entry = end.balls.find((b) => b.playerId === playerId)
     if (!entry) {
       return false
@@ -267,7 +279,6 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     value: BallNote | null,
     shotType?: 'point' | 'tir',
   ): void {
-    if (isFinished.value) return
     const end = ends[currentEndIndex.value]
     ensureEndStructure(end)
     const entry = end.balls.find((b) => b.playerId === playerId)
@@ -314,12 +325,8 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
 
   const currentEnd = computed(() => ends[currentEndIndex.value])
   const currentEndComplete = computed(() => allTrackedNotesFilled(currentEnd.value))
-  const canValidateEnd = computed(
-    () => !isFinished.value && !isEndScored(currentEnd.value) && hasAnyPlayedBall(currentEnd.value),
-  )
-  const canEditRoles = computed(
-    () => setup.type === 'triplette' && !isFinished.value && !isEndScored(currentEnd.value),
-  )
+  const canValidateEnd = computed(() => hasAnyPlayedBall(currentEnd.value))
+  const canEditRoles = computed(() => setup.type === 'triplette')
 
   function setEndScore(winner: TeamSide, points: number): void {
     const end = currentEnd.value
@@ -327,25 +334,16 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     end.winner = winner
     end.points = points
     snapshotEndRoles(end, currentRoles, allPlayers.value)
-    recomputeGlobalScore()
-    if (!isFinished.value) {
-      addEndIfNeeded()
-      currentEndIndex.value += 1
-      distanceEstimate.value = null
-    }
+    continueMatchAfterEndChange()
   }
 
   function cancelCurrentEnd(): void {
-    if (isFinished.value) return
     const end = currentEnd.value
     end.canceled = true
     end.winner = 'A'
     end.points = 0
     snapshotEndRoles(end, currentRoles, allPlayers.value)
-    recomputeGlobalScore()
-    addEndIfNeeded()
-    currentEndIndex.value += 1
-    distanceEstimate.value = null
+    continueMatchAfterEndChange()
   }
 
   function colorFor(note: BallNote | undefined): string {
