@@ -12,6 +12,7 @@ final class MatchContextResponse
         public ?string $teamAName,
         public ?string $teamBName,
         public ?string $nature,
+        public ?int $competitionId,
         public ?string $competitionName,
         public ?string $competitionStage,
         public ?string $terrainType,

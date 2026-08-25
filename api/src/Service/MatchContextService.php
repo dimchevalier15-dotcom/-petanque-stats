@@ -8,6 +8,7 @@ use App\Dto\Request\UpdateMatchContextRequest;
 use App\Dto\Response\MatchContextResponse;
 use App\Entity\Game;
 use App\Enum\MatchNature;
+use App\Repository\CompetitionRepository;
 use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -15,6 +16,7 @@ final class MatchContextService
 {
     public function __construct(
         private GameRepository $games,
+        private CompetitionRepository $competitions,
         private EntityManagerInterface $em,
     ) {
     }
@@ -44,9 +46,17 @@ final class MatchContextService
         $game->setNature($this->resolveNature($req->nature));
 
         if ($req->nature === MatchNature::COMPETITION->value) {
-            $game->setCompetitionName($this->normalizeOptionalString($req->competitionName));
+            if ($req->competitionId !== null) {
+                $competition = $this->competitions->find($req->competitionId);
+                $game->setCompetition($competition);
+                $game->setCompetitionName(null);
+            } else {
+                $game->setCompetition(null);
+                $game->setCompetitionName($this->normalizeOptionalString($req->competitionName));
+            }
             $game->setCompetitionStage($req->competitionStage);
         } else {
+            $game->setCompetition(null);
             $game->setCompetitionName(null);
             $game->setCompetitionStage(null);
         }
@@ -66,6 +76,7 @@ final class MatchContextService
             teamAName: $game->getTeamAName(),
             teamBName: $game->getTeamBName(),
             nature: $game->getNature()?->value,
+            competitionId: $game->getCompetition()?->getId(),
             competitionName: $game->getCompetitionName(),
             competitionStage: $game->getCompetitionStage(),
             terrainType: $game->getTerrainType(),

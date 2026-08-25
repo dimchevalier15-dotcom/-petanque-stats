@@ -126,8 +126,8 @@ import PageHeader from '../components/layout/PageHeader.vue'
 import MatchSummaryEndGrid from '../components/match/MatchSummaryEndGrid.vue'
 import MatchSummaryPlayerCard from '../components/match/MatchSummaryPlayerCard.vue'
 import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
-import type { MatchContext } from '../models/MatchContext'
-import { hasMatchContextData } from '../models/MatchContext'
+import { hasMatchContextData, type MatchContext } from '../models/MatchContext'
+import { competitionLabel, type Competition } from '../models/Competition'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import {
@@ -138,6 +138,7 @@ import {
 } from '../composables/useMatchSummaryCharts'
 import { avgSeverity, formatAvg } from '../composables/usePlayerStatsCharts'
 import { matchesService } from '../services/matches'
+import { competitionsService } from '../services/competitions'
 
 const { t } = useI18n()
 const { natureOptions, competitionStageOptions, terrainTypeOptions } = useMatchContextOptions(t)
@@ -147,6 +148,7 @@ const router = useRouter()
 const matchId = Number(route.params.id)
 const summary = ref<MatchSummary>({ matchId, scoreA: 0, scoreB: 0, winner: 'A', ends: 0, players: [] })
 const context = ref<MatchContext | null>(null)
+const competitions = ref<Competition[]>([])
 const { teamALabel, teamBLabel, labelForTeam } = useMatchTeamLabels(context, t)
 
 const teamA = computed<MatchSummaryPlayer[]>(() => summary.value.players.filter((p) => p.team === 'A'))
@@ -182,7 +184,11 @@ const contextSummary = computed<string[]>(() => {
     const nature = natureOptions.value.find((o) => o.value === context.value?.nature)
     if (nature) lines.push(`${t('context.fields.nature')}: ${nature.label}`)
   }
-  if (context.value.competitionName) {
+  if (context.value.competitionId) {
+    const competition = competitions.value.find((item) => item.id === context.value?.competitionId)
+    const label = competition ? competitionLabel(competition) : null
+    if (label) lines.push(`${t('context.fields.competitionName')}: ${label}`)
+  } else if (context.value.competitionName) {
     lines.push(`${t('context.fields.competitionName')}: ${context.value.competitionName}`)
   }
   if (context.value.competitionStage) {
@@ -208,12 +214,14 @@ async function load() {
     return
   }
   try {
-    const [summaryData, contextData] = await Promise.all([
+    const [summaryData, contextData, competitionList] = await Promise.all([
       matchesService.getSummary(matchId),
       matchesService.getContext(matchId),
+      competitionsService.list(),
     ])
     summary.value = summaryData
     context.value = contextData
+    competitions.value = competitionList
   } catch {
     router.replace({ name: 'home' })
   }

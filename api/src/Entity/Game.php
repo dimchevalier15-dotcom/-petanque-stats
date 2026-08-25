@@ -43,6 +43,10 @@ class Game
     #[ORM\Column(type: 'string', length: 20, nullable: true, enumType: MatchNature::class)]
     private ?MatchNature $nature = null;
 
+    #[ORM\ManyToOne(targetEntity: Competition::class)]
+    #[ORM\JoinColumn(name: 'competition_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Competition $competition = null;
+
     #[ORM\Column(name: 'competition_name', type: 'string', length: 255, nullable: true)]
     private ?string $competitionName = null;
 
@@ -73,6 +77,7 @@ class Game
     public function getTeamAName(): ?string { return $this->teamAName; }
     public function getTeamBName(): ?string { return $this->teamBName; }
     public function getNature(): ?MatchNature { return $this->nature; }
+    public function getCompetition(): ?Competition { return $this->competition; }
     public function getCompetitionName(): ?string { return $this->competitionName; }
     public function getCompetitionStage(): ?string { return $this->competitionStage; }
     public function getTerrainType(): ?string { return $this->terrainType; }
@@ -81,6 +86,7 @@ class Game
     public function setTeamAName(?string $teamAName): void { $this->teamAName = $teamAName; }
     public function setTeamBName(?string $teamBName): void { $this->teamBName = $teamBName; }
     public function setNature(?MatchNature $nature): void { $this->nature = $nature; }
+    public function setCompetition(?Competition $competition): void { $this->competition = $competition; }
     public function setCompetitionName(?string $competitionName): void { $this->competitionName = $competitionName; }
     public function setCompetitionStage(?string $competitionStage): void { $this->competitionStage = $competitionStage; }
     public function setTerrainType(?string $terrainType): void { $this->terrainType = $terrainType; }

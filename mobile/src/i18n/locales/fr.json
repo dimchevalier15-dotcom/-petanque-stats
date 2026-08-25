@@ -64,7 +64,8 @@
       "teamAName": "Nom de l'équipe A",
       "teamBName": "Nom de l'équipe B",
       "nature": "Nature du match",
-      "competitionName": "Nom de la compétition",
+      "competitionName": "Compétition",
+      "competitionNameOther": "Nom de la compétition (autre)",
       "competitionStage": "Stade de la compétition",
       "terrainType": "Type de terrain"
     },
@@ -72,6 +73,9 @@
       "friendly": "Amical",
       "training": "Entraînement",
       "competition": "Compétition"
+    },
+    "competition": {
+      "other": "Autre"
     },
     "competitionStage": {
       "group": "Poules",
@@ -108,6 +112,7 @@
       "history": "Historique des matchs",
       "myStats": "Mes statistiques",
       "settings": "Paramètres",
+      "adminCompetitions": "Admin compétitions",
       "logout": "Déconnexion",
       "shooting": "Tir de précision",
       "training": "Entraînement"
@@ -474,6 +479,10 @@
     "legal": {
       "title": "Informations légales"
     },
+    "admin": {
+      "title": "Administration",
+      "competitions": "Gérer les compétitions"
+    },
     "delete": {
       "title": "Supprimer le compte",
       "hint": "Cette action est définitive. Votre email et mot de passe sont effacés. Le profil joueur reste dans l’historique des matchs, sans lien avec un compte.",
@@ -482,6 +491,36 @@
       "confirmMessage": "Voulez-vous vraiment supprimer votre compte ? Vous serez déconnecté et ne pourrez plus vous connecter avec cet email.",
       "cancel": "Annuler",
       "confirm": "Supprimer définitivement"
+    }
+  },
+  "admin": {
+    "competitions": {
+      "title": "Compétitions",
+      "addTitle": "Ajouter une compétition",
+      "editTitle": "Modifier la compétition",
+      "loading": "Chargement…",
+      "empty": "Aucune compétition enregistrée.",
+      "confirmDelete": "Supprimer « {name} » ?",
+      "fields": {
+        "name": "Nom",
+        "eventDate": "Date",
+        "country": "Pays",
+        "context": "Contexte"
+      },
+      "actions": {
+        "add": "Ajouter",
+        "save": "Enregistrer",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "cancelEdit": "Annuler"
+      },
+      "validations": {
+        "required": "Ce champ est obligatoire."
+      },
+      "errors": {
+        "saveFailed": "Impossible d'enregistrer la compétition.",
+        "deleteFailed": "Impossible de supprimer la compétition."
+      }
     }
   },
   "players": {
@@ -740,6 +779,7 @@
       "title": "Filtres",
       "nature": "Nature",
       "format": "Format",
+      "competition": "Compétition",
       "distance": "Distance"
     },
     "kpi": {

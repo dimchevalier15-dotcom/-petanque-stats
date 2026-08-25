@@ -62,6 +62,15 @@
           <i class="pi pi-cog" aria-hidden="true" />
           <span>{{ t('home.actions.settings') }}</span>
         </button>
+        <button
+          v-if="isAdmin"
+          type="button"
+          class="quick-item app-card"
+          @click="goAdminCompetitions"
+        >
+          <i class="pi pi-shield" aria-hidden="true" />
+          <span>{{ t('home.actions.adminCompetitions') }}</span>
+        </button>
         <button type="button" class="quick-item app-card" @click="toggleLanguageMenu">
           <i class="pi pi-language" aria-hidden="true" />
           <span>{{ t('home.language') }} · {{ currentLanguage }}</span>
@@ -85,11 +94,13 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
 import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
+import { useIsAdmin } from '../composables/useIsAdmin'
 import { useAuthStore } from '../stores/auth'
 
 const { t, locale } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
+const isAdmin = useIsAdmin()
 const { draft, resume, abandon } = useMatchDraftResume()
 const verifyNotice = ref('')
 const verifyNoticeSeverity = ref<'success' | 'error'>('success')
@@ -110,6 +121,9 @@ function goTraining(): void {
 }
 function goSettings(): void {
   router.push({ name: 'settings' })
+}
+function goAdminCompetitions(): void {
+  router.push({ name: 'adminCompetitions' })
 }
 function goGuidelines(): void {
   router.push({ name: 'guidelines' })

@@ -55,9 +55,27 @@ final class MatchHistoryService
                 scoreB: $scoreB,
                 winner: $winner,
                 victory: $victory,
+                nature: $g->getNature()?->value,
+                competitionLabel: $this->resolveCompetitionLabel($g),
+                competitionStage: $g->getCompetitionStage(),
             );
         }
 
         return new MatchHistoryResponse(page: $page, pageSize: $pageSize, total: $total, items: $items);
+    }
+
+    private function resolveCompetitionLabel(Game $game): ?string
+    {
+        $competition = $game->getCompetition();
+        if ($competition !== null) {
+            return sprintf('%s - %s', $competition->getName(), $competition->getEventDate()->format('Y'));
+        }
+
+        $name = $game->getCompetitionName();
+        if ($name === null || trim($name) === '') {
+            return null;
+        }
+
+        return trim($name);
     }
 }

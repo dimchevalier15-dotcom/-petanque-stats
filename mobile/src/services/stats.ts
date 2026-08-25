@@ -37,6 +37,7 @@ export const statsService = {
     nature?: MatchNature | 'all',
     type?: MatchType | 'all',
     distance?: DistanceBucketKey | 'all',
+    competitionId?: number | 'all',
   ): Promise<PlayerStats> {
     const { data } = await api.get<PlayerStatsResponseDto>('/players/me/stats', {
       params: {
@@ -44,6 +45,7 @@ export const statsService = {
         ...(nature && nature !== 'all' ? { nature } : {}),
         ...(type && type !== 'all' ? { type } : {}),
         ...(distance && distance !== 'all' ? { distance } : {}),
+        ...(competitionId && competitionId !== 'all' ? { competitionId } : {}),
       },
     })
     return mapPlayerStats(data)

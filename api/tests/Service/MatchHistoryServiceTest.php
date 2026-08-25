@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Service;
 
 use App\Dto\Request\CreateMatchRequest;
+use App\Dto\Request\UpdateMatchContextRequest;
+use App\Entity\Competition;
 use App\Entity\User;
+use App\Service\MatchContextService;
 use App\Service\MatchHistoryService;
 use App\Service\MatchRecordingService;
 use App\Service\MatchService;
@@ -19,6 +22,7 @@ final class MatchHistoryServiceTest extends KernelTestCase
     use MatchTestHelpers;
 
     private MatchHistoryService $history;
+    private MatchContextService $context;
 
     protected function setUp(): void
     {
@@ -29,6 +33,7 @@ final class MatchHistoryServiceTest extends KernelTestCase
         $this->recording = $container->get(MatchRecordingService::class);
         $this->jwtEncoder = $container->get(JWTEncoderInterface::class);
         $this->history = $container->get(MatchHistoryService::class);
+        $this->context = $container->get(MatchContextService::class);
     }
 
     public function testUncompletedMatchDoesNotAppearInHistory(): void
@@ -72,6 +77,31 @@ final class MatchHistoryServiceTest extends KernelTestCase
         self::assertSame(4, $res->items[0]->scoreA);
         self::assertSame(0, $res->items[0]->scoreB);
         self::assertTrue($res->items[0]->victory);
+    }
+
+    public function testHistoryIncludesMatchContextWhenPresent(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+        [$matchId] = $this->createHeadToHeadForPlayers($playerId, $opponentId);
+
+        $this->completeHeadToHead($matchId, $playerId, $opponentId, 4);
+
+        $competition = new Competition('Open test', new \DateTimeImmutable('2026-05-10'), 'France', 'National');
+        $this->em->persist($competition);
+        $this->em->flush();
+
+        $req = new UpdateMatchContextRequest();
+        $req->nature = 'competition';
+        $req->competitionId = (int) $competition->getId();
+        $req->competitionStage = 'final';
+        $this->context->updateContext($matchId, $req);
+
+        $res = $this->history->historyForToken($token);
+
+        self::assertSame('competition', $res->items[0]->nature);
+        self::assertSame('Open test - 2026', $res->items[0]->competitionLabel);
+        self::assertSame('final', $res->items[0]->competitionStage);
     }
 
     public function testHistoryReturnsEmptyWhenAccountHasNoLinkedPlayer(): void

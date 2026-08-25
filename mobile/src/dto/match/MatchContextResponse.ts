@@ -6,6 +6,7 @@ export interface MatchContextResponseDto {
   teamAName: string | null
   teamBName: string | null
   nature: MatchNature | null
+  competitionId: number | null
   competitionName: string | null
   competitionStage: CompetitionStage | null
   terrainType: TerrainType | null

@@ -7,6 +7,7 @@ namespace App\Tests\Service;
 use App\Dto\Request\CompleteMatchEndBallDto;
 use App\Dto\Request\CompleteMatchEndDto;
 use App\Dto\Request\CreateMatchRequest;
+use App\Entity\Competition;
 use App\Entity\Player;
 use App\Entity\User;
 use App\Enum\DistanceBucket;
@@ -204,6 +205,31 @@ final class PlayerStatsServiceTest extends KernelTestCase
         self::assertSame([], $res->byDistance);
     }
 
+    public function testStatsFiltersByCompetition(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+
+        $openA = new Competition('Open A', new \DateTimeImmutable('2026-05-10'), 'France');
+        $openB = new Competition('Open B', new \DateTimeImmutable('2026-06-10'), 'France');
+        $this->em->persist($openA);
+        $this->em->persist($openB);
+        $this->em->flush();
+
+        $matchA = $this->createAndCompleteMatch($playerId, $opponentId, winner: 'A', points: 2, ballNote: 2);
+        $this->setMatchCompetition($matchA, MatchNature::COMPETITION, $openA);
+
+        $matchB = $this->createAndCompleteMatch($playerId, $opponentId, winner: 'A', points: 1, ballNote: 0);
+        $this->setMatchCompetition($matchB, MatchNature::COMPETITION, $openB);
+
+        $res = $this->stats->statsForToken($token, MatchNature::COMPETITION, null, null, null, (int) $openA->getId());
+
+        self::assertSame('ok', $res->status);
+        self::assertSame(1, $res->summary->matchesPlayed);
+        self::assertSame(1, $res->summary->totalBalls);
+        self::assertSame(2.0, $res->overall?->average);
+    }
+
     public function testStatsSuccessRateSplitsPointAndTir(): void
     {
         [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
@@ -281,5 +307,14 @@ final class PlayerStatsServiceTest extends KernelTestCase
         $this->recording->complete($matchId, $req);
 
         return $matchId;
+    }
+
+    private function setMatchCompetition(int $matchId, MatchNature $nature, Competition $competition): void
+    {
+        $game = $this->em->getRepository(\App\Entity\Game::class)->find($matchId);
+        self::assertNotNull($game);
+        $game->setNature($nature);
+        $game->setCompetition($competition);
+        $this->em->flush();
     }
 }

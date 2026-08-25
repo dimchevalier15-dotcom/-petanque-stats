@@ -104,7 +104,16 @@ final class PlayerController extends AbstractController
             }
         }
 
-        $res = $this->playerStatsService->statsForToken($token, $nature, $dateRange, $type, $distance);
+        $competitionParam = $request->query->get('competitionId');
+        $competitionId = null;
+        if ($competitionParam !== null && $competitionParam !== '' && $competitionParam !== 'all') {
+            if (!is_numeric($competitionParam) || (int) $competitionParam <= 0) {
+                return new JsonResponse(['message' => 'Invalid competition filter.'], 400);
+            }
+            $competitionId = (int) $competitionParam;
+        }
+
+        $res = $this->playerStatsService->statsForToken($token, $nature, $dateRange, $type, $distance, $competitionId);
         $json = $this->serializer->serialize($res, 'json');
         return new JsonResponse($json, 200, [], true);
     }

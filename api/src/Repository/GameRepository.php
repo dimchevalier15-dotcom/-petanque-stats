@@ -44,6 +44,7 @@ final class GameRepository extends ServiceEntityRepository
         // items
         /** @var list<Game> $items */
         $items = $this->createQueryBuilder('g')
+            ->leftJoin('g.competition', 'c')->addSelect('c')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
             ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
@@ -67,8 +68,10 @@ final class GameRepository extends ServiceEntityRepository
         ?MatchNature $nature = null,
         ?DateRange $range = null,
         ?GameType $type = null,
+        ?int $competitionId = null,
     ): array {
         $qb = $this->createQueryBuilder('g')
+            ->leftJoin('g.competition', 'c')->addSelect('c')
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
             ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
@@ -76,7 +79,7 @@ final class GameRepository extends ServiceEntityRepository
             ->groupBy('g.id')
             ->orderBy('g.createdAt', 'ASC');
 
-        $this->applyFilters($qb, $nature, $range, $type);
+        $this->applyFilters($qb, $nature, $range, $type, $competitionId);
 
         /** @var list<Game> $items */
         $items = $qb->getQuery()->getResult();
@@ -89,6 +92,7 @@ final class GameRepository extends ServiceEntityRepository
         ?MatchNature $nature = null,
         ?DateRange $range = null,
         ?GameType $type = null,
+        ?int $competitionId = null,
     ): int {
         $qb = $this->createQueryBuilder('g')
             ->select('COUNT(DISTINCT g.id)')
@@ -97,7 +101,7 @@ final class GameRepository extends ServiceEntityRepository
             ->where('gp.player = :pid')
             ->setParameter('pid', $playerId);
 
-        $this->applyFilters($qb, $nature, $range, $type);
+        $this->applyFilters($qb, $nature, $range, $type, $competitionId);
 
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
@@ -107,6 +111,7 @@ final class GameRepository extends ServiceEntityRepository
         ?MatchNature $nature,
         ?DateRange $range,
         ?GameType $type = null,
+        ?int $competitionId = null,
     ): void {
         if ($nature !== null) {
             $qb->andWhere('g.nature = :nature')->setParameter('nature', $nature);
@@ -114,6 +119,10 @@ final class GameRepository extends ServiceEntityRepository
 
         if ($type !== null) {
             $qb->andWhere('g.type = :type')->setParameter('type', $type);
+        }
+
+        if ($competitionId !== null) {
+            $qb->andWhere('g.competition = :competitionId')->setParameter('competitionId', $competitionId);
         }
 
         if ($range !== null) {

@@ -1,3 +1,5 @@
+import { COMPETITION_OTHER_VALUE, type CompetitionSelection } from './Competition'
+
 export type MatchNature = 'friendly' | 'training' | 'competition'
 
 export type CompetitionStage =
@@ -20,6 +22,7 @@ export interface MatchContext {
   teamAName: string | null
   teamBName: string | null
   nature: MatchNature | null
+  competitionId: number | null
   competitionName: string | null
   competitionStage: CompetitionStage | null
   terrainType: TerrainType | null
@@ -30,6 +33,7 @@ export interface MatchContextForm {
   teamAName: string
   teamBName: string
   nature: MatchNature | null
+  competitionSelection: CompetitionSelection
   competitionName: string
   competitionStage: CompetitionStage | null
   terrainType: TerrainType | null
@@ -41,6 +45,7 @@ export function emptyMatchContextForm(): MatchContextForm {
     teamAName: '',
     teamBName: '',
     nature: null,
+    competitionSelection: null,
     competitionName: '',
     competitionStage: null,
     terrainType: null,
@@ -48,11 +53,19 @@ export function emptyMatchContextForm(): MatchContextForm {
 }
 
 export function matchContextToForm(context: MatchContext): MatchContextForm {
+  let competitionSelection: CompetitionSelection = null
+  if (context.competitionId !== null) {
+    competitionSelection = context.competitionId
+  } else if (context.competitionName) {
+    competitionSelection = COMPETITION_OTHER_VALUE
+  }
+
   return {
     comment: context.comment ?? '',
     teamAName: context.teamAName ?? '',
     teamBName: context.teamBName ?? '',
     nature: context.nature,
+    competitionSelection,
     competitionName: context.competitionName ?? '',
     competitionStage: context.competitionStage,
     terrainType: context.terrainType,
@@ -65,6 +78,7 @@ export function hasMatchContextData(context: MatchContext): boolean {
     (context.teamAName !== null && context.teamAName !== '') ||
     (context.teamBName !== null && context.teamBName !== '') ||
     context.nature !== null ||
+    context.competitionId !== null ||
     (context.competitionName !== null && context.competitionName !== '') ||
     context.competitionStage !== null ||
     context.terrainType !== null

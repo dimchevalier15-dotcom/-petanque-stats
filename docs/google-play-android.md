@@ -177,7 +177,7 @@ Ne pas inventer les textes marketing. Compléter les TODO avant soumission.
 | Description courte | **TODO** (max 80 caractères, rédiger) |
 | Description complète | **TODO** (rédiger, 3 langues éventuelles fr/en/sk) |
 | Catégorie | **TODO** (proposition à valider : Sports) |
-| Coordonnées / email de contact | **TODO** |
+| Coordonnées / email de contact | dimchevalier15@gmail.com (déjà dans `docs/google-play.md`) |
 | Icône Play (512×512) | Générer depuis `mobile/resources/icon.png` (asset haute résolution) |
 | Screenshots téléphone | **TODO** (prendre sur Galaxy S25, 2 à 8 images) |
 | Politique de confidentialité (URL HTTPS publique) | https://petanque-analytics.com/privacy (après déploiement front). Ancienne URL `/privacy.html` redirige vers `/privacy`. |

@@ -1,3 +1,5 @@
+import type { CompetitionStage, MatchNature } from './MatchContext'
+
 export interface MatchHistoryItem {
   id: number
   date: string // ISO datetime string
@@ -6,6 +8,9 @@ export interface MatchHistoryItem {
   scoreB: number
   winner: 'A' | 'B'
   victory: boolean
+  nature: MatchNature | null
+  competitionLabel: string | null
+  competitionStage: CompetitionStage | null
 }
 
 export interface MatchHistoryPage {

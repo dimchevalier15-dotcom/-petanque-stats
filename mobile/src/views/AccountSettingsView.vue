@@ -78,6 +78,13 @@
       </nav>
     </section>
 
+    <section v-if="isAdmin" class="admin-card app-card">
+      <h3 class="section-title">{{ t('settings.admin.title') }}</h3>
+      <nav class="legal-links" :aria-label="t('settings.admin.title')">
+        <router-link :to="{ name: 'adminCompetitions' }">{{ t('settings.admin.competitions') }}</router-link>
+      </nav>
+    </section>
+
     <DeleteAccountSection />
   </AppPage>
 </template>
@@ -92,6 +99,7 @@ import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
 import DeleteAccountSection from '../components/legal/DeleteAccountSection.vue'
+import { useIsAdmin } from '../composables/useIsAdmin'
 import { accountService } from '../services/account'
 import { useAuthStore } from '../stores/auth'
 import type { Player } from '../models/Player'
@@ -101,6 +109,7 @@ type ProfileErrors = { firstName?: string; lastName?: string }
 
 const { t } = useI18n()
 const auth = useAuthStore()
+const isAdmin = useIsAdmin()
 
 const loading = ref(true)
 const linking = ref(false)
@@ -247,13 +256,15 @@ onMounted(loadLinkedPlayer)
 .state-card,
 .profile-card,
 .link-card,
-.legal-card {
+.legal-card,
+.admin-card {
   padding: var(--app-space-lg);
   display: grid;
   gap: var(--app-space-md);
 }
 
-.legal-card {
+.legal-card,
+.admin-card {
   margin-top: var(--app-space-md);
 }
 

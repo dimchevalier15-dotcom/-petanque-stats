@@ -40,6 +40,7 @@ final class PlayerStatsService
         ?DateRange $dateRange = null,
         ?GameType $type = null,
         ?DistanceBucket $distanceBucket = null,
+        ?int $competitionId = null,
     ): PlayerStatsResponse {
         $me = $this->currentUser->meFromToken($token);
         $playerId = $me->playerId;
@@ -49,10 +50,10 @@ final class PlayerStatsService
         }
 
         $displayName = $this->buildDisplayName($me->nickname, $me->firstName, $me->lastName);
-        $games = $this->games->findCompletedGamesForPlayer((int) $playerId, $nature, $dateRange, $type);
+        $games = $this->games->findCompletedGamesForPlayer((int) $playerId, $nature, $dateRange, $type, $competitionId);
 
         if ($games === []) {
-            if ($this->hasDataOutsideFilters((int) $playerId, $nature, $dateRange, $type)) {
+            if ($this->hasDataOutsideFilters((int) $playerId, $nature, $dateRange, $type, $competitionId)) {
                 return $this->emptyResponse('no_data_in_period', (int) $playerId, $displayName);
             }
 
@@ -367,16 +368,21 @@ final class PlayerStatsService
         ?MatchNature $nature,
         ?DateRange $dateRange,
         ?GameType $type,
+        ?int $competitionId = null,
     ): bool {
-        if ($dateRange !== null && $this->games->countCompletedGamesForPlayer($playerId, $nature, null, $type) > 0) {
+        if ($dateRange !== null && $this->games->countCompletedGamesForPlayer($playerId, $nature, null, $type, $competitionId) > 0) {
             return true;
         }
 
-        if ($nature !== null && $this->games->countCompletedGamesForPlayer($playerId, null, $dateRange, $type) > 0) {
+        if ($nature !== null && $this->games->countCompletedGamesForPlayer($playerId, null, $dateRange, $type, $competitionId) > 0) {
             return true;
         }
 
-        if ($type !== null && $this->games->countCompletedGamesForPlayer($playerId, $nature, $dateRange, null) > 0) {
+        if ($type !== null && $this->games->countCompletedGamesForPlayer($playerId, $nature, $dateRange, null, $competitionId) > 0) {
+            return true;
+        }
+
+        if ($competitionId !== null && $this->games->countCompletedGamesForPlayer($playerId, $nature, $dateRange, $type, null) > 0) {
             return true;
         }
 

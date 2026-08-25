@@ -14,6 +14,13 @@
             <Tag :value="m.victory ? t('history.victory') : t('history.defeat')" :severity="m.victory ? 'success' : 'danger'" />
           </div>
           <div class="type">{{ typeLabel(m.type) }}</div>
+          <div v-if="hasContext(m)" class="context-row">
+            <Tag v-if="contextLabels(m).nature" :value="contextLabels(m).nature" severity="secondary" />
+            <span v-if="contextLabels(m).competition" class="context-competition">
+              {{ contextLabels(m).competition }}
+            </span>
+            <Tag v-if="contextLabels(m).stage" :value="contextLabels(m).stage" severity="info" />
+          </div>
           <div class="score">{{ m.scoreA }} - {{ m.scoreB }}</div>
         </button>
       </li>
@@ -33,11 +40,13 @@ import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
+import { useMatchHistoryContext } from '../composables/useMatchHistoryContext'
 import { matchesService } from '../services/matches'
 import type { MatchHistoryItem, MatchHistoryPage } from '../models/MatchHistory'
 
 const { t, d } = useI18n()
 const router = useRouter()
+const { contextLabels, hasContext } = useMatchHistoryContext(t)
 
 const items = ref<MatchHistoryItem[]>([])
 const page = ref(1)
@@ -135,6 +144,18 @@ onMounted(load)
 
 .type {
   font-size: 0.875rem;
+  color: var(--app-text-muted);
+}
+
+.context-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.context-competition {
+  font-size: 0.8125rem;
   color: var(--app-text-muted);
 }
 

@@ -64,7 +64,8 @@
       "teamAName": "Názov tímu A",
       "teamBName": "Názov tímu B",
       "nature": "Povaha zápasu",
-      "competitionName": "Názov súťaže",
+      "competitionName": "Súťaž",
+      "competitionNameOther": "Názov súťaže (iné)",
       "competitionStage": "Fáza súťaže",
       "terrainType": "Typ terénu"
     },
@@ -72,6 +73,9 @@
       "friendly": "Priateľský",
       "training": "Tréning",
       "competition": "Súťaž"
+    },
+    "competition": {
+      "other": "Iné"
     },
     "competitionStage": {
       "group": "Skupiny",
@@ -108,6 +112,7 @@
       "history": "História zápasov",
       "myStats": "Moje štatistiky",
       "settings": "Nastavenia",
+      "adminCompetitions": "Admin súťaží",
       "logout": "Odhlásiť sa",
       "shooting": "Presná streľba",
       "training": "Tréning"
@@ -474,6 +479,10 @@
     "legal": {
       "title": "Právne informácie"
     },
+    "admin": {
+      "title": "Administrácia",
+      "competitions": "Spravovať súťaže"
+    },
     "delete": {
       "title": "Odstrániť účet",
       "hint": "Táto akcia je nevratná. Váš e-mail a heslo sa vymažú. Profil hráča zostane v histórii zápasov, bez väzby na účet.",
@@ -482,6 +491,36 @@
       "confirmMessage": "Naozaj chcete odstrániť svoj účet? Budete odhlásení a s týmto e-mailom sa už neprihlásite.",
       "cancel": "Zrušiť",
       "confirm": "Odstrániť natrvalo"
+    }
+  },
+  "admin": {
+    "competitions": {
+      "title": "Súťaže",
+      "addTitle": "Pridať súťaž",
+      "editTitle": "Upraviť súťaž",
+      "loading": "Načítava sa…",
+      "empty": "Zatiaľ žiadne súťaže.",
+      "confirmDelete": "Odstrániť „{name}“?",
+      "fields": {
+        "name": "Názov",
+        "eventDate": "Dátum",
+        "country": "Krajina",
+        "context": "Kontext"
+      },
+      "actions": {
+        "add": "Pridať",
+        "save": "Uložiť",
+        "edit": "Upraviť",
+        "delete": "Odstrániť",
+        "cancelEdit": "Zrušiť"
+      },
+      "validations": {
+        "required": "Povinné pole."
+      },
+      "errors": {
+        "saveFailed": "Súťaž sa nepodarilo uložiť.",
+        "deleteFailed": "Súťaž sa nepodarilo odstrániť."
+      }
     }
   },
   "players": {
@@ -740,6 +779,7 @@
       "title": "Filtre",
       "nature": "Povaha",
       "format": "Formát",
+      "competition": "Súťaž",
       "distance": "Vzdialenosť"
     },
     "kpi": {

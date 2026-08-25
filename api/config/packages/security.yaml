@@ -23,6 +23,7 @@ security:
 
     access_control:
         - { path: ^/api/matches, roles: ROLE_USER }
+        - { path: ^/api/competitions, roles: ROLE_USER }
 
 when@test:
     security:

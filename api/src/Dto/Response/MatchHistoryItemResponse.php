@@ -14,6 +14,9 @@ final class MatchHistoryItemResponse
         public int $scoreB,
         public string $winner, // 'A' | 'B'
         public bool $victory, // from current player's perspective
+        public ?string $nature = null,
+        public ?string $competitionLabel = null,
+        public ?string $competitionStage = null,
     ) {
     }
 }

@@ -14,6 +14,7 @@ final class MeResponse
         public ?string $lastName,
         public ?string $nickname,
         public bool $emailVerified = false,
+        public bool $isAdmin = false,
     ) {
     }
 }

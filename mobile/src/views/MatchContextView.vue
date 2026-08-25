@@ -37,6 +37,19 @@
         <template v-if="form.nature === 'competition'">
           <label class="app-field">
             <span>{{ t('context.fields.competitionName') }}</span>
+            <Dropdown
+              v-model="form.competitionSelection"
+              :options="competitionOptions"
+              option-label="label"
+              option-value="value"
+              :placeholder="t('context.placeholders.select')"
+              show-clear
+              fluid
+            />
+          </label>
+
+          <label v-if="form.competitionSelection === COMPETITION_OTHER_VALUE" class="app-field">
+            <span>{{ t('context.fields.competitionNameOther') }}</span>
             <InputText v-model="form.competitionName" fluid />
           </label>
 
@@ -94,11 +107,17 @@ import Textarea from 'primevue/textarea'
 import PageHeader from '../components/layout/PageHeader.vue'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
 import {
+  COMPETITION_OTHER_VALUE,
+  competitionLabel,
+  type Competition,
+} from '../models/Competition'
+import {
   emptyMatchContextForm,
   hasMatchContextData,
   matchContextToForm,
   type MatchContextForm,
 } from '../models/MatchContext'
+import { competitionsService } from '../services/competitions'
 import { matchesService } from '../services/matches'
 
 const { t } = useI18n()
@@ -109,20 +128,40 @@ const { natureOptions, competitionStageOptions, terrainTypeOptions } = useMatchC
 const matchId = Number(route.params.id)
 const submitting = ref(false)
 const hasExistingContext = ref(false)
+const competitions = ref<Competition[]>([])
 const form = reactive<MatchContextForm>(emptyMatchContextForm())
+
+const competitionOptions = computed(() => {
+  const items = competitions.value.map((competition) => ({
+    label: competitionLabel(competition),
+    value: competition.id,
+  }))
+  items.push({ label: t('context.competition.other'), value: COMPETITION_OTHER_VALUE })
+  return items
+})
 
 const title = computed(() =>
   hasExistingContext.value ? t('context.titleEdit') : t('context.titleAdd'),
 )
 
 function toPayload(formValue: MatchContextForm) {
+  const isCompetition = formValue.nature === 'competition'
+  const selectedKnownCompetition =
+    isCompetition &&
+    formValue.competitionSelection !== null &&
+    formValue.competitionSelection !== COMPETITION_OTHER_VALUE
+
   return {
     comment: formValue.comment.trim() || null,
     teamAName: formValue.teamAName.trim() || null,
     teamBName: formValue.teamBName.trim() || null,
     nature: formValue.nature,
-    competitionName: formValue.nature === 'competition' ? formValue.competitionName.trim() || null : null,
-    competitionStage: formValue.nature === 'competition' ? formValue.competitionStage : null,
+    competitionId: selectedKnownCompetition ? formValue.competitionSelection : null,
+    competitionName:
+      isCompetition && formValue.competitionSelection === COMPETITION_OTHER_VALUE
+        ? formValue.competitionName.trim() || null
+        : null,
+    competitionStage: isCompetition ? formValue.competitionStage : null,
     terrainType: formValue.terrainType,
   }
 }
@@ -133,7 +172,11 @@ async function load() {
     return
   }
   try {
-    const context = await matchesService.getContext(matchId)
+    const [context, competitionList] = await Promise.all([
+      matchesService.getContext(matchId),
+      competitionsService.list(),
+    ])
+    competitions.value = competitionList
     Object.assign(form, matchContextToForm(context))
     hasExistingContext.value = hasMatchContextData(context)
   } catch {

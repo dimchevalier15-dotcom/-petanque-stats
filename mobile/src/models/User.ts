@@ -6,4 +6,5 @@ export interface User {
   lastName?: string
   nickname?: string
   emailVerified?: boolean
+  isAdmin?: boolean
 }

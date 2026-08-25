@@ -64,7 +64,8 @@
       "teamAName": "Team A name",
       "teamBName": "Team B name",
       "nature": "Match nature",
-      "competitionName": "Competition name",
+      "competitionName": "Competition",
+      "competitionNameOther": "Competition name (other)",
       "competitionStage": "Competition stage",
       "terrainType": "Terrain type"
     },
@@ -72,6 +73,9 @@
       "friendly": "Friendly",
       "training": "Training",
       "competition": "Competition"
+    },
+    "competition": {
+      "other": "Other"
     },
     "competitionStage": {
       "group": "Group stage",
@@ -108,6 +112,7 @@
       "history": "Match history",
       "myStats": "My statistics",
       "settings": "Settings",
+      "adminCompetitions": "Competition admin",
       "logout": "Logout",
       "shooting": "Precision shooting",
       "training": "Training"
@@ -474,6 +479,10 @@
     "legal": {
       "title": "Legal information"
     },
+    "admin": {
+      "title": "Administration",
+      "competitions": "Manage competitions"
+    },
     "delete": {
       "title": "Delete account",
       "hint": "This cannot be undone. Your email and password are removed. The player profile stays in match history, unlinked from any account.",
@@ -482,6 +491,36 @@
       "confirmMessage": "Do you really want to delete your account? You will be signed out and will no longer be able to sign in with this email.",
       "cancel": "Cancel",
       "confirm": "Delete permanently"
+    }
+  },
+  "admin": {
+    "competitions": {
+      "title": "Competitions",
+      "addTitle": "Add competition",
+      "editTitle": "Edit competition",
+      "loading": "Loading…",
+      "empty": "No competitions yet.",
+      "confirmDelete": "Delete \"{name}\"?",
+      "fields": {
+        "name": "Name",
+        "eventDate": "Date",
+        "country": "Country",
+        "context": "Context"
+      },
+      "actions": {
+        "add": "Add",
+        "save": "Save",
+        "edit": "Edit",
+        "delete": "Delete",
+        "cancelEdit": "Cancel"
+      },
+      "validations": {
+        "required": "This field is required."
+      },
+      "errors": {
+        "saveFailed": "Unable to save competition.",
+        "deleteFailed": "Unable to delete competition."
+      }
     }
   },
   "players": {
@@ -740,6 +779,7 @@
       "title": "Filters",
       "nature": "Nature",
       "format": "Format",
+      "competition": "Competition",
       "distance": "Distance"
     },
     "kpi": {

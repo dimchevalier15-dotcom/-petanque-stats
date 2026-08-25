@@ -17,6 +17,20 @@
         </div>
       </div>
 
+      <div v-if="natureFilter === 'competition'" class="filter-group">
+        <span class="filter-group-label">{{ t('stats.filters.competition') }}</span>
+        <Dropdown
+          v-model="competitionFilter"
+          :options="competitionFilterOptions"
+          option-label="label"
+          option-value="value"
+          :placeholder="t('stats.filters.all')"
+          show-clear
+          fluid
+          @change="onCompetitionFilterChange"
+        />
+      </div>
+
       <div class="filter-group">
         <span class="filter-group-label">{{ t('stats.filters.format') }}</span>
         <div class="format-filter">
@@ -288,6 +302,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter, type RouteLocationRaw } from 'vue-router'
 import Button from 'primevue/button'
 import Chart from 'primevue/chart'
+import Dropdown from 'primevue/dropdown'
 import ProgressSpinner from 'primevue/progressspinner'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
@@ -306,8 +321,10 @@ import {
 } from '../composables/usePlayerStatsCharts'
 import { useStatsDateRange, toInputDate } from '../composables/useStatsDateRange'
 import type { MatchNature } from '../models/MatchContext'
+import { competitionLabel, type Competition } from '../models/Competition'
 import type { MatchType } from '../models/Match'
 import { DISTANCE_BUCKET_KEYS, type DistanceBucketKey, type PlayerStats } from '../models/PlayerStats'
+import { competitionsService } from '../services/competitions'
 import { statsService } from '../services/stats'
 
 const { t } = useI18n()
@@ -318,6 +335,8 @@ const refreshing = ref(false)
 const loadError = ref(false)
 const stats = ref<PlayerStats | null>(null)
 const natureFilter = ref<MatchNature | 'all'>('all')
+const competitionFilter = ref<number | null>(null)
+const competitions = ref<Competition[]>([])
 const formatFilter = ref<MatchType | 'all'>('all')
 const distanceFilter = ref<DistanceBucketKey | 'all'>('all')
 const { dateFrom, dateTo, maxDate, normalizeRange, queryParams } = useStatsDateRange()
@@ -334,6 +353,13 @@ const natureFilterOptions = computed(() => [
   { value: 'training' as const, label: t('context.nature.training') },
   { value: 'competition' as const, label: t('context.nature.competition') },
 ])
+
+const competitionFilterOptions = computed(() =>
+  competitions.value.map((competition) => ({
+    value: competition.id,
+    label: competitionLabel(competition),
+  })),
+)
 
 const formatFilterOptions = computed(() => [
   { value: 'all' as const, label: t('stats.filters.all') },
@@ -353,6 +379,7 @@ const distanceFilterOptions = computed(() => [
 const activeFilterCount = computed(() => {
   let count = 0
   if (natureFilter.value !== 'all') count++
+  if (competitionFilter.value !== null) count++
   if (formatFilter.value !== 'all') count++
   if (distanceFilter.value !== 'all') count++
   if (dateFrom.value !== defaultDateFrom || dateTo.value !== maxDate) count++
@@ -423,6 +450,15 @@ const showAverageDetails = computed(() => !!(stats.value?.point || stats.value?.
 
 function setNatureFilter(value: MatchNature | 'all'): void {
   natureFilter.value = value
+  if (value !== 'competition') {
+    competitionFilter.value = null
+  }
+  if (stats.value) {
+    load({ refresh: true })
+  }
+}
+
+function onCompetitionFilterChange(): void {
   if (stats.value) {
     load({ refresh: true })
   }
@@ -456,6 +492,7 @@ async function load(options: { refresh?: boolean } = {}) {
       natureFilter.value,
       formatFilter.value,
       distanceFilter.value,
+      competitionFilter.value ?? 'all',
     )
   } catch {
     loadError.value = true
@@ -472,7 +509,14 @@ function onDateRangeChange(): void {
   }
 }
 
-onMounted(load)
+onMounted(async () => {
+  try {
+    competitions.value = await competitionsService.list()
+  } catch {
+    competitions.value = []
+  }
+  await load()
+})
 </script>
 
 <style scoped>

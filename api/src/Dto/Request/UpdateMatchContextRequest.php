@@ -22,6 +22,9 @@ final class UpdateMatchContextRequest
     #[Assert\Choice(callback: [MatchNature::class, 'values'])]
     public ?string $nature = null;
 
+    #[Assert\Positive]
+    public ?int $competitionId = null;
+
     #[Assert\Length(max: 255)]
     public ?string $competitionName = null;
 

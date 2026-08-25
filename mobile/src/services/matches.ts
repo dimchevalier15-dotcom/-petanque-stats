@@ -17,6 +17,7 @@ function mapMatchContext(dto: MatchContextResponseDto): MatchContext {
     teamAName: dto.teamAName,
     teamBName: dto.teamBName,
     nature: dto.nature,
+    competitionId: dto.competitionId,
     competitionName: dto.competitionName,
     competitionStage: dto.competitionStage,
     terrainType: dto.terrainType,
@@ -32,6 +33,9 @@ function mapHistoryItem(dto: MatchHistoryItemDto): MatchHistoryItem {
     scoreB: dto.scoreB,
     winner: dto.winner,
     victory: dto.victory,
+    nature: dto.nature,
+    competitionLabel: dto.competitionLabel,
+    competitionStage: dto.competitionStage,
   }
 }
 

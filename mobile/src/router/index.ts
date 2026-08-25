@@ -18,6 +18,7 @@ import TermsView from '../views/TermsView.vue'
 import LegalNoticeView from '../views/LegalNoticeView.vue'
 import DeleteAccountView from '../views/DeleteAccountView.vue'
 import { GUEST_ONLY_ROUTE_NAMES, LEGAL_PATHS, PUBLIC_ROUTE_NAMES } from './publicRoutes'
+import { useAuthStore } from '../stores/auth'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: { name: 'home' } },
@@ -31,6 +32,12 @@ const routes: RouteRecordRaw[] = [
   { path: LEGAL_PATHS.legal, name: 'legal', component: LegalNoticeView, meta: { layout: 'focus' } },
   { path: LEGAL_PATHS.deleteAccount, name: 'deleteAccount', component: DeleteAccountView, meta: { layout: 'focus' } },
   { path: '/settings', name: 'settings', component: AccountSettingsView, meta: { layout: 'focus' } },
+  {
+    path: '/admin/competitions',
+    name: 'adminCompetitions',
+    component: () => import('../views/AdminCompetitionsView.vue'),
+    meta: { layout: 'focus', requiresAdmin: true },
+  },
   { path: '/match/new', name: 'newMatch', component: NewMatchView, meta: { layout: 'focus' } },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView, meta: { layout: 'focus' } },
   { path: '/matches/history', name: 'matchHistory', component: MatchHistoryView, meta: { layout: 'main' } },
@@ -58,7 +65,7 @@ const router = createRouter({
 const publicRouteNames = new Set<string>(PUBLIC_ROUTE_NAMES)
 const guestOnlyRouteNames = new Set<string>(GUEST_ONLY_ROUTE_NAMES)
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const isPublic = to.name && publicRouteNames.has(String(to.name))
   const isGuestOnly = to.name && guestOnlyRouteNames.has(String(to.name))
   const token = localStorage.getItem('auth_token')
@@ -67,6 +74,15 @@ router.beforeEach((to) => {
   }
   if (token && isGuestOnly) {
     return { name: 'home' }
+  }
+  if (to.meta.requiresAdmin) {
+    const auth = useAuthStore()
+    if (!auth.user && token) {
+      await auth.initFromStorage()
+    }
+    if (!auth.user?.isAdmin) {
+      return { name: 'home' }
+    }
   }
   return true
 })

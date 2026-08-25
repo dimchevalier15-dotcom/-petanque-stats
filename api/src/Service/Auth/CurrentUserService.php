@@ -8,6 +8,7 @@ use App\Dto\Response\MeResponse;
 use App\Entity\User;
 use App\Repository\PlayerRepository;
 use App\Repository\UserRepository;
+use App\Security\AdminAccess;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 
 final class CurrentUserService
@@ -35,6 +36,7 @@ final class CurrentUserService
             lastName: $player?->getLastName(),
             nickname: $player?->getNickname(),
             emailVerified: $user->isEmailVerified(),
+            isAdmin: AdminAccess::isAdmin($user),
         );
     }
 
