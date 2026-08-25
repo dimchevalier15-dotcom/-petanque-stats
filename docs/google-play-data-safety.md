@@ -95,7 +95,8 @@ Google Play / Google Play App Signing : Google reçoit l’AAB et peut collecter
 
 - Déconnexion : supprime le JWT local, pas le compte serveur.
 - Suppression de compte in-app : **Paramètres → Supprimer mon compte** (`DELETE /api/account`).
-- URL web (Play Console) : `https://petanque-analytics.com/settings` (connexion requise).
+- URL web (Play Console) : `https://petanque-analytics.com/delete-account` (page publique ; la suppression exige une connexion).
+- In-app : **Paramètres → Supprimer mon compte**.
 - Effet : suppression de l’utilisateur (email, mot de passe, tokens). Le joueur lié est détaché (`user_id` à NULL) pour conserver l’historique des matchs des autres.
 
 ---

@@ -180,14 +180,14 @@ Ne pas inventer les textes marketing. Compléter les TODO avant soumission.
 | Coordonnées / email de contact | **TODO** |
 | Icône Play (512×512) | Générer depuis `mobile/resources/icon.png` (asset haute résolution) |
 | Screenshots téléphone | **TODO** (prendre sur Galaxy S25, 2 à 8 images) |
-| Politique de confidentialité (URL HTTPS publique) | **TODO** — contenu : `docs/privacy-policy.md`. Fichier web prêt : `mobile/public/privacy.html` → après déploiement front : `https://petanque-analytics.com/privacy.html` |
+| Politique de confidentialité (URL HTTPS publique) | https://petanque-analytics.com/privacy (après déploiement front). Ancienne URL `/privacy.html` redirige vers `/privacy`. |
 | Classification du contenu | **TODO** (questionnaire IARC dans la console) |
-| Data Safety | Remplir d’après `docs/google-play-data-safety.md` |
+| Data Safety | Remplir d’après `docs/google-play.md` et `docs/google-play-data-safety.md` — ne pas remplir à l’aveugle |
 | Publicité | **TODO** à confirmer : l’app n’intègre **pas** de SDK pub |
 | Audience cible | **TODO** (proposition : public sportif adulte ; le code ne cible pas les enfants) |
 | Pays de distribution | **TODO** |
 | Fiche développeur / compte Play | **TODO** (compte payant Google Play Console) |
-| Suppression de compte | In-app : Paramètres. URL web : `https://petanque-analytics.com/settings` |
+| Suppression de compte | In-app : Paramètres. URL web publique : `https://petanque-analytics.com/delete-account` |
 
 ---
 
