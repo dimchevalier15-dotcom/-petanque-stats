@@ -23,10 +23,9 @@
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
 
-# Environment (keep .env.example if you add one)
+# Environment
 /.env
-/.env.dev
-/.env.test
+/.env.*
 
 # PHP tools
 /.php-cs-fixer.cache

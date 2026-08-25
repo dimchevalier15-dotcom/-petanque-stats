@@ -9,10 +9,10 @@ Thumbs.db
 *.swo
 *~
 
-# Production secrets (never commit)
+# Environment secrets (never commit; keep *.example templates)
 .env
-.env.prod
-.env.*.local
+.env.*
+!.env.*.example
 
 # Android upload / signing secrets (never commit)
 *.jks

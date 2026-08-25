@@ -8,12 +8,10 @@ dist-ssr/
 # Vite
 .vite/
 
-# Environment
+# Environment (keep only example templates)
 .env
 .env.*
 !.env.example
-!.env.production
-!.env.development
 
 # Test / coverage
 coverage/
