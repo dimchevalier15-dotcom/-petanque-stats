@@ -185,6 +185,261 @@
       "resent": "Ak vaša adresa ešte nie je overená, bol odoslaný nový e-mail."
     }
   },
+  "legal": {
+    "updatedAt": "Posledná aktualizácia: 25. august 2026",
+    "authNotice": "Používaním Pétanque Analytics súhlasíte s {terms} a beriete na vedomie {privacy}.",
+    "nav": {
+      "label": "Právne stránky",
+      "terms": "Podmienky používania",
+      "privacy": "Zásady ochrany súkromia",
+      "legal": "Právne informácie",
+      "deleteAccount": "Odstrániť môj účet"
+    },
+    "publisher": {
+      "country": "Slovensko",
+      "labels": {
+        "serviceName": "Názov služby",
+        "company": "Prevádzkovateľ",
+        "legalForm": "Právna forma",
+        "address": "Adresa",
+        "email": "Kontaktný e-mail",
+        "publicationDirector": "Riaditeľ vydania",
+        "ico": "IČO",
+        "dic": "DIČ",
+        "icDph": "IČ DPH",
+        "commercialRegister": "Obchodný register (OR SR)",
+        "incorporationDate": "Dátum vzniku"
+      }
+    },
+    "privacy": {
+      "title": "Zásady ochrany súkromia",
+      "intro": "Tieto zásady popisujú spracovanie osobných údajov podľa aktuálneho fungovania aplikácie Pétanque Analytics. Nezaručujú úplnú právnu zhodu.",
+      "s1": {
+        "title": "1. Identita služby",
+        "p1": "Pétanque Analytics je aplikácia na správu a analýzu štatistík pétanque (zápasy, tréningy, presné streľby). Je dostupná na webe (petanque-analytics.com) a na Androide.",
+        "contactLabel": "Kontakt pre otázky týkajúce sa osobných údajov"
+      },
+      "s2": {
+        "title": "2. Účel spracovania",
+        "intro": "Údaje sa spracúvajú na poskytovanie služby, najmä:",
+        "items": [
+          "vytvorenie a overenie používateľského účtu;",
+          "overenie e-mailovej adresy a umožnenie obnovy hesla;",
+          "zaznamenanie hráčov, zápasov, tréningov a streleckých session prepojených s účtom;",
+          "výpočet a zobrazenie štatistík zo zadaných herných akcií."
+        ],
+        "outro": "Toto spracovanie je nevyhnutné na poskytnutie služby, ktorú požadujete. Aplikácia momentálne nie je monetizovaná: nie je integrovaná reklama a nezhromažďujú sa platobné údaje."
+      },
+      "s3": {
+        "title": "3. Zhromaždené osobné údaje",
+        "accountTitle": "Používateľský účet",
+        "accountItems": [
+          "e-mailová adresa;",
+          "heslo (uložené len ako hash, API ho nikdy nevracia);",
+          "dátum vytvorenia účtu;",
+          "dátum overenia e-mailovej adresy, ak existuje."
+        ],
+        "playerTitle": "Profil hráča (ak vytvoríte alebo prepojíte hráča)",
+        "playerItems": [
+          "meno, priezvisko, prezývka;",
+          "stĺpec „klub“ existuje v databáze, ale v aktuálnom rozhraní nie je ponúkaný."
+        ],
+        "gameTitle": "Herné údaje prepojené s hráčom",
+        "gameItems": [
+          "zápasy: formát, cieľový skóre, režim štatistík, názvy tímov, charakter, súťaž, typ terénu, komentár, účastníci, endy, role, boule (nota, typ point/tir, voliteľná vzdialenosť);",
+          "tréningové session (point alebo tir): vzdialenosť, počet boule, pokusy, skóre, dátumy;",
+          "session presnej streľby: 20 striel, skóre, voliteľný titul / popis / charakter kontextu."
+        ],
+        "statsNote": "Zobrazené štatistiky nie sú uložené samostatne: sa vypočítajú pri čítaní zo zaznamenaných akcií.",
+        "authTitle": "Autentifikácia",
+        "authItems": [
+          "session token (JWT) vydaný API, uložený na zariadení v lokálnom úložisku prehliadača alebo aplikácie, približne 14 dní;",
+          "jednorazové tokeny (hashované) na overenie e-mailu (platné 24 hodín) a obnovu hesla (platné 1 hodinu)."
+        ],
+        "deviceTitle": "Na zariadení",
+        "deviceItems": [
+          "session token;",
+          "jazyková preferencia;",
+          "drafty zápasu alebo streleckých session ešte neodoslané na server."
+        ],
+        "notCollected": "Aplikácia v aktuálnom kóde nezhromažďuje: telefónne číslo, profilovú fotku, reklamný identifikátor, kontakty, GPS polohu, platobné údaje ani zdravotné údaje."
+      },
+      "s4": {
+        "title": "4. Poskytovatelia a hosting",
+        "p1": "Prevádzkové údaje sú uložené na infraštruktúre aplikácie (API https://api.petanque-analytics.com, MySQL na rovnakom virtuálnom serveri, nie verejne dostupná). Stránka je obsluhovaná cez HTTPS pomocou Caddy (certifikáty Let’s Encrypt).",
+        "hosting": "Hosting: virtuálny server (VPS) u Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Nemecko.",
+        "resend": "Transakčné e-maily (potvrdenie adresy, obnova hesla) sa odosielajú cez Resend. Resend dostáva e-mail príjemcu a obsah správy (jednorazový odkaz). Aplikácia v aktuálnom stave neodosiela marketingové e-maily.",
+        "googlePlay": "Ak aplikácia je nainštalovaná z Google Play, Google môže spracúvať údaje súvisiace s distribúciou aplikácie, mimo kódu Pétanque Analytics.",
+        "noTracking": "Aplikácia neobsahuje analytiku návštevnosti, crash reporting ani reklamné SDK (žiadny Google Analytics, Firebase Analytics, Sentry ani ekvivalent v kóde)."
+      },
+      "s5": {
+        "title": "5. Cookies",
+        "p1": "Webové frontend nepoužíva sledovacie ani reklamné cookies. Autentifikácia sa spolieha na lokálne uložený token (localStorage), nie na session cookie."
+      },
+      "s6": {
+        "title": "6. Technické logy",
+        "p1": "Ako každá webová služba, reverse proxy (Caddy) môže zaznamenávať technické logy (napr. IP adresa, dátum, požadovaná URL) pre prevádzku a bezpečnosť. API môže zaznamenať interný identifikátor používateľa pri zlyhaní odoslania e-mailu. Rate limiter používa IP adresu a hash e-mailu na obmedzenie zneužitia (zabudnuté heslo, opätovné odoslanie overenia). Trvanie uchovávania týchto infraštruktúrnych logov nie je definované v aplikačnom kóde."
+      },
+      "s7": {
+        "title": "7. Žiadna reklama ani predaj údajov",
+        "p1": "V aktuálnom kóde aplikácia neobsahuje reklamu. Osobné údaje sa nepredávajú."
+      },
+      "s8": {
+        "title": "8. Uchovávanie",
+        "p1": "Údaje účtu a hry zostávajú, kým účet existuje. Po odstránení účtu (pozri nižšie) sa odstráni e-mail, hash hesla a autentifikačné tokeny prepojené s účtom. Tokeny overenia a obnovy expirujú podľa uvedených lehôt, ak neboli použité."
+      },
+      "s9": {
+        "title": "9. Odstránenie účtu a uchované údaje",
+        "p1": "Účet môžete odstrániť v aplikácii (Nastavenia) alebo na stránke {link} po prihlásení.",
+        "deletedIntro": "Pri odstránení:",
+        "deletedItems": [
+          "účet (e-mail, heslo, dátum overenia) sa odstráni;",
+          "tokeny overenia a obnovy prepojené s účtom sa odstránia;",
+          "session token prestane byť platný; aplikácia vás odhlási."
+        ],
+        "kept": "Profil hráča (meno, priezvisko, prezývka) sa neničí: väzba na účet sa odstráni. Zápasy, tréningy a strelecké session prepojené s týmto hráčom sa uchovávajú. Tým sa zachová história zápasov s inými hráčmi. Väzba „vytvorené používateľom“ na zápase sa odstráni.",
+        "extended": "Ak chcete širšie odstránenie herných údajov stále spojených s vaším menom, môžete to požiadať na kontaktnej adrese vyššie. Taká žiadosť môže ovplyvniť históriu viditeľnú pre iných používateľov."
+      },
+      "s10": {
+        "title": "10. Vaše práva",
+        "intro": "Podľa platných právnych predpisov (vrátane GDPR, ak ste v Európskom hospodárskom priestore) môžete mať právo na prístup, opravu, vymazanie, obmedzenie, nesúhlas a prípadne prenosnosť.",
+        "items": [
+          "oprava profilu hráča: Nastavenia účtu po prihlásení;",
+          "vymazanie účtu: odstránenie účtu podľa limitov opísaných vyššie;",
+          "iné žiadosti: e-mailom na kontaktnú adresu nižšie."
+        ],
+        "contact": "Kontakt"
+      },
+      "s11": {
+        "title": "11. Bezpečnosť",
+        "p1": "Komunikácia medzi aplikáciou a API prebieha cez HTTPS. Heslá sú hashované. To znižuje určité riziká, ale nezaručuje absenciu incidentov."
+      },
+      "s12": {
+        "title": "12. Zmeny",
+        "p1": "Tieto zásady môžu byť aktualizované podľa vývoja služby. Dátum v hlavičke stránky je posledná aktualizácia textu publikovaného v aplikácii."
+      }
+    },
+    "terms": {
+      "title": "Podmienky používania",
+      "intro": "Tieto podmienky používania upravujú prístup k aplikácii Pétanque Analytics. Vytvorením účtu alebo používaním služby súhlasíte s týmito podmienkami.",
+      "contactLabel": "Kontakt",
+      "s1": {
+        "title": "1. Účel služby",
+        "p1": "Pétanque Analytics je bezplatná služba na sledovanie a analýzu štatistík pétanque. Umožňuje zaznamenávať zápasy, tréningy a session presnej streľby a zobrazovať štatistiky vypočítané z týchto záznamov.",
+        "p2": "Služba je poskytovaná „tak ako je“. Nie je oficiálnym súťažným nástrojom a nezaručuje športovú presnosť, absenciu chýb pri zadávaní ani konkrétny výsledok."
+      },
+      "s2": {
+        "title": "2. Podmienky prístupu",
+        "p1": "Hlavné funkcie vyžadujú vytvorenie účtu s e-mailovou adresou a heslom. Je potrebný prístup na internet. Android aplikácia a web používajú rovnaké API.",
+        "p2": "Musíte uviesť platnú e-mailovú adresu. Odosiela sa overovací e-mail. Niektoré funkcie môžu byť dostupné pred potvrdením; adresu potvrďte, keď sa to požaduje."
+      },
+      "s3": {
+        "title": "3. Účet a bezpečnosť",
+        "p1": "Ste zodpovední za ochranu svojich prihlasovacích údajov a za používanie účtu. Ak si myslíte, že má tretia strana prístup, zmeňte heslo cez „zabudnuté heslo“.",
+        "p2": "Heslo musí spĺňať minimálnu dĺžku pri registrácii. Je uložené ako hash. Session token je uložený na zariadení; odhlásenie ho lokálne odstráni bez vymazania účtu."
+      },
+      "s4": {
+        "title": "4. Používanie služby",
+        "intro": "Súhlasíte s normálnym a zákonným používaním služby, najmä:",
+        "items": [
+          "nevnímať identitu iných;",
+          "úmyselne nezadávať nezákonný obsah do voľných polí (komentáre, mená atď.);",
+          "nesnažiť sa narušiť, zahlteniť ani obísť službu, jej technické limity ani bezpečnosť;",
+          "nepristupovať k údajom iného účtu ani sa o to pokúšať."
+        ],
+        "outro": "Hráči, kluby (ak budú niekedy zaznamenané) a štatistiky, ktoré zadáte, sú vaša zodpovednosť. Musíte mať potrebné informácie na ich zaznamenanie, najmä pre tretie osoby."
+      },
+      "s5": {
+        "title": "5. Údaje, ktoré poskytujete",
+        "p1": "Zostávate vlastníkom informácií, ktoré zadáte. Autorizujete prevádzkovateľa na ich hosting a spracovanie len na poskytovanie, údržbu a zabezpečenie služby podľa {privacy}.",
+        "p2": "Účet môžete kedykoľvek odstrániť. Dopady na herné údaje (profil hráča zostáva v histórii zápasov) sú popísané v {privacy}.",
+        "p3": "Podrobnosti sú tiež na stránke {delete}."
+      },
+      "s6": {
+        "title": "6. Duševné vlastníctvo",
+        "p1": "Aplikácia, jej názov, rozhranie a kód sú chránené. Službu nemôžete kopírovať, extrahovať ani znovu použiť nad rámec osobného použitia, okrem povolenia alebo zákonných výnimiek."
+      },
+      "s7": {
+        "title": "7. Dostupnosť, údržba a zmeny",
+        "p1": "Prevádzkovateľ sa snaží zabezpečiť dostupnosť služby, ale nemôže zaručiť nepretržitý prístup. Výpadky môžu nastať (údržba, incident, vývoj, obmedzenia hostingu).",
+        "p2": "Funkcie môžu byť pridané, zmenené alebo odstránené. Keďže služba je bezplatná a sa vyvíja, zmeny môžu nastať bez predchádzajúceho upozornenia v rozumnom rozsahu."
+      },
+      "s8": {
+        "title": "8. Pozastavenie alebo odstránenie pri zneužití",
+        "p1": "V prípade zneužitia, podvodu alebo použitia v rozpore s týmito podmienkami môže prevádzkovateľ po posúdení pozastaviť alebo odstrániť dotknutý účet. Toto nie je všeobecná povinnosť monitorovať obsah."
+      },
+      "s9": {
+        "title": "9. Zodpovednosť",
+        "p1": "V limitách povolených zákonom prevádzkovateľ nezodpovedá za nepriame škody, stratu údajov z výpadku, vaše chyby pri zadávaní ani za použitie služby v rozpore s podmienkami.",
+        "p2": "Nič v tomto texte nevylučuje zodpovednosť, ktorú zákon nemôže obmedziť (vrátane hrubej nedbanlivosti alebo úmyslu podľa platných právnych predpisov)."
+      },
+      "s10": {
+        "title": "10. Zmeny podmienok",
+        "p1": "Podmienky môžu byť aktualizované podľa vývoja služby. Dátum v hlavičke je posledná aktualizácia. Pokračovanie používania po publikácii znamená prijatie aktualizovaných podmienok, ak zákon nevyžaduje inak."
+      },
+      "s11": {
+        "title": "11. Použiteľné právo",
+        "p1": "Tieto podmienky sa riadia slovenským právom, s výnimkou kogentných ustanovení v krajine pobytu používateľa. Spory sa predkladajú príslušným súdom podľa platných procesných pravidiel."
+      }
+    },
+    "notice": {
+      "title": "Právne informácie",
+      "intro": "Informácie o prevádzkovateľovi služby Pétanque Analytics (verejné údaje OR SR / FinStat) a jej hostingu.",
+      "s1": { "title": "1. Prevádzkovateľ" },
+      "s2": {
+        "title": "2. Hosting",
+        "intro": "Aplikácia (web, API a databáza) je nasadená na virtuálnom servere (VPS). Poskytovateľ hostingu tejto infraštruktúry je:",
+        "hetzner": "Hetzner Online GmbH\nIndustriestr. 25\n91710 Gunzenhausen\nNemecko",
+        "site": "Verejný web",
+        "api": "API",
+        "https": "HTTPS je zabezpečený cez Caddy s certifikátami Let’s Encrypt."
+      },
+      "s3": {
+        "title": "3. Transakčné e-maily",
+        "p1": "E-maily na overenie adresy a obnovu hesla sa odosielajú cez Resend z technickej adresy noreply@petanque-analytics.com. Táto adresa nie je kontaktný kanál."
+      },
+      "s4": {
+        "title": "4. Duševné vlastníctvo",
+        "p1": "Názov Pétanque Analytics, rozhranie a prvky služby sú chránené. Neoprávnené rozmnožovanie je zakázané, s výnimkou zákonných výnimiek."
+      },
+      "s5": {
+        "title": "5. Osobné údaje",
+        "p1": "Spracovanie osobných údajov je popísané v {privacy}. Odstránenie účtu je vysvetlené na stránke {delete}."
+      },
+      "s6": {
+        "title": "6. Podmienky používania",
+        "p1": "Používanie služby podlieha {terms}."
+      }
+    },
+    "delete": {
+      "title": "Odstrániť môj účet",
+      "needLogin": "Prihláste sa, aby ste mohli odstrániť účet.",
+      "loginLink": "Prihlásiť sa",
+      "intro": "Táto stránka vysvetľuje, ako odstrániť účet Pétanque Analytics. Je dostupná bez účtu, ako to vyžaduje Google Play. Samotné odstránenie vyžaduje prihlásenie, aby účet mohol odstrániť len jeho držiteľ.",
+      "s1": {
+        "title": "1. Ako odstrániť účet",
+        "steps": [
+          "Prihláste sa s e-mailovou adresou účtu, ktorý chcete odstrániť.",
+          "Otvorte túto stránku alebo choďte do Nastavenia a potom Odstrániť môj účet.",
+          "Potvrďte odstránenie v potvrdzovacom dialógu."
+        ]
+      },
+      "s2": {
+        "title": "2. Odstránené údaje",
+        "items": [
+          "e-mailová adresa a hash hesla;",
+          "dátum vytvorenia účtu a stav overenia e-mailu;",
+          "tokeny overenia e-mailu a obnovy hesla;",
+          "platnosť session tokenu: ste odhlásení a s týmto e-mailom sa už neprihlásíte."
+        ]
+      },
+      "s3": {
+        "title": "3. Uchované údaje",
+        "p1": "Profil hráča (meno, priezvisko, prezývka) zostáva v databáze bez väzby na účet. Zápasy, tréningy a strelecké session prepojené s týmto hráčom sa uchovávajú, aby sa nezmazala zdieľaná história s inými hráčmi. Väzba, ktorý účet vytvoril zápas, sa odstráni.",
+        "p2": "Drafty uložené na zariadení sa neodosielajú na server; odhlásenie automaticky nevymaže tieto lokálne drafty."
+      }
+    }
+  },
   "settings": {
     "title": "Nastavenia účtu",
     "loading": "Načítava sa…",
@@ -215,6 +470,9 @@
       "playerNotFound": "Tento hráč už neexistuje alebo nie je dostupný.",
       "userAlreadyHasPlayer": "Váš účet je už prepojený s hráčom.",
       "deleteFailed": "Účet sa nepodarilo odstrániť. Skúste znova."
+    },
+    "legal": {
+      "title": "Právne informácie"
     },
     "delete": {
       "title": "Odstrániť účet",

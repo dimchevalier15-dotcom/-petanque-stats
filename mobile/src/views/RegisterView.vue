@@ -82,6 +82,7 @@
         {{ t('auth.haveAccount') }}
         <router-link :to="{ name: 'login' }">{{ t('auth.login.link') }}</router-link>
       </p>
+      <AuthLegalNotice />
     </form>
   </section>
 </template>
@@ -96,6 +97,7 @@ import Password from 'primevue/password'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
+import AuthLegalNotice from '../components/legal/AuthLegalNotice.vue'
 import type { Player } from '../models/Player'
 import type { RegisterRequest } from '../dto/auth/RegisterRequest'
 

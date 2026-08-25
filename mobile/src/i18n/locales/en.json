@@ -185,6 +185,261 @@
       "resent": "If your address is not verified yet, a new email has been sent."
     }
   },
+  "legal": {
+    "updatedAt": "Last updated: 25 August 2026",
+    "authNotice": "By using Pétanque Analytics, you accept the {terms} and acknowledge the {privacy}.",
+    "nav": {
+      "label": "Legal pages",
+      "terms": "Terms of use",
+      "privacy": "Privacy policy",
+      "legal": "Legal notice",
+      "deleteAccount": "Delete my account"
+    },
+    "publisher": {
+      "country": "Slovakia",
+      "labels": {
+        "serviceName": "Service name",
+        "company": "Publisher",
+        "legalForm": "Legal form",
+        "address": "Address",
+        "email": "Contact email",
+        "publicationDirector": "Publication director",
+        "ico": "IČO (company ID)",
+        "dic": "DIČ (tax ID)",
+        "icDph": "IČ DPH (VAT ID)",
+        "commercialRegister": "Commercial register (OR SR)",
+        "incorporationDate": "Date of incorporation"
+      }
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "intro": "This policy describes how personal data is processed based on how Pétanque Analytics currently works. It does not guarantee full legal compliance.",
+      "s1": {
+        "title": "1. Service identity",
+        "p1": "Pétanque Analytics is an app for managing and analysing pétanque statistics (matches, training, precision shooting). It is available on the web (petanque-analytics.com) and on Android.",
+        "contactLabel": "Contact for privacy-related questions"
+      },
+      "s2": {
+        "title": "2. Purpose of processing",
+        "intro": "Data is processed to provide the service, including:",
+        "items": [
+          "creating and authenticating a user account;",
+          "verifying the email address and enabling password reset;",
+          "recording players, matches, training sessions and shooting sessions linked to the account;",
+          "calculating and displaying statistics from entered game actions."
+        ],
+        "outro": "This processing is necessary to provide the service you request. The app is not monetised today: no advertising is integrated and no payment data is collected."
+      },
+      "s3": {
+        "title": "3. Personal data collected",
+        "accountTitle": "User account",
+        "accountItems": [
+          "email address;",
+          "password (stored only as a hash, never returned by the API);",
+          "account creation date;",
+          "email verification date, if applicable."
+        ],
+        "playerTitle": "Player profile (if you create or link a player)",
+        "playerItems": [
+          "first name, last name, nickname;",
+          "a “club” column exists in the database but is not offered in the current interface."
+        ],
+        "gameTitle": "Game data linked to the player",
+        "gameItems": [
+          "matches: format, target score, statistics mode, team names, nature, competition, terrain type, comment, participants, ends, roles, balls (score, point/shot type, optional distance);",
+          "training sessions (point or shot): distance, number of balls, attempts, scores, dates;",
+          "precision shooting sessions: 20 shots, scores, optional title / description / context nature."
+        ],
+        "statsNote": "Displayed statistics are not stored separately: they are calculated on read from recorded actions.",
+        "authTitle": "Authentication",
+        "authItems": [
+          "session token (JWT) issued by the API, kept on the device in browser or app local storage, for about 14 days;",
+          "one-time tokens (hashed) for email verification (valid 24 hours) and password reset (valid 1 hour)."
+        ],
+        "deviceTitle": "On the device",
+        "deviceItems": [
+          "session token;",
+          "language preference;",
+          "match or shooting session drafts not yet sent to the server."
+        ],
+        "notCollected": "The app does not collect in its current code: phone number, profile photo, advertising ID, contacts, GPS location, payment data, or health data."
+      },
+      "s4": {
+        "title": "4. Providers and hosting",
+        "p1": "Business data is stored on the application infrastructure (API https://api.petanque-analytics.com, MySQL on the same virtual server, not publicly exposed). The site is served over HTTPS via Caddy (Let’s Encrypt certificates).",
+        "hosting": "Hosting: virtual server (VPS) at Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Germany.",
+        "resend": "Transactional emails (address confirmation, password reset) are sent via Resend. Resend receives the recipient email address and message content (one-time link). No marketing emails are sent by the app in its current state.",
+        "googlePlay": "If the app is installed from Google Play, Google may process data related to app distribution, outside the scope of Pétanque Analytics code.",
+        "noTracking": "The app does not include audience analytics, crash reporting, or advertising kits (no Google Analytics, Firebase Analytics, Sentry, or equivalent in the code)."
+      },
+      "s5": {
+        "title": "5. Cookies",
+        "p1": "The web frontend does not use tracking or advertising cookies. Authentication relies on a locally stored token (localStorage), not a session cookie."
+      },
+      "s6": {
+        "title": "6. Technical logs",
+        "p1": "Like any web service, the reverse proxy (Caddy) may record technical logs (e.g. IP address, date, requested URL) for operation and security. The API may log an internal user identifier if email sending fails. A rate limiter uses the IP address and a hash of the email to limit abuse (forgot password, resend verification email). Retention of these infrastructure logs is not defined in the application code."
+      },
+      "s7": {
+        "title": "7. No advertising or sale of data",
+        "p1": "In the current code, the app contains no advertising. Personal data is not sold."
+      },
+      "s8": {
+        "title": "8. Retention",
+        "p1": "Account and game data remain while the account exists. After account deletion (see below), the email, hashed password, and authentication tokens linked to the account are removed. Verification and reset tokens expire according to the durations above if not used."
+      },
+      "s9": {
+        "title": "9. Account deletion and retained data",
+        "p1": "You can delete your account from the app (Settings) or from the {link} after signing in.",
+        "deletedIntro": "When deleted:",
+        "deletedItems": [
+          "the account (email, password, verification date) is removed;",
+          "verification and reset tokens linked to the account are removed;",
+          "the session token becomes invalid; the app signs you out."
+        ],
+        "kept": "The player profile (first name, last name, nickname) is not destroyed: the link to the account is removed. Matches, training and shooting sessions linked to that player are kept. This preserves match history involving other players. The “created by” link on a match to the account is removed.",
+        "extended": "If you want broader deletion of game data still associated with your name, you can request it at the contact address above. Such a request may affect history visible to other users."
+      },
+      "s10": {
+        "title": "10. Your rights",
+        "intro": "Under applicable law (including the GDPR if you are in the European Economic Area), you may have rights of access, rectification, erasure, restriction, objection, and, where applicable, portability.",
+        "items": [
+          "player profile rectification: Account settings, once signed in;",
+          "account erasure: delete account, subject to the limits described above;",
+          "other requests: by email to the contact address below."
+        ],
+        "contact": "Contact"
+      },
+      "s11": {
+        "title": "11. Security",
+        "p1": "Communication between the app and the API uses HTTPS. Passwords are hashed. This reduces certain risks but does not guarantee zero incidents."
+      },
+      "s12": {
+        "title": "12. Changes",
+        "p1": "This policy may be updated to reflect service changes. The date at the top of the page is the last update of the text published in the app."
+      }
+    },
+    "terms": {
+      "title": "Terms of use",
+      "intro": "These terms of use govern access to Pétanque Analytics. By creating an account or using the service, you accept these terms.",
+      "contactLabel": "Contact",
+      "s1": {
+        "title": "1. Purpose of the service",
+        "p1": "Pétanque Analytics is a free service for tracking and analysing pétanque statistics. It lets you record matches, training sessions and precision shooting sessions, and view statistics calculated from those entries.",
+        "p2": "The service is provided “as is”. It is not an official competition tool and does not guarantee sporting accuracy, absence of input errors, or any particular outcome."
+      },
+      "s2": {
+        "title": "2. Access conditions",
+        "p1": "Main features require creating an account with an email address and password. Internet access is required. The Android app and website use the same API.",
+        "p2": "You must provide a valid email address. A verification email is sent. Some features may remain usable before confirmation; you should confirm your address when asked."
+      },
+      "s3": {
+        "title": "3. Account and security",
+        "p1": "You are responsible for keeping your credentials confidential and for use of your account. If you think a third party has access, change your password via “forgot password”.",
+        "p2": "The password must meet the minimum length required at registration. It is stored as a hash. A session token is kept on your device; signing out removes it locally without deleting the account."
+      },
+      "s4": {
+        "title": "4. Use of the service",
+        "intro": "You agree to use the service normally and lawfully, including:",
+        "items": [
+          "not impersonating others;",
+          "not knowingly entering unlawful content in free fields (comments, names, etc.);",
+          "not attempting to disrupt, overload, or bypass the service, its technical limits, or its security;",
+          "not accessing another account’s data or attempting to do so."
+        ],
+        "outro": "Players, clubs (if ever recorded), and statistics you enter are your responsibility. You must have the necessary information to record them, especially for third parties."
+      },
+      "s5": {
+        "title": "5. Data you provide",
+        "p1": "You remain the owner of information you enter. You authorise the publisher to host and process it only to provide, maintain, and secure the service, in line with the {privacy}.",
+        "p2": "You may delete your account at any time. Effects on game data (player profile kept in match history) are described in the {privacy}.",
+        "p3": "Details are also available on the {delete} page."
+      },
+      "s6": {
+        "title": "6. Intellectual property",
+        "p1": "The app, its name, interface, and code are protected. You may not copy, extract, or reuse the service beyond personal use, except with permission or as allowed by law."
+      },
+      "s7": {
+        "title": "7. Availability, maintenance, and changes",
+        "p1": "The publisher strives to keep the service available but cannot guarantee uninterrupted access. Outages may occur (maintenance, incident, evolution, hosting constraints).",
+        "p2": "Features may be added, changed, or removed. As the service is free and evolving, changes may occur without notice, within reason."
+      },
+      "s8": {
+        "title": "8. Suspension or deletion for abuse",
+        "p1": "In case of abusive, fraudulent, or non-compliant use, the publisher may suspend or delete the account concerned, after assessing the facts. This is not a general content monitoring obligation."
+      },
+      "s9": {
+        "title": "9. Liability",
+        "p1": "Within limits allowed by law, the publisher is not liable for indirect damages, data loss due to an outage, your input errors, or non-compliant use of the service.",
+        "p2": "Nothing herein excludes liability that cannot be limited by law (including gross negligence or wilful misconduct, under applicable law)."
+      },
+      "s10": {
+        "title": "10. Changes to these terms",
+        "p1": "These terms may be updated to reflect service changes. The date at the top is the last update. Continued use after publication means acceptance of updated terms, unless otherwise required."
+      },
+      "s11": {
+        "title": "11. Applicable law",
+        "p1": "These terms are governed by Slovak law, subject to mandatory rules in the user’s country of residence. Disputes shall be submitted to the competent courts under applicable procedural rules."
+      }
+    },
+    "notice": {
+      "title": "Legal notice",
+      "intro": "Information about the publisher of Pétanque Analytics (public OR SR / FinStat data) and its hosting.",
+      "s1": { "title": "1. Publisher" },
+      "s2": {
+        "title": "2. Hosting",
+        "intro": "The application (website, API and database) is deployed on a virtual server (VPS). The hosting provider for this infrastructure is:",
+        "hetzner": "Hetzner Online GmbH\nIndustriestr. 25\n91710 Gunzenhausen\nGermany",
+        "site": "Public website",
+        "api": "API",
+        "https": "HTTPS is provided by Caddy with Let’s Encrypt certificates."
+      },
+      "s3": {
+        "title": "3. Transactional email",
+        "p1": "Email verification and password reset messages are sent via Resend from the technical address noreply@petanque-analytics.com. This address is not a contact channel."
+      },
+      "s4": {
+        "title": "4. Intellectual property",
+        "p1": "The name Pétanque Analytics, the interface, and service elements are protected. Unauthorised reproduction is prohibited, subject to legal exceptions."
+      },
+      "s5": {
+        "title": "5. Personal data",
+        "p1": "Personal data processing is described in the {privacy}. Account deletion is explained on the {delete} page."
+      },
+      "s6": {
+        "title": "6. Terms of use",
+        "p1": "Use of the service is subject to the {terms}."
+      }
+    },
+    "delete": {
+      "title": "Delete my account",
+      "needLogin": "Sign in to delete your account.",
+      "loginLink": "Sign in",
+      "intro": "This page explains how to delete a Pétanque Analytics account. It is accessible without an account, as required for Google Play. Deletion itself requires signing in so only the account holder can delete it.",
+      "s1": {
+        "title": "1. How to delete your account",
+        "steps": [
+          "Sign in with the email address of the account to delete.",
+          "Open this page, or go to Settings then Delete my account.",
+          "Confirm deletion in the confirmation dialog."
+        ]
+      },
+      "s2": {
+        "title": "2. Data deleted",
+        "items": [
+          "email address and hashed password;",
+          "account creation date and email verification status;",
+          "email verification and password reset tokens;",
+          "session token validity: you are signed out and can no longer sign in with this email."
+        ]
+      },
+      "s3": {
+        "title": "3. Data retained",
+        "p1": "The player profile (first name, last name, nickname) remains in the database, unlinked from any account. Matches, training and shooting sessions linked to that player are kept so shared history with other players is not erased. The link showing which account created a match is removed.",
+        "p2": "Drafts stored on the device are not sent to the server; signing out does not automatically clear those local drafts."
+      }
+    }
+  },
   "settings": {
     "title": "Account settings",
     "loading": "Loading…",
@@ -215,6 +470,9 @@
       "playerNotFound": "This player no longer exists or is unavailable.",
       "userAlreadyHasPlayer": "Your account is already linked to a player.",
       "deleteFailed": "Unable to delete the account. Please try again."
+    },
+    "legal": {
+      "title": "Legal information"
     },
     "delete": {
       "title": "Delete account",

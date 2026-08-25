@@ -185,6 +185,261 @@
       "resent": "Si votre adresse n'est pas encore vérifiée, un nouvel e-mail a été envoyé."
     }
   },
+  "legal": {
+    "updatedAt": "Dernière mise à jour : 25 août 2026",
+    "authNotice": "En utilisant Pétanque Analytics, vous acceptez les {terms} et reconnaissez avoir pris connaissance de la {privacy}.",
+    "nav": {
+      "label": "Pages légales",
+      "terms": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité",
+      "legal": "Mentions légales",
+      "deleteAccount": "Supprimer mon compte"
+    },
+    "publisher": {
+      "country": "Slovensko",
+      "labels": {
+        "serviceName": "Nom du service",
+        "company": "Éditeur",
+        "legalForm": "Forme juridique",
+        "address": "Adresse",
+        "email": "E-mail de contact",
+        "publicationDirector": "Directeur de la publication",
+        "ico": "IČO",
+        "dic": "DIČ",
+        "icDph": "IČ DPH",
+        "commercialRegister": "Registre du commerce (OR SR)",
+        "incorporationDate": "Date de création"
+      }
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "intro": "Cette politique décrit le traitement des données personnelles tel qu’il résulte du fonctionnement actuel de l’application Pétanque Analytics. Elle ne constitue pas une garantie de conformité juridique exhaustive.",
+      "s1": {
+        "title": "1. Identité du service",
+        "p1": "Pétanque Analytics est une application de gestion et d’analyse de statistiques de pétanque (matchs, entraînements, tir de précision). Elle est disponible sur le web (petanque-analytics.com) et sur Android.",
+        "contactLabel": "Contact pour les questions relatives aux données personnelles"
+      },
+      "s2": {
+        "title": "2. Finalité du traitement",
+        "intro": "Les données sont traitées pour fournir le service, notamment :",
+        "items": [
+          "créer et authentifier un compte utilisateur ;",
+          "vérifier l’adresse e-mail et permettre la réinitialisation du mot de passe ;",
+          "enregistrer les joueurs, matchs, entraînements et séances de tir associés au compte ;",
+          "calculer et afficher des statistiques à partir des actions de jeu saisies."
+        ],
+        "outro": "Ces traitements sont nécessaires à la fourniture du service demandé par l’utilisateur. L’application n’est pas monétisée à ce jour : aucune publicité n’est intégrée, aucune donnée de paiement n’est collectée."
+      },
+      "s3": {
+        "title": "3. Données personnelles collectées",
+        "accountTitle": "Compte utilisateur",
+        "accountItems": [
+          "adresse e-mail ;",
+          "mot de passe (stocké uniquement sous forme de hash, jamais renvoyé par l’API) ;",
+          "date de création du compte ;",
+          "date de vérification de l’adresse e-mail, le cas échéant."
+        ],
+        "playerTitle": "Profil joueur (si vous créez ou liez un joueur)",
+        "playerItems": [
+          "prénom, nom, surnom ;",
+          "une colonne « club » existe en base de données mais n’est pas proposée dans l’interface actuelle."
+        ],
+        "gameTitle": "Données de jeu associées au joueur",
+        "gameItems": [
+          "matchs : format, score cible, mode de statistiques, noms d’équipes, nature, compétition, type de terrain, commentaire, participants, mènes, rôles, boules (note, type point/tir, distance éventuellement) ;",
+          "séances d’entraînement (point ou tir) : distance, nombre de boules, tentatives, scores, dates ;",
+          "séances de tir de précision : 20 tirs, scores, titre / description / nature de contexte éventuellement."
+        ],
+        "statsNote": "Les statistiques affichées ne sont pas une copie séparée des données : elles sont calculées à la lecture à partir des actions enregistrées.",
+        "authTitle": "Authentification",
+        "authItems": [
+          "jeton de session (JWT) émis par l’API, conservé sur l’appareil dans le stockage local du navigateur ou de l’application, pour une durée d’environ 14 jours ;",
+          "jetons à usage unique (hashés) pour la vérification d’e-mail (valables 24 heures) et la réinitialisation du mot de passe (valables 1 heure)."
+        ],
+        "deviceTitle": "Sur l’appareil",
+        "deviceItems": [
+          "jeton de session ;",
+          "préférence de langue ;",
+          "brouillons de match ou de séance de tir non encore envoyés au serveur."
+        ],
+        "notCollected": "L’application ne collecte pas, dans son code actuel : numéro de téléphone, photo de profil, identifiant publicitaire, contacts, localisation GPS, données de paiement, données de santé."
+      },
+      "s4": {
+        "title": "4. Prestataires et hébergement",
+        "p1": "Les données métier sont stockées sur l’infrastructure d’application (API https://api.petanque-analytics.com, base MySQL sur le même serveur virtuel, non exposée publiquement). Le site est servi en HTTPS via Caddy (certificats Let’s Encrypt).",
+        "hosting": "Hébergement : serveur virtuel (VPS) chez Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Allemagne.",
+        "resend": "Les e-mails transactionnels (confirmation d’adresse, réinitialisation de mot de passe) sont envoyés via Resend. Resend reçoit l’adresse e-mail du destinataire et le contenu du message (lien à usage unique). Aucun e-mail marketing n’est envoyé par l’application dans son état actuel.",
+        "googlePlay": "Si l’application est installée depuis Google Play, Google peut traiter des données liées à la distribution de l’application, hors du périmètre du code de Pétanque Analytics.",
+        "noTracking": "L’application n’intègre pas de kit d’analyse d’audience, de crash reporting ni de publicité (pas de Google Analytics, Firebase Analytics, Sentry ou équivalent dans le code)."
+      },
+      "s5": {
+        "title": "5. Cookies",
+        "p1": "Le frontend web n’utilise pas de cookies de suivi ni de cookies publicitaires. L’authentification repose sur un jeton stocké localement (localStorage), et non sur un cookie de session."
+      },
+      "s6": {
+        "title": "6. Journaux techniques",
+        "p1": "Comme tout service web, le reverse proxy (Caddy) peut enregistrer des journaux techniques (par exemple adresse IP, date, URL demandée) pour le fonctionnement et la sécurité. L’API peut consigner un identifiant interne d’utilisateur en cas d’échec d’envoi d’e-mail. Un limiteur de débit utilise l’adresse IP et un hash de l’e-mail pour limiter les abus (mot de passe oublié, renvoi de l’e-mail de vérification). La durée de conservation de ces journaux d’infrastructure n’est pas définie dans le code applicatif."
+      },
+      "s7": {
+        "title": "7. Absence de publicité et de vente des données",
+        "p1": "Dans l’état actuel du code, l’application ne contient pas de publicité. Les données personnelles ne sont pas vendues."
+      },
+      "s8": {
+        "title": "8. Conservation",
+        "p1": "Les données de compte et de jeu restent tant que le compte existe. Après suppression du compte (voir ci-dessous), l’e-mail, le mot de passe hashé et les jetons d’authentification liés au compte sont supprimés. Les jetons de vérification et de réinitialisation expirent selon les durées indiquées plus haut s’ils n’ont pas été utilisés."
+      },
+      "s9": {
+        "title": "9. Suppression du compte et données conservées",
+        "p1": "Vous pouvez supprimer votre compte depuis l’application (Paramètres) ou depuis la {link} après connexion.",
+        "deletedIntro": "Lors de la suppression :",
+        "deletedItems": [
+          "le compte (e-mail, mot de passe, date de vérification) est supprimé ;",
+          "les jetons de vérification et de réinitialisation liés au compte sont supprimés ;",
+          "le jeton de session cesse d’être valable ; l’application vous déconnecte."
+        ],
+        "kept": "Le profil joueur (prénom, nom, surnom) n’est pas détruit : le lien avec le compte est retiré. Les matchs, entraînements et séances de tir associés à ce joueur sont conservés. Cette conservation permet de préserver l’historique des matchs auxquels d’autres joueurs ont participé. Le lien « créé par » d’un match vers le compte est retiré.",
+        "extended": "Si vous souhaitez une suppression plus large des données de jeu encore associées à votre nom, vous pouvez en faire la demande à l’adresse de contact indiquée plus haut. Une telle demande peut affecter l’historique visible par d’autres utilisateurs."
+      },
+      "s10": {
+        "title": "10. Droits des personnes",
+        "intro": "Selon la réglementation applicable (notamment le RGPD si vous êtes dans l’Espace économique européen), vous pouvez disposer d’un droit d’accès, de rectification, d’effacement, de limitation, d’opposition et, le cas échéant, de portabilité.",
+        "items": [
+          "rectification du profil joueur : Paramètres du compte, une fois connecté ;",
+          "effacement du compte : suppression du compte, selon les limites décrites ci-dessus ;",
+          "autres demandes : par e-mail à l’adresse de contact ci-dessous."
+        ],
+        "contact": "Contact"
+      },
+      "s11": {
+        "title": "11. Sécurité",
+        "p1": "Les échanges entre l’application et l’API passent par HTTPS. Les mots de passe sont hashés. Cela réduit certains risques mais ne constitue pas une garantie d’absence totale d’incident."
+      },
+      "s12": {
+        "title": "12. Modifications",
+        "p1": "Cette politique peut être mise à jour pour refléter l’évolution du service. La date indiquée en tête de page correspond à la dernière mise à jour du texte publié dans l’application."
+      }
+    },
+    "terms": {
+      "title": "Conditions générales d'utilisation",
+      "intro": "Les présentes conditions générales d’utilisation (CGU) régissent l’accès à l’application Pétanque Analytics. En créant un compte ou en utilisant le service, vous acceptez ces conditions.",
+      "contactLabel": "Contact",
+      "s1": {
+        "title": "1. Objet du service",
+        "p1": "Pétanque Analytics est un service gratuit de suivi et d’analyse de statistiques de pétanque. Il permet notamment d’enregistrer des matchs, des entraînements et des séances de tir de précision, et d’afficher des statistiques calculées à partir de ces saisies.",
+        "p2": "Le service est fourni « en l’état ». Il n’est pas un outil officiel de compétition et ne garantit pas l’exactitude sportive, l’absence d’erreur de saisie ni un résultat particulier."
+      },
+      "s2": {
+        "title": "2. Conditions d’accès",
+        "p1": "L’utilisation des fonctionnalités principales nécessite la création d’un compte avec une adresse e-mail et un mot de passe. Un accès Internet est nécessaire. L’application Android et le site web s’appuient sur la même API.",
+        "p2": "Vous devez fournir une adresse e-mail valide. Un e-mail de vérification est envoyé. Certaines fonctionnalités peuvent rester utilisables avant confirmation ; il vous appartient de confirmer votre adresse lorsque cela vous est demandé."
+      },
+      "s3": {
+        "title": "3. Compte et sécurité",
+        "p1": "Vous êtes responsable de la confidentialité de vos identifiants et de l’usage qui est fait de votre compte. Si vous pensez qu’un tiers y a accès, changez votre mot de passe via la fonction « mot de passe oublié ».",
+        "p2": "Le mot de passe doit respecter la longueur minimale exigée lors de l’inscription. Il est stocké sous forme de hash. Un jeton de session est conservé sur votre appareil ; la déconnexion l’efface localement sans supprimer le compte."
+      },
+      "s4": {
+        "title": "4. Utilisation du service",
+        "intro": "Vous vous engagez à utiliser le service de façon normale et licite, notamment :",
+        "items": [
+          "ne pas usurper l’identité d’autrui ;",
+          "ne pas saisir volontairement des contenus illicites dans les champs libres (commentaires, noms, etc.) ;",
+          "ne pas tenter de perturber, saturer ou contourner le service, ses limites techniques ou sa sécurité ;",
+          "ne pas accéder aux données d’un autre compte ni chercher à le faire."
+        ],
+        "outro": "Les joueurs, clubs (si cette information est un jour renseignée) et statistiques que vous enregistrez relèvent de votre saisie. Vous devez disposer des informations nécessaires pour les enregistrer, en particulier lorsqu’il s’agit de tiers."
+      },
+      "s5": {
+        "title": "5. Données fournies par l’utilisateur",
+        "p1": "Vous restez propriétaire des informations que vous saisissez. Vous autorisez l’éditeur à les héberger et à les traiter uniquement pour fournir, maintenir et sécuriser le service, conformément à la {privacy}.",
+        "p2": "Vous pouvez supprimer votre compte à tout moment. Les conséquences sur les données de jeu (conservation du profil joueur dans l’historique des matchs) sont décrites dans la {privacy}.",
+        "p3": "Les détails sont également disponibles sur la {delete}."
+      },
+      "s6": {
+        "title": "6. Propriété intellectuelle",
+        "p1": "L’application, son nom, son interface et son code sont protégés. Vous ne pouvez pas copier, extraire ou réutiliser le service au-delà de l’usage personnel prévu, sauf autorisation ou exception légale."
+      },
+      "s7": {
+        "title": "7. Disponibilité, maintenance et évolution",
+        "p1": "L’éditeur s’efforce d’assurer la disponibilité du service mais ne peut garantir une accessibilité ininterrompue. Des interruptions peuvent survenir (maintenance, incident, évolution, contrainte d’hébergement).",
+        "p2": "Des fonctionnalités peuvent être ajoutées, modifiées ou retirées. Le service étant gratuit et évolutif, ces changements peuvent intervenir sans préavis, dans la limite du raisonnable."
+      },
+      "s8": {
+        "title": "8. Suspension ou suppression pour abus",
+        "p1": "En cas d’usage abusif, frauduleux ou contraire aux présentes conditions, l’éditeur peut suspendre ou supprimer le compte concerné, après appréciation des faits. Cette faculté n’est pas une obligation de surveillance générale des contenus."
+      },
+      "s9": {
+        "title": "9. Responsabilité",
+        "p1": "Dans les limites autorisées par la loi, l’éditeur n’est pas responsable des dommages indirects, de la perte de données consécutive à une interruption, d’une mauvaise saisie de votre part ou d’un usage non conforme du service.",
+        "p2": "Rien dans les présentes n’exclut une responsabilité qui ne peut pas être limitée par la loi (notamment en cas de faute lourde ou dolosive, selon le droit applicable)."
+      },
+      "s10": {
+        "title": "10. Modification des CGU",
+        "p1": "Les CGU peuvent être modifiées pour refléter l’évolution du service. La date indiquée en tête de page correspond à la dernière mise à jour. L’usage continu du service après publication vaut acceptation des conditions mises à jour, sauf obligation contraire."
+      },
+      "s11": {
+        "title": "11. Droit applicable",
+        "p1": "Les présentes conditions sont régies par le droit slovak, sous réserve des dispositions impératives applicables dans le pays de résidence de l’utilisateur. Les litiges seront soumis aux tribunaux compétents selon les règles de procédure applicables."
+      }
+    },
+    "notice": {
+      "title": "Mentions légales",
+      "intro": "Informations relatives à l’éditeur du service Pétanque Analytics (données publiques OR SR / FinStat) et à son hébergement.",
+      "s1": { "title": "1. Éditeur" },
+      "s2": {
+        "title": "2. Hébergement",
+        "intro": "L’application (site web, API et base de données) est déployée sur un serveur virtuel (VPS). Le prestataire d’hébergement de cette infrastructure est :",
+        "hetzner": "Hetzner Online GmbH\nIndustriestr. 25\n91710 Gunzenhausen\nAllemagne",
+        "site": "Site public",
+        "api": "API",
+        "https": "L’accès HTTPS est assuré par Caddy, avec des certificats Let’s Encrypt."
+      },
+      "s3": {
+        "title": "3. E-mails transactionnels",
+        "p1": "Les e-mails de vérification d’adresse et de réinitialisation de mot de passe sont envoyés via Resend, à partir de l’adresse technique noreply@petanque-analytics.com. Cette adresse n’est pas un canal de contact."
+      },
+      "s4": {
+        "title": "4. Propriété intellectuelle",
+        "p1": "Le nom Pétanque Analytics, l’interface et les éléments du service sont protégés. Toute reproduction non autorisée est interdite, sous réserve des exceptions légales."
+      },
+      "s5": {
+        "title": "5. Données personnelles",
+        "p1": "Le traitement des données personnelles est décrit dans la {privacy}. La suppression du compte est expliquée sur la {delete}."
+      },
+      "s6": {
+        "title": "6. Conditions d’utilisation",
+        "p1": "L’usage du service est soumis aux {terms}."
+      }
+    },
+    "delete": {
+      "title": "Supprimer mon compte",
+      "needLogin": "Connectez-vous pour supprimer votre compte.",
+      "loginLink": "Se connecter",
+      "intro": "Cette page explique comment supprimer un compte Pétanque Analytics. Elle est accessible sans compte, comme exigé pour une publication sur Google Play. La suppression elle-même nécessite une connexion, afin que seul le titulaire du compte puisse le supprimer.",
+      "s1": {
+        "title": "1. Comment supprimer votre compte",
+        "steps": [
+          "Connectez-vous avec l’adresse e-mail du compte à supprimer.",
+          "Ouvrez cette page, ou allez dans Paramètres puis Supprimer mon compte.",
+          "Confirmez la suppression dans la fenêtre de confirmation."
+        ]
+      },
+      "s2": {
+        "title": "2. Données supprimées",
+        "items": [
+          "l’adresse e-mail et le mot de passe hashé ;",
+          "la date de création du compte et l’état de vérification de l’e-mail ;",
+          "les jetons de vérification d’e-mail et de réinitialisation de mot de passe ;",
+          "la validité du jeton de session : vous êtes déconnecté et ne pouvez plus vous connecter avec cet e-mail."
+        ]
+      },
+      "s3": {
+        "title": "3. Données conservées",
+        "p1": "Le profil joueur (prénom, nom, surnom) reste dans la base, sans lien avec un compte. Les matchs, entraînements et séances de tir associés à ce joueur sont conservés, afin de ne pas effacer l’historique partagé avec d’autres joueurs. Le lien indiquant quel compte a créé un match est retiré.",
+        "p2": "Les brouillons éventuellement stockés sur l’appareil ne sont pas envoyés au serveur ; la déconnexion n’efface pas automatiquement ces brouillons locaux."
+      }
+    }
+  },
   "settings": {
     "title": "Paramètres du compte",
     "loading": "Chargement…",
@@ -215,6 +470,9 @@
       "playerNotFound": "Ce joueur n'existe plus ou n'est plus disponible.",
       "userAlreadyHasPlayer": "Votre compte est déjà lié à un joueur.",
       "deleteFailed": "Impossible de supprimer le compte. Veuillez réessayer."
+    },
+    "legal": {
+      "title": "Informations légales"
     },
     "delete": {
       "title": "Supprimer le compte",

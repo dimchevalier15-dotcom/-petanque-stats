@@ -13,6 +13,11 @@ import MyStatsView from '../views/MyStatsView.vue'
 import AccountSettingsView from '../views/AccountSettingsView.vue'
 import ShootingHomeView from '../views/ShootingHomeView.vue'
 import TrainingHomeView from '../views/TrainingHomeView.vue'
+import PrivacyView from '../views/PrivacyView.vue'
+import TermsView from '../views/TermsView.vue'
+import LegalNoticeView from '../views/LegalNoticeView.vue'
+import DeleteAccountView from '../views/DeleteAccountView.vue'
+import { GUEST_ONLY_ROUTE_NAMES, LEGAL_PATHS, PUBLIC_ROUTE_NAMES } from './publicRoutes'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: { name: 'home' } },
@@ -21,6 +26,10 @@ const routes: RouteRecordRaw[] = [
   { path: '/register', name: 'register', component: RegisterView, meta: { layout: 'auth' } },
   { path: '/forgot-password', name: 'forgotPassword', component: ForgotPasswordView, meta: { layout: 'auth' } },
   { path: '/reset-password', name: 'resetPassword', component: ResetPasswordView, meta: { layout: 'auth' } },
+  { path: LEGAL_PATHS.privacy, name: 'privacy', component: PrivacyView, meta: { layout: 'focus' } },
+  { path: LEGAL_PATHS.terms, name: 'terms', component: TermsView, meta: { layout: 'focus' } },
+  { path: LEGAL_PATHS.legal, name: 'legal', component: LegalNoticeView, meta: { layout: 'focus' } },
+  { path: LEGAL_PATHS.deleteAccount, name: 'deleteAccount', component: DeleteAccountView, meta: { layout: 'focus' } },
   { path: '/settings', name: 'settings', component: AccountSettingsView, meta: { layout: 'focus' } },
   { path: '/match/new', name: 'newMatch', component: NewMatchView, meta: { layout: 'focus' } },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView, meta: { layout: 'focus' } },
@@ -46,8 +55,8 @@ const router = createRouter({
   routes,
 })
 
-const publicRouteNames = new Set(['login', 'register', 'forgotPassword', 'resetPassword'])
-const guestOnlyRouteNames = new Set(['login', 'register'])
+const publicRouteNames = new Set<string>(PUBLIC_ROUTE_NAMES)
+const guestOnlyRouteNames = new Set<string>(GUEST_ONLY_ROUTE_NAMES)
 
 router.beforeEach((to) => {
   const isPublic = to.name && publicRouteNames.has(String(to.name))

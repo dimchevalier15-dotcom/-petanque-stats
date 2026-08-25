@@ -24,6 +24,7 @@
         {{ t('auth.noAccount') }}
         <router-link :to="{ name: 'register' }">{{ t('auth.register.link') }}</router-link>
       </p>
+      <AuthLegalNotice />
     </form>
   </section>
 </template>
@@ -31,14 +32,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
+import AuthLegalNotice from '../components/legal/AuthLegalNotice.vue'
+import { isSafeInternalPath } from '../utils/internalRedirect'
 
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
@@ -51,7 +55,8 @@ const errorMessage = computed(() => (auth.lastError ? t(auth.lastError) : ''))
 async function onSubmit() {
   await auth.login(email.value, password.value)
   if (auth.isAuthenticated) {
-    router.push({ name: 'home' })
+    const redirect = route.query.redirect
+    router.push(isSafeInternalPath(redirect) ? redirect : { name: 'home' })
   }
 }
 </script>
