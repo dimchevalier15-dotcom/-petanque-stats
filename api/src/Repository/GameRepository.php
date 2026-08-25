@@ -22,40 +22,50 @@ final class GameRepository extends ServiceEntityRepository
     }
 
     /**
-     * Returns total count and paginated games for a given player id, ordered by most recent first.
+     * Returns total count and paginated completed games for an account:
+     * matches the linked player participated in, or matches created by the user.
      *
      * @return array{0:int,1:list<Game>}
      */
-    public function findHistoryForPlayer(int $playerId, int $page, int $pageSize): array
+    public function findHistoryForAccount(int $userId, ?int $playerId, int $page, int $pageSize): array
     {
         $page = max(1, $page);
         $pageSize = max(1, $pageSize);
         $offset = ($page - 1) * $pageSize;
 
-        // total — only games with at least one recorded end
-        $total = (int) $this->createQueryBuilder('g')
-            ->select('COUNT(DISTINCT g.id)')
-            ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
-            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
-            ->where('gp.player = :pid')
-            ->setParameter('pid', $playerId)
-            ->getQuery()->getSingleScalarResult();
+        $totalQb = $this->createHistoryForAccountQueryBuilder($userId, $playerId)
+            ->select('COUNT(DISTINCT g.id)');
+        $total = (int) $totalQb->getQuery()->getSingleScalarResult();
 
-        // items
         /** @var list<Game> $items */
-        $items = $this->createQueryBuilder('g')
+        $items = $this->createHistoryForAccountQueryBuilder($userId, $playerId)
             ->leftJoin('g.competition', 'c')->addSelect('c')
-            ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
-            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
-            ->where('gp.player = :pid')
-            ->setParameter('pid', $playerId)
             ->groupBy('g.id')
             ->orderBy('g.createdAt', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($pageSize)
-            ->getQuery()->getResult();
+            ->getQuery()
+            ->getResult();
 
         return [$total, $items];
+    }
+
+    private function createHistoryForAccountQueryBuilder(int $userId, ?int $playerId): \Doctrine\ORM\QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('g')
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
+            ->leftJoin('g.createdBy', 'creator')
+            ->setParameter('userId', $userId);
+
+        if ($playerId !== null) {
+            $qb->leftJoin('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g AND gp.player = :playerId')
+                ->where('creator.id = :userId OR gp.player IS NOT NULL')
+                ->setParameter('playerId', $playerId);
+        } else {
+            $qb->where('creator.id = :userId');
+        }
+
+        return $qb;
     }
 
     /**

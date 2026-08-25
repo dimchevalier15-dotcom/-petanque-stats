@@ -104,7 +104,7 @@ final class MatchHistoryServiceTest extends KernelTestCase
         self::assertSame('final', $res->items[0]->competitionStage);
     }
 
-    public function testHistoryReturnsEmptyWhenAccountHasNoLinkedPlayer(): void
+    public function testHistoryReturnsEmptyWhenAccountHasNoLinkedPlayerAndNoCreatedMatches(): void
     {
         $email = sprintf('history-no-player-%s@test.local', bin2hex(random_bytes(4)));
         $user = new User($email);
@@ -118,6 +118,39 @@ final class MatchHistoryServiceTest extends KernelTestCase
 
         self::assertSame(0, $res->total);
         self::assertSame([], $res->items);
+    }
+
+    public function testCreatedMatchAppearsWhenCreatorDidNotParticipate(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+
+        $suffix = bin2hex(random_bytes(4));
+        $coach = new User('coach'.$suffix.'@test.local');
+        $coach->setPassword('hash');
+        $this->em->persist($coach);
+        $this->em->flush();
+
+        $coachToken = $this->jwtEncoder->encode(['username' => $coach->getEmail(), 'sub' => (string) $coach->getId()]);
+
+        $createReq = new CreateMatchRequest();
+        $createReq->type = 'tete_a_tete';
+        $createReq->targetScore = 13;
+        $createReq->statisticsMode = 'standard';
+        $createReq->teamA = [$playerId];
+        $createReq->teamB = [$opponentId];
+        $createReq->trackedPlayers = [$playerId, $opponentId];
+        $matchId = $this->matchService->create($createReq, $coach)->id;
+
+        $this->completeHeadToHead($matchId, $playerId, $opponentId, 3);
+
+        $res = $this->history->historyForToken($coachToken);
+
+        self::assertSame(1, $res->total);
+        self::assertCount(1, $res->items);
+        self::assertSame($matchId, $res->items[0]->id);
+        self::assertSame(3, $res->items[0]->scoreA);
+        self::assertNull($res->items[0]->victory);
     }
 
     /**

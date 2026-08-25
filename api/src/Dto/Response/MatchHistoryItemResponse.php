@@ -13,7 +13,7 @@ final class MatchHistoryItemResponse
         public int $scoreA,
         public int $scoreB,
         public string $winner, // 'A' | 'B'
-        public bool $victory, // from current player's perspective
+        public ?bool $victory, // from linked player's perspective; null when not a participant
         public ?string $nature = null,
         public ?string $competitionLabel = null,
         public ?string $competitionStage = null,

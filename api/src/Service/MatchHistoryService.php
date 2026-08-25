@@ -9,7 +9,6 @@ use App\Dto\Response\MatchHistoryResponse;
 use App\Entity\Game;
 use App\Repository\GameEndRepository;
 use App\Repository\GameRepository;
-use App\Repository\PlayerRepository;
 use App\Repository\GameParticipantRepository;
 use App\Service\Auth\CurrentUserService;
 
@@ -19,7 +18,6 @@ final class MatchHistoryService
         private CurrentUserService $currentUser,
         private GameRepository $games,
         private GameEndRepository $ends,
-        private PlayerRepository $players,
         private GameParticipantRepository $participants,
     ) {
     }
@@ -28,24 +26,19 @@ final class MatchHistoryService
     {
         $me = $this->currentUser->meFromToken($token);
         $playerId = $me->playerId;
-        if ($playerId === null) {
-            return new MatchHistoryResponse(page: $page, pageSize: $pageSize, total: 0, items: []);
-        }
 
-        // Fetch paginated games for this player
-        [$total, $games] = $this->games->findHistoryForPlayer((int) $playerId, $page, $pageSize);
+        [$total, $games] = $this->games->findHistoryForAccount($me->id, $playerId, $page, $pageSize);
 
         $items = [];
         foreach ($games as $g) {
-            if (!$g instanceof Game) continue;
+            if (!$g instanceof Game) {
+                continue;
+            }
             $sum = $this->ends->sumPointsByTeam($g);
             $scoreA = $sum['A'] ?? 0;
             $scoreB = $sum['B'] ?? 0;
             $winner = $scoreA >= $scoreB ? 'A' : 'B';
-            // Determine if current player's team won
-            $teamMap = $this->participants->mapPlayerTeamByGame($g);
-            $team = $teamMap[$playerId] ?? 'A';
-            $victory = ($winner === $team);
+            $victory = $this->resolveVictory($g, $playerId, $winner);
 
             $items[] = new MatchHistoryItemResponse(
                 id: (int) $g->getId(),
@@ -62,6 +55,20 @@ final class MatchHistoryService
         }
 
         return new MatchHistoryResponse(page: $page, pageSize: $pageSize, total: $total, items: $items);
+    }
+
+    private function resolveVictory(Game $game, ?int $playerId, string $winner): ?bool
+    {
+        if ($playerId === null) {
+            return null;
+        }
+
+        $teamMap = $this->participants->mapPlayerTeamByGame($game);
+        if (!isset($teamMap[$playerId])) {
+            return null;
+        }
+
+        return $winner === $teamMap[$playerId];
     }
 
     private function resolveCompetitionLabel(Game $game): ?string

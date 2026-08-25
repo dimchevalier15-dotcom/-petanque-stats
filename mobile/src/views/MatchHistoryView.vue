@@ -11,7 +11,11 @@
         <button type="button" class="match-card app-card" @click="open(m.id)">
           <div class="head">
             <span class="date">{{ formatDate(m.date) }}</span>
-            <Tag :value="m.victory ? t('history.victory') : t('history.defeat')" :severity="m.victory ? 'success' : 'danger'" />
+            <Tag
+              v-if="m.victory !== null"
+              :value="m.victory ? t('history.victory') : t('history.defeat')"
+              :severity="m.victory ? 'success' : 'danger'"
+            />
           </div>
           <div class="type">{{ typeLabel(m.type) }}</div>
           <div v-if="hasContext(m)" class="context-row">

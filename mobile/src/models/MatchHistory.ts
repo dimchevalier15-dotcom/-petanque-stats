@@ -7,7 +7,7 @@ export interface MatchHistoryItem {
   scoreA: number
   scoreB: number
   winner: 'A' | 'B'
-  victory: boolean
+  victory: boolean | null
   nature: MatchNature | null
   competitionLabel: string | null
   competitionStage: CompetitionStage | null
