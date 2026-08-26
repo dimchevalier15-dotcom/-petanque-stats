@@ -1,4 +1,4 @@
-# Google Play Data Safety — Pétanque Stats
+# Google Play Data Safety — Pétanque Analytics
 
 Analyse basée sur le code réel (`mobile/` + `api/src`), pas sur des possibilités théoriques.
 

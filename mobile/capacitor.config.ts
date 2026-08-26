@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   appId: 'com.petanquestats.app',
-  appName: 'Pétanque Stats',
+  appName: 'Pétanque Analytics',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

@@ -32,7 +32,7 @@ Ces pages sont publiques (aucun compte requis pour les lire). La suppression eff
 
 | Élément | Valeur / action |
 | --- | --- |
-| Nom affiché | **À aligner** : l’UI dit « Pétanque Analytics » ; Capacitor / `strings.xml` disent encore « Pétanque Stats » |
+| Nom affiché | **Pétanque Analytics** (Capacitor, Android, UI i18n) |
 | Package name (`applicationId`) | `com.petanquestats.app` — **ne pas modifier** après la première publication |
 | `versionName` | `1.0.0` (`mobile/android/app/build.gradle`) |
 | `versionCode` | `1` — incrémenter à chaque nouvel AAB |
@@ -40,7 +40,8 @@ Ces pages sont publiques (aucun compte requis pour les lire). La suppression eff
 | Site web | https://petanque-analytics.com |
 | Catégorie | **TODO** (proposition : Sports) |
 | Description courte / complète | **TODO** |
-| Icône 512×512, captures d’écran | **TODO** (voir `docs/google-play-android.md`) |
+| Icône 512×512 | `mobile/resources/play-icon-512.png` — uploader dans Play Console |
+| Captures d’écran | **TODO** (2 à 8, téléphone, prises sur appareil) |
 | Classification du contenu (IARC) | **TODO** questionnaire dans la console |
 | Pays de distribution | **TODO** |
 | Publicité dans l’app | Non (aucun SDK pub dans le code) |
@@ -150,7 +151,7 @@ Raison : ne pas casser l’historique des matchs impliquant d’autres joueurs. 
 13. AAB signé avec la **même** clé d’upload ?
 14. Placeholders légaux (`[À COMPLÉTER …]`) remplacés sur `/legal`, `/privacy`, `/terms` ?
 15. E-mail de contact Play Console renseigné ?
-16. Nom affiché « Pétanque Stats » vs « Pétanque Analytics » : choix conscient avant soumission
+16. Nom affiché = **Pétanque Analytics** partout (Store, Android, UI)
 17. Ne pas déclarer un SDK (Firebase, GA, Sentry, ads) qui n’est pas dans `mobile/package.json`
 18. Ne pas déclarer de paiement / pub / tracking s’ils n’ont pas été ajoutés depuis cette analyse
 

@@ -113,7 +113,7 @@ npx cap sync android
 npx cap open android
 ```
 
-Puis lancer **Pétanque Stats** depuis Android Studio sur un appareil USB (`adb devices`).
+Puis lancer **Pétanque Analytics** depuis Android Studio sur un appareil USB (`adb devices`).
 
 Dans Android Studio, choisir un **Gradle JDK 17 ou 21** (Capacitor 8 / Android API 36). Publication Play : `docs/google-play-android.md`.
 

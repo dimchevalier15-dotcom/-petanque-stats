@@ -319,7 +319,7 @@ Le frontend `mobile/` est la seule source de vérité.
 
 Package ID Android (définitif) : `com.petanquestats.app`
 
-Nom affiché : Pétanque Stats
+Nom affiché : Pétanque Analytics
 
 L'URL de l'API est définie par `VITE_API_URL` (voir `mobile/.env.example`).
 

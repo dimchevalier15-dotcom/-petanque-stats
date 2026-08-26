@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Pétanque Stats</string>
-    <string name="title_activity_main">Pétanque Stats</string>
+    <string name="app_name">Pétanque Analytics</string>
+    <string name="title_activity_main">Pétanque Analytics</string>
     <string name="package_name">com.petanquestats.app</string>
     <string name="custom_url_scheme">com.petanquestats.app</string>
 </resources>

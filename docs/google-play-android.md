@@ -140,10 +140,11 @@ Sans la clé d’upload, un nouvel AAB ne pourra plus être accepté (sauf reset
 
 ## Splash et icône
 
-- Source icône (ne pas modifier) : `mobile/resources/icon.png`
-- Génération Capacitor : `npm run assets:android` (`@capacitor/assets`)
-- Fond splash / adaptive icon : `#1F6B58` (couleur primaire)
-- Il n’y a pas d’asset splash distinct : le splash Android est généré à partir de l’icône et du fond.
+- Source icône Capacitor : `mobile/resources/icon.png` (1024×1024, dérivée du logo fourni)
+- Icône Google Play 512×512 : `mobile/resources/play-icon-512.png` (fichier fourni, à uploader dans Play Console)
+- Génération Android : `npm run assets:android` (`@capacitor/assets`)
+- Fond splash / adaptive icon : `#FFFFFF` (fond du logo)
+- Favicon web : `mobile/public/favicon.png`
 
 ---
 
@@ -173,12 +174,12 @@ Ne pas inventer les textes marketing. Compléter les TODO avant soumission.
 
 | Élément | Statut |
 | --- | --- |
-| Nom de l’application | **Pétanque Stats** (aligné Capacitor / `strings.xml`) |
+| Nom de l’application | **Pétanque Analytics** (Capacitor, `strings.xml`, UI i18n) |
 | Description courte | **TODO** (max 80 caractères, rédiger) |
 | Description complète | **TODO** (rédiger, 3 langues éventuelles fr/en/sk) |
 | Catégorie | **TODO** (proposition à valider : Sports) |
 | Coordonnées / email de contact | dimchevalier15@gmail.com (déjà dans `docs/google-play.md`) |
-| Icône Play (512×512) | Générer depuis `mobile/resources/icon.png` (asset haute résolution) |
+| Icône Play (512×512) | `mobile/resources/play-icon-512.png` — uploader dans Play Console |
 | Screenshots téléphone | **TODO** (prendre sur Galaxy S25, 2 à 8 images) |
 | Politique de confidentialité (URL HTTPS publique) | https://petanque-analytics.com/privacy (après déploiement front). Ancienne URL `/privacy.html` redirige vers `/privacy`. |
 | Classification du contenu | **TODO** (questionnaire IARC dans la console) |
