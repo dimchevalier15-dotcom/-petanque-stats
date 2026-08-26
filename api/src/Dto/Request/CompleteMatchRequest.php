@@ -31,9 +31,27 @@ final class CompleteMatchRequest
     /** @var list<int> */
     public array $trackedPlayers = [];
 
+    /** @var list<CompleteMatchSubstitutionDto> */
+    public array $substitutions = [];
+
     /** @var list<CompleteMatchEndDto> */
     #[Assert\NotBlank]
     public array $ends = [];
+}
+
+final class CompleteMatchSubstitutionDto
+{
+    #[Assert\Choice(choices: ['A', 'B'])]
+    public string $team;
+
+    #[Assert\Positive]
+    public int $outPlayerId;
+
+    #[Assert\Positive]
+    public int $inPlayerId;
+
+    #[Assert\Positive]
+    public int $fromEndIndex;
 }
 
 final class CompleteMatchEndDto

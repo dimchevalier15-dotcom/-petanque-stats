@@ -35,62 +35,124 @@
     <div class="teams">
       <section class="team team--a">
         <h3 class="team-title">{{ teamALabel }}</h3>
-        <article v-for="pid in setup.teamA" :key="pid" class="player">
-          <button
-            type="button"
-            class="player-name"
-            :class="{ 'player-name--clickable': isTracked(pid) }"
-            :disabled="!isTracked(pid)"
-            @click="openFormChart(pid)"
+        <template v-for="slot in teamASlots" :key="`slot-a-${slot.originalPlayerId}`">
+          <article
+            v-if="slot.isSubstitutedOut && hasPlayedBallsInEnd(slot.originalPlayerId, currentEnd)"
+            class="player player--out"
           >
-            {{ nameFor(pid) }}
-            <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(pid)) }}</span>
-          </button>
-          <div v-if="isTracked(pid)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
-            <Button
-              v-for="i in ballsPerPlayer"
-              :key="i"
-              :severity="severityFor(noteAt(pid, i - 1))"
-              :label="ballLabel(pid, i - 1)"
-              text
-              rounded
-              class="ball"
-              :class="{ 'ball--played': noteAt(pid, i - 1) !== undefined, 'ball--empty': noteAt(pid, i - 1) === undefined }"
-              :disabled="!canEnterBall(pid, i - 1)"
-              @click="openNote($event, pid, i - 1)"
-            />
-          </div>
-        </article>
+            <button
+              type="button"
+              class="player-name player-name--clickable"
+              @click="openFormChart(slot.originalPlayerId)"
+            >
+              {{ nameFor(slot.originalPlayerId) }}
+              <span class="player-sub-badge">{{ t('play.substitution.playedBefore') }}</span>
+            </button>
+            <div class="balls balls--readonly" :style="{ '--ball-count': ballsPerPlayer }">
+              <Button
+                v-for="i in ballsPerPlayer"
+                :key="`out-a-${slot.originalPlayerId}-${i}`"
+                :severity="severityFor(noteAt(slot.originalPlayerId, i - 1))"
+                :label="ballLabel(slot.originalPlayerId, i - 1)"
+                text
+                rounded
+                class="ball"
+                :class="{ 'ball--played': noteAt(slot.originalPlayerId, i - 1) !== undefined, 'ball--empty': noteAt(slot.originalPlayerId, i - 1) === undefined }"
+                disabled
+              />
+            </div>
+          </article>
+          <article class="player" :class="{ 'player--sub': slot.isSubstitutedOut }">
+            <button
+              type="button"
+              class="player-name"
+              :class="{ 'player-name--clickable': isTracked(slot.activePlayerId) }"
+              :disabled="!isTracked(slot.activePlayerId)"
+              @click="openFormChart(slot.activePlayerId)"
+            >
+              {{ nameFor(slot.activePlayerId) }}
+              <span v-if="slot.isSubstitutedOut" class="player-sub-badge">
+                {{ t('play.substitution.replaces', { name: nameFor(slot.originalPlayerId) }) }}
+              </span>
+              <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(slot.activePlayerId)) }}</span>
+            </button>
+            <div v-if="isTracked(slot.activePlayerId)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
+              <Button
+                v-for="i in ballsPerPlayer"
+                :key="`a-${slot.activePlayerId}-${i}`"
+                :severity="severityFor(noteAt(slot.activePlayerId, i - 1))"
+                :label="ballLabel(slot.activePlayerId, i - 1)"
+                text
+                rounded
+                class="ball"
+                :class="{ 'ball--played': noteAt(slot.activePlayerId, i - 1) !== undefined, 'ball--empty': noteAt(slot.activePlayerId, i - 1) === undefined }"
+                :disabled="!canEnterBall(slot.activePlayerId, i - 1)"
+                @click="openNote($event, slot.activePlayerId, i - 1)"
+              />
+            </div>
+          </article>
+        </template>
       </section>
 
       <section class="team team--b">
         <h3 class="team-title">{{ teamBLabel }}</h3>
-        <article v-for="pid in setup.teamB" :key="pid" class="player">
-          <button
-            type="button"
-            class="player-name"
-            :class="{ 'player-name--clickable': isTracked(pid) }"
-            :disabled="!isTracked(pid)"
-            @click="openFormChart(pid)"
+        <template v-for="slot in teamBSlots" :key="`slot-b-${slot.originalPlayerId}`">
+          <article
+            v-if="slot.isSubstitutedOut && hasPlayedBallsInEnd(slot.originalPlayerId, currentEnd)"
+            class="player player--out"
           >
-            {{ nameFor(pid) }}
-            <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(pid)) }}</span>
-          </button>
-          <div v-if="isTracked(pid)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
-            <Button
-              v-for="i in ballsPerPlayer"
-              :key="i"
-              :severity="severityFor(noteAt(pid, i - 1))"
-              :label="ballLabel(pid, i - 1)"
-              text
-              rounded
-              class="ball"
-              :class="{ 'ball--played': noteAt(pid, i - 1) !== undefined, 'ball--empty': noteAt(pid, i - 1) === undefined }"
-              :disabled="!canEnterBall(pid, i - 1)"
-              @click="openNote($event, pid, i - 1)"
-            />
-          </div>
-        </article>
+            <button
+              type="button"
+              class="player-name player-name--clickable"
+              @click="openFormChart(slot.originalPlayerId)"
+            >
+              {{ nameFor(slot.originalPlayerId) }}
+              <span class="player-sub-badge">{{ t('play.substitution.playedBefore') }}</span>
+            </button>
+            <div class="balls balls--readonly" :style="{ '--ball-count': ballsPerPlayer }">
+              <Button
+                v-for="i in ballsPerPlayer"
+                :key="`out-b-${slot.originalPlayerId}-${i}`"
+                :severity="severityFor(noteAt(slot.originalPlayerId, i - 1))"
+                :label="ballLabel(slot.originalPlayerId, i - 1)"
+                text
+                rounded
+                class="ball"
+                :class="{ 'ball--played': noteAt(slot.originalPlayerId, i - 1) !== undefined, 'ball--empty': noteAt(slot.originalPlayerId, i - 1) === undefined }"
+                disabled
+              />
+            </div>
+          </article>
+          <article class="player" :class="{ 'player--sub': slot.isSubstitutedOut }">
+            <button
+              type="button"
+              class="player-name"
+              :class="{ 'player-name--clickable': isTracked(slot.activePlayerId) }"
+              :disabled="!isTracked(slot.activePlayerId)"
+              @click="openFormChart(slot.activePlayerId)"
+            >
+              {{ nameFor(slot.activePlayerId) }}
+              <span v-if="slot.isSubstitutedOut" class="player-sub-badge">
+                {{ t('play.substitution.replaces', { name: nameFor(slot.originalPlayerId) }) }}
+              </span>
+              <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(slot.activePlayerId)) }}</span>
+            </button>
+            <div v-if="isTracked(slot.activePlayerId)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
+              <Button
+                v-for="i in ballsPerPlayer"
+                :key="`b-${slot.activePlayerId}-${i}`"
+                :severity="severityFor(noteAt(slot.activePlayerId, i - 1))"
+                :label="ballLabel(slot.activePlayerId, i - 1)"
+                text
+                rounded
+                class="ball"
+                :class="{ 'ball--played': noteAt(slot.activePlayerId, i - 1) !== undefined, 'ball--empty': noteAt(slot.activePlayerId, i - 1) === undefined }"
+                :disabled="!canEnterBall(slot.activePlayerId, i - 1)"
+                @click="openNote($event, slot.activePlayerId, i - 1)"
+              />
+            </div>
+          </article>
+        </template>
       </section>
     </div>
 
@@ -186,15 +248,15 @@
               <span class="roles-team-label">{{ teamALabel }}</span>
               <div class="roles-chips">
                 <button
-                  v-for="pid in setup.teamA"
-                  :key="`role-a-${pid}`"
+                  v-for="slot in teamASlots"
+                  :key="`role-a-${slot.activePlayerId}`"
                   type="button"
                   class="role-chip"
                   :disabled="!canEditRoles"
-                  @click="cyclePlayerRole(pid)"
+                  @click="cyclePlayerRole(slot.activePlayerId)"
                 >
-                  <span class="role-chip-name">{{ nameFor(pid) }}</span>
-                  <span class="role-chip-role">{{ roleLabel(roleFor(pid)) }}</span>
+                  <span class="role-chip-name">{{ nameFor(slot.activePlayerId) }}</span>
+                  <span class="role-chip-role">{{ roleLabel(roleFor(slot.activePlayerId)) }}</span>
                 </button>
               </div>
             </div>
@@ -202,15 +264,15 @@
               <span class="roles-team-label">{{ teamBLabel }}</span>
               <div class="roles-chips">
                 <button
-                  v-for="pid in setup.teamB"
-                  :key="`role-b-${pid}`"
+                  v-for="slot in teamBSlots"
+                  :key="`role-b-${slot.activePlayerId}`"
                   type="button"
                   class="role-chip"
                   :disabled="!canEditRoles"
-                  @click="cyclePlayerRole(pid)"
+                  @click="cyclePlayerRole(slot.activePlayerId)"
                 >
-                  <span class="role-chip-name">{{ nameFor(pid) }}</span>
-                  <span class="role-chip-role">{{ roleLabel(roleFor(pid)) }}</span>
+                  <span class="role-chip-name">{{ nameFor(slot.activePlayerId) }}</span>
+                  <span class="role-chip-role">{{ roleLabel(roleFor(slot.activePlayerId)) }}</span>
                 </button>
               </div>
             </div>
@@ -219,6 +281,15 @@
       </details>
 
       <footer class="play-actions">
+        <Button
+          v-if="canMakeSubstitution"
+          class="substitution-btn"
+          :label="t('play.substitution.action')"
+          icon="pi pi-sync"
+          severity="secondary"
+          outlined
+          @click="openSubstitutionDialog"
+        />
         <div v-if="canValidateEnd && !scoreDialog" class="play-actions-primary">
           <Button class="validate-end-btn" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
           <Button class="cancel-end-btn" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" outlined @click="openCancelDialog" />
@@ -226,6 +297,57 @@
         <Button class="finish-btn" :label="t('play.actions.finish')" icon="pi pi-flag" severity="secondary" text @click="openFinishDialog" />
       </footer>
     </div>
+
+    <Dialog
+      v-model:visible="substitutionDialog"
+      :modal="true"
+      :header="t('play.substitution.title')"
+      :dismissableMask="true"
+      class="play-dialog substitution-dialog"
+    >
+      <div class="substitution-content">
+        <p class="substitution-hint">{{ t('play.substitution.hint') }}</p>
+
+        <div v-if="substitutionTeamOptions.length > 1" class="substitution-field">
+          <span class="substitution-label">{{ t('play.substitution.team') }}</span>
+          <SelectButton
+            v-model="substitutionTeam"
+            :options="substitutionTeamOptions"
+            option-label="label"
+            option-value="value"
+          />
+        </div>
+
+        <div class="substitution-field">
+          <span class="substitution-label">{{ t('play.substitution.playerOut') }}</span>
+          <SelectButton
+            v-model="substitutionOutPlayerId"
+            :options="substitutionOutOptions"
+            option-label="label"
+            option-value="value"
+          />
+        </div>
+
+        <PlayerSearchSelect
+          v-model="substitutionInPlayer"
+          :label="t('play.substitution.playerIn')"
+          :placeholder="t('play.substitution.searchPlaceholder')"
+          :empty-hint="t('play.substitution.searchEmpty')"
+        />
+
+        <p v-if="substitutionError" class="substitution-error">{{ substitutionError }}</p>
+
+        <div class="actions">
+          <Button :label="t('play.substitution.abort')" severity="secondary" @click="substitutionDialog = false" />
+          <Button
+            :label="t('play.substitution.confirm')"
+            icon="pi pi-check"
+            :disabled="!canConfirmSubstitution"
+            @click="confirmSubstitution"
+          />
+        </div>
+      </div>
+    </Dialog>
 
     <Dialog v-model:visible="cancelDialog" :modal="true" :header="t('play.cancel.title')" :closable="false" class="play-dialog">
       <div class="cancel-content">
@@ -263,7 +385,9 @@ import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import SelectButton from 'primevue/selectbutton'
 import Tag from 'primevue/tag'
+import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
 import type { TeamSide } from '../models/MatchPlay'
+import type { Player } from '../models/Player'
 import { DEFAULT_TARGET_SCORE, type MatchType, type PlayerRole, type ShotType, type StatisticsMode } from '../models/Match'
 import { inferStartingRoles } from '../utils/matchRoles'
 import { useMatchPlay } from '../composables/useMatchPlay'
@@ -347,6 +471,7 @@ function resolvePlaySession(): { setup: MatchSetup; initial?: MatchPlayState } |
         ends: draftForMatch.ends,
         distanceEstimate: draftForMatch.distanceEstimate,
         currentRoles: draftForMatch.currentRoles,
+        substitutions: draftForMatch.substitutions,
       },
     }
   }
@@ -406,6 +531,15 @@ const {
   shotDefaultFor,
   cyclePlayerRole,
   canEditRoles,
+  canMakeSubstitution,
+  canSubstituteTeamA,
+  canSubstituteTeamB,
+  teamASlots,
+  teamBSlots,
+  applySubstitution,
+  hasPlayedBallsInEnd,
+  isTracked,
+  substitutions,
 } = useMatchPlay(setup, initialPlayState, persistPlayState)
 
 const distanceEstimateInput = computed<number | null>({
@@ -508,15 +642,86 @@ function ballLabel(playerId: number, idx: number): string {
   return formatNote(n)
 }
 
-function isTracked(playerId: number): boolean {
-  return setup.trackedPlayers.includes(playerId)
+const substitutionDialog = ref(false)
+const substitutionTeam = ref<TeamSide | null>(null)
+const substitutionOutPlayerId = ref<number | null>(null)
+const substitutionInPlayer = ref<Player | null>(null)
+const substitutionError = ref('')
+
+const substitutionTeamOptions = computed(() => {
+  const options: { label: string; value: TeamSide }[] = []
+  if (canSubstituteTeamA.value) {
+    options.push({ label: teamALabel.value, value: 'A' })
+  }
+  if (canSubstituteTeamB.value) {
+    options.push({ label: teamBLabel.value, value: 'B' })
+  }
+  return options
+})
+
+const substitutionOutOptions = computed(() => {
+  if (!substitutionTeam.value) {
+    return []
+  }
+  const teamIds = substitutionTeam.value === 'A' ? setup.teamA : setup.teamB
+  return teamIds.map((playerId) => ({
+    label: nameFor(playerId),
+    value: playerId,
+  }))
+})
+
+const canConfirmSubstitution = computed(() => {
+  return substitutionTeam.value !== null && substitutionOutPlayerId.value !== null && substitutionInPlayer.value !== null
+})
+
+function resetSubstitutionForm(): void {
+  substitutionTeam.value = substitutionTeamOptions.value[0]?.value ?? null
+  substitutionOutPlayerId.value = substitutionOutOptions.value[0]?.value ?? null
+  substitutionInPlayer.value = null
+  substitutionError.value = ''
 }
 
-function canEnterBall(playerId: number, noteIndex: number): boolean {
-  return canPlayBallSlot(currentEnd.value, playerId, noteIndex)
+function openSubstitutionDialog(): void {
+  resetSubstitutionForm()
+  substitutionDialog.value = true
+}
+
+watch(substitutionTeam, () => {
+  substitutionOutPlayerId.value = substitutionOutOptions.value[0]?.value ?? null
+  substitutionInPlayer.value = null
+  substitutionError.value = ''
+})
+
+async function loadPlayerName(playerId: number): Promise<void> {
+  if (names.value[playerId]) {
+    return
+  }
+  try {
+    const player = await playersService.getById(playerId)
+    const full = `${player.firstName} ${player.lastName}`.trim()
+    names.value[player.id] = player.nickname ? `${player.nickname} (${full})` : full
+  } catch {
+    // keep fallback label
+  }
+}
+
+async function confirmSubstitution(): Promise<void> {
+  if (!substitutionTeam.value || substitutionOutPlayerId.value === null || !substitutionInPlayer.value) {
+    return
+  }
+
+  const ok = applySubstitution(substitutionTeam.value, substitutionOutPlayerId.value, substitutionInPlayer.value.id)
+  if (!ok) {
+    substitutionError.value = t('play.substitution.error')
+    return
+  }
+
+  await loadPlayerName(substitutionInPlayer.value.id)
+  substitutionDialog.value = false
 }
 
 const scoreDialog = ref(false)
+const cancelDialog = ref(false)
 const winner = ref<TeamSide | null>(null)
 const points = ref<number | null>(null)
 
@@ -561,6 +766,20 @@ const canSaveEndScore = computed(() => {
   return winner.value !== null && points.value >= 1
 })
 
+function playersForTeamEndScore(team: TeamSide): number[] {
+  const slots = team === 'A' ? teamASlots.value : teamBSlots.value
+  const ids = new Set<number>()
+  for (const slot of slots) {
+    if (hasPlayedBallsInEnd(slot.activePlayerId, currentEnd.value)) {
+      ids.add(slot.activePlayerId)
+    }
+    if (hasPlayedBallsInEnd(slot.originalPlayerId, currentEnd.value)) {
+      ids.add(slot.originalPlayerId)
+    }
+  }
+  return Array.from(ids)
+}
+
 function applyScoreDialogDefaults(): void {
   const end = currentEnd.value
   if (end.canceled !== true && end.winner && end.points !== undefined) {
@@ -571,8 +790,8 @@ function applyScoreDialogDefaults(): void {
 
   const suggestion = suggestEndScore({
     end,
-    teamA: setup.teamA,
-    teamB: setup.teamB,
+    teamA: playersForTeamEndScore('A'),
+    teamB: playersForTeamEndScore('B'),
     scoreA: scoreForEndCap.value.scoreA,
     scoreB: scoreForEndCap.value.scoreB,
     targetScore: setup.targetScore,
@@ -609,7 +828,10 @@ watch(winner, (selectedWinner) => {
   )
 })
 
-const cancelDialog = ref(false)
+function canEnterBall(playerId: number, noteIndex: number): boolean {
+  return canPlayBallSlot(currentEnd.value, playerId, noteIndex)
+}
+
 function openCancelDialog() { cancelDialog.value = true }
 function confirmCancelEnd() {
   cancelCurrentEnd()
@@ -670,7 +892,7 @@ function nameFor(pid: number): string {
 onMounted(async () => {
   if (!session) return
 
-  const ids = Array.from(new Set([...setup.teamA, ...setup.teamB]))
+  const ids = Array.from(new Set([...setup.teamA, ...setup.teamB, ...substitutions.map((sub) => sub.inPlayerId)]))
   try {
     const [contextData, ...playerResults] = await Promise.all([
       matchesService.getContext(matchId),
@@ -946,6 +1168,78 @@ onMounted(async () => {
   opacity: 0.85;
 }
 
+.player-sub-badge {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+}
+
+.player--out {
+  opacity: 0.72;
+}
+
+.player--out .player-name {
+  font-weight: 600;
+}
+
+.player--sub .player-name {
+  color: var(--app-primary-dark);
+}
+
+.balls--readonly :deep(.ball.p-button) {
+  opacity: 0.85;
+}
+
+.substitution-content {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.substitution-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+  line-height: 1.45;
+}
+
+.substitution-field {
+  display: grid;
+  gap: var(--app-space-xs);
+}
+
+.substitution-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--app-text-muted);
+}
+
+.substitution-field :deep(.p-selectbutton) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.substitution-error {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--app-danger, #b91c1c);
+}
+
+.substitution-content .actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-sm);
+}
+
+.substitution-content .actions :deep(.p-button) {
+  width: 100%;
+  min-height: var(--app-touch-min);
+}
+
 .role-chip:disabled {
   opacity: 0.55;
   cursor: default;
@@ -1138,7 +1432,8 @@ onMounted(async () => {
 
 .validate-end-btn,
 .cancel-end-btn,
-.finish-btn {
+.finish-btn,
+.substitution-btn {
   width: 100%;
   min-height: var(--app-touch-min);
 }

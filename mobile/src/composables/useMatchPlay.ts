@@ -3,6 +3,18 @@ import type { PlayerRole } from '../models/Match'
 import type { MatchPlayState, MatchSetup } from '../models/MatchDraft'
 import type { BallNote, EndRecord, TeamSide } from '../models/MatchPlay'
 import {
+  activePlayerForSlot,
+  activeTeamPlayerIds,
+  allMatchPlayerIds,
+  canTeamSubstitute,
+  isPlayerInMatch,
+  substitutionsAllowed,
+  teamForActivePlayer,
+  teamSlotsForEnd,
+  trackedPlayersForSubmission,
+} from '../utils/matchSubstitutions'
+import type { TeamSubstitution } from '../models/MatchPlay'
+import {
   cycleTripletteRole,
   inferStartingRoles,
   roleToShot,
@@ -14,8 +26,39 @@ import {
 
 export type { MatchSetup } from '../models/MatchDraft'
 
-function allPlayerIds(setup: MatchSetup): number[] {
-  return [...setup.teamA, ...setup.teamB]
+function allPlayerIds(setup: MatchSetup, substitutions: TeamSubstitution[]): number[] {
+  return allMatchPlayerIds(setup.teamA, setup.teamB, substitutions)
+}
+
+function trackedPlayerIdsForEnd(
+  setup: MatchSetup,
+  substitutions: TeamSubstitution[],
+  endIndex: number,
+  end: EndRecord,
+): number[] {
+  const ids = new Set<number>()
+
+  for (const playerId of setup.trackedPlayers) {
+    const team = teamForPlayer(playerId, setup.teamA, setup.teamB)
+    if (!team) {
+      continue
+    }
+
+    const activeId = activePlayerForSlot(playerId, team, substitutions, endIndex)
+    ids.add(activeId)
+
+    const sub = substitutions.find((item) => item.team === team && item.outPlayerId === playerId)
+    if (sub && endIndex >= sub.fromEndIndex) {
+      const originalEntry = end.balls.find((ball) => ball.playerId === playerId)
+      if ((originalEntry?.notes.length ?? 0) > 0) {
+        ids.add(playerId)
+      }
+    } else {
+      ids.add(playerId)
+    }
+  }
+
+  return Array.from(ids)
 }
 
 function resolveInitialCurrentRoles(setup: MatchSetup, initial?: MatchPlayState): Record<number, PlayerRole> {
@@ -57,10 +100,25 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
 
   const currentRoles = reactive<Record<number, PlayerRole>>(resolveInitialCurrentRoles(setup, initial))
 
+  const substitutions = reactive<TeamSubstitution[]>(
+    initial?.substitutions?.map((sub) => ({ ...sub })) ?? [],
+  )
+
   const ballsPerPlayer = computed(() => (setup.type === 'triplette' ? 2 : 3))
-  const allPlayers = computed<number[]>(() => allPlayerIds(setup))
+  const allPlayers = computed<number[]>(() => allPlayerIds(setup, substitutions))
   const trackedSet = computed(() => new Set<number>(setup.trackedPlayers))
   const showRoles = computed(() => setup.type === 'doublette' || setup.type === 'triplette')
+  const allowSubstitutions = computed(() => substitutionsAllowed(setup.type))
+  const canSubstituteTeamA = computed(() => allowSubstitutions.value && canTeamSubstitute('A', substitutions))
+  const canSubstituteTeamB = computed(() => allowSubstitutions.value && canTeamSubstitute('B', substitutions))
+  const canMakeSubstitution = computed(() => canSubstituteTeamA.value || canSubstituteTeamB.value)
+
+  const teamASlots = computed(() =>
+    teamSlotsForEnd(setup.teamA, 'A', substitutions, ends[currentEndIndex.value]?.index ?? 1),
+  )
+  const teamBSlots = computed(() =>
+    teamSlotsForEnd(setup.teamB, 'B', substitutions, ends[currentEndIndex.value]?.index ?? 1),
+  )
 
   function roleFor(playerId: number): PlayerRole {
     const end = ends[currentEndIndex.value]
@@ -86,7 +144,9 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   function swapDoubletteTeamRoles(team: 'A' | 'B'): void {
     const teamIds = team === 'A' ? setup.teamA : setup.teamB
     if (teamIds.length !== 2) return
-    const [p1, p2] = teamIds
+    const endIndex = ends[currentEndIndex.value]?.index ?? 1
+    const activeIds = activeTeamPlayerIds(teamIds, team, substitutions, endIndex)
+    const [p1, p2] = activeIds
     const r1 = currentRoles[p1]
     const r2 = currentRoles[p2]
     currentRoles[p1] = r2
@@ -103,7 +163,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       return
     }
 
-    const team = teamForPlayer(playerId, setup.teamA, setup.teamB)
+    const team = teamForActivePlayer(playerId, setup.teamA, setup.teamB, substitutions)
     if (team) {
       swapDoubletteTeamRoles(team)
     }
@@ -120,15 +180,26 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   }
 
   function ensureEndStructure(end: EndRecord): void {
+    const trackedIds = trackedPlayerIdsForEnd(setup, substitutions, end.index, end)
+
     if (end.balls.length === 0) {
-      end.balls = allPlayers.value
-        .filter((id) => trackedSet.value.has(id))
-        .map((playerId) => ({
-          playerId,
-          notes: [] as BallNote[],
-          shotTypes: [] as ('point' | 'tir')[],
-          distances: [] as (number | null)[],
-        }))
+      end.balls = trackedIds.map((playerId) => ({
+        playerId,
+        notes: [] as BallNote[],
+        shotTypes: [] as ('point' | 'tir')[],
+        distances: [] as (number | null)[],
+      }))
+    } else {
+      for (const playerId of trackedIds) {
+        if (!end.balls.some((ball) => ball.playerId === playerId)) {
+          end.balls.push({
+            playerId,
+            notes: [] as BallNote[],
+            shotTypes: [] as ('point' | 'tir')[],
+            distances: [] as (number | null)[],
+          })
+        }
+      }
     }
     for (const entry of end.balls) {
       if (entry.notes.length > ballsPerPlayer.value) {
@@ -166,6 +237,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       })),
       distanceEstimate: distanceEstimate.value,
       currentRoles: { ...currentRoles },
+      substitutions: substitutions.map((sub) => ({ ...sub })),
     }
   }
 
@@ -176,6 +248,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   watch([currentEndIndex, distanceEstimate], persist)
   watch(ends, persist, { deep: true })
   watch(currentRoles, persist, { deep: true })
+  watch(substitutions, persist, { deep: true })
 
   const scoreA = ref(0)
   const scoreB = ref(0)
@@ -317,8 +390,16 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   }
 
   function allTrackedNotesFilled(end: EndRecord): boolean {
-    for (const entry of end.balls) {
-      if (entry.notes.length < ballsPerPlayer.value) return false
+    for (const playerId of setup.trackedPlayers) {
+      const team = teamForPlayer(playerId, setup.teamA, setup.teamB)
+      if (!team) {
+        continue
+      }
+      const activeId = activePlayerForSlot(playerId, team, substitutions, end.index)
+      const entry = end.balls.find((ball) => ball.playerId === activeId)
+      if (!entry || entry.notes.length < ballsPerPlayer.value) {
+        return false
+      }
     }
     return true
   }
@@ -333,7 +414,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     end.canceled = false
     end.winner = winner
     end.points = points
-    snapshotEndRoles(end, currentRoles, allPlayers.value)
+    snapshotEndRoles(end, currentRoles, playersForEndRoles(end))
     continueMatchAfterEndChange()
   }
 
@@ -342,8 +423,70 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     end.canceled = true
     end.winner = 'A'
     end.points = 0
-    snapshotEndRoles(end, currentRoles, allPlayers.value)
+    snapshotEndRoles(end, currentRoles, playersForEndRoles(end))
     continueMatchAfterEndChange()
+  }
+
+  function playersForEndRoles(end: EndRecord): number[] {
+    const ids = new Set(allPlayers.value)
+    for (const ball of end.balls) {
+      ids.add(ball.playerId)
+    }
+    return Array.from(ids)
+  }
+
+  function applySubstitution(team: TeamSide, outPlayerId: number, inPlayerId: number): boolean {
+    if (!allowSubstitutions.value) {
+      return false
+    }
+    if (!canTeamSubstitute(team, substitutions)) {
+      return false
+    }
+
+    const teamIds = team === 'A' ? setup.teamA : setup.teamB
+    if (!teamIds.includes(outPlayerId)) {
+      return false
+    }
+    if (isPlayerInMatch(inPlayerId, setup.teamA, setup.teamB, substitutions)) {
+      return false
+    }
+
+    const end = ends[currentEndIndex.value]
+    if (!end) {
+      return false
+    }
+
+    const role = currentRoles[outPlayerId] ?? startingRoles[outPlayerId] ?? 'pointeur'
+    substitutions.push({
+      team,
+      outPlayerId,
+      inPlayerId,
+      fromEndIndex: end.index,
+    })
+    currentRoles[inPlayerId] = role
+    ensureEndStructure(end)
+    snapshotEndRoles(end, currentRoles, playersForEndRoles(end))
+    return true
+  }
+
+  function substitutionFor(team: TeamSide): TeamSubstitution | undefined {
+    return substitutions.find((sub) => sub.team === team)
+  }
+
+  function hasPlayedBallsInEnd(playerId: number, end: EndRecord): boolean {
+    const entry = end.balls.find((ball) => ball.playerId === playerId)
+    return (entry?.notes.length ?? 0) > 0
+  }
+
+  function isTracked(playerId: number): boolean {
+    if (trackedSet.value.has(playerId)) {
+      return true
+    }
+    const sub = substitutions.find((item) => item.inPlayerId === playerId)
+    if (!sub) {
+      return false
+    }
+    return trackedSet.value.has(sub.outPlayerId)
   }
 
   function colorFor(note: BallNote | undefined): string {
@@ -371,7 +514,8 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       statisticsMode: setup.statisticsMode,
       teamA: setup.teamA,
       teamB: setup.teamB,
-      trackedPlayers: setup.trackedPlayers,
+      trackedPlayers: trackedPlayersForSubmission(setup.trackedPlayers, substitutions),
+      substitutions: substitutions.map((sub) => ({ ...sub })),
       ends: ends
         .filter((e) => e.canceled === true || (e.winner !== undefined && e.points !== undefined))
         .map((e) => ({
@@ -385,9 +529,9 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
             shotTypes: b.shotTypes,
             distances: b.distances,
           })),
-          roles: allPlayers.value.map((playerId) => ({
+          roles: playersForEndRoles(e).map((playerId) => ({
             playerId,
-            role: e.roles?.[playerId] ?? startingRoles[playerId] ?? 'pointeur',
+            role: e.roles?.[playerId] ?? startingRoles[playerId] ?? currentRoles[playerId] ?? 'pointeur',
           })),
         })),
     }
@@ -421,5 +565,16 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     colorFor,
     toSubmission,
     cancelCurrentEnd,
+    substitutions,
+    allowSubstitutions,
+    canMakeSubstitution,
+    canSubstituteTeamA,
+    canSubstituteTeamB,
+    teamASlots,
+    teamBSlots,
+    applySubstitution,
+    substitutionFor,
+    hasPlayedBallsInEnd,
+    isTracked,
   }
 }

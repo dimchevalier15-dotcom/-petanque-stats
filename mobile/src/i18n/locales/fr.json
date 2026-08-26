@@ -625,6 +625,21 @@
       "endLabel": "M{n}"
     },
     "actions": { "saveEnd": "Enregistrer la mène", "validateEnd": "Valider la mène", "cancelEnd": "Annuler la mène", "finish": "Terminer le match" },
+    "substitution": {
+      "action": "Changement",
+      "title": "Changement de joueur",
+      "hint": "Un changement maximum par équipe et par match. Les stats restent attribuées à chaque joueur.",
+      "team": "Équipe",
+      "playerOut": "Joueur à remplacer",
+      "playerIn": "Joueur remplaçant",
+      "searchPlaceholder": "Rechercher un joueur (3 caractères min.)",
+      "searchEmpty": "Aucun joueur trouvé.",
+      "confirm": "Confirmer le changement",
+      "abort": "Annuler",
+      "error": "Ce changement ne peut pas être appliqué.",
+      "replaces": "Remplace {name}",
+      "playedBefore": "A joué avant le changement"
+    },
     "cancel": {
       "title": "Mène annulée",
       "message1": "Le but est sorti.",

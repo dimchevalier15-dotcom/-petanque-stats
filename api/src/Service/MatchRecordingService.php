@@ -11,6 +11,9 @@ use App\Entity\Game;
 use App\Entity\GameBall;
 use App\Entity\GameEnd;
 use App\Entity\GameEndPlayerRole;
+use App\Entity\GameParticipant;
+use App\Entity\GameTracked;
+use App\Entity\Player;
 use App\Enum\GameType;
 use App\Enum\PlayerRole;
 use App\Repository\GameEndRepository;
@@ -53,6 +56,8 @@ final class MatchRecordingService
             // Idempotency: replace any previous completion data instead of duplicating it.
             $this->ends->deleteByGame($game);
 
+            $this->registerSubstitutions($game, $req, $matchPlayerSet, $trackedSet);
+
             // Preload default shot type map for participants
             $participantRepo = $this->participants;
             $defaultMap = $participantRepo->mapDefaultShotTypeByGame($game);
@@ -87,6 +92,74 @@ final class MatchRecordingService
         });
 
         return new CompleteMatchResponse((int) $game->getId());
+    }
+
+    /**
+     * @param array<int, true> $matchPlayerSet
+     * @param array<int, true> $trackedSet
+     */
+    private function registerSubstitutions(
+        Game $game,
+        CompleteMatchRequest $req,
+        array &$matchPlayerSet,
+        array &$trackedSet,
+    ): void {
+        $substitutionsByTeam = [];
+        foreach ($req->substitutions as $subDto) {
+            $team = in_array($subDto->team, ['A', 'B'], true) ? $subDto->team : null;
+            if ($team === null) {
+                continue;
+            }
+            if (isset($substitutionsByTeam[$team])) {
+                continue;
+            }
+
+            $outId = (int) $subDto->outPlayerId;
+            $inId = (int) $subDto->inPlayerId;
+            if ($outId <= 0 || $inId <= 0 || $outId === $inId) {
+                continue;
+            }
+            if (isset($matchPlayerSet[$inId])) {
+                continue;
+            }
+
+            $teamIds = array_map('intval', $team === 'A' ? $req->teamA : $req->teamB);
+            $positionIndex = array_search($outId, $teamIds, true);
+            if ($positionIndex === false) {
+                continue;
+            }
+
+            $outPlayer = $this->players->find($outId);
+            if ($outPlayer === null) {
+                continue;
+            }
+
+            $player = $this->players->find($inId);
+            if ($player === null) {
+                continue;
+            }
+
+            $outParticipant = $this->participants->findOneBy(['game' => $game, 'player' => $outPlayer]);
+            if ($outParticipant === null) {
+                continue;
+            }
+
+            $this->em->persist(new GameParticipant(
+                $game,
+                $player,
+                $team,
+                $positionIndex + 1,
+                $outParticipant->getDefaultShotType(),
+                $outParticipant->getStartingRole(),
+            ));
+            $matchPlayerSet[$inId] = true;
+            $substitutionsByTeam[$team] = true;
+
+            if (isset($trackedSet[$outId])) {
+                $this->em->persist(new GameTracked($game, $player));
+                $trackedSet[$inId] = true;
+            }
+        }
     }
 
     /**

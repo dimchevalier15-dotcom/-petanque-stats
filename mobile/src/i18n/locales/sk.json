@@ -625,6 +625,21 @@
       "endLabel": "M{n}"
     },
     "actions": { "saveEnd": "Uložiť mènu", "validateEnd": "Potvrdiť mènu", "cancelEnd": "Zrušiť mènu", "finish": "Ukončiť zápas" },
+    "substitution": {
+      "action": "Striedanie",
+      "title": "Striedanie hráča",
+      "hint": "Jedno striedanie na tím a zápas. Štatistiky zostávajú pri každom hráčovi.",
+      "team": "Tím",
+      "playerOut": "Hráč na vystriedanie",
+      "playerIn": "Náhradník",
+      "searchPlaceholder": "Hľadať hráča (min. 3 znaky)",
+      "searchEmpty": "Nenašiel sa žiadny hráč.",
+      "confirm": "Potvrdiť striedanie",
+      "abort": "Zrušiť",
+      "error": "Toto striedanie nie je možné použiť.",
+      "replaces": "Nahrádza {name}",
+      "playedBefore": "Hral pred striedaním"
+    },
     "cancel": {
       "title": "Mèna zrušená",
       "message1": "Cieľ vyšiel z ihriska.",

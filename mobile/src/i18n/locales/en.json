@@ -625,6 +625,21 @@
       "endLabel": "E{n}"
     },
     "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "cancelEnd": "Cancel end", "finish": "Finish match" },
+    "substitution": {
+      "action": "Substitution",
+      "title": "Player substitution",
+      "hint": "One substitution per team per match. Stats stay with each player.",
+      "team": "Team",
+      "playerOut": "Player to replace",
+      "playerIn": "Replacement player",
+      "searchPlaceholder": "Search a player (min. 3 characters)",
+      "searchEmpty": "No player found.",
+      "confirm": "Confirm substitution",
+      "abort": "Cancel",
+      "error": "This substitution cannot be applied.",
+      "replaces": "Replaces {name}",
+      "playedBefore": "Played before substitution"
+    },
     "cancel": {
       "title": "End canceled",
       "message1": "The jack is out.",

@@ -1,6 +1,6 @@
 import type { MatchType, StatisticsMode } from '../../models/Match'
 import type { PlayerRole } from '../../models/Match'
-import type { BallNote, TeamSide } from '../../models/MatchPlay'
+import type { BallNote, TeamSide, TeamSubstitution } from '../../models/MatchPlay'
 
 export interface EndBallDto {
   playerId: number
@@ -30,5 +30,6 @@ export interface CompleteMatchRequestDto {
   teamA: number[]
   teamB: number[]
   trackedPlayers: number[]
+  substitutions?: TeamSubstitution[]
   ends: EndDto[]
 }

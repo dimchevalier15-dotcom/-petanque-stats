@@ -90,6 +90,7 @@ export function saveMatchDraft(
       ends: playState.ends.map(normalizeEnd),
       distanceEstimate: playState.distanceEstimate,
       currentRoles: { ...playState.currentRoles },
+      substitutions: playState.substitutions?.map((sub) => ({ ...sub })) ?? [],
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(draft))
   } catch {

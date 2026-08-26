@@ -1,5 +1,5 @@
 import type { MatchType, PlayerRole, ShotType, StatisticsMode } from './Match'
-import type { EndRecord } from './MatchPlay'
+import type { EndRecord, TeamSubstitution } from './MatchPlay'
 
 export interface MatchSetup {
   id: number
@@ -18,6 +18,7 @@ export interface MatchPlayState {
   ends: EndRecord[]
   distanceEstimate: number | null
   currentRoles: Record<number, PlayerRole>
+  substitutions?: TeamSubstitution[]
 }
 
 export interface MatchDraft extends MatchSetup, MatchPlayState {
