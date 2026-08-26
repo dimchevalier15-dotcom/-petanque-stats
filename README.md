@@ -14,6 +14,7 @@ petanque-analytics/
 ├── api/
 ├── mobile/
 ├── docs/
+├── scripts/ (backup-db.sh, restore-db.sh)
 ├── docker/ (Caddyfile production)
 ├── docker-compose.yml
 ├── docker-compose.prod.yml
@@ -71,6 +72,8 @@ make down
 Configuration séparée : `docker-compose.prod.yml` (Caddy, frontend statique, API `APP_ENV=prod`, MySQL non exposé).
 
 Procédure complète (secrets, JWT, migrations) : `docs/deployment.md`.
+
+Sauvegardes MySQL (script, rétention 14 jours, cron à installer manuellement) : `docs/backup.md`.
 
 Ne pas utiliser ce fichier pour le développement local.
 

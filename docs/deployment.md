@@ -205,6 +205,22 @@ docker compose -f docker-compose.prod.yml down
 
 Ne pas ajouter `-v` : cela supprimerait le volume `mysql_data` (données perdues).
 
+### 7. Sauvegardes MySQL
+
+Dump quotidien local via `scripts/backup-db.sh` (mysqldump dans le conteneur, sans toucher au volume `mysql_data`). Documentation complète : `docs/backup.md`.
+
+Backup manuel :
+
+```
+./scripts/backup-db.sh
+```
+
+Le cron quotidien **n'est pas installé automatiquement**. Ligne à ajouter à la main (03:00) :
+
+```
+0 3 * * * mkdir -p /opt/petanque-stats/backups && PATH=/usr/local/bin:/usr/bin:/bin /opt/petanque-stats/scripts/backup-db.sh >> /opt/petanque-stats/backups/backup.log 2>&1
+```
+
 ---
 
 ## Application Android (Capacitor)

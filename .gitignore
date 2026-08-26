@@ -21,3 +21,6 @@ keystore.properties
 
 # Logs
 *.log
+
+# Database backups (never commit dumps)
+backups/
