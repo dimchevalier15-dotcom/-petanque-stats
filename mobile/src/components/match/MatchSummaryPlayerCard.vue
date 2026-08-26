@@ -106,9 +106,11 @@ const tirChart = computed(() => buildPlayerShotChart(props.player.tir, t))
 
 .player-name {
   margin: 0;
+  min-width: 0;
   font-size: 0.9375rem;
   font-weight: 700;
   line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .player-avg :deep(.p-tag) {
@@ -130,7 +132,6 @@ const tirChart = computed(() => buildPlayerShotChart(props.player.tir, t))
 }
 
 .chart-box {
-  position: relative;
   height: 150px;
 }
 

@@ -242,6 +242,7 @@ onMounted(load)
 .summary {
   display: grid;
   gap: var(--app-space-md);
+  min-width: 0;
 }
 
 .hero-banner {
@@ -341,7 +342,6 @@ onMounted(load)
 }
 
 .chart-box {
-  position: relative;
   height: 180px;
 }
 

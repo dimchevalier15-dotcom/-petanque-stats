@@ -24,6 +24,7 @@ defineProps<{
 .app-page {
   display: grid;
   gap: var(--app-space-lg);
+  min-width: 0;
 }
 
 .app-page--compact {
@@ -38,5 +39,6 @@ defineProps<{
 .page-body {
   display: grid;
   gap: var(--app-space-md);
+  min-width: 0;
 }
 </style>

@@ -115,6 +115,7 @@ const orderedPlayers = computed(() => {
 .end-grid-body {
   display: grid;
   gap: 0.5rem;
+  min-width: 0;
   padding: 0 var(--app-space-md) var(--app-space-md);
   border-top: 1px solid var(--app-border);
 }
@@ -128,6 +129,8 @@ const orderedPlayers = computed(() => {
 .end-grid-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  width: 100%;
+  max-width: 100%;
   margin: 0 -0.25rem;
   padding: 0.125rem 0.25rem 0.25rem;
 }

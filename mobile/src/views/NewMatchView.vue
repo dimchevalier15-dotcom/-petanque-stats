@@ -33,6 +33,7 @@
                 option-label="label"
                 :placeholder="t('matches.fields.playerN', { n: slot })"
                 class="player-search"
+                fluid
                 @complete="(event) => onSearch('A', slot, event.query)"
                 @item-select="() => touch('A', slot)"
                 @blur="() => touch('A', slot)"
@@ -95,6 +96,7 @@
                 option-label="label"
                 :placeholder="t('matches.fields.playerN', { n: slot })"
                 class="player-search"
+                fluid
                 @complete="(event) => onSearch('B', slot, event.query)"
                 @item-select="() => touch('B', slot)"
                 @blur="() => touch('B', slot)"
@@ -257,12 +259,13 @@ const {
 
 <style scoped>
 .new-match {
-  padding: 0 var(--app-space-lg) calc(env(safe-area-inset-bottom, 0px) + var(--app-space-xl));
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--app-space-xl));
+  min-width: 0;
 }
 
 .setup-form {
   display: grid;
-  gap: var(--app-space-lg);
+  gap: var(--app-space-xl);
 }
 
 .resume-content {
@@ -299,13 +302,17 @@ const {
 .type-picker :deep(.p-togglebutton) {
   justify-content: center;
   min-height: var(--app-touch-min);
-  font-size: 0.8125rem;
+  padding: 0.5rem 0.375rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  line-height: 1.2;
+  white-space: normal;
 }
 
 .matchup {
   display: grid;
-  gap: var(--app-space-sm);
+  gap: var(--app-space-md);
+  min-width: 0;
 }
 
 .team-panel {
@@ -314,7 +321,8 @@ const {
   background: var(--app-surface);
   border: 1px solid var(--app-border);
   display: grid;
-  gap: var(--app-space-sm);
+  gap: var(--app-space-md);
+  min-width: 0;
 }
 
 .team-panel--a {
@@ -327,7 +335,7 @@ const {
 
 .team-head {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: var(--app-space-sm);
 }
@@ -342,6 +350,7 @@ const {
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 
 .team-panel--a .team-badge {
@@ -356,6 +365,7 @@ const {
 
 .team-name-input {
   width: 100%;
+  min-width: 0;
   font-size: 0.875rem;
 }
 
@@ -370,12 +380,13 @@ const {
 .player-slot {
   display: grid;
   gap: var(--app-space-xs);
+  min-width: 0;
 }
 
 .player-slot-options {
   display: grid;
   gap: var(--app-space-sm);
-  padding: var(--app-space-xs) 0 var(--app-space-xs);
+  padding: var(--app-space-sm) 0 0;
   border-top: 1px dashed var(--app-border);
 }
 
@@ -399,11 +410,13 @@ const {
 }
 
 .role-picker :deep(.p-togglebutton) {
-  flex: 1 1 auto;
+  flex: 1 1 5.5rem;
   justify-content: center;
   font-size: 0.75rem;
   padding: 0.375rem 0.5rem;
   min-height: 2.25rem;
+  white-space: normal;
+  line-height: 1.15;
 }
 
 .track-toggle {
@@ -415,18 +428,31 @@ const {
 
 .player-search-row {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--app-space-xs);
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--app-space-sm);
+  align-items: center;
 }
 
 .player-search {
   min-width: 0;
 }
 
+.player-search :deep(.p-autocomplete) {
+  width: 100%;
+  min-width: 0;
+}
+
+.player-search :deep(.p-autocomplete-input) {
+  width: 100%;
+  min-width: 0;
+}
+
 .add-player-btn {
+  width: var(--app-touch-min);
+  height: var(--app-touch-min);
   min-width: var(--app-touch-min);
   min-height: var(--app-touch-min);
+  padding: 0;
   flex-shrink: 0;
 }
 
@@ -451,11 +477,8 @@ const {
 }
 
 .stats-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--app-space-md);
-  flex-wrap: wrap;
+  display: grid;
+  gap: var(--app-space-sm);
 }
 
 .stats-label {
@@ -464,8 +487,20 @@ const {
   color: var(--app-text-muted);
 }
 
+.mode-picker {
+  width: 100%;
+}
+
+.mode-picker :deep(.p-selectbutton) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+}
+
 .mode-picker :deep(.p-togglebutton) {
+  justify-content: center;
   font-size: 0.75rem;
+  min-height: 2.25rem;
 }
 
 .start-bar {

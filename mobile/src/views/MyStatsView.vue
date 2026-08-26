@@ -547,13 +547,20 @@ watch(
 .nature-filter,
 .format-filter {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--app-space-xs);
+}
+
+@media (min-width: 420px) {
+  .nature-filter,
+  .format-filter {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .distance-filter {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--app-space-xs);
 }
 
@@ -570,6 +577,7 @@ watch(
 }
 
 .filter-btn {
+  min-width: 0;
   min-height: 2.25rem;
   border: 1px solid var(--app-border);
   border-radius: var(--app-radius-sm);
@@ -579,6 +587,8 @@ watch(
   font-weight: 600;
   color: var(--app-text-muted);
   cursor: pointer;
+  line-height: 1.2;
+  white-space: normal;
 }
 
 .filter-btn.active {
@@ -761,6 +771,7 @@ watch(
 
 .avg-detail-row {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
@@ -773,14 +784,15 @@ watch(
 
 .avg-detail-values {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.5rem;
 }
 
 .avg-detail-meta {
   font-size: 0.75rem;
   opacity: 0.65;
-  white-space: nowrap;
 }
 
 .panel {
@@ -812,7 +824,6 @@ watch(
 
 .chart-box {
   position: relative;
-  width: 100%;
 }
 
 .chart-line {
@@ -878,7 +889,14 @@ watch(
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
   font-weight: 600;
+}
+
+.nature-head > span:first-child,
+.breakdown-head > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .nature-meta,
