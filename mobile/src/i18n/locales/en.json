@@ -599,6 +599,10 @@
   "play": {
     "end": "End",
     "score": "Score",
+    "timer": {
+      "start": "Start the timer",
+      "pause": "Pause the timer"
+    },
     "endScore": {
       "title": "End score",
       "earlyHint": "Unplayed balls will not be counted in statistics.",

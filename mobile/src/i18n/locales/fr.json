@@ -599,6 +599,10 @@
   "play": {
     "end": "Mène",
     "score": "Score",
+    "timer": {
+      "start": "Lancer le chrono",
+      "pause": "Mettre le chrono en pause"
+    },
     "endScore": {
       "title": "Fin de mène",
       "earlyHint": "Les boules non jouées ne seront pas comptabilisées.",

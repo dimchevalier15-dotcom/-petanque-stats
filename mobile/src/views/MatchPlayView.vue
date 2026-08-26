@@ -13,7 +13,19 @@
       <div class="scoreboard-main">
         <span class="end-pill">{{ t('play.end') }} {{ currentEnd.index }}</span>
         <div class="score-row">
-          <span class="score-label">{{ t('play.score') }}</span>
+          <div class="score-heading">
+            <span class="score-label">{{ t('play.score') }}</span>
+            <button
+              type="button"
+              class="match-timer"
+              :class="{ 'match-timer--running': timerRunning }"
+              :aria-label="timerRunning ? t('play.timer.pause') : t('play.timer.start')"
+              :title="timerRunning ? t('play.timer.pause') : t('play.timer.start')"
+              @click="toggleTimer"
+            >
+              {{ timerDisplay }}
+            </button>
+          </div>
           <div class="score-values">
             <strong class="score-value score-value--a">{{ scoreA }}</strong>
             <span class="score-sep">–</span>
@@ -389,8 +401,9 @@ import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
 import type { TeamSide } from '../models/MatchPlay'
 import type { Player } from '../models/Player'
 import { DEFAULT_TARGET_SCORE, type MatchType, type PlayerRole, type ShotType, type StatisticsMode } from '../models/Match'
-import { inferStartingRoles } from '../utils/matchRoles'
+import { inferStartingRoles, totalBallsInEnd } from '../utils/matchRoles'
 import { useMatchPlay } from '../composables/useMatchPlay'
+import { useMatchTimer } from '../composables/useMatchTimer'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import { formatFormAvg, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
 import { avgSeverity } from '../composables/usePlayerStatsCharts'
@@ -542,6 +555,22 @@ const {
   substitutions,
 } = useMatchPlay(setup, initialPlayState, persistPlayState)
 
+const {
+  display: timerDisplay,
+  running: timerRunning,
+  toggle: toggleTimer,
+  startIfIdle: startTimerIfIdle,
+} = useMatchTimer()
+
+watch(
+  () => (ends[0] ? totalBallsInEnd(ends[0]) : 0),
+  (count, previous) => {
+    if ((previous ?? 0) === 0 && count > 0) {
+      startTimerIfIdle()
+    }
+  },
+)
+
 const distanceEstimateInput = computed<number | null>({
   get: () => distanceEstimate.value,
   set: (v) => setDistanceEstimate(v === undefined || Number.isNaN(v as number) ? null : v),
@@ -591,6 +620,9 @@ function shotAt(playerId: number, idx: number): ShotType | undefined {
 function openNote(event: Event, playerId: number, noteIndex: number) {
   if (!canEnterBall(playerId, noteIndex)) {
     return
+  }
+  if (currentEndIndex.value === 0 && totalBallsInEnd(currentEnd.value) === 0) {
+    startTimerIfIdle()
   }
   noteCtx.value = { playerId, noteIndex }
   // initialize shot type from existing note or default map
@@ -985,12 +1017,38 @@ onMounted(async () => {
   gap: 0.125rem;
 }
 
+.score-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
 .score-label {
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--app-text-subtle);
+}
+
+.match-timer {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--app-text-subtle);
+  opacity: 0.75;
+}
+
+.match-timer--running {
+  opacity: 1;
 }
 
 .score-values {

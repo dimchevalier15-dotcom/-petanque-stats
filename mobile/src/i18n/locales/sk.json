@@ -599,6 +599,10 @@
   "play": {
     "end": "Mèna",
     "score": "Skóre",
+    "timer": {
+      "start": "Spustiť stopky",
+      "pause": "Pozastaviť stopky"
+    },
     "endScore": {
       "title": "Koniec mèny",
       "earlyHint": "Neodohrané gule sa do štatistík nezapočítajú.",
