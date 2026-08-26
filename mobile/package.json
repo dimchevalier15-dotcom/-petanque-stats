@@ -1,6 +1,6 @@
 {
   "name": "petanque-analytics-mobile",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "build:android": "vite build && cap sync android",
     "android:sync": "cap sync android",
     "android:open": "cap open android",
-    "android:bundle": "vite build && cap sync android && npm run android:bundle:gradle",
+    "android:bundle": "vite build && node scripts/verify-production-api-url.mjs && cap sync android && npm run android:bundle:gradle",
     "android:bundle:gradle": "cd android && ./gradlew bundleRelease",
     "assets:android": "capacitor-assets generate --android --assetPath resources --iconBackgroundColor '#FFFFFF' --iconBackgroundColorDark '#FFFFFF' --splashBackgroundColor '#FFFFFF' --splashBackgroundColorDark '#FFFFFF'"
   },
