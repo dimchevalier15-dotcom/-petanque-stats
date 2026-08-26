@@ -1,6 +1,6 @@
 <template>
   <AppPage>
-    <PageHeader :title="title" :back-to="backTo" />
+    <PageHeader :title="title"/>
 
     <article class="legal-doc app-card">
       <p v-if="updatedAt" class="updated">{{ updatedAt }}</p>
@@ -31,10 +31,6 @@ defineProps<{
 
 const { t } = useI18n()
 const auth = useAuthStore()
-
-const backTo = computed<RouteLocationRaw>(() =>
-  auth.isAuthenticated ? { name: 'settings' } : { name: 'login' },
-)
 </script>
 
 <style scoped>
