@@ -481,7 +481,17 @@
     },
     "admin": {
       "title": "Administrácia",
-      "competitions": "Spravovať súťaže"
+      "competitions": "Spravovať súťaže",
+      "impersonate": {
+        "title": "Režim impersonate",
+        "hint": "Zobrazte štatistiky a históriu zápasov hráča, akoby ste boli on.",
+        "searchLabel": "Hráč",
+        "searchPlaceholder": "Hľadať (min. 3 znaky)",
+        "empty": "Žiadny hráč nezodpovedá hľadaniu.",
+        "start": "Zobraziť ako tohto hráča",
+        "stop": "Ukončiť režim impersonate",
+        "active": "Aktívny režim: {name}"
+      }
     },
     "delete": {
       "title": "Odstrániť účet",
@@ -494,6 +504,10 @@
     }
   },
   "admin": {
+    "impersonate": {
+      "banner": "Režim impersonate — {name}",
+      "stop": "Ukončiť"
+    },
     "competitions": {
       "title": "Súťaže",
       "addTitle": "Pridať súťaž",

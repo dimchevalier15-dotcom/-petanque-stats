@@ -481,7 +481,17 @@
     },
     "admin": {
       "title": "Administration",
-      "competitions": "Gérer les compétitions"
+      "competitions": "Gérer les compétitions",
+      "impersonate": {
+        "title": "Mode impersonate",
+        "hint": "Consultez les statistiques et l'historique d'un joueur comme s'il s'agissait de votre compte.",
+        "searchLabel": "Joueur",
+        "searchPlaceholder": "Rechercher (3 caractères min.)",
+        "empty": "Aucun joueur ne correspond à votre recherche.",
+        "start": "Voir en tant que ce joueur",
+        "stop": "Quitter le mode impersonate",
+        "active": "Mode actif : {name}"
+      }
     },
     "delete": {
       "title": "Supprimer le compte",
@@ -494,6 +504,10 @@
     }
   },
   "admin": {
+    "impersonate": {
+      "banner": "Mode impersonate — {name}",
+      "stop": "Quitter"
+    },
     "competitions": {
       "title": "Compétitions",
       "addTitle": "Ajouter une compétition",

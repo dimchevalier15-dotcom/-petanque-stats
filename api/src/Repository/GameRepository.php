@@ -27,7 +27,7 @@ final class GameRepository extends ServiceEntityRepository
      *
      * @return array{0:int,1:list<Game>}
      */
-    public function findHistoryForAccount(int $userId, ?int $playerId, int $page, int $pageSize): array
+    public function findHistoryForAccount(?int $userId, ?int $playerId, int $page, int $pageSize): array
     {
         $page = max(1, $page);
         $pageSize = max(1, $pageSize);
@@ -50,19 +50,29 @@ final class GameRepository extends ServiceEntityRepository
         return [$total, $items];
     }
 
-    private function createHistoryForAccountQueryBuilder(int $userId, ?int $playerId): \Doctrine\ORM\QueryBuilder
+    private function createHistoryForAccountQueryBuilder(?int $userId, ?int $playerId): \Doctrine\ORM\QueryBuilder
     {
         $qb = $this->createQueryBuilder('g')
-            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
-            ->leftJoin('g.createdBy', 'creator')
-            ->setParameter('userId', $userId);
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g');
+
+        $conditions = [];
+
+        if ($userId !== null) {
+            $qb->leftJoin('g.createdBy', 'creator');
+            $conditions[] = 'creator.id = :userId';
+            $qb->setParameter('userId', $userId);
+        }
 
         if ($playerId !== null) {
             $qb->leftJoin('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g AND gp.player = :playerId')
-                ->where('creator.id = :userId OR gp.player IS NOT NULL')
                 ->setParameter('playerId', $playerId);
+            $conditions[] = 'gp.player IS NOT NULL';
+        }
+
+        if ($conditions === []) {
+            $qb->where('1 = 0');
         } else {
-            $qb->where('creator.id = :userId');
+            $qb->where($qb->expr()->orX(...$conditions));
         }
 
         return $qb;

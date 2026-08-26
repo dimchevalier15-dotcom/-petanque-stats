@@ -297,7 +297,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter, type RouteLocationRaw } from 'vue-router'
 import Button from 'primevue/button'
@@ -326,9 +326,11 @@ import type { MatchType } from '../models/Match'
 import { DISTANCE_BUCKET_KEYS, type DistanceBucketKey, type PlayerStats } from '../models/PlayerStats'
 import { competitionsService } from '../services/competitions'
 import { statsService } from '../services/stats'
+import { useImpersonationStore } from '../stores/impersonation'
 
 const { t } = useI18n()
 const router = useRouter()
+const impersonation = useImpersonationStore()
 
 const loading = ref(true)
 const refreshing = ref(false)
@@ -517,6 +519,15 @@ onMounted(async () => {
   }
   await load()
 })
+
+watch(
+  () => impersonation.player?.id ?? null,
+  (next, prev) => {
+    if (next !== prev && stats.value) {
+      load({ refresh: true })
+    }
+  },
+)
 </script>
 
 <style scoped>

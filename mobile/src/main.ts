@@ -9,6 +9,7 @@ import ToastService from 'primevue/toastservice'
 import router from './router'
 import { i18n } from './i18n'
 import { useAuthStore } from './stores/auth'
+import { useImpersonationStore } from './stores/impersonation'
 
 import 'primeicons/primeicons.css'
 import './assets/theme.css'
@@ -24,6 +25,7 @@ app.use(ToastService)
 // Restore session from local storage if possible
 const auth = useAuthStore(pinia)
 auth.initFromStorage()
+useImpersonationStore(pinia).initFromStorage()
 
 app.use(PrimeVue, {
   theme: {

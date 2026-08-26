@@ -19,13 +19,12 @@ use App\Repository\GameBallRepository;
 use App\Repository\GameEndRepository;
 use App\Repository\GameParticipantRepository;
 use App\Repository\GameRepository;
-use App\Service\Auth\CurrentUserService;
 use App\ValueObject\DateRange;
 
 final class PlayerStatsService
 {
     public function __construct(
-        private CurrentUserService $currentUser,
+        private PlayerViewContextResolver $playerViewContext,
         private GameRepository $games,
         private GameEndRepository $ends,
         private GameParticipantRepository $participants,
@@ -41,15 +40,16 @@ final class PlayerStatsService
         ?GameType $type = null,
         ?DistanceBucket $distanceBucket = null,
         ?int $competitionId = null,
+        ?int $impersonatePlayerId = null,
     ): PlayerStatsResponse {
-        $me = $this->currentUser->meFromToken($token);
-        $playerId = $me->playerId;
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+        $playerId = $context->playerId;
 
         if ($playerId === null) {
             return $this->emptyResponse('no_player', null, null);
         }
 
-        $displayName = $this->buildDisplayName($me->nickname, $me->firstName, $me->lastName);
+        $displayName = $context->displayName;
         $games = $this->games->findCompletedGamesForPlayer((int) $playerId, $nature, $dateRange, $type, $competitionId);
 
         if ($games === []) {
@@ -387,16 +387,6 @@ final class PlayerStatsService
         }
 
         return false;
-    }
-
-    private function buildDisplayName(?string $nickname, ?string $firstName, ?string $lastName): ?string
-    {
-        $full = trim(((string) $firstName).' '.((string) $lastName));
-        if ($nickname !== null && $nickname !== '') {
-            return $full !== '' ? $nickname.' ('.$full.')' : $nickname;
-        }
-
-        return $full !== '' ? $full : null;
     }
 
     private function emptyResponse(string $status, ?int $playerId, ?string $displayName): PlayerStatsResponse

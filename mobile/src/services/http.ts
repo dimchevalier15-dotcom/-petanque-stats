@@ -6,11 +6,17 @@ const api = axios.create({
   baseURL: getApiBaseUrl(),
 })
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(async (config) => {
   const token = localStorage.getItem('auth_token')
   if (token) {
     config.headers = config.headers ?? {}
     config.headers.Authorization = `Bearer ${token}`
+  }
+  const { useImpersonationStore } = await import('../stores/impersonation')
+  const impersonation = useImpersonationStore()
+  if (impersonation.player) {
+    config.headers = config.headers ?? {}
+    config.headers['X-Impersonate-Player-Id'] = String(impersonation.player.id)
   }
   return config
 })

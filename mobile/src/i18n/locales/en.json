@@ -481,7 +481,17 @@
     },
     "admin": {
       "title": "Administration",
-      "competitions": "Manage competitions"
+      "competitions": "Manage competitions",
+      "impersonate": {
+        "title": "Impersonate mode",
+        "hint": "View a player's stats and match history as if you were that player.",
+        "searchLabel": "Player",
+        "searchPlaceholder": "Search (3 characters min.)",
+        "empty": "No player matches your search.",
+        "start": "View as this player",
+        "stop": "Exit impersonate mode",
+        "active": "Active mode: {name}"
+      }
     },
     "delete": {
       "title": "Delete account",
@@ -494,6 +504,10 @@
     }
   },
   "admin": {
+    "impersonate": {
+      "banner": "Impersonate mode — {name}",
+      "stop": "Exit"
+    },
     "competitions": {
       "title": "Competitions",
       "addTitle": "Add competition",

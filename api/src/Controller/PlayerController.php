@@ -12,6 +12,7 @@ use App\Enum\DistanceBucket;
 use App\Enum\GameType;
 use App\Enum\MatchNature;
 use App\Http\StatsDateRangeResolver;
+use App\Security\ImpersonationResolver;
 use App\Service\PlayerService;
 use App\Service\PlayerStatsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,6 +27,7 @@ final class PlayerController extends AbstractController
     public function __construct(
         private PlayerService $playerService,
         private PlayerStatsService $playerStatsService,
+        private ImpersonationResolver $impersonation,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {
@@ -113,7 +115,20 @@ final class PlayerController extends AbstractController
             $competitionId = (int) $competitionParam;
         }
 
-        $res = $this->playerStatsService->statsForToken($token, $nature, $dateRange, $type, $distance, $competitionId);
+        try {
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->playerStatsService->statsForToken(
+                $token,
+                $nature,
+                $dateRange,
+                $type,
+                $distance,
+                $competitionId,
+                $impersonatePlayerId,
+            );
+        } catch (\App\Service\Auth\InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
         $json = $this->serializer->serialize($res, 'json');
         return new JsonResponse($json, 200, [], true);
     }

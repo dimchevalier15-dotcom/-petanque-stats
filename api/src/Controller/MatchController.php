@@ -10,6 +10,7 @@ use App\Dto\Request\UpdateMatchContextRequest;
 use App\Entity\Game;
 use App\Entity\User;
 use App\Security\Voter\GameVoter;
+use App\Security\ImpersonationResolver;
 use App\Service\MatchContextService;
 use App\Service\MatchHistoryService;
 use App\Service\MatchRecordingService;
@@ -36,6 +37,7 @@ final class MatchController extends AbstractController
         private MatchSummaryService $summary,
         private MatchHistoryService $history,
         private MatchContextService $context,
+        private ImpersonationResolver $impersonation,
     ) {}
 
     #[Route('/api/matches', name: 'api_matches_create', methods: ['POST'])]
@@ -147,7 +149,12 @@ final class MatchController extends AbstractController
         $page = $request->query->get('page') !== null ? max(1, (int) $request->query->get('page')) : 1;
         $size = $request->query->get('size') !== null ? max(1, (int) $request->query->get('size')) : 20;
 
-        $res = $this->history->historyForToken($token, $page, $size);
+        try {
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->history->historyForToken($token, $page, $size, $impersonatePlayerId);
+        } catch (\App\Service\Auth\InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
         $json = $this->serializer->serialize($res, 'json');
 
         return new JsonResponse($json, 200, [], true);

@@ -104,6 +104,28 @@ final class MatchHistoryServiceTest extends KernelTestCase
         self::assertSame('final', $res->items[0]->competitionStage);
     }
 
+    public function testHistoryCanBeLoadedForImpersonatedPlayer(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+
+        $suffix = bin2hex(random_bytes(4));
+        $coach = new User('coach-history-'.$suffix.'@test.local');
+        $coach->setPassword('hash');
+        $this->em->persist($coach);
+        $this->em->flush();
+        $coachToken = $this->jwtEncoder->encode(['username' => $coach->getEmail(), 'sub' => (string) $coach->getId()]);
+
+        [$matchId] = $this->createHeadToHeadForPlayers($playerId, $opponentId);
+        $this->completeHeadToHead($matchId, $playerId, $opponentId, 3);
+
+        $res = $this->history->historyForToken($coachToken, 1, 20, $playerId);
+
+        self::assertSame(1, $res->total);
+        self::assertSame($matchId, $res->items[0]->id);
+        self::assertTrue($res->items[0]->victory);
+    }
+
     public function testHistoryReturnsEmptyWhenAccountHasNoLinkedPlayerAndNoCreatedMatches(): void
     {
         $email = sprintf('history-no-player-%s@test.local', bin2hex(random_bytes(4)));

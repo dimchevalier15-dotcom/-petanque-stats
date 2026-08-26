@@ -10,24 +10,35 @@ use App\Entity\Game;
 use App\Repository\GameEndRepository;
 use App\Repository\GameRepository;
 use App\Repository\GameParticipantRepository;
-use App\Service\Auth\CurrentUserService;
+use App\Service\Auth\InvalidTokenException;
 
 final class MatchHistoryService
 {
     public function __construct(
-        private CurrentUserService $currentUser,
+        private PlayerViewContextResolver $playerViewContext,
         private GameRepository $games,
         private GameEndRepository $ends,
         private GameParticipantRepository $participants,
     ) {
     }
 
-    public function historyForToken(string $token, int $page = 1, int $pageSize = 20): MatchHistoryResponse
-    {
-        $me = $this->currentUser->meFromToken($token);
-        $playerId = $me->playerId;
+    /**
+     * @throws InvalidTokenException
+     */
+    public function historyForToken(
+        string $token,
+        int $page = 1,
+        int $pageSize = 20,
+        ?int $impersonatePlayerId = null,
+    ): MatchHistoryResponse {
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
 
-        [$total, $games] = $this->games->findHistoryForAccount($me->id, $playerId, $page, $pageSize);
+        [$total, $games] = $this->games->findHistoryForAccount(
+            $context->historyUserId,
+            $context->playerId,
+            $page,
+            $pageSize,
+        );
 
         $items = [];
         foreach ($games as $g) {
@@ -38,7 +49,7 @@ final class MatchHistoryService
             $scoreA = $sum['A'] ?? 0;
             $scoreB = $sum['B'] ?? 0;
             $winner = $scoreA >= $scoreB ? 'A' : 'B';
-            $victory = $this->resolveVictory($g, $playerId, $winner);
+            $victory = $this->resolveVictory($g, $context->playerId, $winner);
 
             $items[] = new MatchHistoryItemResponse(
                 id: (int) $g->getId(),

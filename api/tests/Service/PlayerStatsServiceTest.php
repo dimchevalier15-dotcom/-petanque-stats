@@ -205,6 +205,28 @@ final class PlayerStatsServiceTest extends KernelTestCase
         self::assertSame([], $res->byDistance);
     }
 
+    public function testStatsCanBeLoadedForImpersonatedPlayer(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+
+        $suffix = bin2hex(random_bytes(4));
+        $coach = new User('coach-stats-'.$suffix.'@test.local');
+        $coach->setPassword('hash');
+        $this->em->persist($coach);
+        $this->em->flush();
+        $coachToken = $this->jwtEncoder->encode(['username' => $coach->getEmail(), 'sub' => (string) $coach->getId()]);
+
+        $this->createAndCompleteMatch($playerId, $opponentId, winner: 'A', points: 2, ballNote: 2);
+
+        $res = $this->stats->statsForToken($coachToken, null, null, null, null, null, $playerId);
+
+        self::assertSame('ok', $res->status);
+        self::assertSame($playerId, $res->playerId);
+        self::assertSame(1, $res->summary->matchesPlayed);
+        self::assertSame(2.0, $res->overall?->average);
+    }
+
     public function testStatsFiltersByCompetition(): void
     {
         [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();

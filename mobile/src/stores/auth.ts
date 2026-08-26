@@ -113,6 +113,9 @@ export const useAuthStore = defineStore('auth', {
       this.token = null
       this.user = null
       localStorage.removeItem(TOKEN_KEY)
+      import('./impersonation').then(({ useImpersonationStore }) => {
+        useImpersonationStore().clear()
+      })
     },
   },
 })

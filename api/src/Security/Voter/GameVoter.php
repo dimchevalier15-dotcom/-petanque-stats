@@ -8,6 +8,9 @@ use App\Entity\Game;
 use App\Entity\User;
 use App\Repository\GameParticipantRepository;
 use App\Repository\PlayerRepository;
+use App\Security\AdminAccess;
+use App\Security\ImpersonationResolver;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -16,6 +19,8 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  * Grants access to a match when the authenticated user is either:
  * - the match creator (owner), or
  * - linked to a player who participates in the match.
+ *
+ * VIEW also allows admin impersonation of a participating player.
  */
 final class GameVoter extends Voter
 {
@@ -25,6 +30,7 @@ final class GameVoter extends Voter
     public function __construct(
         private PlayerRepository $players,
         private GameParticipantRepository $participants,
+        private RequestStack $requestStack,
     ) {
     }
 
@@ -48,7 +54,20 @@ final class GameVoter extends Voter
             return true;
         }
 
-        return $this->isParticipant($game, $user);
+        if ($attribute === self::VIEW) {
+            $impersonatePlayerId = $this->resolveImpersonatePlayerId($user);
+            if ($impersonatePlayerId !== null) {
+                $player = $this->players->find($impersonatePlayerId);
+                $linkedUser = $player?->getUser();
+                if ($linkedUser !== null && $this->isOwner($game, $linkedUser)) {
+                    return true;
+                }
+
+                return $this->isGameParticipant($game, $impersonatePlayerId);
+            }
+        }
+
+        return $this->isLinkedParticipant($game, $user);
     }
 
     private function isOwner(Game $game, User $user): bool
@@ -61,15 +80,39 @@ final class GameVoter extends Voter
         return (int) $createdBy->getId() === (int) $user->getId();
     }
 
-    private function isParticipant(Game $game, User $user): bool
+    private function isLinkedParticipant(Game $game, User $user): bool
     {
         $player = $this->players->findOneByUserId((int) $user->getId());
         if ($player === null || $player->getId() === null) {
             return false;
         }
 
+        return $this->isGameParticipant($game, (int) $player->getId());
+    }
+
+    private function isGameParticipant(Game $game, int $playerId): bool
+    {
         $participantIds = $this->participants->findAllPlayerIdsByGame($game);
 
-        return in_array((int) $player->getId(), $participantIds, true);
+        return in_array($playerId, $participantIds, true);
+    }
+
+    private function resolveImpersonatePlayerId(User $user): ?int
+    {
+        if (!AdminAccess::isAdmin($user)) {
+            return null;
+        }
+
+        $request = $this->requestStack->getCurrentRequest();
+        if ($request === null) {
+            return null;
+        }
+
+        $header = $request->headers->get(ImpersonationResolver::HEADER);
+        if ($header === null || $header === '' || !is_numeric($header) || (int) $header <= 0) {
+            return null;
+        }
+
+        return (int) $header;
     }
 }

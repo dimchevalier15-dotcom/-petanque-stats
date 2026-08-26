@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
@@ -46,10 +46,12 @@ import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
 import { useMatchHistoryContext } from '../composables/useMatchHistoryContext'
 import { matchesService } from '../services/matches'
+import { useImpersonationStore } from '../stores/impersonation'
 import type { MatchHistoryItem, MatchHistoryPage } from '../models/MatchHistory'
 
 const { t, d } = useI18n()
 const router = useRouter()
+const impersonation = useImpersonationStore()
 const { contextLabels, hasContext } = useMatchHistoryContext(t)
 
 const items = ref<MatchHistoryItem[]>([])
@@ -105,6 +107,17 @@ function open(id: number) {
 }
 
 onMounted(load)
+
+watch(
+  () => impersonation.player?.id ?? null,
+  (next, prev) => {
+    if (next !== prev) {
+      items.value = []
+      page.value = 1
+      load()
+    }
+  },
+)
 </script>
 
 <style scoped>
