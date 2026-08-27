@@ -1153,5 +1153,28 @@
         "noDataInPeriodHint": "Élargissez la période ou commencez une nouvelle séance."
       }
     }
+  },
+  "live": {
+    "action": "Suivre en direct",
+    "share": {
+      "title": "Partager le match en direct",
+      "hint": "Envoyez ce lien pour permettre à vos spectateurs de suivre le match en temps réel.",
+      "copy": "Copier le lien",
+      "copied": "Lien copié",
+      "native": "Partager"
+    },
+    "view": {
+      "title": "Match en direct",
+      "recapTitle": "Récapitulatif du match",
+      "loading": "Chargement…",
+      "notFound": "Ce match live n'existe pas ou n'est plus disponible.",
+      "finished": "Match terminé",
+      "winner": "Victoire {team}",
+      "lastUpdate": "Mis à jour à {time}",
+      "endsRecap": "Détail des mènes",
+      "endResult": "{winner} +{points}",
+      "teamA": "Équipe A",
+      "teamB": "Équipe B"
+    }
   }
 }

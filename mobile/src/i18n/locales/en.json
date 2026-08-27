@@ -1128,5 +1128,28 @@
         "noDataInPeriodHint": "Widen the period or start a new session."
       }
     }
+  },
+  "live": {
+    "action": "Go live",
+    "share": {
+      "title": "Share live match",
+      "hint": "Send this link so spectators can follow the match in real time.",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "native": "Share"
+    },
+    "view": {
+      "title": "Live match",
+      "recapTitle": "Match recap",
+      "loading": "Loading…",
+      "notFound": "This live match does not exist or is no longer available.",
+      "finished": "Match finished",
+      "winner": "{team} wins",
+      "lastUpdate": "Updated at {time}",
+      "endsRecap": "End-by-end summary",
+      "endResult": "{winner} +{points}",
+      "teamA": "Team A",
+      "teamB": "Team B"
+    }
   }
 }

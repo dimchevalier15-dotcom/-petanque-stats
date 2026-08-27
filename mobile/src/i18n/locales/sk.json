@@ -1133,5 +1133,28 @@
         "noDataInPeriodHint": "Rozšírte obdobie alebo začnite novú sezónu."
       }
     }
+  },
+  "live": {
+    "action": "Sledovať naživo",
+    "share": {
+      "title": "Zdieľať zápas naživo",
+      "hint": "Pošlite tento odkaz, aby diváci mohli sledovať zápas v reálnom čase.",
+      "copy": "Kopírovať odkaz",
+      "copied": "Odkaz skopírovaný",
+      "native": "Zdieľať"
+    },
+    "view": {
+      "title": "Zápas naživo",
+      "recapTitle": "Rekapitulácia zápasu",
+      "loading": "Načítava sa…",
+      "notFound": "Tento živý zápas neexistuje alebo už nie je dostupný.",
+      "finished": "Zápas ukončený",
+      "winner": "Víťazstvo {team}",
+      "lastUpdate": "Aktualizované o {time}",
+      "endsRecap": "Prehľad mien",
+      "endResult": "{winner} +{points}",
+      "teamA": "Tím A",
+      "teamB": "Tím B"
+    }
   }
 }

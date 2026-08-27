@@ -62,6 +62,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/matches/history', name: 'matchHistory', component: MatchHistoryView, meta: { layout: 'main' } },
   { path: '/matches/guidelines', name: 'guidelines', component: GuidelinessView, meta: { layout: 'focus' } },
   { path: '/matches/:id/score', name: 'matchScore', component: () => import('../views/MatchPlayView.vue'), meta: { layout: 'play' } },
+  { path: '/live/:uuid', name: 'liveMatch', component: () => import('../views/LiveMatchView.vue'), meta: { layout: 'focus' } },
   { path: '/matches/:id/summary', name: 'matchSummary', component: () => import('../views/MatchSummaryView.vue'), meta: { layout: 'focus' } },
   { path: '/matches/:id/context', name: 'matchContext', component: () => import('../views/MatchContextView.vue'), meta: { layout: 'focus' } },
   { path: '/stats', name: 'myStats', component: MyStatsView, meta: { layout: 'main' } },

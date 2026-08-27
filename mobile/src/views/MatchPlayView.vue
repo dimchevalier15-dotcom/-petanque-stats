@@ -328,6 +328,15 @@
           <Button class="validate-end-btn" size="small" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
           <Button class="cancel-end-btn" size="small" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" outlined @click="openCancelDialog" />
         </div>
+        <Button
+          class="live-btn"
+          size="small"
+          :label="t('live.action')"
+          icon="pi pi-eye"
+          :severity="liveIsActive ? 'success' : 'secondary'"
+          outlined
+          @click="openLiveShareDialog"
+        />
         <Button class="finish-btn" size="small" :label="t('play.actions.finish')" icon="pi pi-flag" severity="secondary" text @click="openFinishDialog" />
       </footer>
     </div>
@@ -405,6 +414,34 @@
         </div>
       </div>
     </Dialog>
+
+    <Dialog
+      v-model:visible="liveShareDialog"
+      :modal="true"
+      :header="t('live.share.title')"
+      :dismissableMask="true"
+      class="play-dialog live-share-dialog"
+    >
+      <div class="live-share-content">
+        <p>{{ t('live.share.hint') }}</p>
+        <InputText v-if="liveUrl" :model-value="liveUrl" readonly class="live-share-url" />
+        <div class="actions">
+          <Button
+            v-if="canNativeShare"
+            :label="t('live.share.native')"
+            icon="pi pi-share-alt"
+            @click="shareLiveLink"
+          />
+          <Button
+            :label="liveLinkCopied ? t('live.share.copied') : t('live.share.copy')"
+            icon="pi pi-copy"
+            severity="secondary"
+            outlined
+            @click="copyLiveLink"
+          />
+        </div>
+      </div>
+    </Dialog>
   </section>
 </template>
 
@@ -436,7 +473,9 @@ import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
 import { playersService } from '../services/players'
 import { useAuthStore } from '../stores/auth'
 import type { MatchPlayState, MatchSetup } from '../models/MatchDraft'
+import type { LiveMatchData } from '../models/LiveMatch'
 import { clearMatchDraft, loadMatchDraft, saveMatchDraft } from '../services/matchDraftStorage'
+import { useLiveMatchSync } from '../composables/useLiveMatchSync'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -533,10 +572,14 @@ const setup = session?.setup ?? {
 }
 
 const initialPlayState = session?.initial
+const latestPlayState = ref<MatchPlayState | null>(initialPlayState ?? null)
+let syncLiveOnPersist: (() => Promise<void>) | null = null
 
 function persistPlayState(state: MatchPlayState): void {
   if (!session) return
+  latestPlayState.value = state
   saveMatchDraft(session.setup, state, auth.user?.id ?? null)
+  void syncLiveOnPersist?.()
 }
 
 const context = ref<MatchContext | null>(null)
@@ -931,6 +974,8 @@ function goNext() { goNextEnd() }
 
 async function onFinish() {
   const payload: CompleteMatchRequestDto = toSubmission()
+  await syncLiveMatch()
+  await finishLiveMatch()
   await matchesService.complete(matchId, payload)
   clearMatchDraft()
   router.push({ name: 'matchSummary', params: { id: matchId } })
@@ -938,6 +983,83 @@ async function onFinish() {
 
 const names = ref<Record<number, string>>({})
 const shortNames = ref<Record<number, string>>({})
+
+function buildLiveMatchData(state: MatchPlayState): LiveMatchData {
+  return {
+    type: setup.type,
+    targetScore: setup.targetScore,
+    statisticsMode: setup.statisticsMode,
+    teamA: setup.teamA,
+    teamB: setup.teamB,
+    trackedPlayers: setup.trackedPlayers,
+    defaultShotTypes: setup.defaultShotTypes,
+    startingRoles: setup.startingRoles,
+    currentEndIndex: state.currentEndIndex,
+    ends: state.ends,
+    distanceEstimate: state.distanceEstimate,
+    currentRoles: state.currentRoles,
+    substitutions: state.substitutions,
+    playerNames: names.value,
+    shortPlayerNames: shortNames.value,
+    teamALabel: teamALabel.value,
+    teamBLabel: teamBLabel.value,
+  }
+}
+
+const {
+  isActive: liveIsActive,
+  liveUrl,
+  startLive,
+  sync: syncLiveMatch,
+  finishLive: finishLiveMatch,
+  verifyRemoteStatus: verifyLiveMatchStatus,
+} = useLiveMatchSync(matchId, () => {
+  const state = latestPlayState.value ?? {
+    currentEndIndex: currentEndIndex.value,
+    ends,
+    distanceEstimate: distanceEstimate.value,
+    currentRoles: {},
+    substitutions,
+  }
+  return buildLiveMatchData(state)
+})
+syncLiveOnPersist = syncLiveMatch
+
+const liveShareDialog = ref(false)
+const liveLinkCopied = ref(false)
+const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+
+async function openLiveShareDialog(): Promise<void> {
+  liveLinkCopied.value = false
+  if (!liveIsActive.value) {
+    await startLive()
+  }
+  if (liveUrl.value) {
+    liveShareDialog.value = true
+  }
+}
+
+async function copyLiveLink(): Promise<void> {
+  if (!liveUrl.value) return
+  try {
+    await navigator.clipboard.writeText(liveUrl.value)
+    liveLinkCopied.value = true
+  } catch {
+    liveLinkCopied.value = false
+  }
+}
+
+async function shareLiveLink(): Promise<void> {
+  if (!liveUrl.value || !canNativeShare) return
+  try {
+    await navigator.share({
+      title: t('live.share.title'),
+      url: liveUrl.value,
+    })
+  } catch {
+    // User cancelled or share failed — no blocking error.
+  }
+}
 
 function rememberPlayerName(player: Player): void {
   const full = `${player.firstName} ${player.lastName}`.trim()
@@ -968,6 +1090,14 @@ onMounted(async () => {
     }
   } catch {
     // ignore errors; fallback labels remain
+  }
+
+  if (liveIsActive.value) {
+    void verifyLiveMatchStatus().then(() => {
+      if (liveIsActive.value) {
+        void syncLiveMatch()
+      }
+    })
   }
 })
 </script>
@@ -1677,6 +1807,28 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--app-space-sm);
+}
+
+.live-share-content {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.live-share-content p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+}
+
+.live-share-url {
+  width: 100%;
+}
+
+.live-share-content .actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .form-chart-content {
