@@ -19,14 +19,6 @@
         <span class="ends-meta">{{ t('summary.ends', { n: summary.ends }) }}</span>
       </div>
 
-      <section v-if="comparisonChart" class="panel app-card">
-        <h3>{{ t('summary.sections.comparison') }}</h3>
-        <p class="panel-hint">{{ t('summary.comparison.hint') }}</p>
-        <div class="chart-box chart-comparison">
-          <Chart type="bar" :data="comparisonChart.data" :options="comparisonChart.options" />
-        </div>
-      </section>
-
       <MatchSummaryEndGrid
         :players="summary.players"
         :end-indexes="summary.endIndexes ?? []"
@@ -69,6 +61,14 @@
           />
         </section>
       </template>
+
+      <section v-if="comparisonChart" class="panel app-card">
+        <h3>{{ t('summary.sections.comparison') }}</h3>
+        <p class="panel-hint">{{ t('summary.comparison.hint') }}</p>
+        <div class="chart-box chart-comparison">
+          <Chart type="bar" :data="comparisonChart.data" :options="comparisonChart.options" />
+        </div>
+      </section>
 
       <section v-if="contextSummary.length > 0" class="panel app-card context-panel">
         <h3>{{ t('context.summaryTitle') }}</h3>
