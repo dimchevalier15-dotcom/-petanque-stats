@@ -62,6 +62,7 @@ final class MatchContextService
         }
 
         $game->setTerrainType($req->terrainType);
+        $this->applyPlayedAt($game, $req->playedAt);
 
         $this->em->flush();
 
@@ -80,7 +81,27 @@ final class MatchContextService
             competitionName: $game->getCompetitionName(),
             competitionStage: $game->getCompetitionStage(),
             terrainType: $game->getTerrainType(),
+            playedAt: $game->getPlayedAt()->format('Y-m-d'),
         );
+    }
+
+    private function applyPlayedAt(Game $game, ?string $playedAt): void
+    {
+        if ($playedAt === null || $playedAt === '') {
+            return;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('Y-m-d', $playedAt);
+        if ($date === false || $date->format('Y-m-d') !== $playedAt) {
+            return;
+        }
+
+        $current = $game->getPlayedAt();
+        $game->setPlayedAt($current->setDate(
+            (int) $date->format('Y'),
+            (int) $date->format('n'),
+            (int) $date->format('j'),
+        ));
     }
 
     private function normalizeOptionalString(?string $value): ?string

@@ -58,9 +58,10 @@
     "titleAdd": "Add context",
     "titleEdit": "Edit context",
     "summaryTitle": "Context",
-    "hint": "All fields are optional.",
+    "hint": "All fields are optional. The date is useful when you log a match later from a video.",
     "placeholders": { "select": "Select" },
     "fields": {
+      "playedAt": "Match date",
       "comment": "Comment",
       "teamAName": "Team A name",
       "teamBName": "Team B name",

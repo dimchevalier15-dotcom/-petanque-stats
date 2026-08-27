@@ -196,7 +196,7 @@ final class PlayerStatsService
             $avg = round($raw['sum'] / $raw['count'], 2);
             $points[] = new PlayerStatsEvolutionPointResponse(
                 matchId: $gameId,
-                date: $game->getCreatedAt()->format(DATE_ATOM),
+                date: $game->getPlayedAt()->format(DATE_ATOM),
                 average: $avg,
                 victory: $this->didPlayerWin($game, $playerId),
             );
@@ -328,6 +328,11 @@ final class PlayerStatsService
                 bucket: $bucket,
                 ballCount: (int) $raw['count'],
                 average: round($raw['sum'] / $raw['count'], 2),
+                p2: (int) $raw['p2'],
+                p1: (int) $raw['p1'],
+                p0: (int) $raw['p0'],
+                m1: (int) $raw['m1'],
+                m2: (int) $raw['m2'],
             );
         }
 

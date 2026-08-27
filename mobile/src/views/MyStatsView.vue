@@ -155,6 +155,7 @@
             :severity="avgSeverity(stats.overall.average)"
           />
           <span class="hero-meta">{{ t('stats.ballsTracked', { n: stats.summary.totalBalls }) }}</span>
+          <ShotSuccessRate class="hero-success" :breakdown="stats.overall" />
 
           <details v-if="showAverageDetails" class="avg-details">
             <summary>{{ t('stats.details.title') }}</summary>
@@ -166,8 +167,8 @@
                     :value="formatAvg(stats.point.average)"
                     :severity="avgSeverity(stats.point.average)"
                   />
-                  <span v-if="shotSuccessRate(stats.point) !== null" class="avg-detail-meta">
-                    {{ t('stats.successRate.value', { rate: shotSuccessRate(stats.point) }) }}
+                  <span v-if="successWithMasters(stats.point)" class="avg-detail-meta">
+                    {{ successWithMasters(stats.point) }}
                   </span>
                   <span class="avg-detail-meta">
                     {{ t('stats.details.balls', { n: breakdownBallCount(stats.point) }) }}
@@ -181,8 +182,8 @@
                     :value="formatAvg(stats.tir.average)"
                     :severity="avgSeverity(stats.tir.average)"
                   />
-                  <span v-if="shotSuccessRate(stats.tir) !== null" class="avg-detail-meta">
-                    {{ t('stats.successRate.value', { rate: shotSuccessRate(stats.tir) }) }}
+                  <span v-if="successWithMasters(stats.tir)" class="avg-detail-meta">
+                    {{ successWithMasters(stats.tir) }}
                   </span>
                   <span class="avg-detail-meta">
                     {{ t('stats.details.balls', { n: breakdownBallCount(stats.tir) }) }}
@@ -216,7 +217,7 @@
                 <span>{{ t('play.shots.point') }}</span>
                 <Tag :value="formatAvg(stats.point.average)" :severity="avgSeverity(stats.point.average)" />
               </div>
-              <ShotSuccessRate :rate="shotSuccessRate(stats.point)" />
+              <ShotSuccessRate :breakdown="stats.point" />
               <div v-if="pointDistributionChart" class="chart-box chart-bar-sm">
                 <Chart type="bar" :data="pointDistributionChart.data" :options="pointDistributionChart.options" />
               </div>
@@ -228,7 +229,7 @@
                 <span>{{ t('play.shots.tir') }}</span>
                 <Tag :value="formatAvg(stats.tir.average)" :severity="avgSeverity(stats.tir.average)" />
               </div>
-              <ShotSuccessRate :rate="shotSuccessRate(stats.tir)" />
+              <ShotSuccessRate :breakdown="stats.tir" />
               <div v-if="tirDistributionChart" class="chart-box chart-bar-sm">
                 <Chart type="bar" :data="tirDistributionChart.data" :options="tirDistributionChart.options" />
               </div>
@@ -271,6 +272,7 @@
               <span class="breakdown-meta">
                 {{ t('stats.byDistance.meta', { balls: item.ballCount }) }}
               </span>
+              <ShotSuccessRate :breakdown="distanceBreakdown(item)" />
             </li>
           </ul>
         </section>
@@ -309,7 +311,7 @@ import AppPage from '../components/layout/AppPage.vue'
 import ShotSuccessRate from '../components/stats/ShotSuccessRate.vue'
 import StatsCollapsibleFilters from '../components/stats/StatsCollapsibleFilters.vue'
 import StatsDateRangeFilter from '../components/stats/StatsDateRangeFilter.vue'
-import { shotSuccessRate } from '../composables/matchSuccessRate'
+import { formatMasters, shotMasters, shotSuccessRate } from '../composables/matchSuccessRate'
 import {
   avgSeverity,
   breakdownBallCount,
@@ -323,7 +325,8 @@ import { useStatsDateRange, toInputDate } from '../composables/useStatsDateRange
 import type { MatchNature } from '../models/MatchContext'
 import { competitionLabel, type Competition } from '../models/Competition'
 import type { MatchType } from '../models/Match'
-import { DISTANCE_BUCKET_KEYS, type DistanceBucketKey, type PlayerStats } from '../models/PlayerStats'
+import { DISTANCE_BUCKET_KEYS, type DistanceBucketKey, type PlayerStats, type PlayerStatsByDistance } from '../models/PlayerStats'
+import type { MatchSummaryShotBreakdown } from '../models/MatchSummary'
 import { competitionsService } from '../services/competitions'
 import { statsService } from '../services/stats'
 import { useImpersonationStore } from '../stores/impersonation'
@@ -398,6 +401,28 @@ const {
   pointDistributionChart,
   tirDistributionChart,
 } = usePlayerStatsCharts(stats, t)
+
+function successWithMasters(breakdown: MatchSummaryShotBreakdown | null | undefined): string | null {
+  const rate = shotSuccessRate(breakdown)
+  const masters = shotMasters(breakdown)
+  if (rate === null) {
+    return null
+  }
+  const pct = t('stats.successRate.value', { rate })
+  return masters ? `${pct} (${formatMasters(masters)})` : pct
+}
+
+function distanceBreakdown(item: PlayerStatsByDistance): MatchSummaryShotBreakdown {
+  return {
+    average: item.average,
+    p2: item.p2,
+    p1: item.p1,
+    p0: item.p0,
+    m1: item.m1,
+    m2: item.m2,
+    successRate: null,
+  }
+}
 
 const emptyTitleKey = computed(() => {
   switch (stats.value?.status) {
@@ -721,6 +746,11 @@ watch(
 .hero-meta {
   font-size: 0.85rem;
   opacity: 0.7;
+}
+
+.hero-success {
+  width: 100%;
+  margin-top: 0.25rem;
 }
 
 .avg-details {

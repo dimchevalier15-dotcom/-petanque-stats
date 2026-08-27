@@ -31,6 +31,9 @@ class Game
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
 
+    #[ORM\Column(name: 'played_at', type: 'datetime_immutable')]
+    private DateTimeImmutable $playedAt;
+
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $comment = null;
 
@@ -66,6 +69,7 @@ class Game
         $this->targetScore = $targetScore;
         $this->statisticsMode = $statisticsMode;
         $this->createdAt = new DateTimeImmutable();
+        $this->playedAt = $this->createdAt;
     }
 
     public function getId(): ?int { return $this->id; }
@@ -73,6 +77,7 @@ class Game
     public function getTargetScore(): int { return $this->targetScore; }
     public function getStatisticsMode(): string { return $this->statisticsMode; }
     public function getCreatedAt(): DateTimeImmutable { return $this->createdAt; }
+    public function getPlayedAt(): DateTimeImmutable { return $this->playedAt; }
     public function getComment(): ?string { return $this->comment; }
     public function getTeamAName(): ?string { return $this->teamAName; }
     public function getTeamBName(): ?string { return $this->teamBName; }
@@ -83,6 +88,7 @@ class Game
     public function getTerrainType(): ?string { return $this->terrainType; }
 
     public function setComment(?string $comment): void { $this->comment = $comment; }
+    public function setPlayedAt(DateTimeImmutable $playedAt): void { $this->playedAt = $playedAt; }
     public function setTeamAName(?string $teamAName): void { $this->teamAName = $teamAName; }
     public function setTeamBName(?string $teamBName): void { $this->teamBName = $teamBName; }
     public function setNature(?MatchNature $nature): void { $this->nature = $nature; }

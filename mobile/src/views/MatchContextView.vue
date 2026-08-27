@@ -7,6 +7,11 @@
     <form class="app-form" @submit.prevent="onSubmit">
       <div class="app-card form-card">
         <label class="app-field">
+          <span>{{ t('context.fields.playedAt') }}</span>
+          <input v-model="form.playedAt" type="date" class="date-input" />
+        </label>
+
+        <label class="app-field">
           <span>{{ t('context.fields.comment') }}</span>
           <Textarea v-model="form.comment" rows="3" auto-resize fluid />
         </label>
@@ -171,6 +176,7 @@ function toPayload(formValue: MatchContextForm) {
         : null,
     competitionStage: isCompetition ? formValue.competitionStage : null,
     terrainType: formValue.terrainType,
+    playedAt: formValue.playedAt || null,
   }
 }
 
@@ -245,6 +251,17 @@ onMounted(load)
 
 .w-full {
   width: 100%;
+}
+
+.date-input {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  padding: 0.625rem 0.75rem;
+  font: inherit;
+  color: var(--app-text);
+  background: var(--app-surface);
 }
 </style>
 

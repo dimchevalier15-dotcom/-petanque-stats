@@ -41,7 +41,7 @@ final class GameRepository extends ServiceEntityRepository
         $items = $this->createHistoryForAccountQueryBuilder($userId, $playerId)
             ->leftJoin('g.competition', 'c')->addSelect('c')
             ->groupBy('g.id')
-            ->orderBy('g.createdAt', 'DESC')
+            ->orderBy('g.playedAt', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($pageSize)
             ->getQuery()
@@ -97,7 +97,7 @@ final class GameRepository extends ServiceEntityRepository
             ->where('gp.player = :pid')
             ->setParameter('pid', $playerId)
             ->groupBy('g.id')
-            ->orderBy('g.createdAt', 'ASC');
+            ->orderBy('g.playedAt', 'ASC');
 
         $this->applyFilters($qb, $nature, $range, $type, $competitionId);
 
@@ -146,8 +146,8 @@ final class GameRepository extends ServiceEntityRepository
         }
 
         if ($range !== null) {
-            $qb->andWhere('g.createdAt >= :rangeFrom')
-                ->andWhere('g.createdAt <= :rangeTo')
+            $qb->andWhere('g.playedAt >= :rangeFrom')
+                ->andWhere('g.playedAt <= :rangeTo')
                 ->setParameter('rangeFrom', $range->from)
                 ->setParameter('rangeTo', $range->to);
         }

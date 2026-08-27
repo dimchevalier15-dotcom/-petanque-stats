@@ -10,6 +10,11 @@ final class PlayerStatsByDistanceResponse
         public string $bucket,
         public int $ballCount,
         public float $average,
+        public int $p2,
+        public int $p1,
+        public int $p0,
+        public int $m1,
+        public int $m2,
     ) {
     }
 }

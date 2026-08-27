@@ -160,6 +160,15 @@ final class PlayerStatsServiceTest extends KernelTestCase
         $buckets = array_map(static fn ($row) => $row->bucket, $res->byDistance);
         self::assertContains('6_7', $buckets);
         self::assertContains('10_plus', $buckets);
+
+        $byBucket = [];
+        foreach ($res->byDistance as $row) {
+            $byBucket[$row->bucket] = $row;
+        }
+        self::assertSame(1, $byBucket['6_7']->p1);
+        self::assertSame(0, $byBucket['6_7']->p2);
+        self::assertSame(1, $byBucket['10_plus']->p2);
+        self::assertSame(0, $byBucket['10_plus']->p1);
     }
 
     public function testStatsFiltersByFormat(): void

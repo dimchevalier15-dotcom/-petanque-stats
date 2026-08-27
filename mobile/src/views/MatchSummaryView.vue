@@ -40,25 +40,12 @@
 
       <template v-else>
         <section class="team-section">
-          <template v-if="showTeamBlocks">
-            <div class="team-header app-card team-a">
-              <div>
-                <h3>{{ teamALabel }}</h3>
-                <p v-if="teamAAverage !== null" class="team-meta">
-                  {{ t('summary.teamAverage') }}
-                  <Tag :value="formatAvg(teamAAverage)" :severity="avgSeverity(teamAAverage)" />
-                </p>
-              </div>
-            </div>
-
-            <div v-if="teamAChart" class="panel app-card">
-              <h4>{{ t('summary.sections.teamDistribution') }}</h4>
-              <ShotSuccessRate :rate="shotSuccessRate(teamABreakdown)" />
-              <div class="chart-box">
-                <Chart type="bar" :data="teamAChart.data" :options="teamAChart.options" />
-              </div>
-            </div>
-          </template>
+          <MatchSummaryTeamBlock
+            v-if="showTeamBlocks"
+            team="A"
+            :label="teamALabel"
+            :players="teamA"
+          />
 
           <MatchSummaryPlayerCard
             v-for="player in teamA"
@@ -68,25 +55,12 @@
         </section>
 
         <section class="team-section">
-          <template v-if="showTeamBlocks">
-            <div class="team-header app-card team-b">
-              <div>
-                <h3>{{ teamBLabel }}</h3>
-                <p v-if="teamBAverage !== null" class="team-meta">
-                  {{ t('summary.teamAverage') }}
-                  <Tag :value="formatAvg(teamBAverage)" :severity="avgSeverity(teamBAverage)" />
-                </p>
-              </div>
-            </div>
-
-            <div v-if="teamBChart" class="panel app-card">
-              <h4>{{ t('summary.sections.teamDistribution') }}</h4>
-              <ShotSuccessRate :rate="shotSuccessRate(teamBBreakdown)" />
-              <div class="chart-box">
-                <Chart type="bar" :data="teamBChart.data" :options="teamBChart.options" />
-              </div>
-            </div>
-          </template>
+          <MatchSummaryTeamBlock
+            v-if="showTeamBlocks"
+            team="B"
+            :label="teamBLabel"
+            :players="teamB"
+          />
 
           <MatchSummaryPlayerCard
             v-for="player in teamB"
@@ -123,25 +97,20 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Chart from 'primevue/chart'
-import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import MatchSummaryEndGrid from '../components/match/MatchSummaryEndGrid.vue'
 import MatchSummaryPlayerCard from '../components/match/MatchSummaryPlayerCard.vue'
-import ShotSuccessRate from '../components/stats/ShotSuccessRate.vue'
+import MatchSummaryTeamBlock from '../components/match/MatchSummaryTeamBlock.vue'
 import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
-import { hasMatchContextData, type MatchContext } from '../models/MatchContext'
+import { formatPlayedAt, hasMatchContextData, type MatchContext } from '../models/MatchContext'
 import { competitionLabel, type Competition } from '../models/Competition'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
-import { shotSuccessRate } from '../composables/matchSuccessRate'
 import {
   buildPlayerComparisonChart,
-  buildTeamDistributionChart,
   hasTrackedData,
-  mergeTeamBreakdown,
 } from '../composables/useMatchSummaryCharts'
-import { avgSeverity, formatAvg } from '../composables/usePlayerStatsCharts'
 import { matchesService } from '../services/matches'
 import { competitionsService } from '../services/competitions'
 
@@ -168,13 +137,6 @@ const showTeamBlocks = computed(() => !isHeadToHead.value)
 const hasData = computed(() => hasTrackedData(summary.value))
 
 const comparisonChart = computed(() => buildPlayerComparisonChart(summary.value.players, t))
-const teamAChart = computed(() => buildTeamDistributionChart(teamA.value, t))
-const teamBChart = computed(() => buildTeamDistributionChart(teamB.value, t))
-
-const teamABreakdown = computed(() => mergeTeamBreakdown(teamA.value))
-const teamBBreakdown = computed(() => mergeTeamBreakdown(teamB.value))
-const teamAAverage = computed(() => teamABreakdown.value?.average ?? null)
-const teamBAverage = computed(() => teamBBreakdown.value?.average ?? null)
 
 const contextActionLabel = computed(() =>
   context.value && hasMatchContextData(context.value)
@@ -183,10 +145,16 @@ const contextActionLabel = computed(() =>
 )
 
 const contextSummary = computed<string[]>(() => {
-  if (!context.value || !hasMatchContextData(context.value)) {
+  if (!context.value) {
     return []
   }
   const lines: string[] = []
+  if (context.value.playedAt) {
+    lines.push(`${t('context.fields.playedAt')}: ${formatPlayedAt(context.value.playedAt)}`)
+  }
+  if (!hasMatchContextData(context.value)) {
+    return lines
+  }
   if (context.value.nature) {
     const nature = natureOptions.value.find((o) => o.value === context.value?.nature)
     if (nature) lines.push(`${t('context.fields.nature')}: ${nature.label}`)
@@ -359,32 +327,6 @@ onMounted(load)
 .team-section {
   display: grid;
   gap: var(--app-space-sm);
-}
-
-.team-header {
-  padding: var(--app-space-md);
-}
-
-.team-header h3 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.team-a {
-  border-left: 4px solid #22c55e;
-}
-
-.team-b {
-  border-left: 4px solid #3b82f6;
-}
-
-.team-meta {
-  margin: 0.375rem 0 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8125rem;
-  color: var(--app-text-muted);
 }
 
 .context-panel {

@@ -8,7 +8,7 @@ import type { MatchHistoryResponseDto, MatchHistoryItemDto } from '../dto/match/
 import type { MatchHistoryItem, MatchHistoryPage } from '../models/MatchHistory'
 import type { MatchContextResponseDto } from '../dto/match/MatchContextResponse'
 import type { UpdateMatchContextRequestDto } from '../dto/match/UpdateMatchContextRequest'
-import type { MatchContext } from '../models/MatchContext'
+import { todayInputDate, type MatchContext } from '../models/MatchContext'
 
 function mapMatchContext(dto: MatchContextResponseDto): MatchContext {
   return {
@@ -21,6 +21,7 @@ function mapMatchContext(dto: MatchContextResponseDto): MatchContext {
     competitionName: dto.competitionName,
     competitionStage: dto.competitionStage,
     terrainType: dto.terrainType,
+    playedAt: dto.playedAt ?? todayInputDate(),
   }
 }
 

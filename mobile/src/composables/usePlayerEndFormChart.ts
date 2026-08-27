@@ -1,11 +1,10 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 import type { BallNote, EndRecord } from '../models/MatchPlay'
+import { formatMasters, type MastersScore } from './matchSuccessRate'
 
-export interface MastersScore {
-  success: number
-  total: number
-}
+export type { MastersScore }
+export { formatMasters }
 
 export interface PlayerEndFormSeries {
   labels: string[]
@@ -127,10 +126,6 @@ interface ChartBundle {
 
 export function formatFormAvg(value: number): string {
   return value.toFixed(2)
-}
-
-export function formatMasters(score: MastersScore): string {
-  return `${score.success}/${score.total}`
 }
 
 export function usePlayerEndFormChart(

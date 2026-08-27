@@ -58,9 +58,10 @@
     "titleAdd": "Pridať kontext",
     "titleEdit": "Upraviť kontext",
     "summaryTitle": "Kontext",
-    "hint": "Všetky informácie sú voliteľné.",
+    "hint": "Všetky informácie sú voliteľné. Dátum sa hodí, ak zápas zadávaš neskôr z videa.",
     "placeholders": { "select": "Vybrať" },
     "fields": {
+      "playedAt": "Dátum zápasu",
       "comment": "Komentár",
       "teamAName": "Názov tímu A",
       "teamBName": "Názov tímu B",

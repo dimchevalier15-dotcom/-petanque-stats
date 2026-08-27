@@ -49,6 +49,11 @@ export interface PlayerStatsByDistance {
   bucket: DistanceBucketKey
   ballCount: number
   average: number
+  p2: number
+  p1: number
+  p0: number
+  m1: number
+  m2: number
 }
 
 export interface PlayerStats {

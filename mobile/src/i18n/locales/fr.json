@@ -58,9 +58,10 @@
     "titleAdd": "Ajouter du contexte",
     "titleEdit": "Modifier le contexte",
     "summaryTitle": "Contexte",
-    "hint": "Toutes les informations sont facultatives.",
+    "hint": "Toutes les informations sont facultatives. La date sert notamment si tu saisis un match après coup, à partir d'une vidéo.",
     "placeholders": { "select": "Sélectionner" },
     "fields": {
+      "playedAt": "Date du match",
       "comment": "Commentaire",
       "teamAName": "Nom de l'équipe A",
       "teamBName": "Nom de l'équipe B",

@@ -10,4 +10,5 @@ export interface MatchContextResponseDto {
   competitionName: string | null
   competitionStage: CompetitionStage | null
   terrainType: TerrainType | null
+  playedAt: string
 }

@@ -104,6 +104,25 @@ final class MatchHistoryServiceTest extends KernelTestCase
         self::assertSame('final', $res->items[0]->competitionStage);
     }
 
+    public function testUpdatingPlayedAtChangesHistoryDate(): void
+    {
+        [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();
+        $playerId = (int) $player->getId();
+        [$matchId] = $this->createHeadToHeadForPlayers($playerId, $opponentId);
+
+        $this->completeHeadToHead($matchId, $playerId, $opponentId, 4);
+
+        $req = new UpdateMatchContextRequest();
+        $req->playedAt = '2024-06-15';
+        $this->context->updateContext($matchId, $req);
+
+        $ctx = $this->context->getContext($matchId);
+        self::assertSame('2024-06-15', $ctx?->playedAt);
+
+        $res = $this->history->historyForToken($token);
+        self::assertStringStartsWith('2024-06-15', $res->items[0]->date);
+    }
+
     public function testHistoryCanBeLoadedForImpersonatedPlayer(): void
     {
         [$token, $player, $opponentId] = $this->createLinkedPlayerWithOpponent();

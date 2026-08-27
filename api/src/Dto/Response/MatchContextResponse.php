@@ -16,6 +16,7 @@ final class MatchContextResponse
         public ?string $competitionName,
         public ?string $competitionStage,
         public ?string $terrainType,
+        public string $playedAt,
     ) {
     }
 }

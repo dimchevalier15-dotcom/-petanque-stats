@@ -43,4 +43,7 @@ final class UpdateMatchContextRequest
 
     #[Assert\Length(max: 50)]
     public ?string $terrainType = null;
+
+    #[Assert\Date]
+    public ?string $playedAt = null;
 }

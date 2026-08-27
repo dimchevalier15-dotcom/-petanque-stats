@@ -27,6 +27,11 @@ function mapPlayerStats(dto: PlayerStatsResponseDto): PlayerStats {
     byDistance: dto.byDistance.map((d) => ({
       ...d,
       bucket: d.bucket as PlayerStats['byDistance'][number]['bucket'],
+      p2: d.p2 ?? 0,
+      p1: d.p1 ?? 0,
+      p0: d.p0 ?? 0,
+      m1: d.m1 ?? 0,
+      m2: d.m2 ?? 0,
     })),
   }
 }
