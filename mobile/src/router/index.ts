@@ -18,6 +18,7 @@ import TermsView from '../views/TermsView.vue'
 import LegalNoticeView from '../views/LegalNoticeView.vue'
 import DeleteAccountView from '../views/DeleteAccountView.vue'
 import { GUEST_ONLY_ROUTE_NAMES, LEGAL_PATHS, PUBLIC_ROUTE_NAMES } from './publicRoutes'
+import { userHasMasterAccess } from '../models/UserRole'
 import { useAuthStore } from '../stores/auth'
 
 const routes: RouteRecordRaw[] = [
@@ -32,6 +33,18 @@ const routes: RouteRecordRaw[] = [
   { path: LEGAL_PATHS.legal, name: 'legal', component: LegalNoticeView, meta: { layout: 'focus' } },
   { path: LEGAL_PATHS.deleteAccount, name: 'deleteAccount', component: DeleteAccountView, meta: { layout: 'focus' } },
   { path: '/settings', name: 'settings', component: AccountSettingsView, meta: { layout: 'focus' } },
+  {
+    path: '/admin',
+    name: 'adminHome',
+    component: () => import('../views/AdminHomeView.vue'),
+    meta: { layout: 'focus', requiresAdmin: true },
+  },
+  {
+    path: '/admin/impersonate',
+    name: 'adminImpersonate',
+    component: () => import('../views/AdminImpersonateView.vue'),
+    meta: { layout: 'focus', requiresAdmin: true },
+  },
   {
     path: '/admin/competitions',
     name: 'adminCompetitions',
@@ -80,7 +93,7 @@ router.beforeEach(async (to) => {
     if (!auth.user && token) {
       await auth.initFromStorage()
     }
-    if (!auth.user?.isAdmin) {
+    if (!userHasMasterAccess(auth.user)) {
       return { name: 'home' }
     }
   }

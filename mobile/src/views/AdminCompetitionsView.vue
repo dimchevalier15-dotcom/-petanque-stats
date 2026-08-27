@@ -1,6 +1,6 @@
 <template>
   <AppPage>
-    <PageHeader :title="t('admin.competitions.title')" />
+    <PageHeader :title="t('admin.competitions.title')" :back-to="{ name: 'adminHome' }" />
 
     <section class="form-card app-card">
       <h3 class="section-title">

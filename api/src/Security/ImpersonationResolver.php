@@ -40,7 +40,7 @@ final class ImpersonationResolver
             return null;
         }
 
-        if (!AdminAccess::isAdmin($user)) {
+        if (!$user->isMaster()) {
             throw new AccessDeniedHttpException('Impersonation is not allowed.');
         }
 

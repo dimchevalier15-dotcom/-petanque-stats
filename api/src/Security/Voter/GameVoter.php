@@ -8,7 +8,6 @@ use App\Entity\Game;
 use App\Entity\User;
 use App\Repository\GameParticipantRepository;
 use App\Repository\PlayerRepository;
-use App\Security\AdminAccess;
 use App\Security\ImpersonationResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -99,7 +98,7 @@ final class GameVoter extends Voter
 
     private function resolveImpersonatePlayerId(User $user): ?int
     {
-        if (!AdminAccess::isAdmin($user)) {
+        if (!$user->isMaster()) {
             return null;
         }
 

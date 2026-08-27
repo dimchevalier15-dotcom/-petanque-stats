@@ -114,7 +114,7 @@
       "history": "Match history",
       "myStats": "My statistics",
       "settings": "Settings",
-      "adminCompetitions": "Competition admin",
+      "admin": "Administration",
       "logout": "Logout",
       "shooting": "Precision shooting",
       "training": "Training"
@@ -481,20 +481,6 @@
     "legal": {
       "title": "Legal information"
     },
-    "admin": {
-      "title": "Administration",
-      "competitions": "Manage competitions",
-      "impersonate": {
-        "title": "Impersonate mode",
-        "hint": "View a player's stats and match history as if you were that player.",
-        "searchLabel": "Player",
-        "searchPlaceholder": "Search (3 characters min.)",
-        "empty": "No player matches your search.",
-        "start": "View as this player",
-        "stop": "Exit impersonate mode",
-        "active": "Active mode: {name}"
-      }
-    },
     "delete": {
       "title": "Delete account",
       "hint": "This cannot be undone. Your email and password are removed. The player profile stays in match history, unlinked from any account.",
@@ -506,7 +492,20 @@
     }
   },
   "admin": {
+    "home": {
+      "title": "Administration",
+      "impersonate": "Impersonate",
+      "competitions": "Competitions"
+    },
     "impersonate": {
+      "title": "Impersonate mode",
+      "hint": "View a player's stats and match history as if you were that player.",
+      "searchLabel": "Player",
+      "searchPlaceholder": "Search (3 characters min.)",
+      "empty": "No player matches your search.",
+      "start": "View as this player",
+      "exit": "Exit impersonate mode",
+      "active": "Active mode: {name}",
       "banner": "Impersonate mode — {name}",
       "stop": "Exit"
     },

@@ -114,7 +114,7 @@
       "history": "Historique des matchs",
       "myStats": "Mes statistiques",
       "settings": "Paramètres",
-      "adminCompetitions": "Admin compétitions",
+      "admin": "Administration",
       "logout": "Déconnexion",
       "shooting": "Tir de précision",
       "training": "Entraînement"
@@ -481,20 +481,6 @@
     "legal": {
       "title": "Informations légales"
     },
-    "admin": {
-      "title": "Administration",
-      "competitions": "Gérer les compétitions",
-      "impersonate": {
-        "title": "Mode impersonate",
-        "hint": "Consultez les statistiques et l'historique d'un joueur comme s'il s'agissait de votre compte.",
-        "searchLabel": "Joueur",
-        "searchPlaceholder": "Rechercher (3 caractères min.)",
-        "empty": "Aucun joueur ne correspond à votre recherche.",
-        "start": "Voir en tant que ce joueur",
-        "stop": "Quitter le mode impersonate",
-        "active": "Mode actif : {name}"
-      }
-    },
     "delete": {
       "title": "Supprimer le compte",
       "hint": "Cette action est définitive. Votre email et mot de passe sont effacés. Le profil joueur reste dans l’historique des matchs, sans lien avec un compte.",
@@ -506,7 +492,20 @@
     }
   },
   "admin": {
+    "home": {
+      "title": "Administration",
+      "impersonate": "Impersonate",
+      "competitions": "Compétitions"
+    },
     "impersonate": {
+      "title": "Mode impersonate",
+      "hint": "Consultez les statistiques et l'historique d'un joueur comme s'il s'agissait de votre compte.",
+      "searchLabel": "Joueur",
+      "searchPlaceholder": "Rechercher (3 caractères min.)",
+      "empty": "Aucun joueur ne correspond à votre recherche.",
+      "start": "Voir en tant que ce joueur",
+      "exit": "Quitter le mode impersonate",
+      "active": "Mode actif : {name}",
       "banner": "Mode impersonate — {name}",
       "stop": "Quitter"
     },

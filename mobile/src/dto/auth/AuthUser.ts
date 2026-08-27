@@ -6,5 +6,6 @@ export interface AuthUserDto {
   lastName?: string
   nickname?: string
   emailVerified?: boolean
+  role?: string
   isAdmin?: boolean
 }

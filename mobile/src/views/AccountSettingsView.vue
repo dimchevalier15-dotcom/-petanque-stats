@@ -78,49 +78,6 @@
       </nav>
     </section>
 
-    <section v-if="isAdmin" class="admin-card app-card">
-      <h3 class="section-title">{{ t('settings.admin.title') }}</h3>
-      <nav class="legal-links" :aria-label="t('settings.admin.title')">
-        <router-link :to="{ name: 'adminCompetitions' }">{{ t('settings.admin.competitions') }}</router-link>
-      </nav>
-
-      <div class="impersonate-block">
-        <h4 class="subsection-title">{{ t('settings.admin.impersonate.title') }}</h4>
-        <p class="hint">{{ t('settings.admin.impersonate.hint') }}</p>
-
-        <PlayerSearchSelect
-          v-model="impersonateSelection"
-          :label="t('settings.admin.impersonate.searchLabel')"
-          :placeholder="t('settings.admin.impersonate.searchPlaceholder')"
-          :empty-hint="t('settings.admin.impersonate.empty')"
-        />
-
-        <p v-if="impersonation.isActive && impersonation.player" class="active-player">
-          {{ t('settings.admin.impersonate.active', { name: formatPlayerLabel(impersonation.player) }) }}
-        </p>
-
-        <div class="impersonate-actions">
-          <Button
-            v-if="!impersonation.isActive"
-            type="button"
-            class="w-full"
-            :label="t('settings.admin.impersonate.start')"
-            :disabled="!impersonateSelection"
-            @click="startImpersonation"
-          />
-          <Button
-            v-else
-            type="button"
-            severity="secondary"
-            outlined
-            class="w-full"
-            :label="t('settings.admin.impersonate.stop')"
-            @click="stopImpersonation"
-          />
-        </div>
-      </div>
-    </section>
-
     <DeleteAccountSection />
   </AppPage>
 </template>
@@ -135,11 +92,8 @@ import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
 import DeleteAccountSection from '../components/legal/DeleteAccountSection.vue'
-import { useIsAdmin } from '../composables/useIsAdmin'
-import { formatPlayerLabel } from '../composables/usePlayerSearch'
 import { accountService } from '../services/account'
 import { useAuthStore } from '../stores/auth'
-import { useImpersonationStore } from '../stores/impersonation'
 import type { Player } from '../models/Player'
 import axios from 'axios'
 
@@ -147,8 +101,6 @@ type ProfileErrors = { firstName?: string; lastName?: string }
 
 const { t } = useI18n()
 const auth = useAuthStore()
-const isAdmin = useIsAdmin()
-const impersonation = useImpersonationStore()
 
 const loading = ref(true)
 const linking = ref(false)
@@ -156,7 +108,6 @@ const savingProfile = ref(false)
 const profileSaved = ref(false)
 const linkedPlayer = ref<Player | null>(null)
 const selectedPlayer = ref<Player | null>(null)
-const impersonateSelection = ref<Player | null>(null)
 const errorKey = ref<string | null>(null)
 const profileErrorKey = ref<string | null>(null)
 
@@ -257,18 +208,6 @@ async function onSaveProfile() {
   }
 }
 
-function startImpersonation() {
-  if (!impersonateSelection.value) {
-    return
-  }
-  impersonation.setPlayer(impersonateSelection.value)
-}
-
-function stopImpersonation() {
-  impersonation.clear()
-  impersonateSelection.value = null
-}
-
 async function onLink() {
   if (!selectedPlayer.value) {
     return
@@ -308,15 +247,13 @@ onMounted(loadLinkedPlayer)
 .state-card,
 .profile-card,
 .link-card,
-.legal-card,
-.admin-card {
+.legal-card {
   padding: var(--app-space-lg);
   display: grid;
   gap: var(--app-space-md);
 }
 
-.legal-card,
-.admin-card {
+.legal-card {
   margin-top: var(--app-space-md);
 }
 
@@ -345,30 +282,5 @@ onMounted(loadLinkedPlayer)
 
 .w-full {
   width: 100%;
-}
-
-.subsection-title {
-  margin: var(--app-space-md) 0 0;
-  font-size: 0.9375rem;
-}
-
-.impersonate-block {
-  display: grid;
-  gap: var(--app-space-md);
-  margin-top: var(--app-space-md);
-  padding-top: var(--app-space-md);
-  border-top: 1px solid var(--app-border);
-}
-
-.active-player {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--app-primary);
-}
-
-.impersonate-actions {
-  display: grid;
-  gap: var(--app-space-sm);
 }
 </style>

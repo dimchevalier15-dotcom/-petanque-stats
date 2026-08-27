@@ -109,6 +109,8 @@ final class RegistrationService
                 lastName: $player->getLastName(),
                 nickname: $player->getNickname(),
                 emailVerified: $user->isEmailVerified(),
+                role: $user->getRole(),
+                isAdmin: $user->isMaster(),
             ),
         );
     }

@@ -114,7 +114,7 @@
       "history": "História zápasov",
       "myStats": "Moje štatistiky",
       "settings": "Nastavenia",
-      "adminCompetitions": "Admin súťaží",
+      "admin": "Administrácia",
       "logout": "Odhlásiť sa",
       "shooting": "Presná streľba",
       "training": "Tréning"
@@ -481,20 +481,6 @@
     "legal": {
       "title": "Právne informácie"
     },
-    "admin": {
-      "title": "Administrácia",
-      "competitions": "Spravovať súťaže",
-      "impersonate": {
-        "title": "Režim impersonate",
-        "hint": "Zobrazte štatistiky a históriu zápasov hráča, akoby ste boli on.",
-        "searchLabel": "Hráč",
-        "searchPlaceholder": "Hľadať (min. 3 znaky)",
-        "empty": "Žiadny hráč nezodpovedá hľadaniu.",
-        "start": "Zobraziť ako tohto hráča",
-        "stop": "Ukončiť režim impersonate",
-        "active": "Aktívny režim: {name}"
-      }
-    },
     "delete": {
       "title": "Odstrániť účet",
       "hint": "Táto akcia je nevratná. Váš e-mail a heslo sa vymažú. Profil hráča zostane v histórii zápasov, bez väzby na účet.",
@@ -506,7 +492,20 @@
     }
   },
   "admin": {
+    "home": {
+      "title": "Administrácia",
+      "impersonate": "Impersonate",
+      "competitions": "Súťaže"
+    },
     "impersonate": {
+      "title": "Režim impersonate",
+      "hint": "Zobrazte štatistiky a históriu zápasov hráča, akoby ste boli on.",
+      "searchLabel": "Hráč",
+      "searchPlaceholder": "Hľadať (min. 3 znaky)",
+      "empty": "Žiadny hráč nezodpovedá hľadaniu.",
+      "start": "Zobraziť ako tohto hráča",
+      "exit": "Ukončiť režim impersonate",
+      "active": "Aktívny režim: {name}",
       "banner": "Režim impersonate — {name}",
       "stop": "Ukončiť"
     },

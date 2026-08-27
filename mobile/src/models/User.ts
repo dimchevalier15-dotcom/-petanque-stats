@@ -1,3 +1,5 @@
+import type { UserRole } from './UserRole'
+
 export interface User {
   id: number
   email: string
@@ -6,5 +8,6 @@ export interface User {
   lastName?: string
   nickname?: string
   emailVerified?: boolean
+  role?: UserRole
   isAdmin?: boolean
 }

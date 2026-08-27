@@ -61,7 +61,7 @@ Représente un compte utilisateur.
 - id
 - email
 - password
-- roles
+- role
 - premiumUntil
 - settings
 - createdAt
@@ -271,6 +271,15 @@ Une boule jouée.
 - SEMI_FINAL
 - FINAL
 - OTHER
+
+---
+
+## UserRole
+
+- SIMPLE_PLAYER
+- MASTER
+
+L'administration (impersonate, compétitions) est réservée au rôle MASTER.
 
 ---
 

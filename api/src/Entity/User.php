@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\UserRole;
 use App\Repository\UserRepository;
-use App\Security\AdminAccess;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -32,11 +32,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: 'email_verified_at', type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $emailVerifiedAt = null;
 
+    #[ORM\Column(type: 'string', length: 20, enumType: UserRole::class)]
+    private UserRole $role;
+
     public function __construct(string $email)
     {
         $this->email = $email;
         $this->createdAt = new DateTimeImmutable();
         $this->password = '';
+        $this->role = UserRole::SIMPLE_PLAYER;
     }
 
     public function getId(): ?int
@@ -86,6 +90,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
     }
 
+    public function getRole(): UserRole
+    {
+        return $this->role;
+    }
+
+    public function setRole(UserRole $role): void
+    {
+        $this->role = $role;
+    }
+
+    public function isMaster(): bool
+    {
+        return $this->role === UserRole::MASTER;
+    }
+
     public function getUserIdentifier(): string
     {
         return $this->email;
@@ -97,7 +116,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = ['ROLE_USER'];
-        if (AdminAccess::isAdmin($this)) {
+        if ($this->isMaster()) {
             $roles[] = 'ROLE_ADMIN';
         }
 

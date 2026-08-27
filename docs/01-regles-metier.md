@@ -27,6 +27,7 @@ Le User représente un compte.
 Il possède :
 
 - une authentification ;
+- un rôle (`SIMPLE_PLAYER` par défaut, `MASTER` pour l'administration) ;
 - des préférences ;
 - un abonnement (plus tard).
 

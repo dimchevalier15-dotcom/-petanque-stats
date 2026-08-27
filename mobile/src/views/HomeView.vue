@@ -66,10 +66,10 @@
           v-if="isAdmin"
           type="button"
           class="quick-item app-card"
-          @click="goAdminCompetitions"
+          @click="goAdmin"
         >
           <i class="pi pi-shield" aria-hidden="true" />
-          <span>{{ t('home.actions.adminCompetitions') }}</span>
+          <span>{{ t('home.actions.admin') }}</span>
         </button>
         <button type="button" class="quick-item app-card" @click="toggleLanguageMenu">
           <i class="pi pi-language" aria-hidden="true" />
@@ -122,8 +122,8 @@ function goTraining(): void {
 function goSettings(): void {
   router.push({ name: 'settings' })
 }
-function goAdminCompetitions(): void {
-  router.push({ name: 'adminCompetitions' })
+function goAdmin(): void {
+  router.push({ name: 'adminHome' })
 }
 function goGuidelines(): void {
   router.push({ name: 'guidelines' })
