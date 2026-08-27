@@ -26,11 +26,12 @@ class Player
     #[ORM\Column(name: 'nickname', type: 'string', length: 100)]
     private string $nickname;
 
-    #[ORM\Column(name: 'club', type: 'string', length: 255, nullable: true)]
-    private ?string $club = null;
-
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
+
+    #[ORM\ManyToOne(targetEntity: Club::class, inversedBy: 'players')]
+    #[ORM\JoinColumn(name: 'club_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Club $club = null;
 
     #[ORM\OneToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, unique: true, onDelete: 'SET NULL')]
@@ -79,12 +80,12 @@ class Player
         $this->nickname = $nickname;
     }
 
-    public function getClub(): ?string
+    public function getClub(): ?Club
     {
         return $this->club;
     }
 
-    public function setClub(?string $club): void
+    public function setClub(?Club $club): void
     {
         $this->club = $club;
     }

@@ -16,8 +16,11 @@ final class PlayerService
 {
     public function __construct(
         private PlayerRepository $players,
+        private PlayerClubResolver $playerClubResolver,
+        private PlayerItemMapper $playerItemMapper,
         private EntityManagerInterface $em,
-    ) {}
+    ) {
+    }
 
     public function create(CreatePlayerRequest $req): CreatePlayerResponse
     {
@@ -27,15 +30,20 @@ final class PlayerService
             nickname: $req->nickname !== null && $req->nickname !== '' ? $req->nickname : $req->firstName,
         );
         $player->setUser(null);
+        $player->setClub($this->playerClubResolver->resolveOptional($req->clubId));
 
         $this->em->persist($player);
         $this->em->flush();
 
+        $item = $this->playerItemMapper->map($player);
+
         return new CreatePlayerResponse(
-            id: (int) $player->getId(),
-            firstName: $player->getFirstName(),
-            lastName: $player->getLastName(),
-            nickname: $player->getNickname(),
+            id: $item->id,
+            firstName: $item->firstName,
+            lastName: $item->lastName,
+            nickname: $item->nickname,
+            clubId: $item->clubId,
+            clubName: $item->clubName,
         );
     }
 
@@ -50,13 +58,9 @@ final class PlayerService
             : $this->players->searchByQuery($q, 20);
         $out = [];
         foreach ($list as $p) {
-            $out[] = new PlayerItem(
-                id: (int) $p->getId(),
-                firstName: $p->getFirstName(),
-                lastName: $p->getLastName(),
-                nickname: $p->getNickname(),
-            );
+            $out[] = $this->playerItemMapper->map($p);
         }
+
         return $out;
     }
 
@@ -66,11 +70,7 @@ final class PlayerService
         if (!$p) {
             return null;
         }
-        return new PlayerItem(
-            id: (int) $p->getId(),
-            firstName: $p->getFirstName(),
-            lastName: $p->getLastName(),
-            nickname: $p->getNickname(),
-        );
+
+        return $this->playerItemMapper->map($p);
     }
 }

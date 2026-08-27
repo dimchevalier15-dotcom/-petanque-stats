@@ -11,6 +11,8 @@ use App\Entity\Player;
 use App\Repository\PlayerRepository;
 use App\Service\Auth\CurrentUserService;
 use App\Service\Auth\InvalidTokenException;
+use App\Service\PlayerClubResolver;
+use App\Service\PlayerItemMapper;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class AccountPlayerService
@@ -19,6 +21,8 @@ final class AccountPlayerService
         private CurrentUserService $currentUserService,
         private PlayerRepository $players,
         private PlayerLinkService $playerLinkService,
+        private PlayerClubResolver $playerClubResolver,
+        private PlayerItemMapper $playerItemMapper,
         private EntityManagerInterface $em,
     ) {
     }
@@ -38,7 +42,7 @@ final class AccountPlayerService
             return null;
         }
 
-        return $this->toPlayerItem($player);
+        return $this->playerItemMapper->map($player);
     }
 
     /**
@@ -54,7 +58,7 @@ final class AccountPlayerService
         $list = $this->players->searchUnlinkedByQuery($q, 20);
         $out = [];
         foreach ($list as $player) {
-            $out[] = $this->toPlayerItem($player);
+            $out[] = $this->playerItemMapper->map($player);
         }
 
         return $out;
@@ -76,7 +80,7 @@ final class AccountPlayerService
         $user = $this->currentUserService->getUserFromToken($token);
         $player = $this->playerLinkService->linkToUser($user, $request->playerId);
 
-        return $this->toPlayerItem($player);
+        return $this->playerItemMapper->map($player);
     }
 
     /**
@@ -105,20 +109,13 @@ final class AccountPlayerService
         $player->setFirstName($firstName);
         $player->setLastName($lastName);
         $player->setNickname($nickname);
+        $player->setClub($this->playerClubResolver->resolveOptional($request->clubId));
         $this->em->flush();
 
-        return $this->toPlayerItem($player);
-    }
-
-    private function toPlayerItem(Player $player): PlayerItem
-    {
-        return new PlayerItem(
-            id: (int) $player->getId(),
-            firstName: $player->getFirstName(),
-            lastName: $player->getLastName(),
-            nickname: $player->getNickname(),
-        );
+        return $this->playerItemMapper->map($player);
     }
 }
 
-final class NoLinkedPlayerException extends \RuntimeException {}
+final class NoLinkedPlayerException extends \RuntimeException
+{
+}

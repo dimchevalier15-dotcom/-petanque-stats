@@ -58,6 +58,8 @@ final class AuthController extends AbstractController
             return new JsonResponse(['error' => 'player_not_found'], 404);
         } catch (PlayerAlreadyLinkedException) {
             return new JsonResponse(['error' => 'player_already_linked'], 409);
+        } catch (\App\Service\ClubNotFoundException) {
+            return new JsonResponse(['error' => 'club_not_found'], 404);
         } catch (\Throwable $e) {
             // Do not expose technical details
             $payload = [

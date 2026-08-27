@@ -53,11 +53,13 @@ Toutes les statistiques appartiennent au Player.
 
 # Club
 
-Le Club est prévu dans le modèle dès la V1.
+Le Club représente un club de pétanque.
 
-Il n'est pas développé fonctionnellement.
+Il appartient à un pays.
 
-Il représente uniquement une information rattachée au Player.
+Un Player peut appartenir à un Club.
+
+Le rattachement est optionnel et peut être renseigné dans le profil, à l'inscription ou lors de la création d'un joueur.
 
 ---
 

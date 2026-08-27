@@ -19,6 +19,8 @@
         <span>{{ t('players.fields.nickname') }}</span>
         <InputText v-model="nickname" autocomplete="nickname" fluid />
       </label>
+
+      <ClubSelect v-model="clubId" :error="errors.clubId" :invalid="!!errors.clubId" />
     </div>
 
     <Button type="submit" class="w-full" :label="t('players.actions.submit')" :disabled="submitting || !canSubmit" />
@@ -33,9 +35,10 @@ import { useToast } from 'primevue/usetoast'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import PageHeader from '../components/layout/PageHeader.vue'
+import ClubSelect from '../components/players/ClubSelect.vue'
 import { playersService } from '../services/players'
 
-type Errors = { firstName?: string; lastName?: string }
+type Errors = { firstName?: string; lastName?: string; clubId?: string }
 
 const { t } = useI18n()
 const router = useRouter()
@@ -44,6 +47,7 @@ const toast = useToast()
 const firstName = ref('')
 const lastName = ref('')
 const nickname = ref('')
+const clubId = ref<number | null>(null)
 
 const submitting = ref(false)
 const errors = reactive<Errors>({})
@@ -64,6 +68,7 @@ async function onSubmit(): Promise<void> {
       firstName: firstName.value.trim(),
       lastName: lastName.value.trim(),
       nickname: nickname.value.trim() || undefined,
+      clubId: clubId.value,
     })
 
     toast.add({ severity: 'success', summary: t('players.create.toast.success'), life: 2000 })
@@ -79,6 +84,7 @@ async function onSubmit(): Promise<void> {
     if (serverErrors) {
       errors.firstName = serverErrors.firstName ? serverErrors.firstName : undefined
       errors.lastName = serverErrors.lastName ? serverErrors.lastName : undefined
+      errors.clubId = serverErrors.clubId ? serverErrors.clubId : undefined
     }
   } finally {
     submitting.value = false

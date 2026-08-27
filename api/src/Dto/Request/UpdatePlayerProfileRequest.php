@@ -18,4 +18,7 @@ final class UpdatePlayerProfileRequest
 
     #[Assert\Length(max: 100)]
     public ?string $nickname = null;
+
+    #[Assert\Positive]
+    public ?int $clubId = null;
 }

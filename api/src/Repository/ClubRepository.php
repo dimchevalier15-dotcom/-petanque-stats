@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repository;
+
+use App\Entity\Club;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Club>
+ */
+final class ClubRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Club::class);
+    }
+
+    /**
+     * @return list<Club>
+     */
+    public function findAllOrdered(): array
+    {
+        /** @var list<Club> $res */
+        $res = $this->createQueryBuilder('club')
+            ->innerJoin('club.country', 'country')
+            ->addSelect('country')
+            ->orderBy('club.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $res;
+    }
+}

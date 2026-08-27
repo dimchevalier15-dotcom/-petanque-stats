@@ -99,16 +99,37 @@ Le Player est le cœur du projet.
 
 # Club
 
-Prévu dans le modèle.
+Représente un club de pétanque.
 
-Pas d'interface V1.
+Un Player peut appartenir à un Club.
+
+Le rattachement est optionnel et peut être renseigné dans le profil, à l'inscription ou lors de la création d'un joueur.
 
 ## Attributs
 
 - id
 - name
-- city
+- description
 - country
+
+## Relations
+
+- appartient à un Country
+- contient des Players
+
+---
+
+# Country
+
+Liste de pays de référence.
+
+Utilisée pour lier un Club à un pays.
+
+## Attributs
+
+- id
+- isoCode
+- name
 
 ---
 

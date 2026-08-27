@@ -15,6 +15,7 @@ use App\Http\StatsDateRangeResolver;
 use App\Security\ImpersonationResolver;
 use App\Service\PlayerService;
 use App\Service\PlayerStatsService;
+use App\Service\ClubNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,7 +49,11 @@ final class PlayerController extends AbstractController
             return new JsonResponse(['errors' => $errors], 400);
         }
 
-        $output = $this->playerService->create($input);
+        try {
+            $output = $this->playerService->create($input);
+        } catch (ClubNotFoundException) {
+            return new JsonResponse(['errors' => ['clubId' => 'Club not found.']], 400);
+        }
         $json = $this->serializer->serialize($output, 'json');
         return new JsonResponse($json, 201, [], true);
     }

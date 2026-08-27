@@ -5,7 +5,14 @@ import type { PlayerItemDto } from '../dto/player/PlayerItem'
 import type { Player } from '../models/Player'
 
 function toModel(dto: PlayerItemDto): Player {
-  return { id: dto.id, firstName: dto.firstName, lastName: dto.lastName, nickname: dto.nickname }
+  return {
+    id: dto.id,
+    firstName: dto.firstName,
+    lastName: dto.lastName,
+    nickname: dto.nickname,
+    clubId: dto.clubId ?? null,
+    clubName: dto.clubName ?? null,
+  }
 }
 
 export const playersService = {

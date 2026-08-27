@@ -13,6 +13,7 @@ use App\Service\Account\PlayerAlreadyLinkedException;
 use App\Service\Account\PlayerNotFoundException;
 use App\Service\Account\UserAlreadyHasPlayerException;
 use App\Service\Auth\InvalidTokenException;
+use App\Service\ClubNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -133,6 +134,8 @@ final class AccountController extends AbstractController
             return new JsonResponse(['error' => 'no_linked_player'], 409);
         } catch (PlayerNotFoundException) {
             return new JsonResponse(['error' => 'player_not_found'], 404);
+        } catch (ClubNotFoundException) {
+            return new JsonResponse(['errors' => ['clubId' => 'Club not found.']], 400);
         }
     }
 

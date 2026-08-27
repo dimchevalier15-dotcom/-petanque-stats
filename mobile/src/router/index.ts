@@ -51,6 +51,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/AdminCompetitionsView.vue'),
     meta: { layout: 'focus', requiresAdmin: true },
   },
+  {
+    path: '/admin/clubs',
+    name: 'adminClubs',
+    component: () => import('../views/AdminClubsView.vue'),
+    meta: { layout: 'focus', requiresAdmin: true },
+  },
   { path: '/match/new', name: 'newMatch', component: NewMatchView, meta: { layout: 'focus' } },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView, meta: { layout: 'focus' } },
   { path: '/matches/history', name: 'matchHistory', component: MatchHistoryView, meta: { layout: 'main' } },

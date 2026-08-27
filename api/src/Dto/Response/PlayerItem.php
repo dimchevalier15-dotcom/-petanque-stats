@@ -11,6 +11,8 @@ final class PlayerItem
         public string $firstName,
         public string $lastName,
         public string $nickname,
+        public ?int $clubId = null,
+        public ?string $clubName = null,
     ) {
     }
 }

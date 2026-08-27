@@ -495,7 +495,8 @@
     "home": {
       "title": "Administrácia",
       "impersonate": "Impersonate",
-      "competitions": "Súťaže"
+      "competitions": "Súťaže",
+      "clubs": "Kluby"
     },
     "impersonate": {
       "title": "Režim impersonate",
@@ -536,6 +537,36 @@
         "saveFailed": "Súťaž sa nepodarilo uložiť.",
         "deleteFailed": "Súťaž sa nepodarilo odstrániť."
       }
+    },
+    "clubs": {
+      "title": "Kluby",
+      "addTitle": "Pridať klub",
+      "editTitle": "Upraviť klub",
+      "loading": "Načítava sa…",
+      "empty": "Zatiaľ žiadne kluby.",
+      "confirmDelete": "Odstrániť „{name}“?",
+      "placeholders": {
+        "country": "Vybrať krajinu"
+      },
+      "fields": {
+        "name": "Názov",
+        "country": "Krajina",
+        "description": "Popis"
+      },
+      "actions": {
+        "add": "Pridať",
+        "save": "Uložiť",
+        "edit": "Upraviť",
+        "delete": "Odstrániť",
+        "cancelEdit": "Zrušiť"
+      },
+      "validations": {
+        "required": "Povinné pole."
+      },
+      "errors": {
+        "saveFailed": "Klub sa nepodarilo uložiť.",
+        "deleteFailed": "Klub sa nepodarilo odstrániť."
+      }
     }
   },
   "players": {
@@ -546,7 +577,11 @@
     "fields": {
       "firstName": "Meno",
       "lastName": "Priezvisko",
-      "nickname": "Prezývka"
+      "nickname": "Prezývka",
+      "club": "Klub"
+    },
+    "placeholders": {
+      "club": "Vybrať klub (voliteľné)"
     },
     "actions": {
       "submit": "Uložiť"

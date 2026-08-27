@@ -5,4 +5,5 @@ export interface RegisterRequest {
   lastName?: string
   nickname?: string
   playerId?: number
+  clubId?: number | null
 }

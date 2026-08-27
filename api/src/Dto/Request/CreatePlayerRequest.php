@@ -15,4 +15,7 @@ final class CreatePlayerRequest
     public string $lastName;
 
     public ?string $nickname = null;
+
+    #[Assert\Positive]
+    public ?int $clubId = null;
 }

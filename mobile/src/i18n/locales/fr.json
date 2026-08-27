@@ -495,7 +495,8 @@
     "home": {
       "title": "Administration",
       "impersonate": "Impersonate",
-      "competitions": "Compétitions"
+      "competitions": "Compétitions",
+      "clubs": "Clubs"
     },
     "impersonate": {
       "title": "Mode impersonate",
@@ -536,6 +537,36 @@
         "saveFailed": "Impossible d'enregistrer la compétition.",
         "deleteFailed": "Impossible de supprimer la compétition."
       }
+    },
+    "clubs": {
+      "title": "Clubs",
+      "addTitle": "Ajouter un club",
+      "editTitle": "Modifier le club",
+      "loading": "Chargement…",
+      "empty": "Aucun club enregistré.",
+      "confirmDelete": "Supprimer « {name} » ?",
+      "placeholders": {
+        "country": "Choisir un pays"
+      },
+      "fields": {
+        "name": "Nom",
+        "country": "Pays",
+        "description": "Description"
+      },
+      "actions": {
+        "add": "Ajouter",
+        "save": "Enregistrer",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "cancelEdit": "Annuler"
+      },
+      "validations": {
+        "required": "Ce champ est obligatoire."
+      },
+      "errors": {
+        "saveFailed": "Impossible d'enregistrer le club.",
+        "deleteFailed": "Impossible de supprimer le club."
+      }
     }
   },
   "players": {
@@ -546,7 +577,11 @@
     "fields": {
       "firstName": "Prénom",
       "lastName": "Nom",
-      "nickname": "Surnom"
+      "nickname": "Surnom",
+      "club": "Club"
+    },
+    "placeholders": {
+      "club": "Choisir un club (optionnel)"
     },
     "actions": {
       "submit": "Enregistrer"

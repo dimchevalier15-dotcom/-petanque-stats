@@ -64,6 +64,8 @@
           <span>{{ t('players.fields.nickname') }}</span>
           <InputText v-model="nickname" autocomplete="nickname" fluid />
         </label>
+
+        <ClubSelect v-model="clubId" />
       </div>
 
       <div class="link-section app-card">
@@ -97,6 +99,7 @@ import Password from 'primevue/password'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
+import ClubSelect from '../components/players/ClubSelect.vue'
 import AuthLegalNotice from '../components/legal/AuthLegalNotice.vue'
 import type { Player } from '../models/Player'
 import type { RegisterRequest } from '../dto/auth/RegisterRequest'
@@ -119,6 +122,7 @@ const password = ref('')
 const firstName = ref('')
 const lastName = ref('')
 const nickname = ref('')
+const clubId = ref<number | null>(null)
 const selectedPlayer = ref<Player | null>(null)
 const errors = reactive<FieldErrors>({})
 
@@ -129,6 +133,7 @@ watch(selectedPlayer, (player) => {
   if (player) {
     errors.firstName = undefined
     errors.lastName = undefined
+    clubId.value = null
   }
 })
 
@@ -191,6 +196,7 @@ async function onSubmit() {
     if (trimmedNickname) {
       payload.nickname = trimmedNickname
     }
+    payload.clubId = clubId.value
   }
 
   await auth.register(payload)

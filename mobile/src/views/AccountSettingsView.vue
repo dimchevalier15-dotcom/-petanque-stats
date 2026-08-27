@@ -29,6 +29,12 @@
             <InputText v-model="nickname" autocomplete="nickname" fluid />
           </label>
 
+          <ClubSelect
+            v-model="clubId"
+            :error="profileErrors.clubId"
+            :invalid="!!profileErrors.clubId"
+          />
+
           <Message v-if="profileErrorMessage" severity="error">{{ profileErrorMessage }}</Message>
           <Message v-if="profileSaved" severity="success">{{ t('settings.profile.saved') }}</Message>
 
@@ -91,13 +97,14 @@ import Message from 'primevue/message'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
+import ClubSelect from '../components/players/ClubSelect.vue'
 import DeleteAccountSection from '../components/legal/DeleteAccountSection.vue'
 import { accountService } from '../services/account'
 import { useAuthStore } from '../stores/auth'
 import type { Player } from '../models/Player'
 import axios from 'axios'
 
-type ProfileErrors = { firstName?: string; lastName?: string }
+type ProfileErrors = { firstName?: string; lastName?: string; clubId?: string }
 
 const { t } = useI18n()
 const auth = useAuthStore()
@@ -114,6 +121,7 @@ const profileErrorKey = ref<string | null>(null)
 const firstName = ref('')
 const lastName = ref('')
 const nickname = ref('')
+const clubId = ref<number | null>(null)
 const profileErrors = reactive<ProfileErrors>({})
 
 const errorMessage = computed(() => (errorKey.value ? t(errorKey.value) : ''))
@@ -121,7 +129,7 @@ const profileErrorMessage = computed(() => (profileErrorKey.value ? t(profileErr
 
 const canSaveProfile = computed(() => firstName.value.trim() !== '' && lastName.value.trim() !== '')
 
-watch([firstName, lastName, nickname], () => {
+watch([firstName, lastName, nickname, clubId], () => {
   profileSaved.value = false
 })
 
@@ -129,6 +137,7 @@ function syncProfileForm(player: Player): void {
   firstName.value = player.firstName
   lastName.value = player.lastName
   nickname.value = player.nickname
+  clubId.value = player.clubId ?? null
 }
 
 function updateAuthUser(player: Player): void {
@@ -179,6 +188,7 @@ async function onSaveProfile() {
       firstName: firstName.value.trim(),
       lastName: lastName.value.trim(),
       nickname: nickname.value.trim() || undefined,
+      clubId: clubId.value,
     }
     linkedPlayer.value = await accountService.updateProfile(payload)
     syncProfileForm(linkedPlayer.value)
@@ -190,6 +200,7 @@ async function onSaveProfile() {
       if (serverErrors) {
         profileErrors.firstName = serverErrors.firstName
         profileErrors.lastName = serverErrors.lastName
+        profileErrors.clubId = serverErrors.clubId
         return
       }
       const code = error.response?.data?.error as string | undefined

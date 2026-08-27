@@ -11,6 +11,10 @@
         <i class="pi pi-trophy" aria-hidden="true" />
         <span>{{ t('admin.home.competitions') }}</span>
       </button>
+      <button type="button" class="quick-item app-card" @click="goClubs">
+        <i class="pi pi-building" aria-hidden="true" />
+        <span>{{ t('admin.home.clubs') }}</span>
+      </button>
     </div>
   </AppPage>
 </template>
@@ -30,6 +34,10 @@ function goImpersonate(): void {
 
 function goCompetitions(): void {
   router.push({ name: 'adminCompetitions' })
+}
+
+function goClubs(): void {
+  router.push({ name: 'adminClubs' })
 }
 </script>
 

@@ -14,6 +14,7 @@ use App\Service\Account\PlayerAlreadyLinkedException;
 use App\Service\Account\PlayerLinkService;
 use App\Service\Account\PlayerNotFoundException;
 use App\Service\Account\UserAlreadyHasPlayerException;
+use App\Service\PlayerClubResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -29,6 +30,7 @@ final class RegistrationService
         private UserPasswordHasherInterface $passwordHasher,
         private ValidatorInterface $validator,
         private PlayerLinkService $playerLinkService,
+        private PlayerClubResolver $playerClubResolver,
         private JWTEncoderInterface $jwtEncoder,
         private EmailVerificationService $emailVerificationService,
         #[Autowire(param: 'lexik_jwt_authentication.token_ttl')]
@@ -84,6 +86,7 @@ final class RegistrationService
                 nickname: $nickname,
             );
             $player->setUser($user);
+            $player->setClub($this->playerClubResolver->resolveOptional($input->clubId));
 
             $this->em->persist($player);
             $this->em->flush();

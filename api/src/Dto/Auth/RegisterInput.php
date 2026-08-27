@@ -40,4 +40,7 @@ final class RegisterInput
 
     #[Assert\Positive]
     public ?int $playerId = null;
+
+    #[Assert\Positive]
+    public ?int $clubId = null;
 }
