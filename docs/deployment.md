@@ -7,7 +7,11 @@ Les environnements sont :
 - **local** : `docker-compose.yml` (développement)
 - **production** : `docker-compose.prod.yml` (VPS)
 
-Les migrations de production ne sont **pas** exécutées au démarrage du conteneur. Elles se lancent manuellement après le premier `up` (base initialement vide) et après chaque déploiement qui ajoute une migration.
+Les migrations de production ne sont **pas** exécutées au démarrage du conteneur. `./scripts/deploy.sh` les applique après que le service `api` est healthy (uniquement s’il en reste de pendantes). Pour un premier `up` hors script :
+
+```
+docker compose -f docker-compose.prod.yml exec api php bin/console doctrine:migrations:migrate --no-interaction
+```
 
 Ne jamais copier une base locale vers la production.
 
@@ -151,13 +155,13 @@ Le DNS doit déjà pointer vers le VPS, et les ports 80/443 doivent être ouvert
 
 ### 4. Migrations
 
-Base de production initialement vide. Après que MySQL et l'API sont sains :
+`./scripts/deploy.sh` applique les migrations pendantes une fois `api` healthy.
+
+Base de production initialement vide, ou déploiement hors script : après que MySQL et l'API sont sains :
 
 ```
 docker compose -f docker-compose.prod.yml exec api php bin/console doctrine:migrations:migrate --no-interaction
 ```
-
-Répéter cette commande après un déploiement qui ajoute des migrations.
 
 Cette version ajoute la migration `Version20260824120000` (`email_verified_at` + table `auth_tokens`). Les comptes déjà présents en base sont marqués comme vérifiés (`email_verified_at = created_at`) pour ne pas bloquer les utilisateurs existants.
 

@@ -31,8 +31,9 @@ Usage:
   ./scripts/deploy.sh --pull-only
   ./scripts/deploy.sh --help
 
-Met à jour le dépôt Git (fetch + pull --ff-only) puis redéploie la stack
-de production (docker-compose.prod.yml) sans toucher à .env ni aux volumes.
+Met à jour le dépôt Git (fetch + pull --ff-only), redéploie la stack
+de production (docker-compose.prod.yml), puis exécute les migrations
+Doctrine en attente. Ne touche pas à .env ni aux volumes.
 
 Options:
   --pull-only   Mise à jour Git uniquement (pas de docker compose)
@@ -123,6 +124,30 @@ api_health() {
   printf '%s\n' "${health}"
 }
 
+run_pending_migrations() {
+  local status
+
+  log_info "Vérification des migrations Doctrine…"
+  set +e
+  compose exec -T "${API_SERVICE}" php bin/console doctrine:migrations:up-to-date --no-interaction --no-ansi >/dev/null 2>&1
+  status=$?
+  set -e
+
+  if [[ "${status}" -eq 0 ]]; then
+    log_ok "Aucune migration en attente."
+    return 0
+  fi
+
+  log_info "Migrations en attente, exécution (doctrine:migrations:migrate --no-interaction)…"
+  if ! compose exec -T "${API_SERVICE}" php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration --no-ansi; then
+    log_err "Les migrations Doctrine ont échoué."
+    return 1
+  fi
+
+  log_ok "Migrations Doctrine appliquées."
+  return 0
+}
+
 wait_for_api_healthy() {
   local elapsed=0
   local health
@@ -163,6 +188,12 @@ deploy_stack() {
   show_compose_ps
 
   if ! wait_for_api_healthy; then
+    show_compose_ps
+    dump_compose_logs
+    die "Déploiement échoué."
+  fi
+
+  if ! run_pending_migrations; then
     show_compose_ps
     dump_compose_logs
     die "Déploiement échoué."
