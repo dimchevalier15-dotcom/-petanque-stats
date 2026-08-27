@@ -19,6 +19,8 @@ final class MatchSummaryResponse
         public string $type, // tete_a_tete | doublette | triplette
         /** @param list<int> $endIndexes */
         public array $endIndexes,
+        /** @param list<int> $canceledEndIndexes */
+        public array $canceledEndIndexes,
         public array $players,
     ) {
     }

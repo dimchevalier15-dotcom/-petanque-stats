@@ -11,6 +11,7 @@
 
     <div v-if="overallChart" class="chart-block">
       <span class="chart-label">{{ t('summary.sections.distribution') }}</span>
+      <ShotSuccessRate :rate="shotSuccessRate(overallBreakdown)" />
       <div class="chart-box">
         <Chart type="bar" :data="overallChart.data" :options="overallChart.options" />
       </div>
@@ -66,6 +67,7 @@ import {
   buildPlayerDistributionChart,
   buildPlayerShotChart,
   playerDisplayName,
+  playerToOverallBreakdown,
 } from '../../composables/useMatchSummaryCharts'
 import { avgSeverity, formatAvg } from '../../composables/usePlayerStatsCharts'
 import ShotSuccessRate from '../stats/ShotSuccessRate.vue'
@@ -77,6 +79,7 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const displayName = computed(() => playerDisplayName(props.player))
+const overallBreakdown = computed(() => playerToOverallBreakdown(props.player))
 const overallChart = computed(() => buildPlayerDistributionChart(props.player, t))
 const pointChart = computed(() => buildPlayerShotChart(props.player.point, t))
 const tirChart = computed(() => buildPlayerShotChart(props.player.tir, t))

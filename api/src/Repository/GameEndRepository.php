@@ -29,8 +29,28 @@ final class GameEndRepository extends ServiceEntityRepository
     }
 
     /**
-     * Removes all ends for a match. Related balls are deleted via DB ON DELETE CASCADE.
+     * @return list<array{endIndex: int, canceled: bool}>
      */
+    public function listIndexMetaByGame(Game $game): array
+    {
+        $rows = $this->createQueryBuilder('e')
+            ->select('e.index AS endIndex, e.canceled AS canceled')
+            ->where('e.game = :g')
+            ->setParameter('g', $game)
+            ->orderBy('e.index', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        $out = [];
+        foreach ($rows as $row) {
+            $out[] = [
+                'endIndex' => (int) $row['endIndex'],
+                'canceled' => (bool) $row['canceled'],
+            ];
+        }
+
+        return $out;
+    }
     public function deleteByGame(Game $game): void
     {
         $this->createQueryBuilder('e')

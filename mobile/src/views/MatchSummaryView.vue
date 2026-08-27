@@ -30,6 +30,7 @@
       <MatchSummaryEndGrid
         :players="summary.players"
         :end-indexes="summary.endIndexes ?? []"
+        :canceled-end-indexes="summary.canceledEndIndexes ?? []"
       />
 
       <section v-if="!hasData" class="panel app-card notice">
@@ -52,6 +53,7 @@
 
             <div v-if="teamAChart" class="panel app-card">
               <h4>{{ t('summary.sections.teamDistribution') }}</h4>
+              <ShotSuccessRate :rate="shotSuccessRate(teamABreakdown)" />
               <div class="chart-box">
                 <Chart type="bar" :data="teamAChart.data" :options="teamAChart.options" />
               </div>
@@ -79,6 +81,7 @@
 
             <div v-if="teamBChart" class="panel app-card">
               <h4>{{ t('summary.sections.teamDistribution') }}</h4>
+              <ShotSuccessRate :rate="shotSuccessRate(teamBBreakdown)" />
               <div class="chart-box">
                 <Chart type="bar" :data="teamBChart.data" :options="teamBChart.options" />
               </div>
@@ -125,11 +128,13 @@ import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import MatchSummaryEndGrid from '../components/match/MatchSummaryEndGrid.vue'
 import MatchSummaryPlayerCard from '../components/match/MatchSummaryPlayerCard.vue'
+import ShotSuccessRate from '../components/stats/ShotSuccessRate.vue'
 import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
 import { hasMatchContextData, type MatchContext } from '../models/MatchContext'
 import { competitionLabel, type Competition } from '../models/Competition'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
+import { shotSuccessRate } from '../composables/matchSuccessRate'
 import {
   buildPlayerComparisonChart,
   buildTeamDistributionChart,
@@ -166,8 +171,10 @@ const comparisonChart = computed(() => buildPlayerComparisonChart(summary.value.
 const teamAChart = computed(() => buildTeamDistributionChart(teamA.value, t))
 const teamBChart = computed(() => buildTeamDistributionChart(teamB.value, t))
 
-const teamAAverage = computed(() => mergeTeamBreakdown(teamA.value)?.average ?? null)
-const teamBAverage = computed(() => mergeTeamBreakdown(teamB.value)?.average ?? null)
+const teamABreakdown = computed(() => mergeTeamBreakdown(teamA.value))
+const teamBBreakdown = computed(() => mergeTeamBreakdown(teamB.value))
+const teamAAverage = computed(() => teamABreakdown.value?.average ?? null)
+const teamBAverage = computed(() => teamBBreakdown.value?.average ?? null)
 
 const contextActionLabel = computed(() =>
   context.value && hasMatchContextData(context.value)

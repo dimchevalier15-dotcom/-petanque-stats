@@ -8,8 +8,14 @@
           <thead>
             <tr>
               <th scope="col" class="sticky-col">{{ t('summary.endGrid.player') }}</th>
-              <th v-for="endIndex in endIndexes" :key="endIndex" scope="col">
+              <th
+                v-for="endIndex in endIndexes"
+                :key="endIndex"
+                scope="col"
+                :class="{ 'end-col--canceled': isCanceledEnd(endIndex) }"
+              >
                 {{ t('play.formChart.endLabel', { n: endIndex }) }}
+                <span v-if="isCanceledEnd(endIndex)" class="canceled-mark">{{ t('summary.endGrid.canceled') }}</span>
               </th>
               <th scope="col" class="total-col">{{ t('summary.endGrid.total') }}</th>
             </tr>
@@ -19,7 +25,11 @@
               <th scope="row" class="sticky-col" :class="`player-cell--${player.team}`">
                 {{ playerShortName(player) }}
               </th>
-              <td v-for="endIndex in endIndexes" :key="`${player.playerId}-${endIndex}`">
+              <td
+                v-for="endIndex in endIndexes"
+                :key="`${player.playerId}-${endIndex}`"
+                :class="{ 'end-col--canceled': isCanceledEnd(endIndex) }"
+              >
                 <span
                   v-if="endTotalByIndex(player, endIndex) !== null"
                   class="cell"
@@ -62,9 +72,16 @@ import { playerShortName } from '../../composables/useMatchSummaryCharts'
 const props = defineProps<{
   players: MatchSummaryPlayer[]
   endIndexes: number[]
+  canceledEndIndexes?: number[]
 }>()
 
 const { t } = useI18n()
+
+const canceledSet = computed(() => new Set(props.canceledEndIndexes ?? []))
+
+function isCanceledEnd(endIndex: number): boolean {
+  return canceledSet.value.has(endIndex)
+}
 
 const orderedPlayers = computed(() => {
   const teamA = props.players.filter((player) => player.team === 'A')
@@ -155,6 +172,20 @@ const orderedPlayers = computed(() => {
   font-size: 0.6875rem;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+}
+
+.end-col--canceled {
+  opacity: 0.85;
+}
+
+.canceled-mark {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--app-text-subtle);
 }
 
 .sticky-col {

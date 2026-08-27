@@ -54,8 +54,18 @@ final class MatchSummaryService
         $agg = $this->balls->aggregateByGame($game);
         $shotAgg = $this->balls->aggregateByGamePerShot($game);
         $notesByEnd = $this->balls->sumNotesByPlayerAndEnd($game);
-        $endIndexes = array_keys($notesByEnd);
-        sort($endIndexes);
+        $endIndexes = [];
+        $canceledEndIndexes = [];
+        foreach ($this->ends->listIndexMetaByGame($game) as $endMeta) {
+            $endIndexes[] = $endMeta['endIndex'];
+            if ($endMeta['canceled']) {
+                $canceledEndIndexes[] = $endMeta['endIndex'];
+            }
+        }
+        if ($endIndexes === []) {
+            $endIndexes = array_keys($notesByEnd);
+            sort($endIndexes);
+        }
         $playerMap = $this->players->findMapByIds($trackedIds);
 
         $rows = [];
@@ -113,6 +123,7 @@ final class MatchSummaryService
             ends: $endsCount,
             type: $game->getType()->value,
             endIndexes: array_values($endIndexes),
+            canceledEndIndexes: array_values($canceledEndIndexes),
             players: $rows,
         );
     }

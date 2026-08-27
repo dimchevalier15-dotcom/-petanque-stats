@@ -79,7 +79,7 @@ final class MatchSummaryServiceTest extends KernelTestCase
         self::assertSame([], $rowB->endTotals);
     }
 
-    public function testEndTotalsSumBallNotesPerPlayerAndExcludeCanceledEnds(): void
+    public function testEndTotalsSumBallNotesPerPlayerIncludingCanceledEnds(): void
     {
         [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
 
@@ -114,7 +114,7 @@ final class MatchSummaryServiceTest extends KernelTestCase
         self::assertSame(-1, $rowB->endTotals[0]->total);
     }
 
-    public function testCanceledEndBallsAreExcludedFromSummaryAggregates(): void
+    public function testCanceledEndBallsAreIncludedInSummaryAggregatesAndEndGrid(): void
     {
         [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
 
@@ -149,17 +149,21 @@ final class MatchSummaryServiceTest extends KernelTestCase
         self::assertNotNull($res);
         self::assertSame(2, $res->scoreA);
         self::assertSame(2, $res->ends);
+        self::assertSame([1, 2], $res->endIndexes);
+        self::assertSame([2], $res->canceledEndIndexes);
 
         $rowA = $this->findPlayerRow($res->players, $playerAId);
         self::assertNotNull($rowA);
-        self::assertSame(1.0, $rowA->average);
+        self::assertSame(-0.5, $rowA->average);
         self::assertSame(1, $rowA->p1);
-        self::assertSame(0, $rowA->m2);
-        self::assertSame([1], $res->endIndexes);
-        self::assertCount(1, $rowA->endTotals);
+        self::assertSame(1, $rowA->m2);
+        self::assertCount(2, $rowA->endTotals);
+        self::assertSame(1, $rowA->endTotals[0]->endIndex);
         self::assertSame(1, $rowA->endTotals[0]->total);
+        self::assertSame(2, $rowA->endTotals[1]->endIndex);
+        self::assertSame(-2, $rowA->endTotals[1]->total);
         self::assertNotNull($rowA->point);
-        self::assertSame(100.0, $rowA->point->successRate);
+        self::assertSame(50.0, $rowA->point->successRate);
         self::assertNull($rowA->tir);
     }
 

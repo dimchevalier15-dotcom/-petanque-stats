@@ -32,9 +32,10 @@
       "endGrid": "Impact par mène"
     },
     "endGrid": {
-      "hint": "Somme des notes de chaque joueur sur la mène.",
+      "hint": "Somme des notes de chaque joueur sur la mène. Les mènes annulées sont incluses.",
       "player": "Joueur",
-      "total": "Total"
+      "total": "Total",
+      "canceled": "Annulée"
     },
     "comparison": {
       "hint": "Moyenne globale de chaque joueur sur ce match."

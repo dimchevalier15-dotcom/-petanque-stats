@@ -31,7 +31,7 @@ final class GameBallRepositoryTest extends KernelTestCase
         $this->balls = $container->get(GameBallRepository::class);
     }
 
-    public function testAggregateByGameExcludesBallsFromCanceledEnds(): void
+    public function testAggregateByGameIncludesBallsFromCanceledEnds(): void
     {
         [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
 
@@ -53,10 +53,13 @@ final class GameBallRepositoryTest extends KernelTestCase
 
         $agg = $this->balls->aggregateByGame($game);
 
-        self::assertSame([], $agg);
+        self::assertArrayHasKey($playerAId, $agg);
+        self::assertSame(1, $agg[$playerAId]['count']);
+        self::assertSame(-2, $agg[$playerAId]['sum']);
+        self::assertSame(1, $agg[$playerAId]['m2']);
     }
 
-    public function testAggregateByGamePerShotExcludesBallsFromCanceledEnds(): void
+    public function testAggregateByGamePerShotIncludesBallsFromCanceledEnds(): void
     {
         [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
 
@@ -78,6 +81,10 @@ final class GameBallRepositoryTest extends KernelTestCase
 
         $agg = $this->balls->aggregateByGamePerShot($game);
 
-        self::assertSame([], $agg);
+        self::assertArrayHasKey($playerAId, $agg);
+        self::assertArrayHasKey('tir', $agg[$playerAId]);
+        self::assertSame(1, $agg[$playerAId]['tir']['count']);
+        self::assertSame(1, $agg[$playerAId]['tir']['sum']);
+        self::assertSame(1, $agg[$playerAId]['tir']['p1']);
     }
 }

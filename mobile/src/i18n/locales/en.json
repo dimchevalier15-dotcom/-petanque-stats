@@ -32,9 +32,10 @@
       "endGrid": "Impact by end"
     },
     "endGrid": {
-      "hint": "Sum of each player's ball notes in the end.",
+      "hint": "Sum of each player's ball notes in the end. Canceled ends are included.",
       "player": "Player",
-      "total": "Total"
+      "total": "Total",
+      "canceled": "Canceled"
     },
     "comparison": {
       "hint": "Overall average for each player in this match."

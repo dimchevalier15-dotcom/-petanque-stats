@@ -29,6 +29,8 @@
             option-label="label"
             option-value="value"
             :placeholder="t('context.placeholders.select')"
+            overlay-class="context-dropdown-overlay"
+            scroll-height="40vh"
             show-clear
             fluid
           />
@@ -43,6 +45,8 @@
               option-label="label"
               option-value="value"
               :placeholder="t('context.placeholders.select')"
+              overlay-class="context-dropdown-overlay"
+              scroll-height="40vh"
               show-clear
               fluid
             />
@@ -61,6 +65,8 @@
               option-label="label"
               option-value="value"
               :placeholder="t('context.placeholders.select')"
+              overlay-class="context-dropdown-overlay"
+              scroll-height="40vh"
               show-clear
               fluid
             />
@@ -75,6 +81,8 @@
             option-label="label"
             option-value="value"
             :placeholder="t('context.placeholders.select')"
+            overlay-class="context-dropdown-overlay"
+            scroll-height="40vh"
             show-clear
             fluid
           />
@@ -205,6 +213,7 @@ onMounted(load)
 .context {
   display: grid;
   gap: var(--app-space-md);
+  min-width: 0;
 }
 
 .hint {
@@ -217,9 +226,46 @@ onMounted(load)
   padding: var(--app-space-lg);
   display: grid;
   gap: var(--app-space-md);
+  min-width: 0;
+}
+
+.form-card .app-field,
+.form-card :deep(.p-select),
+.form-card :deep(.p-dropdown) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.form-card :deep(.p-select-label),
+.form-card :deep(.p-dropdown-label) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .w-full {
   width: 100%;
+}
+</style>
+
+<style>
+.context-dropdown-overlay {
+  max-width: min(calc(100vw - 1.5rem), var(--app-page-max));
+}
+
+.context-dropdown-overlay .p-select-list,
+.context-dropdown-overlay .p-dropdown-list,
+.context-dropdown-overlay .p-select-items-wrapper,
+.context-dropdown-overlay .p-dropdown-items-wrapper {
+  max-height: min(40vh, 14rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.context-dropdown-overlay .p-select-option,
+.context-dropdown-overlay .p-dropdown-item {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 </style>

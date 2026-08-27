@@ -38,5 +38,6 @@ export interface MatchSummaryResponseDto {
   ends: number
   type?: 'tete_a_tete' | 'doublette' | 'triplette'
   endIndexes?: number[]
+  canceledEndIndexes?: number[]
   players: MatchSummaryPlayerDto[]
 }

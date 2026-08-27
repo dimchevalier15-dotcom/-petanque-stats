@@ -105,6 +105,17 @@ a {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
+/* Phone only: keep match actions above Android back/home (env() is often 0 in WebView). */
+@media (max-width: 48rem) {
+  .play-shell {
+    padding-bottom: max(3rem, env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.play-shell--phone-inset {
+  padding-bottom: max(3rem, env(safe-area-inset-bottom, 0px));
+}
+
 .play-shell > * {
   flex: 1;
   min-height: 0;

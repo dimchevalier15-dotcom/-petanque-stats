@@ -1761,4 +1761,14 @@ onMounted(async () => {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
+
+@media (max-width: 48rem) {
+  .p-dialog-mask:has(.end-score-dialog) {
+    padding-bottom: max(3rem, env(safe-area-inset-bottom, 0px));
+  }
+}
+
+html.native-app .p-dialog-mask:has(.end-score-dialog) {
+  padding-bottom: max(3rem, env(safe-area-inset-bottom, 0px));
+}
 </style>

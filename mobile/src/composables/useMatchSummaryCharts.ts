@@ -1,5 +1,6 @@
 import type { ComposerTranslation } from 'vue-i18n'
 import type { MatchSummary, MatchSummaryPlayer, MatchSummaryShotBreakdown } from '../models/MatchSummary'
+import { successRateFromNoteCounts } from './matchSuccessRate'
 import { buildNoteDistributionChart } from './usePlayerStatsCharts'
 
 interface ChartBundle {
@@ -24,7 +25,7 @@ export function playerToOverallBreakdown(player: MatchSummaryPlayer): MatchSumma
     p0: player.p0,
     m1: player.m1,
     m2: player.m2,
-    successRate: null,
+    successRate: successRateFromNoteCounts(player.p2, player.p1, player.p0, player.m1, player.m2),
   }
 }
 
@@ -65,7 +66,7 @@ export function mergeTeamBreakdown(players: MatchSummaryPlayer[]): MatchSummaryS
     p0,
     m1,
     m2,
-    successRate: null,
+    successRate: successRateFromNoteCounts(p2, p1, p0, m1, m2),
   }
 }
 

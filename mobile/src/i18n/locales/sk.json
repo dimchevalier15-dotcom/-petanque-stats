@@ -32,9 +32,10 @@
       "endGrid": "Vplyv podľa mèny"
     },
     "endGrid": {
-      "hint": "Súčet známok každého hráča v mène.",
+      "hint": "Súčet známok každého hráča v mène. Zrušené mèny sú zahrnuté.",
       "player": "Hráč",
-      "total": "Súčet"
+      "total": "Súčet",
+      "canceled": "Zrušená"
     },
     "comparison": {
       "hint": "Celkový priemer každého hráča v tomto zápase."
