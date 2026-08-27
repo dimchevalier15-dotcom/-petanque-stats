@@ -1,12 +1,19 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
-import type { EndRecord } from '../models/MatchPlay'
+import type { BallNote, EndRecord } from '../models/MatchPlay'
+
+export interface MastersScore {
+  success: number
+  total: number
+}
 
 export interface PlayerEndFormSeries {
   labels: string[]
   totals: number[]
   pointAverage: number | null
   tirAverage: number | null
+  pointMasters: MastersScore | null
+  tirMasters: MastersScore | null
   hasData: boolean
 }
 
@@ -29,6 +36,25 @@ function sumAllNotes(end: EndRecord, playerId: number): number | null {
   return entry.notes.reduce((acc, note) => acc + note, 0)
 }
 
+function forEachShotNote(
+  completedEnds: EndRecord[],
+  playerId: number,
+  shotType: 'point' | 'tir',
+  fn: (note: BallNote) => void,
+): void {
+  for (const end of completedEnds) {
+    const entry = end.balls.find((b) => b.playerId === playerId)
+    if (!entry) {
+      continue
+    }
+    for (let i = 0; i < entry.notes.length; i++) {
+      if (entry.shotTypes[i] === shotType) {
+        fn(entry.notes[i])
+      }
+    }
+  }
+}
+
 function shotTypeAverage(
   completedEnds: EndRecord[],
   playerId: number,
@@ -37,20 +63,30 @@ function shotTypeAverage(
   let sum = 0
   let count = 0
 
-  for (const end of completedEnds) {
-    const entry = end.balls.find((b) => b.playerId === playerId)
-    if (!entry) {
-      continue
-    }
-    for (let i = 0; i < entry.notes.length; i++) {
-      if (entry.shotTypes[i] === shotType) {
-        sum += entry.notes[i]
-        count++
-      }
-    }
-  }
+  forEachShotNote(completedEnds, playerId, shotType, (note) => {
+    sum += note
+    count++
+  })
 
   return count > 0 ? sum / count : null
+}
+
+function shotTypeMasters(
+  completedEnds: EndRecord[],
+  playerId: number,
+  shotType: 'point' | 'tir',
+): MastersScore | null {
+  let success = 0
+  let total = 0
+
+  forEachShotNote(completedEnds, playerId, shotType, (note) => {
+    total++
+    if (note >= 1) {
+      success++
+    }
+  })
+
+  return total > 0 ? { success, total } : null
 }
 
 export function buildPlayerEndFormSeries(
@@ -78,6 +114,8 @@ export function buildPlayerEndFormSeries(
     totals,
     pointAverage: shotTypeAverage(completedEnds, playerId, 'point'),
     tirAverage: shotTypeAverage(completedEnds, playerId, 'tir'),
+    pointMasters: shotTypeMasters(completedEnds, playerId, 'point'),
+    tirMasters: shotTypeMasters(completedEnds, playerId, 'tir'),
     hasData: totals.length > 0,
   }
 }
@@ -89,6 +127,10 @@ interface ChartBundle {
 
 export function formatFormAvg(value: number): string {
   return value.toFixed(2)
+}
+
+export function formatMasters(score: MastersScore): string {
+  return `${score.success}/${score.total}`
 }
 
 export function usePlayerEndFormChart(

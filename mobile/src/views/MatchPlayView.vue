@@ -42,6 +42,19 @@
         :disabled="currentEndIndex >= ends.length - 1"
         :aria-label="t('play.nav.nextEnd')"
       />
+      <div class="distance-estimate">
+        <span class="distance-estimate-label">{{ t('play.distanceEstimate') }}</span>
+        <InputText
+          v-model.number="distanceEstimateInput"
+          type="number"
+          inputmode="decimal"
+          step="0.05"
+          min="6"
+          max="20"
+          class="distance-estimate-input"
+        />
+        <span class="distance-estimate-unit">m</span>
+      </div>
     </header>
 
     <div class="teams">
@@ -55,9 +68,12 @@
             <button
               type="button"
               class="player-name player-name--clickable"
+              :title="nameFor(slot.originalPlayerId)"
               @click="openFormChart(slot.originalPlayerId)"
             >
-              {{ nameFor(slot.originalPlayerId) }}
+              <span class="player-name-line">
+                <span class="player-name-main">{{ shortNameFor(slot.originalPlayerId) }}</span>
+              </span>
               <span class="player-sub-badge">{{ t('play.substitution.playedBefore') }}</span>
             </button>
             <div class="balls balls--readonly" :style="{ '--ball-count': ballsPerPlayer }">
@@ -80,13 +96,16 @@
               class="player-name"
               :class="{ 'player-name--clickable': isTracked(slot.activePlayerId) }"
               :disabled="!isTracked(slot.activePlayerId)"
+              :title="nameFor(slot.activePlayerId)"
               @click="openFormChart(slot.activePlayerId)"
             >
-              {{ nameFor(slot.activePlayerId) }}
-              <span v-if="slot.isSubstitutedOut" class="player-sub-badge">
-                {{ t('play.substitution.replaces', { name: nameFor(slot.originalPlayerId) }) }}
+              <span class="player-name-line">
+                <span class="player-name-main">{{ shortNameFor(slot.activePlayerId) }}</span>
               </span>
               <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(slot.activePlayerId)) }}</span>
+              <span v-if="slot.isSubstitutedOut" class="player-sub-badge">
+                {{ t('play.substitution.replaces', { name: shortNameFor(slot.originalPlayerId) }) }}
+              </span>
             </button>
             <div v-if="isTracked(slot.activePlayerId)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
               <Button
@@ -116,9 +135,12 @@
             <button
               type="button"
               class="player-name player-name--clickable"
+              :title="nameFor(slot.originalPlayerId)"
               @click="openFormChart(slot.originalPlayerId)"
             >
-              {{ nameFor(slot.originalPlayerId) }}
+              <span class="player-name-line">
+                <span class="player-name-main">{{ shortNameFor(slot.originalPlayerId) }}</span>
+              </span>
               <span class="player-sub-badge">{{ t('play.substitution.playedBefore') }}</span>
             </button>
             <div class="balls balls--readonly" :style="{ '--ball-count': ballsPerPlayer }">
@@ -141,13 +163,16 @@
               class="player-name"
               :class="{ 'player-name--clickable': isTracked(slot.activePlayerId) }"
               :disabled="!isTracked(slot.activePlayerId)"
+              :title="nameFor(slot.activePlayerId)"
               @click="openFormChart(slot.activePlayerId)"
             >
-              {{ nameFor(slot.activePlayerId) }}
-              <span v-if="slot.isSubstitutedOut" class="player-sub-badge">
-                {{ t('play.substitution.replaces', { name: nameFor(slot.originalPlayerId) }) }}
+              <span class="player-name-line">
+                <span class="player-name-main">{{ shortNameFor(slot.activePlayerId) }}</span>
               </span>
               <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(slot.activePlayerId)) }}</span>
+              <span v-if="slot.isSubstitutedOut" class="player-sub-badge">
+                {{ t('play.substitution.replaces', { name: shortNameFor(slot.originalPlayerId) }) }}
+              </span>
             </button>
             <div v-if="isTracked(slot.activePlayerId)" class="balls" :style="{ '--ball-count': ballsPerPlayer }">
               <Button
@@ -168,20 +193,6 @@
       </section>
     </div>
 
-    <div class="distance-estimate">
-      <span class="distance-estimate-label">{{ t('play.distanceEstimate') }}</span>
-      <InputText
-        v-model.number="distanceEstimateInput"
-        type="number"
-        inputmode="decimal"
-        step="0.05"
-        min="6"
-        max="20"
-        class="distance-estimate-input"
-      />
-      <span class="distance-estimate-unit">m</span>
-    </div>
-
     <Dialog
       v-model:visible="formChartDialog"
       :header="formChartTitle"
@@ -196,18 +207,28 @@
         <div v-if="formChartSeries && (formChartSeries.pointAverage !== null || formChartSeries.tirAverage !== null)" class="form-chart-stats">
           <div v-if="formChartSeries.pointAverage !== null" class="form-chart-stat">
             <span>{{ t('play.formChart.pointAverage') }}</span>
-            <Tag :value="formatFormAvg(formChartSeries.pointAverage)" :severity="avgSeverity(formChartSeries.pointAverage)" />
+            <div class="form-chart-stat-values">
+              <Tag :value="formatFormAvg(formChartSeries.pointAverage)" :severity="avgSeverity(formChartSeries.pointAverage)" />
+              <span v-if="formChartSeries.pointMasters" class="form-chart-masters">
+                ({{ formatMasters(formChartSeries.pointMasters) }})
+              </span>
+            </div>
           </div>
           <div v-if="formChartSeries.tirAverage !== null" class="form-chart-stat">
             <span>{{ t('play.formChart.tirAverage') }}</span>
-            <Tag :value="formatFormAvg(formChartSeries.tirAverage)" :severity="avgSeverity(formChartSeries.tirAverage)" />
+            <div class="form-chart-stat-values">
+              <Tag :value="formatFormAvg(formChartSeries.tirAverage)" :severity="avgSeverity(formChartSeries.tirAverage)" />
+              <span v-if="formChartSeries.tirMasters" class="form-chart-masters">
+                ({{ formatMasters(formChartSeries.tirMasters) }})
+              </span>
+            </div>
           </div>
         </div>
       </div>
       <p v-else class="form-chart-empty">{{ t('play.formChart.empty') }}</p>
     </Dialog>
 
-    <OverlayPanel ref="op" class="note-overlay-panel">
+    <OverlayPanel ref="op" class="note-overlay-panel" appendTo="body">
       <div class="note-overlay">
         <div class="shot-type">
           <SelectButton v-model="shotType" :options="shotOptions" optionLabel="label" optionValue="value" size="small" />
@@ -296,6 +317,7 @@
         <Button
           v-if="canMakeSubstitution"
           class="substitution-btn"
+          size="small"
           :label="t('play.substitution.action')"
           icon="pi pi-sync"
           severity="secondary"
@@ -303,10 +325,10 @@
           @click="openSubstitutionDialog"
         />
         <div v-if="canValidateEnd && !scoreDialog" class="play-actions-primary">
-          <Button class="validate-end-btn" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
-          <Button class="cancel-end-btn" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" outlined @click="openCancelDialog" />
+          <Button class="validate-end-btn" size="small" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
+          <Button class="cancel-end-btn" size="small" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" outlined @click="openCancelDialog" />
         </div>
-        <Button class="finish-btn" :label="t('play.actions.finish')" icon="pi pi-flag" severity="secondary" text @click="openFinishDialog" />
+        <Button class="finish-btn" size="small" :label="t('play.actions.finish')" icon="pi pi-flag" severity="secondary" text @click="openFinishDialog" />
       </footer>
     </div>
 
@@ -405,7 +427,7 @@ import { inferStartingRoles, totalBallsInEnd } from '../utils/matchRoles'
 import { useMatchPlay } from '../composables/useMatchPlay'
 import { useMatchTimer } from '../composables/useMatchTimer'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
-import { formatFormAvg, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
+import { formatFormAvg, formatMasters, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
 import { avgSeverity } from '../composables/usePlayerStatsCharts'
 import type { MatchContext } from '../models/MatchContext'
 import { clampEndPoints, maxPointsForWinner, maxPointsPerEnd, suggestEndScore } from '../models/EndScoreSuggestion'
@@ -730,8 +752,7 @@ async function loadPlayerName(playerId: number): Promise<void> {
   }
   try {
     const player = await playersService.getById(playerId)
-    const full = `${player.firstName} ${player.lastName}`.trim()
-    names.value[player.id] = player.nickname ? `${player.nickname} (${full})` : full
+    rememberPlayerName(player)
   } catch {
     // keep fallback label
   }
@@ -916,9 +937,20 @@ async function onFinish() {
 }
 
 const names = ref<Record<number, string>>({})
+const shortNames = ref<Record<number, string>>({})
+
+function rememberPlayerName(player: Player): void {
+  const full = `${player.firstName} ${player.lastName}`.trim()
+  names.value[player.id] = player.nickname ? `${player.nickname} (${full})` : full
+  shortNames.value[player.id] = (player.nickname || player.firstName || full).trim()
+}
 
 function nameFor(pid: number): string {
   return names.value[pid] ?? `#${pid}`
+}
+
+function shortNameFor(pid: number): string {
+  return shortNames.value[pid] ?? nameFor(pid)
 }
 
 onMounted(async () => {
@@ -932,8 +964,7 @@ onMounted(async () => {
     ])
     context.value = contextData
     for (const p of playerResults) {
-      const full = `${p.firstName} ${p.lastName}`.trim()
-      names.value[p.id] = p.nickname ? `${p.nickname} (${full})` : full
+      rememberPlayerName(p)
     }
   } catch {
     // ignore errors; fallback labels remain
@@ -961,12 +992,15 @@ onMounted(async () => {
   --play-note-great-bg: #eff6ff;
 
   max-width: var(--app-page-max);
+  width: 100%;
   margin: 0 auto;
-  min-height: 100dvh;
+  flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: var(--app-space-md);
-  padding: var(--app-space-sm) var(--app-space-lg) calc(var(--app-nav-h) + env(safe-area-inset-bottom, 0px) + var(--app-space-sm));
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: var(--app-space-sm);
+  padding: var(--app-space-sm) var(--app-space-sm) var(--app-space-sm);
+  overflow: hidden;
   background:
     radial-gradient(circle at 0% 0%, rgba(31, 107, 88, 0.07), transparent 38%),
     radial-gradient(circle at 100% 0%, rgba(184, 146, 58, 0.06), transparent 34%),
@@ -981,7 +1015,7 @@ onMounted(async () => {
   grid-template-columns: 2.5rem 1fr 2.5rem;
   align-items: center;
   gap: var(--app-space-xs);
-  padding: var(--app-space-md);
+  padding: var(--app-space-sm) var(--app-space-sm) var(--app-space-xs);
   border-radius: var(--app-radius-lg);
   background: var(--app-surface);
   border: 1px solid var(--app-border);
@@ -1059,7 +1093,7 @@ onMounted(async () => {
 }
 
 .score-value {
-  font-size: clamp(2rem, 9vw, 2.75rem);
+  font-size: clamp(1.75rem, 8vw, 2.5rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -1082,11 +1116,14 @@ onMounted(async () => {
 }
 
 .distance-estimate {
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
-  padding: 0.25rem 0;
+  padding: 0.125rem 0 0.125rem;
+  border-top: 1px solid var(--app-border);
+  margin-top: 0.125rem;
   color: var(--app-text-subtle);
 }
 
@@ -1167,6 +1204,7 @@ onMounted(async () => {
 
 .roles-teams {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 0.5rem;
 }
 
@@ -1216,22 +1254,26 @@ onMounted(async () => {
 }
 
 .player-role {
-  display: block;
-  margin-top: 0.125rem;
-  font-size: 0.6875rem;
+  font-size: 0.5rem;
   font-weight: 700;
+  line-height: 1.1;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   color: var(--app-primary);
-  opacity: 0.85;
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .player-sub-badge {
-  display: block;
-  margin-top: 0.125rem;
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 600;
+  line-height: 1.2;
   color: var(--app-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .player--out {
@@ -1308,49 +1350,57 @@ onMounted(async () => {
   bottom: 0;
   z-index: 15;
   display: grid;
-  gap: var(--app-space-xs);
+  gap: 0.375rem;
   padding-top: var(--app-space-xs);
+  padding-bottom: 0.5rem;
   background: linear-gradient(to top, var(--app-bg) 85%, transparent);
 }
 
 .play-actions {
   display: grid;
-  gap: var(--app-space-xs);
+  gap: 0.25rem;
 }
 
 .teams {
   display: grid;
-  gap: var(--app-space-md);
-  align-content: start;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: stretch;
+  min-height: 0;
+  overflow: auto;
 }
 
 .team {
-  padding: var(--app-space-md);
+  min-width: 0;
+  padding: 0.5rem 0.5rem 0.375rem;
   border-radius: var(--app-radius);
   background: var(--app-surface);
   border: 1px solid var(--app-border);
   display: grid;
+  align-content: start;
   gap: 0;
-  overflow: hidden;
 }
 
 .team--a {
-  border-left: 4px solid var(--play-team-a-border);
-  background: linear-gradient(90deg, var(--play-team-a-soft) 0%, var(--app-surface) 18%);
+  border-top: 3px solid var(--play-team-a);
+  background: linear-gradient(180deg, var(--play-team-a-soft) 0%, var(--app-surface) 2.5rem);
 }
 
 .team--b {
-  border-left: 4px solid var(--play-team-b-border);
-  background: linear-gradient(90deg, var(--play-team-b-soft) 0%, var(--app-surface) 18%);
+  border-top: 3px solid var(--play-team-b);
+  background: linear-gradient(180deg, var(--play-team-b-soft) 0%, var(--app-surface) 2.5rem);
 }
 
 .team-title {
-  margin: 0 0 var(--app-space-sm);
-  font-size: 0.8125rem;
+  margin: 0 0 0.375rem;
+  font-size: 0.6875rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--app-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .team--a .team-title {
@@ -1359,12 +1409,14 @@ onMounted(async () => {
 
 .team--b .team-title {
   color: var(--play-team-b);
+  text-align: right;
 }
 
 .player {
   display: grid;
-  gap: var(--app-space-sm);
-  padding: var(--app-space-sm) 0;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.375rem 0;
   border-top: 1px solid var(--app-border);
 }
 
@@ -1378,12 +1430,27 @@ onMounted(async () => {
   padding: 0;
   border: none;
   background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.125rem;
+  min-width: 0;
   font: inherit;
   font-weight: 700;
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
   letter-spacing: -0.01em;
   text-align: left;
   color: var(--app-text);
+}
+
+.player-name-line {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.player-name-main {
+  display: block;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1391,6 +1458,9 @@ onMounted(async () => {
 
 .player-name--clickable {
   cursor: pointer;
+}
+
+.player-name--clickable .player-name-main {
   color: var(--app-primary);
   text-decoration: underline;
   text-underline-offset: 0.18em;
@@ -1405,16 +1475,18 @@ onMounted(async () => {
 }
 
 .balls {
-  display: grid;
-  grid-template-columns: repeat(var(--ball-count, 3), minmax(0, 1fr));
-  gap: var(--app-space-xs);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .balls :deep(.ball.p-button) {
-  width: 100%;
-  aspect-ratio: 1;
-  min-height: 2.875rem;
-  max-height: 3.5rem;
+  width: 2.7rem;
+  height: 2.7rem;
+  min-height: 2.7rem;
+  max-height: 2.7rem;
+  flex: 0 0 2.7rem;
   padding: 0;
   border-radius: 999px;
   border: 2px solid var(--app-border-strong);
@@ -1432,7 +1504,7 @@ onMounted(async () => {
   border-color: var(--app-border);
   background: transparent;
   color: var(--app-text-subtle);
-  font-size: 1.125rem;
+  font-size: 0.95rem;
 }
 
 .balls :deep(.ball--empty.p-button:not(:disabled)) {
@@ -1478,26 +1550,31 @@ onMounted(async () => {
 }
 
 .balls :deep(.ball--played .p-button-label) {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .play-actions-primary {
   display: grid;
-  gap: var(--app-space-xs);
+  grid-template-columns: 1.4fr 1fr;
+  gap: 0.25rem;
 }
 
-.validate-end-btn,
-.cancel-end-btn,
-.finish-btn,
-.substitution-btn {
+.play-actions :deep(.p-button) {
   width: 100%;
-  min-height: var(--app-touch-min);
+  height: 1.75rem;
+  min-height: 1.75rem;
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+}
+
+.play-actions :deep(.p-button-label),
+.play-actions :deep(.p-button-icon) {
+  font-size: 0.75rem;
 }
 
 .validate-end-btn {
-  min-height: 3rem;
   font-weight: 700;
 }
 
@@ -1626,6 +1703,18 @@ onMounted(async () => {
   gap: 0.75rem;
   font-size: 0.875rem;
   font-weight: 600;
+}
+
+.form-chart-stat-values {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.form-chart-masters {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--app-text-muted);
 }
 
 .form-chart-empty {
