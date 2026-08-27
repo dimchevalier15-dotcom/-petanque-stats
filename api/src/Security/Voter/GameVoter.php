@@ -54,6 +54,10 @@ final class GameVoter extends Voter
         }
 
         if ($attribute === self::VIEW) {
+            if ($this->canCoachViewGame($game, $user)) {
+                return true;
+            }
+
             $impersonatePlayerId = $this->resolveImpersonatePlayerId($user);
             if ($impersonatePlayerId !== null) {
                 $player = $this->players->find($impersonatePlayerId);
@@ -94,6 +98,25 @@ final class GameVoter extends Voter
         $participantIds = $this->participants->findAllPlayerIdsByGame($game);
 
         return in_array($playerId, $participantIds, true);
+    }
+
+    private function canCoachViewGame(Game $game, User $user): bool
+    {
+        $coachClub = $user->getCoachForClub();
+        if ($coachClub === null) {
+            return false;
+        }
+
+        $coachClubId = (int) $coachClub->getId();
+        foreach ($this->participants->findAllPlayerIdsByGame($game) as $playerId) {
+            $player = $this->players->find($playerId);
+            $playerClub = $player?->getClub();
+            if ($playerClub !== null && (int) $playerClub->getId() === $coachClubId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function resolveImpersonatePlayerId(User $user): ?int

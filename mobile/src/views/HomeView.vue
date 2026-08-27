@@ -63,6 +63,15 @@
           <span>{{ t('home.actions.settings') }}</span>
         </button>
         <button
+          v-if="isCoach"
+          type="button"
+          class="quick-item app-card"
+          @click="goCoach"
+        >
+          <i class="pi pi-users" aria-hidden="true" />
+          <span>{{ t('home.actions.coach') }}</span>
+        </button>
+        <button
           v-if="isAdmin"
           type="button"
           class="quick-item app-card"
@@ -95,12 +104,14 @@ import { useRouter } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
 import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
 import { useIsAdmin } from '../composables/useIsAdmin'
+import { useIsCoach } from '../composables/useIsCoach'
 import { useAuthStore } from '../stores/auth'
 
 const { t, locale } = useI18n()
 const router = useRouter()
 const auth = useAuthStore()
 const isAdmin = useIsAdmin()
+const isCoach = useIsCoach()
 const { draft, resume, abandon } = useMatchDraftResume()
 const verifyNotice = ref('')
 const verifyNoticeSeverity = ref<'success' | 'error'>('success')
@@ -124,6 +135,9 @@ function goSettings(): void {
 }
 function goAdmin(): void {
   router.push({ name: 'adminHome' })
+}
+function goCoach(): void {
+  router.push({ name: 'coachPlayers' })
 }
 function goGuidelines(): void {
   router.push({ name: 'guidelines' })

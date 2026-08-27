@@ -209,22 +209,30 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
   }
 
   watch(
-    [type, teamASelections, teamBSelections],
-    () => {
-      const expected = slotsForType(type.value).length
+    type,
+    (nextType) => {
+      const expected = slotsForType(nextType).length
       for (let i = expected; i < 3; i++) {
         teamASelections[i] = null
         teamBSelections[i] = null
       }
 
       for (let i = 0; i < 3; i++) {
-        teamARoles[i] = defaultRoleFor(type.value, i + 1)
-        teamBRoles[i] = defaultRoleFor(type.value, i + 1)
+        teamARoles[i] = defaultRoleFor(nextType, i + 1)
+        teamBRoles[i] = defaultRoleFor(nextType, i + 1)
       }
 
       validateAll()
     },
-    { deep: true, immediate: true },
+    { immediate: true },
+  )
+
+  watch(
+    [teamASelections, teamBSelections],
+    () => {
+      validateAll()
+    },
+    { deep: true },
   )
 
   function touch(team: MatchTeamSide, slot: number): void {

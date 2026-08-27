@@ -49,7 +49,26 @@ final class PlayerStatsService
             return $this->emptyResponse('no_player', null, null);
         }
 
-        $displayName = $context->displayName;
+        return $this->statsForPlayerId(
+            $playerId,
+            $context->displayName,
+            $nature,
+            $dateRange,
+            $type,
+            $distanceBucket,
+            $competitionId,
+        );
+    }
+
+    public function statsForPlayerId(
+        int $playerId,
+        ?string $displayName,
+        ?MatchNature $nature = null,
+        ?DateRange $dateRange = null,
+        ?GameType $type = null,
+        ?DistanceBucket $distanceBucket = null,
+        ?int $competitionId = null,
+    ): PlayerStatsResponse {
         $games = $this->games->findCompletedGamesForPlayer((int) $playerId, $nature, $dateRange, $type, $competitionId);
 
         if ($games === []) {

@@ -10,4 +10,6 @@ export interface User {
   emailVerified?: boolean
   role?: UserRole
   isAdmin?: boolean
+  coachForClubId?: number | null
+  coachForClubName?: string | null
 }

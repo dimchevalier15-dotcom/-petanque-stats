@@ -115,6 +115,7 @@
       "myStats": "My statistics",
       "settings": "Settings",
       "admin": "Administration",
+      "coach": "Coach space",
       "logout": "Logout",
       "shooting": "Precision shooting",
       "training": "Training"
@@ -496,7 +497,8 @@
       "title": "Administration",
       "impersonate": "Impersonate",
       "competitions": "Competitions",
-      "clubs": "Clubs"
+      "clubs": "Clubs",
+      "coach": "Coaches"
     },
     "impersonate": {
       "title": "Impersonate mode",
@@ -566,6 +568,57 @@
       "errors": {
         "saveFailed": "Unable to save club.",
         "deleteFailed": "Unable to delete club."
+      }
+    },
+    "coach": {
+      "title": "Assign a coach",
+      "hint": "Link a user account to a club to grant coach access.",
+      "fields": {
+        "email": "Account email",
+        "club": "Coach club"
+      },
+      "placeholders": {
+        "club": "Select a club"
+      },
+      "clearHint": "Leave empty and save to remove coach rights.",
+      "actions": {
+        "save": "Save"
+      },
+      "success": "Coach rights updated.",
+      "errors": {
+        "emailRequired": "Email is required.",
+        "saveFailed": "Could not update coach rights."
+      }
+    }
+  },
+  "coach": {
+    "title": "Coach space",
+    "empty": "No players linked to this club.",
+    "addPlayer": {
+      "action": "Add player",
+      "title": "Add player to club",
+      "hint": "The player will be linked to {club}.",
+      "searchTitle": "Existing player without club",
+      "searchLabel": "Search for a player",
+      "searchPlaceholder": "Search (3 characters min.)",
+      "searchEmpty": "No player without a club matches.",
+      "attach": "Add to club",
+      "attachSuccess": "Player added to the club.",
+      "attachError": "Could not add this player to the club.",
+      "orCreate": "or create",
+      "createTitle": "New player",
+      "createSubmit": "Create and add",
+      "cancel": "Cancel",
+      "success": "Player created and added to the club.",
+      "error": "Could not create the player."
+    },
+    "player": {
+      "title": "Player",
+      "subtitle": "Player statistics",
+      "noStats": "No data for the selected period.",
+      "tabs": {
+        "stats": "Statistics",
+        "history": "Matches"
       }
     }
   },

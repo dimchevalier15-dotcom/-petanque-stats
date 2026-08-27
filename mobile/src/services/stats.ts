@@ -6,7 +6,7 @@ import type { PlayerStatsResponseDto } from '../dto/player/PlayerStatsResponse'
 import type { StatsDateRangeParams } from '../composables/useStatsDateRange'
 import type { PlayerStats } from '../models/PlayerStats'
 
-function mapPlayerStats(dto: PlayerStatsResponseDto): PlayerStats {
+export function mapPlayerStats(dto: PlayerStatsResponseDto): PlayerStats {
   return {
     status: dto.status,
     playerId: dto.playerId,

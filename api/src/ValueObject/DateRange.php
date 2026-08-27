@@ -23,6 +23,15 @@ final readonly class DateRange
         return new self($fromDate, $toDate);
     }
 
+    public static function defaultLastMonth(): self
+    {
+        $today = new \DateTimeImmutable('today');
+        $from = $today->modify('-1 month')->setTime(0, 0, 0);
+        $to = $today->setTime(23, 59, 59);
+
+        return new self($from, $to);
+    }
+
     private static function parseDate(string $value): \DateTimeImmutable
     {
         $date = \DateTimeImmutable::createFromFormat('Y-m-d', $value);

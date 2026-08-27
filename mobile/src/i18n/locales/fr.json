@@ -115,6 +115,7 @@
       "myStats": "Mes statistiques",
       "settings": "Paramètres",
       "admin": "Administration",
+      "coach": "Espace coach",
       "logout": "Déconnexion",
       "shooting": "Tir de précision",
       "training": "Entraînement"
@@ -496,7 +497,8 @@
       "title": "Administration",
       "impersonate": "Impersonate",
       "competitions": "Compétitions",
-      "clubs": "Clubs"
+      "clubs": "Clubs",
+      "coach": "Coaches"
     },
     "impersonate": {
       "title": "Mode impersonate",
@@ -566,6 +568,57 @@
       "errors": {
         "saveFailed": "Impossible d'enregistrer le club.",
         "deleteFailed": "Impossible de supprimer le club."
+      }
+    },
+    "coach": {
+      "title": "Attribuer un coach",
+      "hint": "Lie un compte utilisateur à un club pour lui donner accès à l'espace coach.",
+      "fields": {
+        "email": "Email du compte",
+        "club": "Club coach"
+      },
+      "placeholders": {
+        "club": "Choisir un club"
+      },
+      "clearHint": "Laisser vide et enregistrer pour retirer les droits coach.",
+      "actions": {
+        "save": "Enregistrer"
+      },
+      "success": "Droits coach mis à jour.",
+      "errors": {
+        "emailRequired": "L'email est obligatoire.",
+        "saveFailed": "Impossible de mettre à jour les droits coach."
+      }
+    }
+  },
+  "coach": {
+    "title": "Espace coach",
+    "empty": "Aucun joueur rattaché à ce club.",
+    "addPlayer": {
+      "action": "Ajouter un joueur",
+      "title": "Ajouter un joueur au club",
+      "hint": "Le joueur sera rattaché à {club}.",
+      "searchTitle": "Joueur existant sans club",
+      "searchLabel": "Rechercher un joueur",
+      "searchPlaceholder": "Rechercher (3 caractères min.)",
+      "searchEmpty": "Aucun joueur sans club ne correspond.",
+      "attach": "Ajouter au club",
+      "attachSuccess": "Joueur ajouté au club.",
+      "attachError": "Impossible d'ajouter ce joueur au club.",
+      "orCreate": "ou créer",
+      "createTitle": "Nouveau joueur",
+      "createSubmit": "Créer et ajouter",
+      "cancel": "Annuler",
+      "success": "Joueur créé et ajouté au club.",
+      "error": "Impossible de créer le joueur."
+    },
+    "player": {
+      "title": "Joueur",
+      "subtitle": "Statistiques du joueur",
+      "noStats": "Aucune donnée sur la période sélectionnée.",
+      "tabs": {
+        "stats": "Statistiques",
+        "history": "Matchs"
       }
     }
   },

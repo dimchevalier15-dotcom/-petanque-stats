@@ -8,4 +8,6 @@ export interface AuthUserDto {
   emailVerified?: boolean
   role?: string
   isAdmin?: boolean
+  coachForClubId?: number | null
+  coachForClubName?: string | null
 }

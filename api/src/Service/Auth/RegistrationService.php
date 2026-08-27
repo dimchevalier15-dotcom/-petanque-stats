@@ -6,7 +6,6 @@ namespace App\Service\Auth;
 
 use App\Dto\Auth\RegisterInput;
 use App\Dto\Response\AuthSessionResponse;
-use App\Dto\Response\MeResponse;
 use App\Entity\User;
 use App\Entity\Player;
 use App\Repository\UserRepository;
@@ -15,6 +14,7 @@ use App\Service\Account\PlayerLinkService;
 use App\Service\Account\PlayerNotFoundException;
 use App\Service\Account\UserAlreadyHasPlayerException;
 use App\Service\PlayerClubResolver;
+use App\Service\MeResponseFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -33,6 +33,7 @@ final class RegistrationService
         private PlayerClubResolver $playerClubResolver,
         private JWTEncoderInterface $jwtEncoder,
         private EmailVerificationService $emailVerificationService,
+        private MeResponseFactory $meResponseFactory,
         #[Autowire(param: 'lexik_jwt_authentication.token_ttl')]
         private int $tokenTtl,
     ) {
@@ -104,17 +105,7 @@ final class RegistrationService
 
         return new AuthSessionResponse(
             token: $token,
-            user: new MeResponse(
-                id: (int) $user->getId(),
-                email: $user->getEmail(),
-                playerId: (int) $player->getId(),
-                firstName: $player->getFirstName(),
-                lastName: $player->getLastName(),
-                nickname: $player->getNickname(),
-                emailVerified: $user->isEmailVerified(),
-                role: $user->getRole(),
-                isAdmin: $user->isMaster(),
-            ),
+            user: $this->meResponseFactory->fromUser($user),
         );
     }
 }

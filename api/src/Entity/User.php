@@ -35,6 +35,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 20, enumType: UserRole::class)]
     private UserRole $role;
 
+    #[ORM\ManyToOne(targetEntity: Club::class)]
+    #[ORM\JoinColumn(name: 'coach_for_club_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Club $coachForClub = null;
+
     public function __construct(string $email)
     {
         $this->email = $email;
@@ -103,6 +107,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isMaster(): bool
     {
         return $this->role === UserRole::MASTER;
+    }
+
+    public function getCoachForClub(): ?Club
+    {
+        return $this->coachForClub;
+    }
+
+    public function setCoachForClub(?Club $club): void
+    {
+        $this->coachForClub = $club;
+    }
+
+    public function isCoach(): bool
+    {
+        return $this->coachForClub !== null;
     }
 
     public function getUserIdentifier(): string

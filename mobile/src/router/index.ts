@@ -19,6 +19,7 @@ import LegalNoticeView from '../views/LegalNoticeView.vue'
 import DeleteAccountView from '../views/DeleteAccountView.vue'
 import { GUEST_ONLY_ROUTE_NAMES, LEGAL_PATHS, PUBLIC_ROUTE_NAMES } from './publicRoutes'
 import { userHasMasterAccess } from '../models/UserRole'
+import { userIsCoach } from '../composables/useIsCoach'
 import { useAuthStore } from '../stores/auth'
 
 const routes: RouteRecordRaw[] = [
@@ -56,6 +57,24 @@ const routes: RouteRecordRaw[] = [
     name: 'adminClubs',
     component: () => import('../views/AdminClubsView.vue'),
     meta: { layout: 'focus', requiresAdmin: true },
+  },
+  {
+    path: '/admin/coach',
+    name: 'adminCoach',
+    component: () => import('../views/AdminCoachView.vue'),
+    meta: { layout: 'focus', requiresAdmin: true },
+  },
+  {
+    path: '/coach',
+    name: 'coachPlayers',
+    component: () => import('../views/CoachPlayersView.vue'),
+    meta: { layout: 'focus', requiresCoach: true },
+  },
+  {
+    path: '/coach/players/:id',
+    name: 'coachPlayer',
+    component: () => import('../views/CoachPlayerDetailView.vue'),
+    meta: { layout: 'focus', requiresCoach: true },
   },
   { path: '/match/new', name: 'newMatch', component: NewMatchView, meta: { layout: 'focus' } },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView, meta: { layout: 'focus' } },
@@ -101,6 +120,15 @@ router.beforeEach(async (to) => {
       await auth.initFromStorage()
     }
     if (!userHasMasterAccess(auth.user)) {
+      return { name: 'home' }
+    }
+  }
+  if (to.meta.requiresCoach) {
+    const auth = useAuthStore()
+    if (!auth.user && token) {
+      await auth.initFromStorage()
+    }
+    if (!userIsCoach(auth.user)) {
       return { name: 'home' }
     }
   }

@@ -6,8 +6,8 @@ namespace App\Service\Auth;
 
 use App\Dto\Response\MeResponse;
 use App\Entity\User;
-use App\Repository\PlayerRepository;
 use App\Repository\UserRepository;
+use App\Service\MeResponseFactory;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 
 final class CurrentUserService
@@ -15,7 +15,7 @@ final class CurrentUserService
     public function __construct(
         private JWTEncoderInterface $jwtEncoder,
         private UserRepository $users,
-        private PlayerRepository $players,
+        private MeResponseFactory $meResponseFactory,
     ) {
     }
 
@@ -25,19 +25,8 @@ final class CurrentUserService
     public function meFromToken(string $token): MeResponse
     {
         $user = $this->getUserFromToken($token);
-        $player = $this->players->findOneByUserId((int) $user->getId());
 
-        return new MeResponse(
-            id: (int) $user->getId(),
-            email: $user->getEmail(),
-            playerId: $player?->getId() !== null ? (int) $player->getId() : null,
-            firstName: $player?->getFirstName(),
-            lastName: $player?->getLastName(),
-            nickname: $player?->getNickname(),
-            emailVerified: $user->isEmailVerified(),
-            role: $user->getRole(),
-            isAdmin: $user->isMaster(),
-        );
+        return $this->meResponseFactory->fromUser($user);
     }
 
     /**

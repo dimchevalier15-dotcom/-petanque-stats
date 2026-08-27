@@ -115,6 +115,7 @@
       "myStats": "Moje štatistiky",
       "settings": "Nastavenia",
       "admin": "Administrácia",
+      "coach": "Tréner",
       "logout": "Odhlásiť sa",
       "shooting": "Presná streľba",
       "training": "Tréning"
@@ -496,7 +497,8 @@
       "title": "Administrácia",
       "impersonate": "Impersonate",
       "competitions": "Súťaže",
-      "clubs": "Kluby"
+      "clubs": "Kluby",
+      "coach": "Tréneri"
     },
     "impersonate": {
       "title": "Režim impersonate",
@@ -566,6 +568,57 @@
       "errors": {
         "saveFailed": "Klub sa nepodarilo uložiť.",
         "deleteFailed": "Klub sa nepodarilo odstrániť."
+      }
+    },
+    "coach": {
+      "title": "Priradiť trénera",
+      "hint": "Prepojte používateľský účet s klubom pre prístup trénera.",
+      "fields": {
+        "email": "Email účtu",
+        "club": "Klub trénera"
+      },
+      "placeholders": {
+        "club": "Vybrať klub"
+      },
+      "clearHint": "Nechajte prázdne a uložte na odstránenie práv trénera.",
+      "actions": {
+        "save": "Uložiť"
+      },
+      "success": "Práva trénera aktualizované.",
+      "errors": {
+        "emailRequired": "Email je povinný.",
+        "saveFailed": "Práva trénera sa nepodarilo aktualizovať."
+      }
+    }
+  },
+  "coach": {
+    "title": "Tréner",
+    "empty": "Žiadni hráči priradení k tomuto klubu.",
+    "addPlayer": {
+      "action": "Pridať hráča",
+      "title": "Pridať hráča do klubu",
+      "hint": "Hráč bude priradený ku klubu {club}.",
+      "searchTitle": "Existujúci hráč bez klubu",
+      "searchLabel": "Hľadať hráča",
+      "searchPlaceholder": "Hľadať (min. 3 znaky)",
+      "searchEmpty": "Žiadny hráč bez klubu nevyhovuje.",
+      "attach": "Pridať do klubu",
+      "attachSuccess": "Hráč bol pridaný do klubu.",
+      "attachError": "Hráča sa nepodarilo pridať do klubu.",
+      "orCreate": "alebo vytvoriť",
+      "createTitle": "Nový hráč",
+      "createSubmit": "Vytvoriť a pridať",
+      "cancel": "Zrušiť",
+      "success": "Hráč bol vytvorený a pridaný do klubu.",
+      "error": "Hráča sa nepodarilo vytvoriť."
+    },
+    "player": {
+      "title": "Hráč",
+      "subtitle": "Štatistiky hráča",
+      "noStats": "Žiadne údaje za zvolené obdobie.",
+      "tabs": {
+        "stats": "Štatistiky",
+        "history": "Zápasy"
       }
     }
   },

@@ -10,12 +10,14 @@ use App\Entity\Game;
 use App\Repository\GameEndRepository;
 use App\Repository\GameRepository;
 use App\Repository\GameParticipantRepository;
+use App\Repository\PlayerRepository;
 use App\Service\Auth\InvalidTokenException;
 
 final class MatchHistoryService
 {
     public function __construct(
         private PlayerViewContextResolver $playerViewContext,
+        private PlayerRepository $players,
         private GameRepository $games,
         private GameEndRepository $ends,
         private GameParticipantRepository $participants,
@@ -33,9 +35,38 @@ final class MatchHistoryService
     ): MatchHistoryResponse {
         $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
 
-        [$total, $games] = $this->games->findHistoryForAccount(
+        return $this->historyForPlayerContext(
             $context->historyUserId,
             $context->playerId,
+            $page,
+            $pageSize,
+        );
+    }
+
+    public function historyForPlayerId(int $playerId, int $page = 1, int $pageSize = 20): MatchHistoryResponse
+    {
+        $player = $this->players->find($playerId);
+        if ($player === null) {
+            return new MatchHistoryResponse(page: $page, pageSize: $pageSize, total: 0, items: []);
+        }
+
+        return $this->historyForPlayerContext(
+            $player->getUser()?->getId(),
+            $playerId,
+            $page,
+            $pageSize,
+        );
+    }
+
+    private function historyForPlayerContext(
+        ?int $historyUserId,
+        ?int $playerId,
+        int $page,
+        int $pageSize,
+    ): MatchHistoryResponse {
+        [$total, $games] = $this->games->findHistoryForAccount(
+            $historyUserId,
+            $playerId,
             $page,
             $pageSize,
         );
@@ -49,7 +80,7 @@ final class MatchHistoryService
             $scoreA = $sum['A'] ?? 0;
             $scoreB = $sum['B'] ?? 0;
             $winner = $scoreA >= $scoreB ? 'A' : 'B';
-            $victory = $this->resolveVictory($g, $context->playerId, $winner);
+            $victory = $this->resolveVictory($g, $playerId, $winner);
 
             $items[] = new MatchHistoryItemResponse(
                 id: (int) $g->getId(),

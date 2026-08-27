@@ -15,6 +15,10 @@
         <i class="pi pi-building" aria-hidden="true" />
         <span>{{ t('admin.home.clubs') }}</span>
       </button>
+      <button type="button" class="quick-item app-card" @click="goCoachAdmin">
+        <i class="pi pi-users" aria-hidden="true" />
+        <span>{{ t('admin.home.coach') }}</span>
+      </button>
     </div>
   </AppPage>
 </template>
@@ -38,6 +42,10 @@ function goCompetitions(): void {
 
 function goClubs(): void {
   router.push({ name: 'adminClubs' })
+}
+
+function goCoachAdmin(): void {
+  router.push({ name: 'adminCoach' })
 }
 </script>
 

@@ -18,6 +18,8 @@ final class MeResponse
         public bool $emailVerified = false,
         public UserRole $role = UserRole::SIMPLE_PLAYER,
         public bool $isAdmin = false,
+        public ?int $coachForClubId = null,
+        public ?string $coachForClubName = null,
     ) {
     }
 }

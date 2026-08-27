@@ -47,6 +47,7 @@ const props = withDefaults(
     unlinkedOnly?: boolean
     authenticatedSearch?: boolean
     minQueryLength?: number
+    searchPlayers?: (query: string) => Promise<Player[]>
   }>(),
   {
     label: undefined,
@@ -55,6 +56,7 @@ const props = withDefaults(
     unlinkedOnly: false,
     authenticatedSearch: false,
     minQueryLength: 3,
+    searchPlayers: undefined,
   },
 )
 
@@ -78,6 +80,9 @@ watch(
 )
 
 async function searchPlayers(q: string): Promise<Player[]> {
+  if (props.searchPlayers) {
+    return props.searchPlayers(q)
+  }
   if (props.authenticatedSearch) {
     return accountService.searchUnlinkedPlayers(q)
   }

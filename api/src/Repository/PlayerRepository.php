@@ -57,6 +57,44 @@ final class PlayerRepository extends ServiceEntityRepository
         return $map;
     }
 
+    /**
+     * @return list<Player>
+     */
+    public function findByClubId(int $clubId): array
+    {
+        /** @var list<Player> $res */
+        $res = $this->createQueryBuilder('p')
+            ->where('IDENTITY(p.club) = :clubId')
+            ->setParameter('clubId', $clubId)
+            ->orderBy('p.lastName', 'ASC')
+            ->addOrderBy('p.firstName', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $res;
+    }
+
+    /**
+     * @return list<Player>
+     */
+    public function searchWithoutClubByQuery(string $q, int $limit = 20): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->where('p.club IS NULL');
+        if ($q !== '') {
+            $qb->andWhere($qb->expr()->orX(
+                $qb->expr()->like('LOWER(p.firstName)', ':q'),
+                $qb->expr()->like('LOWER(p.lastName)', ':q'),
+                $qb->expr()->like('LOWER(p.nickname)', ':q'),
+            ))->setParameter('q', '%'.mb_strtolower($q).'%');
+        }
+        $qb->setMaxResults($limit)->orderBy('p.lastName', 'ASC')->addOrderBy('p.firstName', 'ASC');
+        /** @var list<Player> $res */
+        $res = $qb->getQuery()->getResult();
+
+        return $res;
+    }
+
     public function findOneByUserId(int $userId): ?Player
     {
         return $this->findOneBy(['user' => $userId]);
