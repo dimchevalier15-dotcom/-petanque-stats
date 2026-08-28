@@ -55,7 +55,7 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
   const competitions = ref<Competition[]>([])
   const formatFilter = ref<MatchType | 'all'>('all')
   const distanceFilter = ref<DistanceBucketKey | 'all'>('all')
-  const { dateFrom, dateTo, maxDate, normalizeRange, queryParams } = useStatsDateRange()
+  const { dateFrom, dateTo, maxDate, dateFilterEnabled, normalizeRange, queryParams } = useStatsDateRange()
   if (options.initialFrom) {
     dateFrom.value = options.initialFrom
   }
@@ -104,7 +104,8 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
     if (competitionFilter.value !== null) count++
     if (formatFilter.value !== 'all') count++
     if (distanceFilter.value !== 'all') count++
-    if (dateFrom.value !== defaultDateFrom || dateTo.value !== maxDate) count++
+    if (!dateFilterEnabled.value) count++
+    else if (dateFrom.value !== defaultDateFrom || dateTo.value !== maxDate) count++
     return count
   })
 
@@ -288,6 +289,7 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
     dateFrom,
     dateTo,
     maxDate,
+    dateFilterEnabled,
     natureFilterOptions,
     competitionFilterOptions,
     formatFilterOptions,

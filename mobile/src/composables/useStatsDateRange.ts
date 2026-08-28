@@ -18,8 +18,8 @@ export function toInputDate(date: Date): string {
 }
 
 export interface StatsDateRangeParams {
-  from: string
-  to: string
+  from?: string
+  to?: string
 }
 
 export function useStatsDateRange() {
@@ -29,6 +29,7 @@ export function useStatsDateRange() {
   const dateFrom = ref(toInputDate(defaultFrom))
   const dateTo = ref(toInputDate(today))
   const maxDate = toInputDate(today)
+  const dateFilterEnabled = ref(true)
 
   const isValid = computed(() => dateFrom.value <= dateTo.value)
 
@@ -46,7 +47,14 @@ export function useStatsDateRange() {
     }
   }
 
-  function queryParams(): { from: string; to: string } {
+  function showAllDates(): void {
+    dateFilterEnabled.value = false
+  }
+
+  function queryParams(): StatsDateRangeParams {
+    if (!dateFilterEnabled.value) {
+      return {}
+    }
     normalizeRange()
     return { from: dateFrom.value, to: dateTo.value }
   }
@@ -55,8 +63,10 @@ export function useStatsDateRange() {
     dateFrom,
     dateTo,
     maxDate,
+    dateFilterEnabled,
     isValid,
     normalizeRange,
+    showAllDates,
     queryParams,
   }
 }

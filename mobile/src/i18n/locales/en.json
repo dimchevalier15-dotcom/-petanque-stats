@@ -9,7 +9,8 @@
   "dateRange": {
     "label": "Period",
     "from": "From",
-    "to": "To"
+    "to": "To",
+    "showAll": "See all"
   },
   "nav": {
     "aria": "Main navigation",

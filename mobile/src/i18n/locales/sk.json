@@ -9,7 +9,8 @@
   "dateRange": {
     "label": "Obdobie",
     "from": "Od",
-    "to": "Do"
+    "to": "Do",
+    "showAll": "Zobraziť všetko"
   },
   "nav": {
     "aria": "Hlavná navigácia",

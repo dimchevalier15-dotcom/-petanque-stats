@@ -1,10 +1,21 @@
 <template>
   <section class="date-range-filter app-card" :aria-label="t('dateRange.label')">
     <div class="date-range-head">
-      <i class="pi pi-calendar" aria-hidden="true" />
-      <span class="date-range-title">{{ t('dateRange.label') }}</span>
+      <div class="date-range-head-main">
+        <i class="pi pi-calendar" aria-hidden="true" />
+        <span class="date-range-title">{{ t('dateRange.label') }}</span>
+      </div>
+      <button
+        v-if="showAllButton"
+        type="button"
+        class="show-all-btn"
+        :class="{ active: !dateFilterEnabled }"
+        @click="onShowAll"
+      >
+        {{ t('dateRange.showAll') }}
+      </button>
     </div>
-    <div class="date-range-fields">
+    <div class="date-range-fields" :class="{ 'date-range-fields--inactive': !dateFilterEnabled }">
       <label class="date-field">
         <span class="date-field-label">{{ t('dateRange.from') }}</span>
         <input
@@ -12,7 +23,8 @@
           type="date"
           class="date-input"
           :max="dateTo"
-          @change="emitChange"
+          :disabled="!dateFilterEnabled"
+          @change="onDateChange"
         />
       </label>
       <span class="date-range-separator" aria-hidden="true">→</span>
@@ -24,7 +36,8 @@
           class="date-input"
           :min="dateFrom"
           :max="maxDate"
-          @change="emitChange"
+          :disabled="!dateFilterEnabled"
+          @change="onDateChange"
         />
       </label>
     </div>
@@ -38,16 +51,29 @@ const { t } = useI18n()
 
 const dateFrom = defineModel<string>('dateFrom', { required: true })
 const dateTo = defineModel<string>('dateTo', { required: true })
+const dateFilterEnabled = defineModel<boolean>('dateFilterEnabled', { default: true })
 
-defineProps<{
-  maxDate: string
-}>()
+withDefaults(
+  defineProps<{
+    maxDate: string
+    showAllButton?: boolean
+  }>(),
+  {
+    showAllButton: false,
+  },
+)
 
 const emit = defineEmits<{
   change: []
 }>()
 
-function emitChange(): void {
+function onDateChange(): void {
+  dateFilterEnabled.value = true
+  emit('change')
+}
+
+function onShowAll(): void {
+  dateFilterEnabled.value = !dateFilterEnabled.value
   emit('change')
 }
 </script>
@@ -62,12 +88,42 @@ function emitChange(): void {
 .date-range-head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.date-range-head-main {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
   color: var(--app-text-muted);
   font-size: 0.8125rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+}
+
+.show-all-btn {
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: #fff;
+  padding: 0.3125rem 0.625rem;
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--app-text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.show-all-btn.active {
+  border-color: var(--app-primary);
+  background: var(--app-primary-soft);
+  color: var(--app-primary-dark);
+}
+
+.date-range-fields--inactive {
+  opacity: 0.55;
 }
 
 .date-range-title {
@@ -103,6 +159,11 @@ function emitChange(): void {
   background: #fff;
   color: inherit;
   min-height: 2.5rem;
+}
+
+.date-input:disabled {
+  cursor: not-allowed;
+  background: var(--app-surface-muted, #f4f4f5);
 }
 
 .date-input:focus {

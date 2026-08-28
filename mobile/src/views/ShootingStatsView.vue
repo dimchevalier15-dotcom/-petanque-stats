@@ -23,7 +23,9 @@
       v-if="showDateFilter"
       v-model:date-from="dateFrom"
       v-model:date-to="dateTo"
+      v-model:date-filter-enabled="dateFilterEnabled"
       :max-date="maxDate"
+      show-all-button
       @change="onDateRangeChange"
     />
 
@@ -213,7 +215,7 @@ const refreshing = ref(false)
 const loadError = ref(false)
 const stats = ref<ShootingStats | null>(null)
 const natureFilter = ref<ShootingContextNature | 'all'>('all')
-const { dateFrom, dateTo, maxDate, normalizeRange, queryParams } = useStatsDateRange()
+const { dateFrom, dateTo, maxDate, dateFilterEnabled, normalizeRange, queryParams } = useStatsDateRange()
 
 const natureFilterOptions = computed(() => [
   { value: 'all' as const, label: t('shooting.stats.filters.all') },

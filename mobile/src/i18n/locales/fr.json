@@ -9,7 +9,8 @@
   "dateRange": {
     "label": "Période",
     "from": "Du",
-    "to": "Au"
+    "to": "Au",
+    "showAll": "Voir tout"
   },
   "nav": {
     "aria": "Navigation principale",

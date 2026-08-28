@@ -65,7 +65,9 @@
     <StatsDateRangeFilter
       v-model:date-from="dateFrom"
       v-model:date-to="dateTo"
+      v-model:date-filter-enabled="dateFilterEnabled"
       :max-date="maxDate"
+      show-all-button
       @change="onDateRangeChange"
     />
   </StatsCollapsibleFilters>
@@ -338,6 +340,7 @@ const {
   dateFrom,
   dateTo,
   maxDate,
+  dateFilterEnabled,
   natureFilterOptions,
   competitionFilterOptions,
   formatFilterOptions,
