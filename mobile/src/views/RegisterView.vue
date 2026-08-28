@@ -75,7 +75,7 @@
           v-model="selectedPlayer"
           :placeholder="t('auth.register.linkPlayer.searchPlaceholder')"
           :empty-hint="t('auth.register.linkPlayer.empty')"
-          unlinked-only
+          :search-players="searchUnlinkedPlayersForRegistration"
         />
       </div>
 
@@ -101,6 +101,7 @@ import Message from 'primevue/message'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
 import ClubSelect from '../components/players/ClubSelect.vue'
 import AuthLegalNotice from '../components/legal/AuthLegalNotice.vue'
+import { authService } from '../services/auth'
 import type { Player } from '../models/Player'
 import type { RegisterRequest } from '../dto/auth/RegisterRequest'
 
@@ -128,6 +129,10 @@ const errors = reactive<FieldErrors>({})
 
 const loading = computed(() => auth.loading)
 const errorMessage = computed(() => (auth.lastError === 'auth.errors.validation' ? '' : auth.lastError ? t(auth.lastError) : ''))
+
+function searchUnlinkedPlayersForRegistration(query: string): Promise<Player[]> {
+  return authService.searchUnlinkedPlayers(query)
+}
 
 watch(selectedPlayer, (player) => {
   if (player) {

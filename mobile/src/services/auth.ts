@@ -4,7 +4,20 @@ import type { AuthUserDto } from '../dto/auth/AuthUser'
 import type { AuthSession } from '../models/AuthSession'
 import type { User } from '../models/User'
 import type { RegisterRequest } from '../dto/auth/RegisterRequest'
+import type { PlayerItemDto } from '../dto/player/PlayerItem'
+import type { Player } from '../models/Player'
 import axios from 'axios'
+
+function toPlayer(dto: PlayerItemDto): Player {
+  return {
+    id: dto.id,
+    firstName: dto.firstName,
+    lastName: dto.lastName,
+    nickname: dto.nickname,
+    clubId: dto.clubId ?? null,
+    clubName: dto.clubName ?? null,
+  }
+}
 
 export class AuthValidationError extends Error {
   readonly fields: Record<string, string>
@@ -81,6 +94,10 @@ export const authService = {
     } catch (error) {
       throw mapAuthError(error)
     }
+  },
+  async searchUnlinkedPlayers(q: string): Promise<Player[]> {
+    const { data } = await api.get<PlayerItemDto[]>('/auth/unlinked-players/search', { params: { q } })
+    return data.map(toPlayer)
   },
   async resendVerification(): Promise<{ alreadyVerified: boolean }> {
     try {

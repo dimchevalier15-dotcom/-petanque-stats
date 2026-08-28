@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Auth;
 
 use App\Dto\Auth\RegisterInput;
+use App\Dto\Request\SearchPlayersQuery;
 use App\Service\Auth\CurrentUserService;
 use App\Service\Auth\EmailAlreadyUsedException;
 use App\Service\Auth\InvalidCredentialsException;
@@ -15,6 +16,7 @@ use App\Service\Account\PlayerNotFoundException;
 use App\Dto\Request\LoginRequest;
 use App\Service\Auth\LoginService;
 use App\Dto\Response\LoginResponse;
+use App\Service\PlayerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,7 +32,20 @@ final class AuthController extends AbstractController
         private LoginService $loginService,
         private ValidatorInterface $validator,
         private CurrentUserService $currentUserService,
+        private PlayerService $playerService,
     ) {}
+
+    #[Route('/api/auth/unlinked-players/search', name: 'api_auth_unlinked_players_search', methods: ['GET'])]
+    public function searchUnlinkedPlayers(Request $request): JsonResponse
+    {
+        $q = new SearchPlayersQuery();
+        $q->q = $request->query->get('q') !== null ? (string) $request->query->get('q') : null;
+        $q->unlinkedOnly = true;
+        $items = $this->playerService->search($q);
+        $json = $this->serializer->serialize($items, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
 
     #[Route('/api/auth/register', name: 'api_auth_register', methods: ['POST'])]
     public function register(Request $request): JsonResponse

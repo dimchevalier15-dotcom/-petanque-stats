@@ -25,6 +25,7 @@ security:
         - { path: '^/api/live-matches/[0-9a-f-]{36}$', roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api/live-matches, roles: ROLE_USER }
         - { path: ^/api/matches, roles: ROLE_USER }
+        - { path: ^/api/players, roles: ROLE_USER }
         - { path: ^/api/competitions, roles: ROLE_USER }
         - { path: ^/api/countries, roles: ROLE_USER }
         - { path: ^/api/clubs$, roles: PUBLIC_ACCESS, methods: [GET] }
