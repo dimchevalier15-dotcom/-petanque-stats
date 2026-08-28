@@ -68,7 +68,10 @@ final class CoachServiceTest extends TestCase
         $players->method('findByClubId')->willReturn([$player]);
 
         $games = $this->createMock(GameRepository::class);
-        $games->method('findCompletedGamesForPlayer')->willReturn([]);
+        $games->expects(self::once())
+            ->method('findCompletedGamesForPlayer')
+            ->with(self::anything(), null, self::isInstanceOf(DateRange::class))
+            ->willReturn([]);
 
         $balls = $this->createMock(GameBallRepository::class);
         $mapper = new PlayerItemMapper();
@@ -78,15 +81,49 @@ final class CoachServiceTest extends TestCase
         $user->setCoachForClub($club);
 
         $service = new CoachService($players, $games, $balls, $mapper, $em);
-        $range = DateRange::defaultLastMonth();
+        $range = DateRange::fromQueryStrings('2026-01-01', '2026-01-31');
 
         $res = $service->listPlayersForCoach($user, $range);
 
         self::assertSame('Test Club', $res->clubName);
+        self::assertSame('2026-01-01', $res->from);
+        self::assertSame('2026-01-31', $res->to);
         self::assertCount(1, $res->items);
         self::assertSame('Marie', $res->items[0]->firstName);
         self::assertNull($res->items[0]->point->average);
         self::assertNull($res->items[0]->point->successCount);
+    }
+
+    public function testListPlayersForCoachWithoutDateRangeDoesNotFilterByDate(): void
+    {
+        $country = new Country('FR', 'France');
+        $club = new Club('Test Club', $country);
+
+        $player = new Player('Marie', 'Martin', 'Mimi');
+        $player->setClub($club);
+
+        $players = $this->createMock(PlayerRepository::class);
+        $players->method('findByClubId')->willReturn([$player]);
+
+        $games = $this->createMock(GameRepository::class);
+        $games->expects(self::once())
+            ->method('findCompletedGamesForPlayer')
+            ->with(self::anything(), null, null)
+            ->willReturn([]);
+
+        $balls = $this->createMock(GameBallRepository::class);
+        $mapper = new PlayerItemMapper();
+        $em = $this->createMock(EntityManagerInterface::class);
+
+        $user = new User('coach@test.fr');
+        $user->setCoachForClub($club);
+
+        $service = new CoachService($players, $games, $balls, $mapper, $em);
+
+        $res = $service->listPlayersForCoach($user, null);
+
+        self::assertNull($res->from);
+        self::assertNull($res->to);
     }
 
     public function testAttachPlayerToCoachClubAssignsClub(): void

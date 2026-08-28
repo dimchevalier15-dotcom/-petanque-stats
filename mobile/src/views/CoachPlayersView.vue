@@ -52,7 +52,9 @@
       <StatsDateRangeFilter
         v-model:date-from="dateFrom"
         v-model:date-to="dateTo"
+        v-model:date-filter-enabled="dateFilterEnabled"
         :max-date="maxDate"
+        show-all-button
         @change="onFiltersChange"
       />
     </StatsCollapsibleFilters>
@@ -239,7 +241,7 @@ const canSubmitAdd = computed(
   () => addForm.firstName.trim() !== '' && addForm.lastName.trim() !== '' && !addSubmitting.value,
 )
 
-const { dateFrom, dateTo, maxDate, queryParams } = useStatsDateRange()
+const { dateFrom, dateTo, maxDate, dateFilterEnabled, normalizeRange, queryParams } = useStatsDateRange()
 
 const defaultDateFrom = (() => {
   const today = new Date()
@@ -264,7 +266,8 @@ const activeFilterCount = computed(() => {
   let count = 0
   if (natureFilter.value !== 'all') count++
   if (sortBy.value !== 'name') count++
-  if (dateFrom.value !== defaultDateFrom || dateTo.value !== maxDate) count++
+  if (!dateFilterEnabled.value) count++
+  else if (dateFrom.value !== defaultDateFrom || dateTo.value !== maxDate) count++
   return count
 })
 
@@ -319,7 +322,20 @@ function setNatureFilter(value: MatchNature | 'all'): void {
 }
 
 function onFiltersChange(): void {
+  normalizeRange()
   void load()
+}
+
+function playerDetailQuery(): Record<string, string> {
+  const query: Record<string, string> = {}
+  if (dateFilterEnabled.value) {
+    query.from = dateFrom.value
+    query.to = dateTo.value
+  }
+  if (natureFilter.value !== 'all') {
+    query.nature = natureFilter.value
+  }
+  return query
 }
 
 function formatMastersLine(summary: CoachPlayerShotSummary): string | null {
@@ -333,11 +349,7 @@ function openPlayer(playerId: number): void {
   router.push({
     name: 'coachPlayer',
     params: { id: playerId },
-    query: {
-      from: dateFrom.value,
-      to: dateTo.value,
-      ...(natureFilter.value !== 'all' ? { nature: natureFilter.value } : {}),
-    },
+    query: playerDetailQuery(),
   })
 }
 
@@ -467,6 +479,13 @@ onMounted(() => {
   border-color: var(--app-primary);
   background: var(--app-primary-soft);
   color: var(--app-primary);
+}
+
+:deep(.date-range-filter) {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 .loading {

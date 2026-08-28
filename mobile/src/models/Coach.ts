@@ -16,7 +16,7 @@ export interface CoachPlayerListItem {
 export interface CoachPlayerList {
   clubId: number
   clubName: string
-  from: string
-  to: string
+  from: string | null
+  to: string | null
   items: CoachPlayerListItem[]
 }

@@ -12,8 +12,8 @@ final class CoachPlayerListResponse
     public function __construct(
         public int $clubId,
         public string $clubName,
-        public string $from,
-        public string $to,
+        public ?string $from,
+        public ?string $to,
         public array $items,
     ) {
     }

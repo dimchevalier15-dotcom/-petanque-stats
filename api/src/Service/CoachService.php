@@ -29,7 +29,7 @@ final class CoachService
     ) {
     }
 
-    public function listPlayersForCoach(User $coach, DateRange $dateRange, ?MatchNature $nature = null): CoachPlayerListResponse
+    public function listPlayersForCoach(User $coach, ?DateRange $dateRange, ?MatchNature $nature = null): CoachPlayerListResponse
     {
         $club = $coach->getCoachForClub();
         if ($club === null) {
@@ -47,8 +47,8 @@ final class CoachService
         return new CoachPlayerListResponse(
             clubId: $clubId,
             clubName: $club->getName(),
-            from: $dateRange->from->format('Y-m-d'),
-            to: $dateRange->to->format('Y-m-d'),
+            from: $dateRange?->from->format('Y-m-d'),
+            to: $dateRange?->to->format('Y-m-d'),
             items: $items,
         );
     }
@@ -93,7 +93,7 @@ final class CoachService
         return $this->playerItemMapper->map($player);
     }
 
-    private function buildListItem(Player $player, DateRange $dateRange, ?MatchNature $nature = null): CoachPlayerListItemResponse
+    private function buildListItem(Player $player, ?DateRange $dateRange, ?MatchNature $nature = null): CoachPlayerListItemResponse
     {
         $playerId = (int) $player->getId();
         $games = $this->games->findCompletedGamesForPlayer($playerId, $nature, $dateRange);

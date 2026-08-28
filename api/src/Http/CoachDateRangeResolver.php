@@ -9,17 +9,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 final class CoachDateRangeResolver
 {
-    public static function fromRequest(Request $request): DateRange
+    /**
+     * Returns null when no date filter is requested (all matches).
+     * When from/to are provided, filters on match played_at.
+     */
+    public static function fromRequest(Request $request): ?DateRange
     {
-        try {
-            $range = StatsDateRangeResolver::fromRequest($request);
-            if ($range !== null) {
-                return $range;
-            }
-        } catch (\InvalidArgumentException $e) {
-            throw $e;
-        }
-
-        return DateRange::defaultLastMonth();
+        return StatsDateRangeResolver::fromRequest($request);
     }
 }

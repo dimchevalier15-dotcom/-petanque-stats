@@ -16,7 +16,7 @@ export interface CoachPlayerListItemDto {
 export interface CoachPlayerListResponseDto {
   clubId: number
   clubName: string
-  from: string
-  to: string
+  from: string | null
+  to: string | null
   items: CoachPlayerListItemDto[]
 }
