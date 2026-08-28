@@ -594,6 +594,12 @@
   "coach": {
     "title": "Coach space",
     "empty": "No players linked to this club.",
+    "list": {
+      "sort": "Sort",
+      "sortName": "Name",
+      "sortPoint": "Point success",
+      "sortTir": "Tir success"
+    },
     "addPlayer": {
       "action": "Add player",
       "title": "Add player to club",
@@ -616,6 +622,8 @@
       "title": "Player",
       "subtitle": "Player statistics",
       "noStats": "No data for the selected period.",
+      "historyLink": "Match history",
+      "historySubtitle": "Match history",
       "tabs": {
         "stats": "Statistics",
         "history": "Matches"

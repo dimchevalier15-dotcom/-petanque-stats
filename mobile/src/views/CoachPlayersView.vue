@@ -16,27 +16,59 @@
       </template>
     </PageHeader>
 
-    <section class="filters app-card">
+    <StatsCollapsibleFilters :active-count="activeFilterCount">
+      <div class="filter-group">
+        <span class="filter-group-label">{{ t('stats.filters.nature') }}</span>
+        <div class="nature-filter">
+          <button
+            v-for="opt in natureFilterOptions"
+            :key="opt.value"
+            type="button"
+            class="filter-btn"
+            :class="{ active: natureFilter === opt.value }"
+            @click="setNatureFilter(opt.value)"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-group-label">{{ t('coach.list.sort') }}</span>
+        <div class="sort-filter">
+          <button
+            v-for="opt in sortOptions"
+            :key="opt.value"
+            type="button"
+            class="filter-btn"
+            :class="{ active: sortBy === opt.value }"
+            @click="sortBy = opt.value"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+      </div>
+
       <StatsDateRangeFilter
         v-model:date-from="dateFrom"
         v-model:date-to="dateTo"
         :max-date="maxDate"
-        @change="onDateChange"
+        @change="onFiltersChange"
       />
-    </section>
+    </StatsCollapsibleFilters>
 
     <div v-if="loading" class="loading">
       <ProgressSpinner stroke-width="4" />
     </div>
 
     <EmptyState
-      v-else-if="players.length === 0"
+      v-else-if="sortedPlayers.length === 0"
       :title="t('coach.empty')"
       icon="pi pi-users"
     />
 
     <ul v-else class="player-list">
-      <li v-for="player in players" :key="player.id">
+      <li v-for="player in sortedPlayers" :key="player.id">
         <button type="button" class="player-card app-card" @click="openPlayer(player.id)">
           <div class="player-card-name">
             <span class="player-first">{{ player.firstName }}</span>
@@ -171,10 +203,12 @@ import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
+import StatsCollapsibleFilters from '../components/stats/StatsCollapsibleFilters.vue'
 import StatsDateRangeFilter from '../components/stats/StatsDateRangeFilter.vue'
 import { avgSeverity, formatAvg } from '../composables/usePlayerStatsCharts'
-import { useStatsDateRange } from '../composables/useStatsDateRange'
+import { useStatsDateRange, toInputDate } from '../composables/useStatsDateRange'
 import type { CoachPlayerListItem, CoachPlayerShotSummary } from '../models/Coach'
+import type { MatchNature } from '../models/MatchContext'
 import type { Player } from '../models/Player'
 import { coachService } from '../services/coach'
 import { useAuthStore } from '../stores/auth'
@@ -184,9 +218,13 @@ const router = useRouter()
 const toast = useToast()
 const auth = useAuthStore()
 
+type CoachSortBy = 'name' | 'point' | 'tir'
+
 const loading = ref(true)
 const players = ref<CoachPlayerListItem[]>([])
 const clubName = ref<string | null>(auth.user?.coachForClubName ?? null)
+const natureFilter = ref<MatchNature | 'all'>('all')
+const sortBy = ref<CoachSortBy>('name')
 
 const addDialog = ref(false)
 const addSubmitting = ref(false)
@@ -203,10 +241,71 @@ const canSubmitAdd = computed(
 
 const { dateFrom, dateTo, maxDate, queryParams } = useStatsDateRange()
 
+const defaultDateFrom = (() => {
+  const today = new Date()
+  const from = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate())
+  return toInputDate(from)
+})()
+
+const natureFilterOptions = computed(() => [
+  { value: 'all' as const, label: t('stats.filters.all') },
+  { value: 'friendly' as const, label: t('context.nature.friendly') },
+  { value: 'training' as const, label: t('context.nature.training') },
+  { value: 'competition' as const, label: t('context.nature.competition') },
+])
+
+const sortOptions = computed(() => [
+  { value: 'name' as const, label: t('coach.list.sortName') },
+  { value: 'point' as const, label: t('coach.list.sortPoint') },
+  { value: 'tir' as const, label: t('coach.list.sortTir') },
+])
+
+const activeFilterCount = computed(() => {
+  let count = 0
+  if (natureFilter.value !== 'all') count++
+  if (sortBy.value !== 'name') count++
+  if (dateFrom.value !== defaultDateFrom || dateTo.value !== maxDate) count++
+  return count
+})
+
+function shotSuccessRate(summary: CoachPlayerShotSummary): number | null {
+  if (summary.successCount === null || summary.totalCount === null || summary.totalCount === 0) {
+    return null
+  }
+  return summary.successCount / summary.totalCount
+}
+
+const sortedPlayers = computed(() => {
+  const list = [...players.value]
+  if (sortBy.value === 'name') {
+    return list.sort((a, b) => {
+      const last = a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' })
+      if (last !== 0) return last
+      return a.firstName.localeCompare(b.firstName, undefined, { sensitivity: 'base' })
+    })
+  }
+
+  const field = sortBy.value
+  return list.sort((a, b) => {
+    const rateA = shotSuccessRate(a[field])
+    const rateB = shotSuccessRate(b[field])
+    if (rateA === null && rateB === null) {
+      return a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' })
+    }
+    if (rateA === null) return 1
+    if (rateB === null) return -1
+    if (rateB !== rateA) return rateB - rateA
+    const avgA = a[field].average ?? Number.NEGATIVE_INFINITY
+    const avgB = b[field].average ?? Number.NEGATIVE_INFINITY
+    if (avgB !== avgA) return avgB - avgA
+    return a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' })
+  })
+})
+
 async function load(): Promise<void> {
   loading.value = true
   try {
-    const res = await coachService.listPlayers(queryParams())
+    const res = await coachService.listPlayers(queryParams(), natureFilter.value)
     players.value = res.items
     clubName.value = res.clubName
   } finally {
@@ -214,7 +313,12 @@ async function load(): Promise<void> {
   }
 }
 
-function onDateChange(): void {
+function setNatureFilter(value: MatchNature | 'all'): void {
+  natureFilter.value = value
+  void load()
+}
+
+function onFiltersChange(): void {
   void load()
 }
 
@@ -229,7 +333,11 @@ function openPlayer(playerId: number): void {
   router.push({
     name: 'coachPlayer',
     params: { id: playerId },
-    query: { from: dateFrom.value, to: dateTo.value },
+    query: {
+      from: dateFrom.value,
+      to: dateTo.value,
+      ...(natureFilter.value !== 'all' ? { nature: natureFilter.value } : {}),
+    },
   })
 }
 
@@ -303,9 +411,62 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.filters {
-  margin-bottom: var(--app-space-md);
-  padding: var(--app-space-md);
+.filter-group {
+  display: grid;
+  gap: var(--app-space-xs);
+}
+
+.filter-group-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.nature-filter,
+.sort-filter {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--app-space-xs);
+}
+
+@media (min-width: 420px) {
+  .nature-filter {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .sort-filter {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+:deep(.date-range-filter) {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.filter-btn {
+  min-width: 0;
+  min-height: 2.25rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: #fff;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  cursor: pointer;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.filter-btn.active {
+  border-color: var(--app-primary);
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
 }
 
 .loading {

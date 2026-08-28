@@ -1,5 +1,14 @@
 <template>
   <div class="auth-shell">
-    <router-view />
+    <div class="auth-lang">
+      <LanguageSwitcher />
+    </div>
+    <div class="auth-main">
+      <router-view />
+    </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import LanguageSwitcher from '../components/layout/LanguageSwitcher.vue'
+</script>

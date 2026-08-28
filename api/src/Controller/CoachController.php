@@ -50,7 +50,12 @@ final class CoachController extends AbstractController
             return new JsonResponse(['message' => $e->getMessage()], 400);
         }
 
-        $res = $this->coachService->listPlayersForCoach($user, $dateRange);
+        $nature = $this->parseNature($request);
+        if ($nature === false) {
+            return new JsonResponse(['message' => 'Invalid nature filter.'], 400);
+        }
+
+        $res = $this->coachService->listPlayersForCoach($user, $dateRange, $nature);
         $json = $this->serializer->serialize($res, 'json');
 
         return new JsonResponse($json, 200, [], true);

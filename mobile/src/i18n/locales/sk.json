@@ -594,6 +594,12 @@
   "coach": {
     "title": "Tréner",
     "empty": "Žiadni hráči priradení k tomuto klubu.",
+    "list": {
+      "sort": "Zoradenie",
+      "sortName": "Meno",
+      "sortPoint": "Úspešnosť point",
+      "sortTir": "Úspešnosť tir"
+    },
     "addPlayer": {
       "action": "Pridať hráča",
       "title": "Pridať hráča do klubu",
@@ -616,6 +622,8 @@
       "title": "Hráč",
       "subtitle": "Štatistiky hráča",
       "noStats": "Žiadne údaje za zvolené obdobie.",
+      "historyLink": "História zápasov",
+      "historySubtitle": "História zápasov",
       "tabs": {
         "stats": "Štatistiky",
         "history": "Zápasy"

@@ -14,7 +14,7 @@ function resolveInitialLocale(): string {
   } catch {
     // Private mode or unavailable storage: fall back to default.
   }
-  return 'fr'
+  return 'en'
 }
 
 export const i18n = createI18n({

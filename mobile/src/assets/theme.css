@@ -124,13 +124,25 @@ a {
 
 .auth-shell {
   min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  padding: calc(var(--app-space-xl) + env(safe-area-inset-top, 0px)) var(--app-space-lg)
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--app-space-md) + env(safe-area-inset-top, 0px)) var(--app-space-lg)
     calc(var(--app-space-xl) + env(safe-area-inset-bottom, 0px));
   background:
     radial-gradient(circle at top right, rgba(31, 107, 88, 0.12), transparent 42%),
     var(--app-bg);
+}
+
+.auth-lang {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--app-space-md);
+}
+
+.auth-main {
+  flex: 1;
+  display: grid;
+  place-items: center;
 }
 
 .app-card {

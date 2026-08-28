@@ -100,6 +100,7 @@ import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import Message from 'primevue/message'
 import { useI18n } from 'vue-i18n'
+import { useLocaleSwitcher } from '../composables/useLocaleSwitcher'
 import { useRouter } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
 import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
@@ -107,7 +108,8 @@ import { useIsAdmin } from '../composables/useIsAdmin'
 import { useIsCoach } from '../composables/useIsCoach'
 import { useAuthStore } from '../stores/auth'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+const { currentLanguage, languageItems } = useLocaleSwitcher()
 const router = useRouter()
 const auth = useAuthStore()
 const isAdmin = useIsAdmin()
@@ -161,30 +163,6 @@ async function onResendVerification(): Promise<void> {
 }
 
 const languageMenu = ref()
-
-const currentLanguage = computed(() => {
-  switch (locale.value) {
-    case 'fr':
-      return 'FR'
-    case 'en':
-      return 'EN'
-    case 'sk':
-      return 'SK'
-    default:
-      return locale.value.toUpperCase()
-  }
-})
-
-const languageItems = [
-  { label: 'Français', command: () => changeLanguage('fr') },
-  { label: 'English', command: () => changeLanguage('en') },
-  { label: 'Slovenčina', command: () => changeLanguage('sk') },
-]
-
-function changeLanguage(lang: string) {
-  locale.value = lang
-  localStorage.setItem('locale', lang)
-}
 
 function toggleLanguageMenu(event: Event) {
   languageMenu.value.toggle(event)

@@ -11,6 +11,7 @@ use App\Dto\Response\PlayerItem;
 use App\Entity\Game;
 use App\Entity\Player;
 use App\Entity\User;
+use App\Enum\MatchNature;
 use App\Repository\GameBallRepository;
 use App\Repository\GameRepository;
 use App\Repository\PlayerRepository;
@@ -28,7 +29,7 @@ final class CoachService
     ) {
     }
 
-    public function listPlayersForCoach(User $coach, DateRange $dateRange): CoachPlayerListResponse
+    public function listPlayersForCoach(User $coach, DateRange $dateRange, ?MatchNature $nature = null): CoachPlayerListResponse
     {
         $club = $coach->getCoachForClub();
         if ($club === null) {
@@ -40,7 +41,7 @@ final class CoachService
         $items = [];
 
         foreach ($playerList as $player) {
-            $items[] = $this->buildListItem($player, $dateRange);
+            $items[] = $this->buildListItem($player, $dateRange, $nature);
         }
 
         return new CoachPlayerListResponse(
@@ -92,10 +93,10 @@ final class CoachService
         return $this->playerItemMapper->map($player);
     }
 
-    private function buildListItem(Player $player, DateRange $dateRange): CoachPlayerListItemResponse
+    private function buildListItem(Player $player, DateRange $dateRange, ?MatchNature $nature = null): CoachPlayerListItemResponse
     {
         $playerId = (int) $player->getId();
-        $games = $this->games->findCompletedGamesForPlayer($playerId, null, $dateRange);
+        $games = $this->games->findCompletedGamesForPlayer($playerId, $nature, $dateRange);
         $gameIds = array_map(static fn (Game $game): int => (int) $game->getId(), $games);
 
         $pointRaw = $gameIds === []

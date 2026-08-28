@@ -47,9 +47,15 @@ export interface CreateCoachPlayerRequest {
 }
 
 export const coachService = {
-  async listPlayers(range: StatsDateRangeParams): Promise<CoachPlayerList> {
+  async listPlayers(
+    range: StatsDateRangeParams,
+    nature?: MatchNature | 'all',
+  ): Promise<CoachPlayerList> {
     const { data } = await api.get<CoachPlayerListResponseDto>('/coach/players', {
-      params: range,
+      params: {
+        ...range,
+        ...(nature && nature !== 'all' ? { nature } : {}),
+      },
     })
     return mapCoachList(data)
   },

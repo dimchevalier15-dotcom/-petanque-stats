@@ -594,6 +594,12 @@
   "coach": {
     "title": "Espace coach",
     "empty": "Aucun joueur rattaché à ce club.",
+    "list": {
+      "sort": "Tri",
+      "sortName": "Nom",
+      "sortPoint": "Réussite point",
+      "sortTir": "Réussite tir"
+    },
     "addPlayer": {
       "action": "Ajouter un joueur",
       "title": "Ajouter un joueur au club",
@@ -616,6 +622,8 @@
       "title": "Joueur",
       "subtitle": "Statistiques du joueur",
       "noStats": "Aucune donnée sur la période sélectionnée.",
+      "historyLink": "Historique des matchs",
+      "historySubtitle": "Historique des matchs",
       "tabs": {
         "stats": "Statistiques",
         "history": "Matchs"
