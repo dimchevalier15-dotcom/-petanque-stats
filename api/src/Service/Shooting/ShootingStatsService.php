@@ -61,7 +61,7 @@ final class ShootingStatsService
         $evolution = array_map(
             static fn (array $row): ShootingStatsEvolutionPointResponse => new ShootingStatsEvolutionPointResponse(
                 sessionId: $row['id'],
-                date: $row['finishedAt']->format(DATE_ATOM),
+                date: $row['playedAt']->format(DATE_ATOM),
                 totalScore: $row['totalScore'],
             ),
             $this->sessions->findEvolutionForPlayer($playerId, $contextNature, $dateRange),

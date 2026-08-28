@@ -55,7 +55,7 @@ final class ShootingSessionRepository extends ServiceEntityRepository
             ->where('s.player = :pid')
             ->andWhere('s.finishedAt IS NOT NULL')
             ->setParameter('pid', $playerId)
-            ->orderBy('s.finishedAt', 'DESC')
+            ->orderBy('s.playedAt', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($pageSize)
             ->getQuery()->getResult();
@@ -66,7 +66,7 @@ final class ShootingSessionRepository extends ServiceEntityRepository
     /**
      * Completed sessions for evolution charts, oldest first.
      *
-     * @return list<array{id:int,finishedAt:\DateTimeImmutable,totalScore:int}>
+     * @return list<array{id:int,playedAt:\DateTimeImmutable,totalScore:int}>
      */
     public function findEvolutionForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
     {
@@ -74,7 +74,7 @@ final class ShootingSessionRepository extends ServiceEntityRepository
             ->where('s.player = :pid')
             ->andWhere('s.finishedAt IS NOT NULL')
             ->setParameter('pid', $playerId)
-            ->orderBy('s.finishedAt', 'ASC');
+            ->orderBy('s.playedAt', 'ASC');
 
         $this->applyFilters($qb, 's', $contextNature, $range);
 
@@ -84,7 +84,7 @@ final class ShootingSessionRepository extends ServiceEntityRepository
         return array_map(
             static fn (ShootingSession $s): array => [
                 'id' => (int) $s->getId(),
-                'finishedAt' => $s->getFinishedAt(),
+                'playedAt' => $s->getPlayedAt(),
                 'totalScore' => (int) $s->getTotalScore(),
             ],
             $sessions,
@@ -142,8 +142,8 @@ final class ShootingSessionRepository extends ServiceEntityRepository
         }
 
         if ($range !== null) {
-            $qb->andWhere($alias.'.finishedAt >= :rangeFrom')
-                ->andWhere($alias.'.finishedAt <= :rangeTo')
+            $qb->andWhere($alias.'.playedAt >= :rangeFrom')
+                ->andWhere($alias.'.playedAt <= :rangeTo')
                 ->setParameter('rangeFrom', $range->from)
                 ->setParameter('rangeTo', $range->to);
         }

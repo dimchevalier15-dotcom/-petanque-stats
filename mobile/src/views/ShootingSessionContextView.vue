@@ -6,6 +6,11 @@
 
     <form class="app-form" @submit.prevent="onSubmit">
       <div class="app-card form-card">
+        <label class="app-field">
+          <span>{{ t('shooting.context.fields.playedAt') }}</span>
+          <input v-model="form.playedAt" type="date" class="date-input" />
+        </label>
+
         <h3 class="section-label">{{ t('shooting.context.fields.nature') }}</h3>
         <div class="nature-toggle">
           <button
@@ -60,6 +65,7 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
 import PageHeader from '../components/layout/PageHeader.vue'
+import { playedAtToInputDate, todayInputDate } from '../models/MatchContext'
 import type { ShootingSessionContextForm } from '../models/Shooting'
 import { shootingSessionsService } from '../services/shootingSessions'
 
@@ -70,7 +76,12 @@ const router = useRouter()
 const sessionId = Number(route.params.id)
 const submitting = ref(false)
 const hasExistingContext = ref(false)
-const form = reactive<ShootingSessionContextForm>({ contextNature: 'training', title: '', description: '' })
+const form = reactive<ShootingSessionContextForm>({
+  contextNature: 'training',
+  playedAt: todayInputDate(),
+  title: '',
+  description: '',
+})
 
 const title = computed(() =>
   hasExistingContext.value ? t('shooting.context.titleEdit') : t('shooting.context.titleAdd'),
@@ -84,6 +95,7 @@ async function load(): Promise<void> {
   try {
     const summary = await shootingSessionsService.getSummary(sessionId)
     form.contextNature = summary.contextNature ?? 'training'
+    form.playedAt = playedAtToInputDate(summary.playedAt)
     form.title = summary.title ?? ''
     form.description = summary.description ?? ''
     hasExistingContext.value = Boolean(summary.contextNature || summary.title || summary.description)
@@ -97,6 +109,7 @@ async function onSubmit(): Promise<void> {
   try {
     await shootingSessionsService.updateContext(sessionId, {
       contextNature: form.contextNature,
+      playedAt: form.playedAt || null,
       title: form.title.trim() || null,
       description: form.description.trim() || null,
     })
@@ -169,5 +182,16 @@ onMounted(load)
 
 .w-full {
   width: 100%;
+}
+
+.date-input {
+  width: 100%;
+  min-height: 2.75rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  padding: 0.625rem 0.75rem;
+  font: inherit;
+  color: var(--app-text);
+  background: var(--app-surface);
 }
 </style>

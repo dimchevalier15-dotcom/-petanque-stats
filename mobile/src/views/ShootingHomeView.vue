@@ -31,7 +31,7 @@
         <li v-for="s in items" :key="s.id">
           <button type="button" class="session-card app-card" @click="openSummary(s.id)">
             <div class="head">
-              <span class="date">{{ formatShortDate(s.finishedAt) }}</span>
+              <span class="date">{{ formatShortDate(s.playedAt) }}</span>
               <Tag :value="t('shooting.home.scoreOn100', { score: s.totalScore })" severity="info" />
             </div>
             <span v-if="s.title" class="session-title">{{ s.title }}</span>

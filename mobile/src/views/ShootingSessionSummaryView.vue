@@ -6,7 +6,7 @@
       <div class="hero-banner app-card">
         <span class="hero-badge">{{ t('shooting.summary.sessionFinished') }}</span>
         <strong class="hero-score">{{ summary.totalScore }}<span class="hero-max">/100</span></strong>
-        <span class="hero-date">{{ formatDate(summary.finishedAt) }}</span>
+        <span class="hero-date">{{ formatDate(summary.playedAt) }}</span>
       </div>
 
       <section v-if="summary.contextNature || summary.title || summary.description" class="panel app-card context-panel">

@@ -832,6 +832,7 @@
       "titleEdit": "Upraviť názov",
       "hint": "Voliteľné: uveďte kontext tohto kola.",
       "fields": {
+        "playedAt": "Dátum tréningu",
         "nature": "Kontext",
         "title": "Názov",
         "description": "Popis"

@@ -156,12 +156,14 @@ final class ShootingSessionServiceTest extends KernelTestCase
         $req->contextNature = 'training';
         $req->title = 'Entraînement du soir';
         $req->description = 'Bon ressenti.';
+        $req->playedAt = '2024-09-28';
 
         $summary = $this->service->updateContext($token, $started->id, $req);
 
         self::assertSame('training', $summary->contextNature);
         self::assertSame('Entraînement du soir', $summary->title);
         self::assertSame('Bon ressenti.', $summary->description);
+        self::assertStringStartsWith('2024-09-28', $summary->playedAt);
     }
 
     public function testContextCannotBeAddedByAnotherPlayer(): void

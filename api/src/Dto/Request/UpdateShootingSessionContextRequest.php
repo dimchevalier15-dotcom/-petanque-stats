@@ -17,4 +17,7 @@ final class UpdateShootingSessionContextRequest
 
     #[Assert\Length(max: 2000)]
     public ?string $description = null;
+
+    #[Assert\Regex(pattern: '/^\d{4}-\d{2}-\d{2}$/')]
+    public ?string $playedAt = null;
 }

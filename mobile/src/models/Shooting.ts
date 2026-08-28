@@ -50,6 +50,7 @@ export interface ShootingWorkshopSummary {
 export interface ShootingSessionSummary {
   id: number
   createdAt: string
+  playedAt: string
   finishedAt: string | null
   totalScore: number | null
   contextNature: ShootingContextNature | null
@@ -66,6 +67,7 @@ export interface ShootingSessionStarted {
 export interface ShootingSessionHistoryItem {
   id: number
   createdAt: string
+  playedAt: string
   finishedAt: string
   totalScore: number
   contextNature: ShootingContextNature | null
@@ -74,6 +76,7 @@ export interface ShootingSessionHistoryItem {
 
 export interface ShootingSessionContextForm {
   contextNature: ShootingContextNature
+  playedAt: string
   title: string
   description: string
 }

@@ -832,6 +832,7 @@
       "titleEdit": "Modifier le titre",
       "hint": "Optionnel : indiquez le contexte de cette séance.",
       "fields": {
+        "playedAt": "Date de la séance",
         "nature": "Contexte",
         "title": "Titre",
         "description": "Description"

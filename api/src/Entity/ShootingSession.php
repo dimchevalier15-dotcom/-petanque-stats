@@ -32,6 +32,9 @@ class ShootingSession
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private DateTimeImmutable $createdAt;
 
+    #[ORM\Column(name: 'played_at', type: 'datetime_immutable')]
+    private DateTimeImmutable $playedAt;
+
     #[ORM\Column(name: 'finished_at', type: 'datetime_immutable', nullable: true)]
     private ?DateTimeImmutable $finishedAt = null;
 
@@ -59,6 +62,7 @@ class ShootingSession
     {
         $this->player = $player;
         $this->createdAt = new DateTimeImmutable();
+        $this->playedAt = $this->createdAt;
     }
 
     public function getId(): ?int
@@ -74,6 +78,11 @@ class ShootingSession
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function getPlayedAt(): DateTimeImmutable
+    {
+        return $this->playedAt;
     }
 
     public function getFinishedAt(): ?DateTimeImmutable
@@ -122,7 +131,13 @@ class ShootingSession
         }
 
         $this->finishedAt = new DateTimeImmutable();
+        $this->playedAt = $this->finishedAt;
         $this->totalScore = $totalScore;
+    }
+
+    public function setPlayedAt(DateTimeImmutable $playedAt): void
+    {
+        $this->playedAt = $playedAt;
     }
 
     public function setContext(?ShootingContextNature $contextNature, ?string $title, ?string $description): void

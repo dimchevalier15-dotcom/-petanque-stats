@@ -175,8 +175,8 @@ final class ShootingShotRepository extends ServiceEntityRepository
         }
 
         if ($range !== null) {
-            $qb->andWhere($sessionAlias.'.finishedAt >= :rangeFrom')
-                ->andWhere($sessionAlias.'.finishedAt <= :rangeTo')
+            $qb->andWhere($sessionAlias.'.playedAt >= :rangeFrom')
+                ->andWhere($sessionAlias.'.playedAt <= :rangeTo')
                 ->setParameter('rangeFrom', $range->from)
                 ->setParameter('rangeTo', $range->to);
         }

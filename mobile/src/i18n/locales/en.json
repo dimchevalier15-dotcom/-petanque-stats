@@ -832,6 +832,7 @@
       "titleEdit": "Edit title",
       "hint": "Optional: describe the context of this session.",
       "fields": {
+        "playedAt": "Session date",
         "nature": "Context",
         "title": "Title",
         "description": "Description"

@@ -139,6 +139,7 @@ final class ShootingSessionService
             $this->normalizeOptionalString($req->title),
             $this->normalizeOptionalString($req->description),
         );
+        $this->applyPlayedAt($session, $req->playedAt);
         $this->em->flush();
 
         return $this->toSummaryResponse($session);
@@ -156,6 +157,7 @@ final class ShootingSessionService
             static fn (ShootingSession $s): ShootingSessionHistoryItemResponse => new ShootingSessionHistoryItemResponse(
                 id: (int) $s->getId(),
                 createdAt: $s->getCreatedAt()->format(DATE_ATOM),
+                playedAt: $s->getPlayedAt()->format(DATE_ATOM),
                 finishedAt: (string) $s->getFinishedAt()?->format(DATE_ATOM),
                 totalScore: (int) $s->getTotalScore(),
                 contextNature: $s->getContextNature()?->value,
@@ -300,6 +302,7 @@ final class ShootingSessionService
         return new ShootingSessionSummaryResponse(
             id: (int) $session->getId(),
             createdAt: $session->getCreatedAt()->format(DATE_ATOM),
+            playedAt: $session->getPlayedAt()->format(DATE_ATOM),
             finishedAt: $session->getFinishedAt()?->format(DATE_ATOM),
             totalScore: $session->getTotalScore(),
             contextNature: $session->getContextNature()?->value,
@@ -327,6 +330,25 @@ final class ShootingSessionService
         }
 
         return ShootingContextNature::from($value);
+    }
+
+    private function applyPlayedAt(ShootingSession $session, ?string $playedAt): void
+    {
+        if ($playedAt === null || $playedAt === '') {
+            return;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('Y-m-d', $playedAt);
+        if ($date === false || $date->format('Y-m-d') !== $playedAt) {
+            return;
+        }
+
+        $current = $session->getPlayedAt();
+        $session->setPlayedAt($current->setDate(
+            (int) $date->format('Y'),
+            (int) $date->format('n'),
+            (int) $date->format('j'),
+        ));
     }
 }
 

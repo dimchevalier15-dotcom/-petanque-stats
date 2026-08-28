@@ -93,7 +93,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/stats', name: 'myStats', component: MyStatsView, meta: { layout: 'main' } },
   { path: '/shooting', name: 'shootingHome', component: ShootingHomeView, meta: { layout: 'main' } },
   { path: '/shooting/stats', name: 'shootingStats', component: () => import('../views/ShootingStatsView.vue'), meta: { layout: 'main' } },
-  { path: '/shooting/:id', name: 'shootingSession', component: () => import('../views/ShootingSessionView.vue'), meta: { layout: 'play' } },
+  { path: '/shooting/:id', name: 'shootingSession', component: () => import('../views/ShootingSessionView.vue'), meta: { layout: 'main' } },
   { path: '/shooting/:id/summary', name: 'shootingSessionSummary', component: () => import('../views/ShootingSessionSummaryView.vue'), meta: { layout: 'focus' } },
   { path: '/shooting/:id/context', name: 'shootingSessionContext', component: () => import('../views/ShootingSessionContextView.vue'), meta: { layout: 'focus' } },
   { path: '/training', name: 'trainingHome', component: TrainingHomeView, meta: { layout: 'main' } },

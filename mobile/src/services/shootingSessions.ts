@@ -24,6 +24,7 @@ function mapSummary(dto: ShootingSessionSummaryResponseDto): ShootingSessionSumm
   return {
     id: dto.id,
     createdAt: dto.createdAt,
+    playedAt: dto.playedAt,
     finishedAt: dto.finishedAt,
     totalScore: dto.totalScore,
     contextNature: dto.contextNature,

@@ -113,14 +113,14 @@ final class MatchHistoryServiceTest extends KernelTestCase
         $this->completeHeadToHead($matchId, $playerId, $opponentId, 4);
 
         $req = new UpdateMatchContextRequest();
-        $req->playedAt = '2024-06-15';
+        $req->playedAt = '2024-09-28';
         $this->context->updateContext($matchId, $req);
 
         $ctx = $this->context->getContext($matchId);
-        self::assertSame('2024-06-15', $ctx?->playedAt);
+        self::assertSame('2024-09-28', $ctx?->playedAt);
 
         $res = $this->history->historyForToken($token);
-        self::assertStringStartsWith('2024-06-15', $res->items[0]->date);
+        self::assertStringStartsWith('2024-09-28', $res->items[0]->date);
     }
 
     public function testHistoryCanBeLoadedForImpersonatedPlayer(): void

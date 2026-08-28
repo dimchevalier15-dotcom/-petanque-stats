@@ -60,6 +60,7 @@ final class ShootingSessionTest extends TestCase
         self::assertTrue($session->isFinished());
         self::assertSame(42, $session->getTotalScore());
         self::assertNotNull($session->getFinishedAt());
+        self::assertNotNull($session->getPlayedAt());
     }
 
     public function testASessionCannotBeFinishedTwice(): void

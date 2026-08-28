@@ -31,30 +31,32 @@
 
     <p class="workshop-hint">{{ t('shooting.workshopHint') }}</p>
 
-    <div class="distances">
-      <article v-for="distance in distances" :key="distance" class="distance-card app-card">
-        <div class="distance-head">
-          <span class="distance-label">{{ t('shooting.distanceMeters', { n: distance }) }}</span>
-          <Tag v-if="scoreAt(distance) !== undefined" :value="`+${scoreAt(distance)}`" :severity="severityFor(resultAt(distance))" />
-        </div>
-        <div class="results" :style="{ '--result-count': resultsFor(currentWorkshop).length }">
-          <Button
-            v-for="result in resultsFor(currentWorkshop)"
-            :key="result"
-            :label="resultLabel(result)"
-            :severity="resultAt(distance) === result ? severityFor(result) : 'secondary'"
-            :outlined="resultAt(distance) !== result"
-            size="small"
-            class="result-btn"
-            @click="selectResult(distance, result)"
-          />
-        </div>
-      </article>
-    </div>
+    <div class="play-main">
+      <div class="distances">
+        <article v-for="distance in distances" :key="distance" class="distance-card app-card">
+          <div class="distance-head">
+            <span class="distance-label">{{ t('shooting.distanceMeters', { n: distance }) }}</span>
+            <Tag v-if="scoreAt(distance) !== undefined" :value="`+${scoreAt(distance)}`" :severity="severityFor(resultAt(distance))" />
+          </div>
+          <div class="results" :style="{ '--result-count': resultsFor(currentWorkshop).length }">
+            <Button
+              v-for="result in resultsFor(currentWorkshop)"
+              :key="result"
+              :label="resultLabel(result)"
+              :severity="resultAt(distance) === result ? severityFor(result) : 'secondary'"
+              :outlined="resultAt(distance) !== result"
+              size="small"
+              class="result-btn"
+              @click="selectResult(distance, result)"
+            />
+          </div>
+        </article>
+      </div>
 
-    <div class="workshop-score app-card">
-      <span>{{ t('shooting.score.workshop') }}</span>
-      <strong>{{ workshopScore(currentWorkshop) }}</strong>
+      <div class="workshop-score app-card">
+        <span>{{ t('shooting.score.workshop') }}</span>
+        <strong>{{ workshopScore(currentWorkshop) }}</strong>
+      </div>
     </div>
 
     <footer class="play-actions">
@@ -207,13 +209,17 @@ async function confirmAbandon(): Promise<void> {
 
 <style scoped>
 .shooting-play {
-  max-width: var(--app-page-max);
-  margin: 0 auto;
-  min-height: 100dvh;
   display: grid;
-  grid-template-rows: auto auto 1fr auto auto;
-  gap: var(--app-space-md);
-  padding: var(--app-space-sm) var(--app-space-lg) calc(var(--app-nav-h) + env(safe-area-inset-bottom, 0px) + var(--app-space-sm));
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: var(--app-space-sm);
+  min-height: calc(
+    100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--app-nav-h) -
+      var(--app-space-md) - var(--app-space-lg)
+  );
+  min-width: 0;
+  overflow: hidden;
+  margin: calc(-1 * var(--app-space-md)) calc(-1 * var(--app-space-lg)) calc(-1 * var(--app-space-lg));
+  padding: var(--app-space-sm) var(--app-space-lg) 0;
   background:
     radial-gradient(circle at 0% 0%, rgba(31, 107, 88, 0.07), transparent 38%),
     radial-gradient(circle at 100% 0%, rgba(184, 146, 58, 0.06), transparent 34%),
@@ -300,10 +306,19 @@ async function confirmAbandon(): Promise<void> {
   color: var(--app-text-muted);
 }
 
+.play-main {
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: grid;
+  gap: var(--app-space-md);
+  align-content: start;
+  padding-bottom: var(--app-space-xs);
+}
+
 .distances {
   display: grid;
   gap: var(--app-space-sm);
-  align-content: start;
 }
 
 .distance-card {
@@ -350,13 +365,11 @@ async function confirmAbandon(): Promise<void> {
 }
 
 .play-actions {
-  position: sticky;
-  bottom: calc(var(--app-nav-h) + env(safe-area-inset-bottom, 0px));
   z-index: 15;
   display: grid;
   gap: var(--app-space-xs);
-  padding-top: var(--app-space-xs);
-  background: linear-gradient(to top, var(--app-bg) 78%, transparent);
+  padding: var(--app-space-xs) 0 var(--app-space-sm);
+  background: linear-gradient(to top, var(--app-bg) 85%, transparent);
 }
 
 .primary-action {

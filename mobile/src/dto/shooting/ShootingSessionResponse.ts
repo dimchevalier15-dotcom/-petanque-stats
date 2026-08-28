@@ -20,6 +20,7 @@ export interface ShootingWorkshopSummaryDto {
 export interface ShootingSessionSummaryResponseDto {
   id: number
   createdAt: string
+  playedAt: string
   finishedAt: string | null
   totalScore: number | null
   contextNature: ShootingContextNature | null
@@ -31,6 +32,7 @@ export interface ShootingSessionSummaryResponseDto {
 export interface ShootingSessionHistoryItemDto {
   id: number
   createdAt: string
+  playedAt: string
   finishedAt: string
   totalScore: number
   contextNature: ShootingContextNature | null
@@ -39,6 +41,7 @@ export interface ShootingSessionHistoryItemDto {
 
 export interface UpdateShootingSessionContextRequestDto {
   contextNature: ShootingContextNature | null
+  playedAt?: string | null
   title: string | null
   description: string | null
 }
