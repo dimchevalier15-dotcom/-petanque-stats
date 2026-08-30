@@ -64,7 +64,7 @@ async function onSubmit(): Promise<void> {
   if (!validateLocal()) return
   submitting.value = true
   try {
-    const created = await playersService.create({
+    await playersService.create({
       firstName: firstName.value.trim(),
       lastName: lastName.value.trim(),
       nickname: nickname.value.trim() || undefined,
@@ -72,12 +72,7 @@ async function onSubmit(): Promise<void> {
     })
 
     toast.add({ severity: 'success', summary: t('players.create.toast.success'), life: 2000 })
-    const q = router.currentRoute.value.query as Record<string, string | undefined>
-    if (q.returnTo === 'newMatch' && q.slot) {
-      router.push({ name: 'newMatch', query: { newPlayerId: String(created.id), slot: q.slot } })
-    } else {
-      router.push({ name: 'home' })
-    }
+    router.push({ name: 'home' })
   } catch (e: unknown) {
     const err = e as import('axios').AxiosError<{ errors?: Record<string, string> }>
     const serverErrors = err.response?.data?.errors

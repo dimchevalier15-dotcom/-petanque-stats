@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
-import type { MatchContext } from '../models/MatchContext'
+import type { MatchTeamNames } from '../models/MatchContext'
 import type { TeamSide } from '../models/MatchPlay'
 
 function resolveTeamLabel(name: string | null | undefined, fallback: string): string {
@@ -8,9 +8,9 @@ function resolveTeamLabel(name: string | null | undefined, fallback: string): st
   return trimmed ? trimmed : fallback
 }
 
-export function useMatchTeamLabels(context: Ref<MatchContext | null>, t: ComposerTranslation) {
-  const teamALabel = computed(() => resolveTeamLabel(context.value?.teamAName, t('matches.teams.a')))
-  const teamBLabel = computed(() => resolveTeamLabel(context.value?.teamBName, t('matches.teams.b')))
+export function useMatchTeamLabels(source: Ref<MatchTeamNames | null>, t: ComposerTranslation) {
+  const teamALabel = computed(() => resolveTeamLabel(source.value?.teamAName, t('matches.teams.a')))
+  const teamBLabel = computed(() => resolveTeamLabel(source.value?.teamBName, t('matches.teams.b')))
 
   function labelForTeam(team: TeamSide): string {
     return team === 'A' ? teamALabel.value : teamBLabel.value

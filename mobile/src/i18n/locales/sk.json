@@ -659,15 +659,33 @@
       "typeSection": "Typ zápasu",
       "versus": "VS",
       "teamNameHint": "Názov tímu (voliteľné)",
-      "addPlayer": "Pridať hráča",
       "role": "Rola",
-      "trackPlayer": "Analyzovať"
+      "trackPlayer": "Analyzovať",
+      "addProvisional": "Pridať „{name}“ do zápasu",
+      "provisionalBadge": "Priradiť po zápase",
+      "addSelf": "Ja"
+    },
+    "players": {
+      "title": "Hráči zápasu",
+      "subtitle": "Posledný krok pred uložením",
+      "hint": "Niektorí hráči boli zadaní počas hry. Priraďte ich k existujúcemu hráčovi alebo ich vytvorte, aby ste mohli zápas uložiť.",
+      "kinds": { "new": "Nový hráč", "existing": "Existujúci hráč" },
+      "searchPlaceholder": "Hľadať hráča (min. 3 znaky)",
+      "searchEmpty": "Nenašiel sa žiadny hráč.",
+      "incomplete": "Zadajte meno a priezvisko alebo vyberte existujúceho hráča.",
+      "duplicate": "Hráč nemôže obsadiť dve miesta v tom istom zápase.",
+      "save": "Uložiť zápas",
+      "saveError": "Uloženie sa nepodarilo. Vaše údaje sú zachované, skúste to znova."
     },
     "resume": {
       "title": "Prebiehajúci zápas",
       "message": "Máte nedokončený zápas. Chcete ho pokračovať alebo začať nový?",
       "continue": "Pokračovať",
       "abandon": "Zahodiť",
+      "abandonTitle": "Zahodiť zápas?",
+      "abandonMessage": "Tento zápas je uložený len v tomto zariadení. Zahodením sa natrvalo odstráni.",
+      "abandonCancel": "Späť",
+      "abandonConfirm": "Zahodiť",
       "score": "Aktuálne skóre: {scoreA} – {scoreB}"
     },
     "teams": { "a": "Tím A", "b": "Tím B", "aShort": "A", "bShort": "B" },
@@ -682,7 +700,12 @@
     "stats": {
       "sectionTitle": "Štatistiky",
       "mode": { "title": "Režim bodovania" },
-      "modes": { "standard": "Štandardný", "simple": "Zjednodušený" },
+      "modes": {
+        "standard": "Štandardný",
+        "simple": "Zjednodušený",
+        "standardHint": "Každá guľa je hodnotená od -2 do +2: podrobná analýza.",
+        "simpleHint": "Každá guľa je úspešná alebo nie: rýchlejší zápis."
+      },
       "tracked": { "title": "Sledovaní hráči" }
     },
     "roles": { "pointeur": "Plac", "milieu": "Ucko", "tireur": "Strelba" },
@@ -734,8 +757,7 @@
       "team": "Tím",
       "playerOut": "Hráč na vystriedanie",
       "playerIn": "Náhradník",
-      "searchPlaceholder": "Hľadať hráča (min. 3 znaky)",
-      "searchEmpty": "Nenašiel sa žiadny hráč.",
+      "searchPlaceholder": "Hľadať alebo zadať meno",
       "confirm": "Potvrdiť striedanie",
       "abort": "Zrušiť",
       "error": "Toto striedanie nie je možné použiť.",
@@ -754,6 +776,8 @@
       "title": "Ukončiť zápas",
       "message1": "Ukončiť zápas teraz?",
       "message2": "Aktuálne skóre zostane zachované.",
+      "pendingParticipants": "Pred uložením treba priradiť {count} hráča(ov).",
+      "error": "Uloženie sa nepodarilo. Vaše údaje sú zachované, skúste to znova.",
       "confirm": "Ukončiť",
       "abort": "Späť"
     },

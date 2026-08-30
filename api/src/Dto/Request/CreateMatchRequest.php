@@ -56,6 +56,13 @@ final class CreateMatchRequest
      * @var list<CreateMatchStartingRole>
      */
     public array $startingRoles = [];
+
+    /**
+     * ISO-8601 date-time the match actually started.
+     * The match is sent once finished, so without it the recorded date would be the end time.
+     * Ignored when null or unparsable.
+     */
+    public ?string $playedAt = null;
 }
 
 final class CreateMatchStartingRole

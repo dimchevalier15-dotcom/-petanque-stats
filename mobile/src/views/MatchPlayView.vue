@@ -371,12 +371,16 @@
           />
         </div>
 
-        <PlayerSearchSelect
-          v-model="substitutionInPlayer"
-          :label="t('play.substitution.playerIn')"
-          :placeholder="t('play.substitution.searchPlaceholder')"
-          :empty-hint="t('play.substitution.searchEmpty')"
-        />
+        <div class="substitution-field">
+          <span class="substitution-label">{{ t('play.substitution.playerIn') }}</span>
+          <MatchParticipantSelect
+            :model-value="substitutionInPlayer"
+            :placeholder="t('play.substitution.searchPlaceholder')"
+            :exclude-ids="knownParticipantIds"
+            @update:model-value="(value) => (substitutionInPlayer = value)"
+            @create="addProvisionalSubstitute"
+          />
+        </div>
 
         <p v-if="substitutionError" class="substitution-error">{{ substitutionError }}</p>
 
@@ -408,9 +412,13 @@
       <div class="finish-content">
         <p>{{ t('play.finish.message1') }}</p>
         <p>{{ t('play.finish.message2') }}</p>
+        <p v-if="pendingParticipants.length > 0" class="finish-pending">
+          {{ t('play.finish.pendingParticipants', { count: pendingParticipants.length }) }}
+        </p>
+        <p v-if="finishError" class="substitution-error" role="alert">{{ finishError }}</p>
         <div class="actions">
-          <Button :label="t('play.finish.abort')" severity="secondary" @click="finishDialog = false" />
-          <Button :label="t('play.finish.confirm')" icon="pi pi-check" @click="confirmFinish" />
+          <Button :label="t('play.finish.abort')" severity="secondary" :disabled="saving" @click="finishDialog = false" />
+          <Button :label="t('play.finish.confirm')" icon="pi pi-check" :loading="saving" @click="confirmFinish" />
         </div>
       </div>
     </Dialog>
@@ -456,25 +464,32 @@ import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import SelectButton from 'primevue/selectbutton'
 import Tag from 'primevue/tag'
-import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
+import MatchParticipantSelect from '../components/match/MatchParticipantSelect.vue'
 import type { TeamSide } from '../models/MatchPlay'
-import type { Player } from '../models/Player'
 import { DEFAULT_TARGET_SCORE, type MatchType, type PlayerRole, type ShotType, type StatisticsMode } from '../models/Match'
-import { inferStartingRoles, totalBallsInEnd } from '../utils/matchRoles'
+import { totalBallsInEnd } from '../utils/matchRoles'
+import { allMatchPlayerIds } from '../utils/matchSubstitutions'
+import {
+  isProvisionalParticipant,
+  nextProvisionalId,
+  participantFromPlayer,
+  provisionalParticipant,
+  unresolvedParticipants,
+} from '../utils/matchParticipants'
 import { useMatchPlay } from '../composables/useMatchPlay'
 import { useMatchTimer } from '../composables/useMatchTimer'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
+import { useMatchFinalization } from '../composables/useMatchFinalization'
 import { formatFormAvg, formatMasters, usePlayerEndFormChart } from '../composables/usePlayerEndFormChart'
 import { avgSeverity } from '../composables/usePlayerStatsCharts'
-import type { MatchContext } from '../models/MatchContext'
+import type { MatchTeamNames } from '../models/MatchContext'
 import { clampEndPoints, maxPointsForWinner, maxPointsPerEnd, suggestEndScore } from '../models/EndScoreSuggestion'
 import { matchesService } from '../services/matches'
-import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
 import { playersService } from '../services/players'
 import { useAuthStore } from '../stores/auth'
-import type { MatchPlayState, MatchSetup } from '../models/MatchDraft'
+import type { MatchDraft, MatchParticipant, MatchPlayState, MatchSetup } from '../models/MatchDraft'
 import type { LiveMatchData } from '../models/LiveMatch'
-import { clearMatchDraft, loadMatchDraft, saveMatchDraft } from '../services/matchDraftStorage'
+import { loadMatchDraft, saveMatchDraft } from '../services/matchDraftStorage'
 import { useLiveMatchSync } from '../composables/useLiveMatchSync'
 
 const { t } = useI18n()
@@ -482,42 +497,9 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-const matchId = Number(route.params.id)
+const draftId = Number(route.params.id)
 
-function parseSetupFromQuery(): MatchSetup | null {
-  const q = route.query as Record<string, string | undefined>
-  const teamA = q.teamA ? q.teamA.split(',').map((x) => Number(x)) : []
-  const teamB = q.teamB ? q.teamB.split(',').map((x) => Number(x)) : []
-  if (teamA.length === 0 || teamB.length === 0) return null
-
-  const type = (q.type as MatchType) || 'doublette'
-  const statisticsMode = (q.statisticsMode as StatisticsMode) || 'standard'
-  const trackedPlayers = q.tracked ? q.tracked.split(',').map((x) => Number(x)) : [...teamA, ...teamB]
-
-  const defaultShotTypes: Record<number, 'point' | 'tir'> = {}
-  const defaultsParam = q.defaults || ''
-  if (defaultsParam) {
-    for (const pair of defaultsParam.split(',')) {
-      const [pidStr, st] = pair.split(':')
-      const pid = Number(pidStr)
-      if (pid && (st === 'point' || st === 'tir')) defaultShotTypes[pid] = st
-    }
-  }
-
-  return {
-    id: matchId,
-    type,
-    targetScore: DEFAULT_TARGET_SCORE,
-    statisticsMode,
-    teamA,
-    teamB,
-    trackedPlayers,
-    defaultShotTypes,
-    startingRoles: inferStartingRoles(type, teamA, teamB, defaultShotTypes),
-  }
-}
-
-function setupFromDraft(draft: NonNullable<ReturnType<typeof loadMatchDraft>>): MatchSetup {
+function setupFromDraft(draft: MatchDraft): MatchSetup {
   return {
     id: draft.id,
     type: draft.type,
@@ -525,34 +507,31 @@ function setupFromDraft(draft: NonNullable<ReturnType<typeof loadMatchDraft>>): 
     statisticsMode: draft.statisticsMode,
     teamA: draft.teamA,
     teamB: draft.teamB,
+    teamAName: draft.teamAName,
+    teamBName: draft.teamBName,
     trackedPlayers: draft.trackedPlayers,
-    defaultShotTypes: draft.defaultShotTypes,
+    defaultShotTypes: draft.defaultShotTypes ?? {},
     startingRoles: draft.startingRoles,
+    participants: draft.participants,
+    startedAt: draft.startedAt,
   }
 }
 
 const storedDraft = loadMatchDraft(auth.user?.id ?? null)
-const draftForMatch = storedDraft !== null && storedDraft.id === matchId ? storedDraft : null
-const querySetup = parseSetupFromQuery()
+const draftForMatch = storedDraft !== null && storedDraft.id === draftId ? storedDraft : null
 
-function resolvePlaySession(): { setup: MatchSetup; initial?: MatchPlayState } | null {
-  if (!matchId) return null
-  if (draftForMatch) {
-    return {
-      setup: setupFromDraft(draftForMatch),
-      initial: {
-        currentEndIndex: draftForMatch.currentEndIndex,
-        ends: draftForMatch.ends,
-        distanceEstimate: draftForMatch.distanceEstimate,
-        currentRoles: draftForMatch.currentRoles,
-        substitutions: draftForMatch.substitutions,
-      },
-    }
+function resolvePlaySession(): { setup: MatchSetup; initial: MatchPlayState } | null {
+  if (!draftId || !draftForMatch) return null
+  return {
+    setup: setupFromDraft(draftForMatch),
+    initial: {
+      currentEndIndex: draftForMatch.currentEndIndex,
+      ends: draftForMatch.ends,
+      distanceEstimate: draftForMatch.distanceEstimate,
+      currentRoles: draftForMatch.currentRoles,
+      substitutions: draftForMatch.substitutions ?? [],
+    },
   }
-  if (querySetup && querySetup.teamA.length > 0 && querySetup.teamB.length > 0) {
-    return { setup: querySetup }
-  }
-  return null
 }
 
 const session = resolvePlaySession()
@@ -560,15 +539,19 @@ if (!session) {
   void router.replace({ name: 'home' })
 }
 
-const setup = session?.setup ?? {
+const setup: MatchSetup = session?.setup ?? {
   id: 0,
   type: 'doublette' as MatchType,
   targetScore: DEFAULT_TARGET_SCORE,
   statisticsMode: 'standard' as StatisticsMode,
   teamA: [0],
   teamB: [0],
+  teamAName: null,
+  teamBName: null,
   trackedPlayers: [0],
   startingRoles: {},
+  participants: [],
+  startedAt: new Date().toISOString(),
 }
 
 const initialPlayState = session?.initial
@@ -582,8 +565,14 @@ function persistPlayState(state: MatchPlayState): void {
   void syncLiveOnPersist?.()
 }
 
-const context = ref<MatchContext | null>(null)
-const { teamALabel, teamBLabel } = useMatchTeamLabels(context, t)
+// Team names come from the local draft: nothing is fetched during the match (ADR-001).
+const teamNames = ref<MatchTeamNames>({ teamAName: setup.teamAName, teamBName: setup.teamBName })
+const { teamALabel, teamBLabel } = useMatchTeamLabels(teamNames, t)
+
+const { saving, progress, save } = useMatchFinalization(setup, {
+  serverId: draftForMatch?.serverId ?? null,
+  resolvedPlayers: draftForMatch?.resolvedPlayers ?? {},
+})
 
 const {
   currentEndIndex,
@@ -602,7 +591,6 @@ const {
   currentEndComplete,
   canValidateEnd,
   canPlayBallSlot,
-  toSubmission,
   cancelCurrentEnd,
   showRoles,
   roleFor,
@@ -742,7 +730,7 @@ function ballLabel(playerId: number, idx: number): string {
 const substitutionDialog = ref(false)
 const substitutionTeam = ref<TeamSide | null>(null)
 const substitutionOutPlayerId = ref<number | null>(null)
-const substitutionInPlayer = ref<Player | null>(null)
+const substitutionInPlayer = ref<MatchParticipant | null>(null)
 const substitutionError = ref('')
 
 const substitutionTeamOptions = computed(() => {
@@ -789,30 +777,34 @@ watch(substitutionTeam, () => {
   substitutionError.value = ''
 })
 
-async function loadPlayerName(playerId: number): Promise<void> {
-  if (names.value[playerId]) {
-    return
-  }
-  try {
-    const player = await playersService.getById(playerId)
-    rememberPlayerName(player)
-  } catch {
-    // keep fallback label
-  }
+/** A substitute can also be a name typed on the spot: US-021. */
+function addProvisionalSubstitute(name: string): void {
+  const trimmed = name.trim()
+  if (trimmed === '') return
+  substitutionInPlayer.value = provisionalParticipant(nextProvisionalId(setup.participants), trimmed)
 }
 
-async function confirmSubstitution(): Promise<void> {
-  if (!substitutionTeam.value || substitutionOutPlayerId.value === null || !substitutionInPlayer.value) {
+function registerParticipant(participant: MatchParticipant): void {
+  if (!setup.participants.some((known) => known.id === participant.id)) {
+    setup.participants.push(participant)
+  }
+  rememberParticipant(participant)
+}
+
+function confirmSubstitution(): void {
+  const participant = substitutionInPlayer.value
+  if (!substitutionTeam.value || substitutionOutPlayerId.value === null || !participant) {
     return
   }
 
-  const ok = applySubstitution(substitutionTeam.value, substitutionOutPlayerId.value, substitutionInPlayer.value.id)
+  registerParticipant(participant)
+
+  const ok = applySubstitution(substitutionTeam.value, substitutionOutPlayerId.value, participant.id)
   if (!ok) {
     substitutionError.value = t('play.substitution.error')
     return
   }
 
-  await loadPlayerName(substitutionInPlayer.value.id)
   substitutionDialog.value = false
 }
 
@@ -935,10 +927,20 @@ function confirmCancelEnd() {
 }
 
 const finishDialog = ref(false)
-function openFinishDialog() { finishDialog.value = true }
+const finishError = ref('')
+
+function openFinishDialog() {
+  finishError.value = ''
+  finishDialog.value = true
+}
+
 async function confirmFinish() {
-  finishDialog.value = false
-  await onFinish()
+  finishError.value = ''
+  if (await onFinish()) {
+    finishDialog.value = false
+    return
+  }
+  finishError.value = t('play.finish.error')
 }
 
 function confirmEndScore() {
@@ -972,17 +974,49 @@ function reopenEndDialog() {
 function goPrev() { goPrevEnd() }
 function goNext() { goNextEnd() }
 
-async function onFinish() {
-  const payload: CompleteMatchRequestDto = toSubmission()
+const pendingParticipants = computed(() =>
+  unresolvedParticipants(setup, substitutions, progress.resolvedPlayers),
+)
+
+/** Nobody already in the match may come in as a substitute. */
+const knownParticipantIds = computed(() =>
+  allMatchPlayerIds(setup.teamA, setup.teamB, substitutions),
+)
+
+/**
+ * The match leaves the device only now. Participants typed on the spot must first be turned
+ * into real Players, on a dedicated screen. See US-021.
+ */
+async function onFinish(): Promise<boolean> {
   await syncLiveMatch()
   await finishLiveMatch()
-  await matchesService.complete(matchId, payload)
-  clearMatchDraft()
-  router.push({ name: 'matchSummary', params: { id: matchId } })
+
+  if (pendingParticipants.value.length > 0) {
+    void router.push({ name: 'matchPlayers', params: { id: draftId } })
+    return true
+  }
+
+  const state = latestPlayState.value
+  if (!state) return false
+
+  const savedMatchId = await save(state)
+  if (savedMatchId === null) return false
+
+  void router.push({ name: 'matchSummary', params: { id: savedMatchId } })
+  return true
 }
 
 const names = ref<Record<number, string>>({})
 const shortNames = ref<Record<number, string>>({})
+
+function rememberParticipant(participant: MatchParticipant): void {
+  names.value[participant.id] = participant.label
+  shortNames.value[participant.id] = participant.shortLabel
+}
+
+for (const participant of setup.participants) {
+  rememberParticipant(participant)
+}
 
 function buildLiveMatchData(state: MatchPlayState): LiveMatchData {
   return {
@@ -1013,7 +1047,7 @@ const {
   sync: syncLiveMatch,
   finishLive: finishLiveMatch,
   verifyRemoteStatus: verifyLiveMatchStatus,
-} = useLiveMatchSync(matchId, () => {
+} = useLiveMatchSync(draftId, () => {
   const state = latestPlayState.value ?? {
     currentEndIndex: currentEndIndex.value,
     ends,
@@ -1061,12 +1095,6 @@ async function shareLiveLink(): Promise<void> {
   }
 }
 
-function rememberPlayerName(player: Player): void {
-  const full = `${player.firstName} ${player.lastName}`.trim()
-  names.value[player.id] = player.nickname ? `${player.nickname} (${full})` : full
-  shortNames.value[player.id] = (player.nickname || player.firstName || full).trim()
-}
-
 function nameFor(pid: number): string {
   return names.value[pid] ?? `#${pid}`
 }
@@ -1078,18 +1106,23 @@ function shortNameFor(pid: number): string {
 onMounted(async () => {
   if (!session) return
 
-  const ids = Array.from(new Set([...setup.teamA, ...setup.teamB, ...substitutions.map((sub) => sub.inPlayerId)]))
+  // Only a draft saved before ADR-001 can miss labels: it also carries a server match id.
+  const serverMatchId = progress.serverId
+  const missingIds = allMatchPlayerIds(setup.teamA, setup.teamB, substitutions).filter(
+    (id) => !isProvisionalParticipant(id) && names.value[id] === undefined,
+  )
+
   try {
-    const [contextData, ...playerResults] = await Promise.all([
-      matchesService.getContext(matchId),
-      ...ids.map((id) => playersService.getById(id)),
-    ])
-    context.value = contextData
-    for (const p of playerResults) {
-      rememberPlayerName(p)
+    if (serverMatchId !== null) {
+      const context = await matchesService.getContext(serverMatchId)
+      teamNames.value = { teamAName: context.teamAName, teamBName: context.teamBName }
+    }
+    const players = await Promise.all(missingIds.map((id) => playersService.getById(id)))
+    for (const player of players) {
+      rememberParticipant(participantFromPlayer(player))
     }
   } catch {
-    // ignore errors; fallback labels remain
+    // ignore errors; draft labels remain
   }
 
   if (liveIsActive.value) {
@@ -1807,6 +1840,11 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--app-space-sm);
+}
+
+.finish-content .finish-pending {
+  font-weight: 600;
+  color: var(--app-text);
 }
 
 .live-share-content {

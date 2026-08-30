@@ -22,4 +22,6 @@ export interface CreateMatchRequestDto {
   trackedPlayers: number[]
   defaultShotTypes?: DefaultShotTypeDto[]
   startingRoles?: StartingRoleDto[]
+  /** ISO-8601 date-time the match started, since the match is sent once finished. */
+  playedAt?: string | null
 }

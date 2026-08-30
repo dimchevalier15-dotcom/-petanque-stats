@@ -16,11 +16,15 @@ export type CompetitionStage =
 /** TODO: business validation pending — see docs/02-ux.md */
 export type TerrainType = 'gravel' | 'stabilized' | 'indoor' | 'other'
 
-export interface MatchContext {
-  matchId: number
-  comment: string | null
+/** Anything that can name the two teams: a saved match context or a local match setup. */
+export interface MatchTeamNames {
   teamAName: string | null
   teamBName: string | null
+}
+
+export interface MatchContext extends MatchTeamNames {
+  matchId: number
+  comment: string | null
   nature: MatchNature | null
   competitionId: number | null
   competitionName: string | null

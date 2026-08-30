@@ -659,15 +659,33 @@
       "typeSection": "Match type",
       "versus": "VS",
       "teamNameHint": "Team name (optional)",
-      "addPlayer": "Add player",
       "role": "Role",
-      "trackPlayer": "Track stats"
+      "trackPlayer": "Track stats",
+      "addProvisional": "Add “{name}” to the match",
+      "provisionalBadge": "To link at the end",
+      "addSelf": "Me"
+    },
+    "players": {
+      "title": "Match players",
+      "subtitle": "Last step before saving",
+      "hint": "Some players were typed in during the match. Link them to an existing player or create them to save the match.",
+      "kinds": { "new": "New player", "existing": "Existing player" },
+      "searchPlaceholder": "Search a player (min. 3 characters)",
+      "searchEmpty": "No player found.",
+      "incomplete": "Enter a first and last name, or pick an existing player.",
+      "duplicate": "A player cannot take two spots in the same match.",
+      "save": "Save match",
+      "saveError": "Saving failed. Your data is kept, please try again."
     },
     "resume": {
       "title": "Match in progress",
       "message": "You have an unfinished match. Resume it or start a new one?",
       "continue": "Resume",
       "abandon": "Discard",
+      "abandonTitle": "Discard the match?",
+      "abandonMessage": "This match is only stored on this device. Discarding it deletes it for good.",
+      "abandonCancel": "Back",
+      "abandonConfirm": "Discard",
       "score": "Current score: {scoreA} – {scoreB}"
     },
     "teams": { "a": "Team A", "b": "Team B", "aShort": "A", "bShort": "B" },
@@ -682,7 +700,12 @@
     "stats": {
       "sectionTitle": "Statistics",
       "mode": { "title": "Scoring mode" },
-      "modes": { "standard": "Standard", "simple": "Simple" },
+      "modes": {
+        "standard": "Standard",
+        "simple": "Simple",
+        "standardHint": "Every ball is rated from -2 to +2: detailed analysis.",
+        "simpleHint": "Every ball is a hit or a miss: faster entry."
+      },
       "tracked": { "title": "Tracked players" }
     },
     "roles": { "pointeur": "Pointer", "milieu": "Middle", "tireur": "Shooter" },
@@ -734,8 +757,7 @@
       "team": "Team",
       "playerOut": "Player to replace",
       "playerIn": "Replacement player",
-      "searchPlaceholder": "Search a player (min. 3 characters)",
-      "searchEmpty": "No player found.",
+      "searchPlaceholder": "Search or type a name",
       "confirm": "Confirm substitution",
       "abort": "Cancel",
       "error": "This substitution cannot be applied.",
@@ -754,6 +776,8 @@
       "title": "Finish match",
       "message1": "Finish the match now?",
       "message2": "The current score will be kept.",
+      "pendingParticipants": "{count} player(s) still need to be linked before saving.",
+      "error": "Saving failed. Your data is kept, please try again.",
       "confirm": "Finish",
       "abort": "Back"
     },

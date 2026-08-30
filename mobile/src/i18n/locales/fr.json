@@ -659,15 +659,33 @@
       "typeSection": "Type de partie",
       "versus": "VS",
       "teamNameHint": "Nom d'équipe (facultatif)",
-      "addPlayer": "Ajouter un joueur",
       "role": "Rôle",
-      "trackPlayer": "Analyser"
+      "trackPlayer": "Analyser",
+      "addProvisional": "Ajouter « {name} » au match",
+      "provisionalBadge": "À rattacher en fin de match",
+      "addSelf": "Moi"
+    },
+    "players": {
+      "title": "Joueurs du match",
+      "subtitle": "Dernière étape avant l'enregistrement",
+      "hint": "Certains joueurs ont été saisis pendant la partie. Rattachez-les à un joueur existant ou créez-les pour enregistrer le match.",
+      "kinds": { "new": "Nouveau joueur", "existing": "Joueur existant" },
+      "searchPlaceholder": "Rechercher un joueur (3 caractères min.)",
+      "searchEmpty": "Aucun joueur trouvé.",
+      "incomplete": "Renseignez un prénom et un nom, ou choisissez un joueur existant.",
+      "duplicate": "Un joueur ne peut pas occuper deux places dans le même match.",
+      "save": "Enregistrer le match",
+      "saveError": "L'enregistrement a échoué. Vos données sont conservées, réessayez."
     },
     "resume": {
       "title": "Partie en cours",
       "message": "Vous avez une partie non terminée. Voulez-vous la reprendre ou démarrer un nouveau match ?",
       "continue": "Reprendre",
       "abandon": "Abandonner",
+      "abandonTitle": "Abandonner la partie ?",
+      "abandonMessage": "Cette partie n'est enregistrée que sur cet appareil. L'abandonner la supprime définitivement.",
+      "abandonCancel": "Retour",
+      "abandonConfirm": "Abandonner",
       "score": "Score actuel : {scoreA} – {scoreB}"
     },
     "teams": { "a": "Équipe A", "b": "Équipe B", "aShort": "A", "bShort": "B" },
@@ -682,7 +700,12 @@
     "stats": {
       "sectionTitle": "Statistiques",
       "mode": { "title": "Mode de notation" },
-      "modes": { "standard": "Standard", "simple": "Simplifié" },
+      "modes": {
+        "standard": "Standard",
+        "simple": "Simplifié",
+        "standardHint": "Chaque boule est notée de -2 à +2 : analyse détaillée.",
+        "simpleHint": "Chaque boule est réussie ou manquée : saisie plus rapide."
+      },
       "tracked": { "title": "Joueurs suivis" }
     },
     "roles": { "pointeur": "Pointeur", "milieu": "Milieu", "tireur": "Tireur" },
@@ -734,8 +757,7 @@
       "team": "Équipe",
       "playerOut": "Joueur à remplacer",
       "playerIn": "Joueur remplaçant",
-      "searchPlaceholder": "Rechercher un joueur (3 caractères min.)",
-      "searchEmpty": "Aucun joueur trouvé.",
+      "searchPlaceholder": "Rechercher ou saisir un nom",
       "confirm": "Confirmer le changement",
       "abort": "Annuler",
       "error": "Ce changement ne peut pas être appliqué.",
@@ -754,6 +776,8 @@
       "title": "Terminer le match",
       "message1": "Terminer le match maintenant ?",
       "message2": "Le score actuel sera conservé.",
+      "pendingParticipants": "Il reste {count} joueur(s) à rattacher avant l'enregistrement.",
+      "error": "L'enregistrement a échoué. Vos données sont conservées, réessayez.",
       "confirm": "Terminer",
       "abort": "Retour"
     },

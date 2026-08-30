@@ -81,6 +81,10 @@ final class MatchService
         $game->setCreatedBy($createdBy);
         $game->setTeamAName($this->resolveTeamName($req->teamAName, $map[(int) $req->teamA[0]]));
         $game->setTeamBName($this->resolveTeamName($req->teamBName, $map[(int) $req->teamB[0]]));
+        $playedAt = $this->resolvePlayedAt($req->playedAt);
+        if ($playedAt !== null) {
+            $game->setPlayedAt($playedAt);
+        }
         $this->em->persist($game);
 
         $defaults = [];
@@ -133,6 +137,19 @@ final class MatchService
         $this->em->flush();
 
         return new CreateMatchResponse((int) $game->getId());
+    }
+
+    private function resolvePlayedAt(?string $value): ?\DateTimeImmutable
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        try {
+            return new \DateTimeImmutable($value);
+        } catch (\Exception) {
+            return null;
+        }
     }
 
     private function resolveTeamName(?string $provided, Player $firstPlayer): string

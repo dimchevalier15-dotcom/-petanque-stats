@@ -12,10 +12,35 @@
           :label="t('matches.resume.abandon')"
           severity="secondary"
           outlined
-          @click="abandon"
+          @click="abandonDialog = true"
         />
       </div>
     </section>
+
+    <Dialog
+      v-model:visible="abandonDialog"
+      :modal="true"
+      :header="t('matches.resume.abandonTitle')"
+      class="abandon-dialog"
+    >
+      <div class="abandon-content">
+        <p>{{ t('matches.resume.abandonMessage') }}</p>
+        <div class="abandon-actions">
+          <Button
+            :label="t('matches.resume.abandonCancel')"
+            severity="secondary"
+            outlined
+            @click="abandonDialog = false"
+          />
+          <Button
+            :label="t('matches.resume.abandonConfirm')"
+            severity="danger"
+            icon="pi pi-trash"
+            @click="confirmAbandon"
+          />
+        </div>
+      </div>
+    </Dialog>
 
     <div class="welcome-card app-card">
       <div class="brand-row">
@@ -97,6 +122,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
 import Menu from 'primevue/menu'
 import Message from 'primevue/message'
 import { useI18n } from 'vue-i18n'
@@ -117,11 +143,18 @@ const isCoach = useIsCoach()
 const { draft, resume, abandon } = useMatchDraftResume()
 const verifyNotice = ref('')
 const verifyNoticeSeverity = ref<'success' | 'error'>('success')
+const abandonDialog = ref(false)
 
 const currentScore = computed(() => {
   if (!draft.value) return { scoreA: 0, scoreB: 0 }
   return draftScore(draft.value)
 })
+
+/** The draft is the only copy of an ongoing match: losing it must be explicit. */
+function confirmAbandon(): void {
+  abandon()
+  abandonDialog.value = false
+}
 
 function goAddPlayer(): void {
   router.push({ name: 'addPlayer' })
@@ -282,6 +315,23 @@ function toggleLanguageMenu(event: Event) {
 }
 
 .resume-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--app-space-sm);
+}
+
+.abandon-content {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.abandon-content p {
+  margin: 0;
+  line-height: 1.45;
+  color: var(--app-text-muted);
+}
+
+.abandon-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--app-space-sm);

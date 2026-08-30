@@ -11,7 +11,6 @@ import {
   substitutionsAllowed,
   teamForActivePlayer,
   teamSlotsForEnd,
-  trackedPlayersForSubmission,
 } from '../utils/matchSubstitutions'
 import type { TeamSubstitution } from '../models/MatchPlay'
 import {
@@ -507,36 +506,6 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     }
   }
 
-  function toSubmission() {
-    return {
-      type: setup.type,
-      targetScore: setup.targetScore,
-      statisticsMode: setup.statisticsMode,
-      teamA: setup.teamA,
-      teamB: setup.teamB,
-      trackedPlayers: trackedPlayersForSubmission(setup.trackedPlayers, substitutions),
-      substitutions: substitutions.map((sub) => ({ ...sub })),
-      ends: ends
-        .filter((e) => e.canceled === true || (e.winner !== undefined && e.points !== undefined))
-        .map((e) => ({
-          index: e.index,
-          winner: (e.winner as TeamSide) ?? 'A',
-          points: e.canceled ? 0 : ((e.points as number) ?? 0),
-          canceled: e.canceled === true,
-          balls: e.balls.map((b) => ({
-            playerId: b.playerId,
-            notes: b.notes,
-            shotTypes: b.shotTypes,
-            distances: b.distances,
-          })),
-          roles: playersForEndRoles(e).map((playerId) => ({
-            playerId,
-            role: e.roles?.[playerId] ?? startingRoles[playerId] ?? currentRoles[playerId] ?? 'pointeur',
-          })),
-        })),
-    }
-  }
-
   return {
     currentEndIndex,
     currentEnd,
@@ -563,7 +532,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     canPlayBallSlot,
     hasAnyPlayedBall,
     colorFor,
-    toSubmission,
+    snapshot,
     cancelCurrentEnd,
     substitutions,
     allowSubstitutions,

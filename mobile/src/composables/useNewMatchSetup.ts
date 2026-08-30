@@ -1,13 +1,9 @@
-import { computed, onMounted, reactive, ref, watch, type ComputedRef, type Ref } from 'vue'
+import { computed, reactive, ref, watch, type ComputedRef, type Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { playersService } from '../services/players'
-import { matchesService } from '../services/matches'
 import { saveMatchDraft } from '../services/matchDraftStorage'
 import { useAuthStore } from '../stores/auth'
-import type { MatchSetup } from '../models/MatchDraft'
-import { playerToSearchOption, type PlayerSearchOption } from './usePlayerSearch'
-import type { Player } from '../models/Player'
+import type { MatchParticipant, MatchSetup } from '../models/MatchDraft'
 import {
   DEFAULT_TARGET_SCORE,
   type MatchType,
@@ -15,14 +11,15 @@ import {
   type ShotType,
   type StatisticsMode,
 } from '../models/Match'
-import type { DefaultShotTypeDto, StartingRoleDto } from '../dto/match/CreateMatchRequest'
+import { defaultRoleFor, roleToShot } from '../utils/matchRoles'
+import { nextProvisionalId, participantFromPlayer, provisionalParticipant } from '../utils/matchParticipants'
 
 export type MatchTeamSide = 'A' | 'B'
 
 export interface NewMatchPlayerEntry {
   team: MatchTeamSide
   slot: number
-  option: PlayerSearchOption
+  participant: MatchParticipant
 }
 
 export interface UseNewMatchSetupReturn {
@@ -35,10 +32,8 @@ export interface UseNewMatchSetupReturn {
   roleOptions: ComputedRef<Array<{ label: string; value: PlayerRole }>>
   teamASlots: ComputedRef<number[]>
   teamBSlots: ComputedRef<number[]>
-  teamASelections: Array<PlayerSearchOption | null>
-  teamBSelections: Array<PlayerSearchOption | null>
-  teamASuggestions: Array<PlayerSearchOption[]>
-  teamBSuggestions: Array<PlayerSearchOption[]>
+  teamASelections: Array<MatchParticipant | null>
+  teamBSelections: Array<MatchParticipant | null>
   teamARoles: PlayerRole[]
   teamBRoles: PlayerRole[]
   configuredPlayers: ComputedRef<NewMatchPlayerEntry[]>
@@ -46,37 +41,29 @@ export interface UseNewMatchSetupReturn {
   canStart: ComputedRef<boolean>
   submitting: Ref<boolean>
   attemptedSubmit: Ref<boolean>
+  formError: Ref<string>
+  selfParticipant: ComputedRef<MatchParticipant | null>
+  canAddSelf: ComputedRef<boolean>
   slotError: (team: MatchTeamSide, slot: number) => string | undefined
   showSlotError: (team: MatchTeamSide, slot: number) => boolean
   showDuplicateError: ComputedRef<boolean>
-  onSearch: (team: MatchTeamSide, slot: number, query: string) => void
+  excludedIdsFor: (team: MatchTeamSide, slot: number) => number[]
+  teamNamePlaceholder: (team: MatchTeamSide) => string
+  select: (team: MatchTeamSide, slot: number, participant: MatchParticipant | null) => void
+  addProvisional: (team: MatchTeamSide, slot: number, name: string) => void
+  addSelf: () => void
   touch: (team: MatchTeamSide, slot: number) => void
-  goQuickAdd: (team: MatchTeamSide, slot: number) => void
   trackedFor: (team: MatchTeamSide, slot: number) => boolean
   setTrackedFor: (team: MatchTeamSide, slot: number, value: boolean) => void
   roleFor: (team: MatchTeamSide, slot: number) => PlayerRole
   setRoleFor: (team: MatchTeamSide, slot: number, role: PlayerRole) => void
-  submit: () => Promise<void>
+  submit: () => void
 }
 
 function slotsForType(type: MatchType): number[] {
   if (type === 'tete_a_tete') return [1]
   if (type === 'doublette') return [1, 2]
   return [1, 2, 3]
-}
-
-function defaultRoleFor(type: MatchType, position: number): PlayerRole {
-  if (type === 'doublette') return position === 2 ? 'tireur' : 'pointeur'
-  if (type === 'triplette') {
-    if (position === 2) return 'milieu'
-    if (position === 3) return 'tireur'
-    return 'pointeur'
-  }
-  return 'pointeur'
-}
-
-function roleToShot(role: PlayerRole): ShotType {
-  return role === 'tireur' ? 'tir' : 'point'
 }
 
 export function useNewMatchSetup(): UseNewMatchSetupReturn {
@@ -91,16 +78,14 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
   const tracked = reactive<Record<number, boolean>>({})
   const submitting = ref(false)
   const attemptedSubmit = ref(false)
+  const formError = ref('')
 
   const teamARoles = reactive<PlayerRole[]>(['pointeur', 'tireur', 'tireur'])
   const teamBRoles = reactive<PlayerRole[]>(['pointeur', 'tireur', 'tireur'])
-  const teamASelections = reactive<Array<PlayerSearchOption | null>>([null, null, null])
-  const teamBSelections = reactive<Array<PlayerSearchOption | null>>([null, null, null])
-  const teamASuggestions = reactive<Array<PlayerSearchOption[]>>([[], [], []])
-  const teamBSuggestions = reactive<Array<PlayerSearchOption[]>>([[], [], []])
+  const teamASelections = reactive<Array<MatchParticipant | null>>([null, null, null])
+  const teamBSelections = reactive<Array<MatchParticipant | null>>([null, null, null])
   const errors = reactive<Record<string, string>>({})
   const touched = reactive<Record<string, boolean>>({})
-  const searchTimers = new Map<string, number>()
 
   const typeOptions = computed(() => [
     { label: t('matches.types.teteATete'), value: 'tete_a_tete' as MatchType },
@@ -134,16 +119,20 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
   const teamBSlots = computed(() => slotsForType(type.value))
   const showRoleConfig = computed(() => type.value !== 'tete_a_tete')
 
-  function selectionAt(team: MatchTeamSide, slot: number): PlayerSearchOption | null {
-    return team === 'A' ? teamASelections[slot - 1] : teamBSelections[slot - 1]
+  function selectionsOf(team: MatchTeamSide): Array<MatchParticipant | null> {
+    return team === 'A' ? teamASelections : teamBSelections
+  }
+
+  function selectionAt(team: MatchTeamSide, slot: number): MatchParticipant | null {
+    return selectionsOf(team)[slot - 1] ?? null
   }
 
   function configuredEntriesFor(team: MatchTeamSide, slots: number[]): NewMatchPlayerEntry[] {
-    const selections = team === 'A' ? teamASelections : teamBSelections
+    const selections = selectionsOf(team)
     return slots
       .map((slot) => {
-        const option = selections[slot - 1]
-        return option ? { team, slot, option } : null
+        const participant = selections[slot - 1]
+        return participant ? { team, slot, participant } : null
       })
       .filter((entry): entry is NewMatchPlayerEntry => entry !== null)
   }
@@ -155,14 +144,43 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
 
   const selectedPlayers = computed(() => {
     const seen = new Set<number>()
-    const list: PlayerSearchOption[] = []
+    const list: MatchParticipant[] = []
     for (const entry of configuredPlayers.value) {
-      if (!seen.has(entry.option.id)) {
-        seen.add(entry.option.id)
-        list.push(entry.option)
+      if (!seen.has(entry.participant.id)) {
+        seen.add(entry.participant.id)
+        list.push(entry.participant)
       }
     }
     return list
+  })
+
+  const allParticipants = computed(() =>
+    [...teamASelections, ...teamBSelections].filter(
+      (participant): participant is MatchParticipant => participant !== null,
+    ),
+  )
+
+  const selfParticipant = computed<MatchParticipant | null>(() => {
+    const user = auth.user
+    if (!user?.playerId) return null
+    const firstName = user.firstName ?? ''
+    const lastName = user.lastName ?? ''
+    if (`${firstName}${lastName}`.trim() === '') return null
+    return participantFromPlayer({
+      id: user.playerId,
+      firstName,
+      lastName,
+      nickname: user.nickname ?? '',
+      clubId: null,
+      clubName: null,
+    })
+  })
+
+  const canAddSelf = computed(() => {
+    const self = selfParticipant.value
+    if (!self) return false
+    if (allParticipants.value.some((participant) => participant.id === self.id)) return false
+    return firstEmptySlot() !== null
   })
 
   watch(
@@ -181,7 +199,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
   )
 
   function selectedIds(): number[] {
-    return configuredPlayers.value.map((entry) => entry.option.id)
+    return configuredPlayers.value.map((entry) => entry.participant.id)
   }
 
   function validateAll(): boolean {
@@ -246,7 +264,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
 
   function showSlotError(team: MatchTeamSide, slot: number): boolean {
     const key = `${team}${slot}`
-    return (attemptedSubmit.value || touched[key]) && !!errors[key]
+    return (attemptedSubmit.value || touched[key] === true) && errors[key] !== undefined
   }
 
   const showDuplicateError = computed(
@@ -258,45 +276,64 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
     return configuredPlayers.value.length === expectedCount && !errors.duplicates
   })
 
-  function onSearch(team: MatchTeamSide, slot: number, query: string): void {
-    const key = `${team}${slot}`
-    const previous = searchTimers.get(key)
-    if (previous) clearTimeout(previous)
-
-    if (query.trim().length < 3) {
-      if (team === 'A') teamASuggestions[slot - 1] = []
-      else teamBSuggestions[slot - 1] = []
-      return
-    }
-
-    const timer = window.setTimeout(async () => {
-      const list = await playersService.search(query)
-      const options = list.map(playerToSearchOption)
-      if (team === 'A') teamASuggestions[slot - 1] = options
-      else teamBSuggestions[slot - 1] = options
-    }, 300)
-
-    searchTimers.set(key, timer)
+  /** Already picked participants must not be offered again in the other slots. */
+  function excludedIdsFor(team: MatchTeamSide, slot: number): number[] {
+    const current = selectionAt(team, slot)
+    return allParticipants.value
+      .filter((participant) => participant.id !== current?.id)
+      .map((participant) => participant.id)
   }
 
-  function goQuickAdd(team: MatchTeamSide, slot: number): void {
-    router.push({ name: 'addPlayer', query: { returnTo: 'newMatch', slot: `${team}${slot}` } })
+  /** The team name falls back to the first participant's name, shown as a hint. */
+  function teamNamePlaceholder(team: MatchTeamSide): string {
+    const first = selectionAt(team, 1)
+    return first ? first.shortLabel : t('matches.create.teamNameHint')
+  }
+
+  function select(team: MatchTeamSide, slot: number, participant: MatchParticipant | null): void {
+    selectionsOf(team)[slot - 1] = participant
+    touch(team, slot)
+  }
+
+  function addProvisional(team: MatchTeamSide, slot: number, name: string): void {
+    const trimmed = name.trim()
+    if (trimmed === '') return
+    const id = nextProvisionalId(allParticipants.value)
+    select(team, slot, provisionalParticipant(id, trimmed))
+  }
+
+  function firstEmptySlot(): { team: MatchTeamSide; slot: number } | null {
+    for (const slot of teamASlots.value) {
+      if (!selectionAt('A', slot)) return { team: 'A', slot }
+    }
+    for (const slot of teamBSlots.value) {
+      if (!selectionAt('B', slot)) return { team: 'B', slot }
+    }
+    return null
+  }
+
+  function addSelf(): void {
+    const self = selfParticipant.value
+    const target = firstEmptySlot()
+    if (!self || !target) return
+    select(target.team, target.slot, self)
   }
 
   function trackedFor(team: MatchTeamSide, slot: number): boolean {
-    const sel = selectionAt(team, slot)
-    if (!sel) return false
-    return tracked[sel.id] === undefined ? true : Boolean(tracked[sel.id])
+    const selection = selectionAt(team, slot)
+    if (!selection) return false
+    return tracked[selection.id] === undefined ? true : Boolean(tracked[selection.id])
   }
 
   function setTrackedFor(team: MatchTeamSide, slot: number, value: boolean): void {
-    const sel = selectionAt(team, slot)
-    if (!sel) return
-    tracked[sel.id] = value
+    const selection = selectionAt(team, slot)
+    if (!selection) return
+    tracked[selection.id] = value
   }
 
   function roleFor(team: MatchTeamSide, slot: number): PlayerRole {
-    return team === 'A' ? teamARoles[slot - 1] : teamBRoles[slot - 1]
+    const roles = team === 'A' ? teamARoles : teamBRoles
+    return roles[slot - 1] ?? 'pointeur'
   }
 
   function setRoleFor(team: MatchTeamSide, slot: number, role: PlayerRole): void {
@@ -304,26 +341,48 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
     else teamBRoles[slot - 1] = role
   }
 
-  onMounted(async () => {
-    const q = router.currentRoute.value.query as Record<string, string | undefined>
-    const newPlayerId = q.newPlayerId ? Number(q.newPlayerId) : undefined
-    const slot = q.slot
-    if (!newPlayerId || !slot || (slot[0] !== 'A' && slot[0] !== 'B')) return
+  function buildSetup(): MatchSetup {
+    const teamA = teamASlots.value.map((slot) => selectionAt('A', slot) as MatchParticipant)
+    const teamB = teamBSlots.value.map((slot) => selectionAt('B', slot) as MatchParticipant)
 
-    try {
-      const player: Player = await playersService.getById(newPlayerId)
-      const option = playerToSearchOption(player)
-      const team = slot[0] as MatchTeamSide
-      const pos = Number(slot.substring(1))
-      if (team === 'A') teamASelections[pos - 1] = option
-      else teamBSelections[pos - 1] = option
-    } catch {
-      // ignore
+    const defaultShotTypes: Record<number, ShotType> = {}
+    const startingRoles: Record<number, PlayerRole> = {}
+    const applyRoles = (participants: MatchParticipant[], roles: PlayerRole[]) => {
+      participants.forEach((participant, index) => {
+        const role = roles[index] ?? 'pointeur'
+        startingRoles[participant.id] = role
+        defaultShotTypes[participant.id] = roleToShot(role)
+      })
     }
-  })
+    applyRoles(teamA, teamARoles)
+    applyRoles(teamB, teamBRoles)
 
-  async function submit(): Promise<void> {
+    return {
+      id: Date.now(),
+      type: type.value,
+      targetScore: DEFAULT_TARGET_SCORE,
+      statisticsMode: statisticsMode.value,
+      teamA: teamA.map((participant) => participant.id),
+      teamB: teamB.map((participant) => participant.id),
+      teamAName: teamAName.value.trim() || null,
+      teamBName: teamBName.value.trim() || null,
+      trackedPlayers: selectedPlayers.value
+        .filter((participant) => tracked[participant.id] !== false)
+        .map((participant) => participant.id),
+      defaultShotTypes,
+      startingRoles,
+      participants: [...teamA, ...teamB],
+      startedAt: new Date().toISOString(),
+    }
+  }
+
+  /**
+   * Starting a match is entirely local: nothing is sent until the match is finished.
+   * See ADR-001.
+   */
+  function submit(): void {
     attemptedSubmit.value = true
+    formError.value = ''
     for (const slot of teamASlots.value) touched[`A${slot}`] = true
     for (const slot of teamBSlots.value) touched[`B${slot}`] = true
 
@@ -331,80 +390,23 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
 
     submitting.value = true
     try {
-      const teamA = teamASlots.value.map((slot) => teamASelections[slot - 1]?.id as number)
-      const teamB = teamBSlots.value.map((slot) => teamBSelections[slot - 1]?.id as number)
-      const trackedPlayers = selectedPlayers.value
-        .filter((player) => tracked[player.id] !== false)
-        .map((player) => player.id)
-
-      const defaults: DefaultShotTypeDto[] = []
-      const startingRoles: StartingRoleDto[] = []
-      const startingRolesMap: Record<number, PlayerRole> = {}
-      teamA.forEach((playerId, idx) => {
-        const role = teamARoles[idx] ?? 'pointeur'
-        defaults.push({ playerId, defaultShotType: roleToShot(role) })
-        startingRoles.push({ playerId, role })
-        startingRolesMap[playerId] = role
-      })
-      teamB.forEach((playerId, idx) => {
-        const role = teamBRoles[idx] ?? 'pointeur'
-        defaults.push({ playerId, defaultShotType: roleToShot(role) })
-        startingRoles.push({ playerId, role })
-        startingRolesMap[playerId] = role
-      })
-
-      const trimmedTeamAName = teamAName.value.trim()
-      const trimmedTeamBName = teamBName.value.trim()
-
-      const { id } = await matchesService.create({
-        type: type.value,
-        targetScore: DEFAULT_TARGET_SCORE,
-        teamA,
-        teamB,
-        teamAName: trimmedTeamAName || null,
-        teamBName: trimmedTeamBName || null,
-        statisticsMode: statisticsMode.value,
-        trackedPlayers,
-        defaultShotTypes: defaults,
-        startingRoles,
-      })
-
-      const defaultShotTypesMap: Record<number, 'point' | 'tir'> = {}
-      for (const item of defaults) {
-        defaultShotTypesMap[item.playerId] = item.defaultShotType
-      }
-
-      const setup: MatchSetup = {
-        id,
-        type: type.value,
-        targetScore: DEFAULT_TARGET_SCORE,
-        statisticsMode: statisticsMode.value,
-        teamA,
-        teamB,
-        trackedPlayers,
-        defaultShotTypes: defaultShotTypesMap,
-        startingRoles: startingRolesMap,
-      }
-
+      const setup = buildSetup()
       saveMatchDraft(
         setup,
         {
           currentEndIndex: 0,
-          ends: [{ index: 1, balls: [], winner: undefined, points: undefined, canceled: false }],
+          ends: [{ index: 1, balls: [], canceled: false }],
           distanceEstimate: null,
-          currentRoles: { ...startingRolesMap },
+          currentRoles: { ...setup.startingRoles },
+          substitutions: [],
         },
         auth.user?.id ?? null,
       )
 
-      router.push({
-        name: 'matchScore',
-        params: { id },
-      })
+      router.push({ name: 'matchScore', params: { id: setup.id } })
     } catch {
-      errors['A1'] = errors['A1'] || t('matches.validations.generic')
-    } finally {
       submitting.value = false
+      formError.value = t('matches.validations.generic')
     }
   }
 
@@ -420,8 +422,6 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
     teamBSlots,
     teamASelections,
     teamBSelections,
-    teamASuggestions,
-    teamBSuggestions,
     teamARoles,
     teamBRoles,
     configuredPlayers,
@@ -429,12 +429,18 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
     canStart,
     submitting,
     attemptedSubmit,
+    formError,
+    selfParticipant,
+    canAddSelf,
     slotError,
     showSlotError,
     showDuplicateError,
-    onSearch,
+    excludedIdsFor,
+    teamNamePlaceholder,
+    select,
+    addProvisional,
+    addSelf,
     touch,
-    goQuickAdd,
     trackedFor,
     setTrackedFor,
     roleFor,
