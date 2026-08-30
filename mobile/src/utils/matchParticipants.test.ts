@@ -5,6 +5,7 @@ import type { MatchSetup } from '../models/MatchDraft'
 import {
   assignPlaceholderPlayers,
   containsProvisionalParticipant,
+  emptySlotsToFill,
   excludePlayersFromTracked,
   isProvisionalParticipant,
   nextProvisionalId,
@@ -139,6 +140,22 @@ describe('remapSubmission', () => {
   it('reports a partially remapped payload, whose balls the backend would drop', () => {
     const remapped = remapSubmission(payload, { '-1': 30, '-2': 31 })
     expect(containsProvisionalParticipant(remapped)).toBe(true)
+  })
+})
+
+describe('emptySlotsToFill', () => {
+  it('lists empty slots in team A then team B order', () => {
+    expect(
+      emptySlotsToFill([1, 2], [1, 2], (team, slot) => team === 'A' && slot === 1),
+    ).toEqual([
+      { team: 'A', slot: 2, letter: 'A' },
+      { team: 'B', slot: 1, letter: 'B' },
+      { team: 'B', slot: 2, letter: 'C' },
+    ])
+  })
+
+  it('assigns up to six letters for a full triplette roster', () => {
+    expect(emptySlotsToFill([1, 2, 3], [1, 2, 3], () => false)).toHaveLength(6)
   })
 })
 

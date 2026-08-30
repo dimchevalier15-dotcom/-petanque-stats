@@ -12,7 +12,7 @@ import {
   type StatisticsMode,
 } from '../models/Match'
 import { defaultRoleFor, roleToShot } from '../utils/matchRoles'
-import { nextProvisionalId, participantFromPlayer, provisionalParticipant } from '../utils/matchParticipants'
+import { nextProvisionalId, emptySlotsToFill, participantFromPlayer, provisionalParticipant } from '../utils/matchParticipants'
 import { normalizeOpeningScore } from '../utils/matchScore'
 
 export type MatchTeamSide = 'A' | 'B'
@@ -214,19 +214,8 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
       delete errors[key]
     }
 
-    const requireTeam = (team: MatchTeamSide, slots: number[]) => {
-      for (const slot of slots) {
-        if (!selectionAt(team, slot)) {
-          errors[`${team}${slot}`] = t('matches.validations.required')
-        }
-      }
-    }
-
-    requireTeam('A', teamASlots.value)
-    requireTeam('B', teamBSlots.value)
-
     const ids = selectedIds()
-    if (ids.length !== new Set(ids).size) {
+    if (ids.length > 0 && ids.length !== new Set(ids).size) {
       errors.duplicates = t('matches.validations.duplicates')
     }
 
@@ -278,10 +267,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
     () => attemptedSubmit.value && errors.duplicates !== undefined,
   )
 
-  const canStart = computed(() => {
-    const expectedCount = teamASlots.value.length + teamBSlots.value.length
-    return configuredPlayers.value.length === expectedCount && !errors.duplicates
-  })
+  const canStart = computed(() => !errors.duplicates)
 
   /** Already picked participants must not be offered again in the other slots. */
   function excludedIdsFor(team: MatchTeamSide, slot: number): number[] {
@@ -348,6 +334,26 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
     else teamBRoles[slot - 1] = role
   }
 
+  function fillEmptySlotsWithDefaults(): void {
+    const pending = emptySlotsToFill(
+      teamASlots.value,
+      teamBSlots.value,
+      (team, slot) => selectionAt(team, slot) !== null,
+    )
+
+    for (const { team, slot, letter } of pending) {
+      const label = t('matches.create.defaultPlayer', { letter })
+      const id = nextProvisionalId(allParticipants.value)
+      const participant = provisionalParticipant(id, label)
+      selectionsOf(team)[slot - 1] = participant
+      tracked[participant.id] = true
+    }
+
+    if (pending.length > 0) {
+      validateAll()
+    }
+  }
+
   function buildSetup(): MatchSetup {
     const teamA = teamASlots.value.map((slot) => selectionAt('A', slot) as MatchParticipant)
     const teamB = teamBSlots.value.map((slot) => selectionAt('B', slot) as MatchParticipant)
@@ -390,8 +396,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
   function submit(): void {
     attemptedSubmit.value = true
     formError.value = ''
-    for (const slot of teamASlots.value) touched[`A${slot}`] = true
-    for (const slot of teamBSlots.value) touched[`B${slot}`] = true
+    fillEmptySlotsWithDefaults()
 
     if (!validateAll()) return
 

@@ -668,7 +668,8 @@
         "title": "Reprendre un match en cours",
         "hint": "Indiquez le score actuel si vous rejoignez une partie déjà commencée. Les statistiques ne couvrent que les mènes jouées à partir de maintenant.",
         "invalid": "Le score de départ n'est pas valide."
-      }
+      },
+      "defaultPlayer": "Joueur {letter}"
     },
     "players": {
       "title": "Joueurs du match",

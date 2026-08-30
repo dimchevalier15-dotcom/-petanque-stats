@@ -27,6 +27,44 @@ export function isProvisionalParticipant(id: number): boolean {
  */
 export const PROVISIONAL_OPTION_ID = 0
 
+/** Letters used when empty roster slots are auto-filled at match start (up to triplette). */
+export const DEFAULT_PROVISIONAL_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'] as const
+
+export type MatchTeamSide = 'A' | 'B'
+
+export interface EmptyMatchSlot {
+  team: MatchTeamSide
+  slot: number
+  letter: (typeof DEFAULT_PROVISIONAL_LETTERS)[number]
+}
+
+/** Empty slots in team A then team B order, each assigned the next default letter. */
+export function emptySlotsToFill(
+  teamASlots: number[],
+  teamBSlots: number[],
+  hasSelection: (team: MatchTeamSide, slot: number) => boolean,
+): EmptyMatchSlot[] {
+  const pending: EmptyMatchSlot[] = []
+  let letterIndex = 0
+
+  for (const team of ['A', 'B'] as const) {
+    const slots = team === 'A' ? teamASlots : teamBSlots
+    for (const slot of slots) {
+      if (hasSelection(team, slot)) {
+        continue
+      }
+      const letter = DEFAULT_PROVISIONAL_LETTERS[letterIndex]
+      if (!letter) {
+        return pending
+      }
+      letterIndex += 1
+      pending.push({ team, slot, letter })
+    }
+  }
+
+  return pending
+}
+
 export function nextProvisionalId(participants: MatchParticipant[]): number {
   let next = -1
   for (const participant of participants) {

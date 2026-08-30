@@ -668,7 +668,8 @@
         "title": "Pripojiť sa k prebiehajúcemu zápasu",
         "hint": "Zadajte aktuálne skóre, ak sa pripájate k už začatému zápasu. Štatistiky zahŕňajú len mèny odteraz.",
         "invalid": "Počiatočné skóre nie je platné."
-      }
+      },
+      "defaultPlayer": "Hráč {letter}"
     },
     "players": {
       "title": "Hráči zápasu",
