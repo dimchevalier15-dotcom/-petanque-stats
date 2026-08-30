@@ -64,6 +64,19 @@
       </div>
     </div>
 
+    <section class="primary-actions">
+      <button type="button" class="new-match-cta" @click="goNewMatch">
+        <span class="new-match-cta-icon" aria-hidden="true">
+          <i class="pi pi-plus" />
+        </span>
+        <span class="new-match-cta-text">
+          <strong>{{ t('home.actions.newMatch') }}</strong>
+          <small>{{ t('matches.create.subtitle') }}</small>
+        </span>
+        <i class="pi pi-chevron-right new-match-cta-arrow" aria-hidden="true" />
+      </button>
+    </section>
+
     <section class="quick-section">
       <h3 class="section-label">{{ t('home.quickActions') }}</h3>
       <div class="quick-grid">
@@ -82,15 +95,6 @@
         <button type="button" class="quick-item app-card" @click="goSettings">
           <i class="pi pi-cog" aria-hidden="true" />
           <span>{{ t('home.actions.settings') }}</span>
-        </button>
-        <button
-          v-if="isCoach"
-          type="button"
-          class="quick-item app-card"
-          @click="goCoach"
-        >
-          <i class="pi pi-users" aria-hidden="true" />
-          <span>{{ t('home.actions.coach') }}</span>
         </button>
         <button
           v-if="isAdmin"
@@ -127,7 +131,6 @@ import { useRouter } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
 import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
 import { useIsAdmin } from '../composables/useIsAdmin'
-import { useIsCoach } from '../composables/useIsCoach'
 import { useAuthStore } from '../stores/auth'
 
 const { t } = useI18n()
@@ -135,7 +138,6 @@ const { currentLanguage, languageItems } = useLocaleSwitcher()
 const router = useRouter()
 const auth = useAuthStore()
 const isAdmin = useIsAdmin()
-const isCoach = useIsCoach()
 const { draft, resume, abandon } = useMatchDraftResume()
 const verifyNotice = ref('')
 const verifyNoticeSeverity = ref<'success' | 'error'>('success')
@@ -164,8 +166,8 @@ function goSettings(): void {
 function goAdmin(): void {
   router.push({ name: 'adminHome' })
 }
-function goCoach(): void {
-  router.push({ name: 'coachPlayers' })
+function goNewMatch(): void {
+  router.push({ name: 'newMatch' })
 }
 function goGuidelines(): void {
   router.push({ name: 'guidelines' })
@@ -237,6 +239,72 @@ function toggleLanguageMenu(event: Event) {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--app-text-subtle);
+}
+
+.primary-actions {
+  margin-bottom: var(--app-space-md);
+}
+
+.new-match-cta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-md);
+  padding: var(--app-space-md) var(--app-space-lg);
+  border: none;
+  border-radius: var(--app-radius);
+  background: linear-gradient(160deg, var(--app-primary), var(--app-primary-dark));
+  color: #fff;
+  box-shadow: var(--app-shadow-md);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.new-match-cta:active {
+  transform: scale(0.99);
+}
+
+.new-match-cta-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.new-match-cta-icon i {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.new-match-cta-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.125rem;
+}
+
+.new-match-cta-text strong {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.new-match-cta-text small {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  opacity: 0.9;
+  line-height: 1.3;
+}
+
+.new-match-cta-arrow {
+  flex: 0 0 auto;
+  font-size: 0.875rem;
+  opacity: 0.85;
 }
 
 .quick-grid {
