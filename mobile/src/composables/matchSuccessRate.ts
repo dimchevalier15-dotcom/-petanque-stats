@@ -1,4 +1,5 @@
 import type { MatchSummaryShotBreakdown } from '../models/MatchSummary'
+import type { EndRecord } from '../models/MatchPlay'
 
 export interface MastersScore {
   success: number
@@ -72,4 +73,51 @@ export function shotMasters(
 
 export function formatMasters(score: MastersScore): string {
   return `${score.success}/${score.total}`
+}
+
+export function playerMastersFromEnds(ends: EndRecord[], playerId: number): MastersScore | null {
+  let success = 0
+  let total = 0
+
+  for (const end of ends) {
+    const entry = end.balls.find((ball) => ball.playerId === playerId)
+    if (!entry) {
+      continue
+    }
+    for (const note of entry.notes) {
+      total++
+      if (note >= 1) {
+        success++
+      }
+    }
+  }
+
+  return total > 0 ? { success, total } : null
+}
+
+export function playerShotMastersFromEnds(
+  ends: EndRecord[],
+  playerId: number,
+  shotType: 'point' | 'tir',
+): MastersScore | null {
+  let success = 0
+  let total = 0
+
+  for (const end of ends) {
+    const entry = end.balls.find((ball) => ball.playerId === playerId)
+    if (!entry) {
+      continue
+    }
+    for (let i = 0; i < entry.notes.length; i++) {
+      if (entry.shotTypes[i] !== shotType) {
+        continue
+      }
+      total++
+      if (entry.notes[i] >= 1) {
+        success++
+      }
+    }
+  }
+
+  return total > 0 ? { success, total } : null
 }

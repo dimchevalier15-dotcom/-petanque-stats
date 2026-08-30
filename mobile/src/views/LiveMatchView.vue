@@ -1,9 +1,12 @@
 <template>
   <section class="live-view">
     <header class="live-header">
-      <h1>{{ pageTitle }}</h1>
-      <p v-if="isLiveActive && lastUpdatedLabel" class="live-updated">{{ lastUpdatedLabel }}</p>
-      <p v-else-if="isFinished" class="live-finished-badge">{{ t('live.view.finished') }}</p>
+      <div class="live-header-main">
+        <h1>{{ pageTitle }}</h1>
+        <p v-if="isLiveActive && lastUpdatedLabel" class="live-updated">{{ lastUpdatedLabel }}</p>
+        <p v-else-if="isFinished" class="live-finished-badge">{{ t('live.view.finished') }}</p>
+      </div>
+      <LanguageSwitcher class="live-lang-switcher" />
     </header>
 
     <div v-if="loading" class="live-state">
@@ -28,6 +31,45 @@
         </div>
       </section>
 
+      <template v-if="isFinished">
+        <div class="teams teams--recap">
+          <section class="team team--a">
+            <h3 class="team-title" :title="teamALabel">{{ teamALabel }}</h3>
+            <article v-for="playerId in recapTeamAPlayers" :key="`recap-a-${playerId}`" class="recap-player">
+              <span class="recap-player-name" :title="nameFor(playerId)">{{ shortNameFor(playerId) }}</span>
+              <div class="recap-player-stats">
+                <span v-if="pointMastersLabel(playerId)" class="recap-stat recap-stat--point">
+                  <span class="recap-stat-label">{{ t('play.shots.point') }}</span>
+                  <span class="recap-stat-value">{{ pointMastersLabel(playerId) }}</span>
+                </span>
+                <span v-if="tirMastersLabel(playerId)" class="recap-stat recap-stat--tir">
+                  <span class="recap-stat-label">{{ t('play.shots.tir') }}</span>
+                  <span class="recap-stat-value">{{ tirMastersLabel(playerId) }}</span>
+                </span>
+              </div>
+            </article>
+          </section>
+
+          <section class="team team--b">
+            <h3 class="team-title" :title="teamBLabel">{{ teamBLabel }}</h3>
+            <article v-for="playerId in recapTeamBPlayers" :key="`recap-b-${playerId}`" class="recap-player recap-player--right">
+              <span class="recap-player-name" :title="nameFor(playerId)">{{ shortNameFor(playerId) }}</span>
+              <div class="recap-player-stats">
+                <span v-if="pointMastersLabel(playerId)" class="recap-stat recap-stat--point">
+                  <span class="recap-stat-label">{{ t('play.shots.point') }}</span>
+                  <span class="recap-stat-value">{{ pointMastersLabel(playerId) }}</span>
+                </span>
+                <span v-if="tirMastersLabel(playerId)" class="recap-stat recap-stat--tir">
+                  <span class="recap-stat-label">{{ t('play.shots.tir') }}</span>
+                  <span class="recap-stat-value">{{ tirMastersLabel(playerId) }}</span>
+                </span>
+              </div>
+            </article>
+          </section>
+        </div>
+      </template>
+
+      <template v-else>
       <header class="scoreboard">
         <Button
           class="scoreboard-nav"
@@ -78,6 +120,9 @@
               <div class="player-name" :title="nameFor(slot.originalPlayerId)">
                 <span class="player-name-line">
                   <span class="player-name-main">{{ shortNameFor(slot.originalPlayerId) }}</span>
+                  <span v-if="mastersLabel(slot.originalPlayerId)" class="player-masters">
+                    {{ mastersLabel(slot.originalPlayerId) }}
+                  </span>
                 </span>
                 <span class="player-sub-badge">{{ t('play.substitution.playedBefore') }}</span>
               </div>
@@ -106,6 +151,9 @@
               <div class="player-name" :title="nameFor(slot.activePlayerId)">
                 <span class="player-name-line">
                   <span class="player-name-main">{{ shortNameFor(slot.activePlayerId) }}</span>
+                  <span v-if="mastersLabel(slot.activePlayerId)" class="player-masters">
+                    {{ mastersLabel(slot.activePlayerId) }}
+                  </span>
                 </span>
                 <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(slot.activePlayerId)) }}</span>
                 <span v-if="slot.isSubstitutedOut" class="player-sub-badge">
@@ -146,6 +194,9 @@
               <div class="player-name player-name--right" :title="nameFor(slot.originalPlayerId)">
                 <span class="player-name-line">
                   <span class="player-name-main">{{ shortNameFor(slot.originalPlayerId) }}</span>
+                  <span v-if="mastersLabel(slot.originalPlayerId)" class="player-masters">
+                    {{ mastersLabel(slot.originalPlayerId) }}
+                  </span>
                 </span>
                 <span class="player-sub-badge">{{ t('play.substitution.playedBefore') }}</span>
               </div>
@@ -174,6 +225,9 @@
               <div class="player-name player-name--right" :title="nameFor(slot.activePlayerId)">
                 <span class="player-name-line">
                   <span class="player-name-main">{{ shortNameFor(slot.activePlayerId) }}</span>
+                  <span v-if="mastersLabel(slot.activePlayerId)" class="player-masters">
+                    {{ mastersLabel(slot.activePlayerId) }}
+                  </span>
                 </span>
                 <span v-if="showRoles" class="player-role">{{ roleLabel(roleFor(slot.activePlayerId)) }}</span>
                 <span v-if="slot.isSubstitutedOut" class="player-sub-badge">
@@ -204,8 +258,9 @@
           </template>
         </section>
       </div>
+      </template>
 
-      <section v-if="scoredEnds.length > 0" class="ends-recap">
+      <section v-if="isFinished && scoredEnds.length > 0" class="ends-recap">
         <h2 class="ends-recap-title">{{ t('live.view.endsRecap') }}</h2>
         <ul class="ends-recap-list">
           <li v-for="end in scoredEnds" :key="end.index" class="ends-recap-item">
@@ -229,10 +284,12 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import Button from 'primevue/button'
+import LanguageSwitcher from '../components/layout/LanguageSwitcher.vue'
 import type { PlayerRole } from '../models/Match'
 import type { LiveMatchData } from '../models/LiveMatch'
 import type { EndRecord } from '../models/MatchPlay'
 import { liveMatchesService } from '../services/liveMatches'
+import { formatMasters, playerMastersFromEnds, playerShotMastersFromEnds } from '../composables/matchSuccessRate'
 import { teamSlotsForEnd } from '../utils/matchSubstitutions'
 
 const POLL_INTERVAL_MS = 5000
@@ -285,6 +342,9 @@ const teamBSlots = computed(() => {
   if (!matchData.value) return []
   return teamSlotsForEnd(matchData.value.teamB, 'B', substitutions.value, currentEnd.value.index)
 })
+
+const recapTeamAPlayers = computed(() => recapPlayersForTeam('A'))
+const recapTeamBPlayers = computed(() => recapPlayersForTeam('B'))
 
 const scoreA = computed(
   () => (matchData.value?.openingScoreA ?? 0) + computeScore('A', matchData.value?.ends ?? []),
@@ -366,6 +426,45 @@ function nameFor(playerId: number): string {
 
 function shortNameFor(playerId: number): string {
   return matchData.value?.shortPlayerNames[playerId] ?? nameFor(playerId)
+}
+
+function mastersLabel(playerId: number): string | null {
+  if (!matchData.value) return null
+  const score = playerMastersFromEnds(matchData.value.ends, playerId)
+  return score ? `(${formatMasters(score)})` : null
+}
+
+function pointMastersLabel(playerId: number): string | null {
+  if (!matchData.value) return null
+  const score = playerShotMastersFromEnds(matchData.value.ends, playerId, 'point')
+  return score ? formatMasters(score) : null
+}
+
+function tirMastersLabel(playerId: number): string | null {
+  if (!matchData.value) return null
+  const score = playerShotMastersFromEnds(matchData.value.ends, playerId, 'tir')
+  return score ? formatMasters(score) : null
+}
+
+function recapPlayersForTeam(team: 'A' | 'B'): number[] {
+  if (!matchData.value) return []
+  const base = team === 'A' ? matchData.value.teamA : matchData.value.teamB
+  const ids = new Set(base)
+  for (const sub of substitutions.value) {
+    if (sub.team === team) {
+      ids.add(sub.inPlayerId)
+    }
+  }
+  return Array.from(ids)
+    .filter((playerId) => hasPlayedInMatch(playerId))
+    .sort((a, b) => shortNameFor(a).localeCompare(shortNameFor(b), undefined, { sensitivity: 'base' }))
+}
+
+function hasPlayedInMatch(playerId: number): boolean {
+  if (!matchData.value) return false
+  return matchData.value.ends.some((end) =>
+    end.balls.some((ball) => ball.playerId === playerId && ball.notes.length > 0),
+  )
 }
 
 function roleFor(playerId: number): PlayerRole {
@@ -453,9 +552,6 @@ async function fetchLiveMatch(): Promise<void> {
 
     if (response.status === 'finished') {
       stopPolling()
-      if (scoredEnds.value.length > 0) {
-        viewEndIndex.value = Math.max(0, (matchData.value?.ends.length ?? 1) - 1)
-      }
     }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -512,11 +608,42 @@ onUnmounted(() => {
     var(--app-bg);
 }
 
+.live-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--app-space-sm);
+}
+
+.live-header-main {
+  min-width: 0;
+  flex: 1;
+}
+
 .live-header h1 {
   margin: 0;
   font-size: 1.125rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+}
+
+.live-lang-switcher {
+  flex-shrink: 0;
+  opacity: 0.82;
+  transform: scale(0.92);
+  transform-origin: top right;
+}
+
+.live-lang-switcher :deep(.lang-switcher) {
+  box-shadow: none;
+  border-color: var(--app-border);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.live-lang-switcher :deep(.lang-btn) {
+  min-width: 2rem;
+  min-height: 1.65rem;
+  font-size: 0.6875rem;
 }
 
 .live-updated,
@@ -777,6 +904,21 @@ onUnmounted(() => {
 .player-name-line {
   min-width: 0;
   max-width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.player-name--right .player-name-line {
+  justify-content: flex-end;
+}
+
+.player-masters {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .player-name-main {
@@ -936,5 +1078,78 @@ onUnmounted(() => {
 .ends-recap-result--canceled {
   color: var(--app-text-muted);
   font-weight: 500;
+}
+
+.teams--recap {
+  align-items: stretch;
+}
+
+.recap-player {
+  display: grid;
+  gap: 0.375rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--app-border);
+}
+
+.recap-player:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.recap-player--right {
+  text-align: right;
+}
+
+.recap-player--right .recap-player-stats {
+  justify-content: flex-end;
+}
+
+.recap-player-name {
+  display: block;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recap-player-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.recap-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border);
+}
+
+.recap-stat-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--app-text-muted);
+}
+
+.recap-stat-value {
+  font-weight: 800;
+  color: var(--app-text);
+}
+
+.recap-stat--point .recap-stat-value {
+  color: var(--play-team-a);
+}
+
+.recap-stat--tir .recap-stat-value {
+  color: var(--play-team-b);
 }
 </style>

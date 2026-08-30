@@ -2,7 +2,8 @@
  * @vitest-environment node
  */
 import { describe, expect, it } from 'vitest'
-import { formatMasters, shotMasters, shotSuccessRate } from './matchSuccessRate'
+import { formatMasters, playerMastersFromEnds, playerShotMastersFromEnds, shotMasters, shotSuccessRate } from './matchSuccessRate'
+import type { EndRecord } from '../models/MatchPlay'
 
 describe('shotSuccessRate', () => {
   it('counts +2 as success', () => {
@@ -51,5 +52,49 @@ describe('shotMasters', () => {
   it('returns null when there is no data', () => {
     expect(shotMasters(null)).toBeNull()
     expect(shotMasters({ p2: 0, p1: 0, p0: 0, m1: 0, m2: 0, average: 0, successRate: null })).toBeNull()
+  })
+})
+
+describe('playerMastersFromEnds', () => {
+  it('counts successes across all ends for a player', () => {
+    const ends: EndRecord[] = [
+      {
+        index: 1,
+        balls: [{ playerId: 1, notes: [1, -1, 2], shotTypes: ['point', 'point', 'point'], distances: [] }],
+      },
+      {
+        index: 2,
+        balls: [{ playerId: 1, notes: [0, 1], shotTypes: ['point', 'tir'], distances: [] }],
+      },
+    ]
+
+    expect(playerMastersFromEnds(ends, 1)).toEqual({ success: 3, total: 5 })
+    expect(formatMasters(playerMastersFromEnds(ends, 1)!)).toBe('3/5')
+  })
+
+  it('returns null when the player has no balls', () => {
+    expect(playerMastersFromEnds([], 1)).toBeNull()
+    expect(playerMastersFromEnds([{ index: 1, balls: [] }], 1)).toBeNull()
+  })
+})
+
+describe('playerShotMastersFromEnds', () => {
+  it('counts point and tir masters separately', () => {
+    const ends: EndRecord[] = [
+      {
+        index: 1,
+        balls: [
+          {
+            playerId: 1,
+            notes: [1, -1, 2, 0],
+            shotTypes: ['point', 'point', 'tir', 'tir'],
+            distances: [],
+          },
+        ],
+      },
+    ]
+
+    expect(playerShotMastersFromEnds(ends, 1, 'point')).toEqual({ success: 1, total: 2 })
+    expect(playerShotMastersFromEnds(ends, 1, 'tir')).toEqual({ success: 1, total: 2 })
   })
 })
