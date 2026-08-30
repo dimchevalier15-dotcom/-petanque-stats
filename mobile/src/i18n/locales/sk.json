@@ -145,7 +145,7 @@
       "submit": "Registrovať",
       "link": "Vytvoriť účet",
       "profile": {
-        "title": "Váš profil hráča",
+        "title": "Váš profil hráča (ak neexistuje)",
         "hint": "Tieto informácie sa použijú pre vášho hráča v aplikácii."
       },
       "linkPlayer": {

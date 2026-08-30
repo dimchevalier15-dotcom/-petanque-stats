@@ -34,6 +34,17 @@
         <small v-if="errors.password" class="field-error">{{ errors.password }}</small>
       </label>
 
+      <div class="link-section app-card">
+        <h3 class="link-title">{{ t('auth.register.linkPlayer.title') }}</h3>
+        <p class="link-hint">{{ t('auth.register.linkPlayer.hint') }}</p>
+        <PlayerSearchSelect
+          v-model="selectedPlayer"
+          :placeholder="t('auth.register.linkPlayer.searchPlaceholder')"
+          :empty-hint="t('auth.register.linkPlayer.empty')"
+          :search-players="searchUnlinkedPlayersForRegistration"
+        />
+      </div>
+
       <div v-if="!selectedPlayer" class="profile-section app-card">
         <h3 class="section-title">{{ t('auth.register.profile.title') }}</h3>
         <p class="section-hint">{{ t('auth.register.profile.hint') }}</p>
@@ -66,17 +77,6 @@
         </label>
 
         <ClubSelect v-model="clubId" />
-      </div>
-
-      <div class="link-section app-card">
-        <h3 class="link-title">{{ t('auth.register.linkPlayer.title') }}</h3>
-        <p class="link-hint">{{ t('auth.register.linkPlayer.hint') }}</p>
-        <PlayerSearchSelect
-          v-model="selectedPlayer"
-          :placeholder="t('auth.register.linkPlayer.searchPlaceholder')"
-          :empty-hint="t('auth.register.linkPlayer.empty')"
-          :search-players="searchUnlinkedPlayersForRegistration"
-        />
       </div>
 
       <Button type="submit" :label="t('auth.register.submit')" :disabled="loading" class="w-full" />

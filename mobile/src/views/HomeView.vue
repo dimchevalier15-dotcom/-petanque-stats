@@ -67,10 +67,6 @@
     <section class="quick-section">
       <h3 class="section-label">{{ t('home.quickActions') }}</h3>
       <div class="quick-grid">
-        <button type="button" class="quick-item app-card" @click="goAddPlayer">
-          <i class="pi pi-user-plus" aria-hidden="true" />
-          <span>{{ t('home.actions.addPlayer') }}</span>
-        </button>
         <button type="button" class="quick-item app-card" @click="goShooting">
           <i class="pi pi-bullseye" aria-hidden="true" />
           <span>{{ t('home.actions.shooting') }}</span>
@@ -156,9 +152,6 @@ function confirmAbandon(): void {
   abandonDialog.value = false
 }
 
-function goAddPlayer(): void {
-  router.push({ name: 'addPlayer' })
-}
 function goShooting(): void {
   router.push({ name: 'shootingHome' })
 }

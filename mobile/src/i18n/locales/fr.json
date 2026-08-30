@@ -145,7 +145,7 @@
       "submit": "S'inscrire",
       "link": "Créer un compte",
       "profile": {
-        "title": "Votre profil joueur",
+        "title": "Votre profil joueur (si non existant)",
         "hint": "Ces informations seront utilisées pour votre joueur dans l'application."
       },
       "linkPlayer": {

@@ -145,7 +145,7 @@
       "submit": "Register",
       "link": "Create account",
       "profile": {
-        "title": "Your player profile",
+        "title": "Your player profile (if not existing)",
         "hint": "This information will be used for your player in the app."
       },
       "linkPlayer": {
