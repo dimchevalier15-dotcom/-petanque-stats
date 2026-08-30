@@ -1,5 +1,6 @@
 import type { MatchSummaryShotBreakdown } from '../models/MatchSummary'
 import type { EndRecord } from '../models/MatchPlay'
+import { isCochonnetShot } from '../utils/matchBallFlags'
 
 export interface MastersScore {
   success: number
@@ -109,7 +110,30 @@ export function playerShotMastersFromEnds(
       continue
     }
     for (let i = 0; i < entry.notes.length; i++) {
-      if (entry.shotTypes[i] !== shotType) {
+      if (entry.shotTypes[i] !== shotType || isCochonnetShot(entry, i)) {
+        continue
+      }
+      total++
+      if (entry.notes[i] >= 1) {
+        success++
+      }
+    }
+  }
+
+  return total > 0 ? { success, total } : null
+}
+
+export function playerCochonnetMastersFromEnds(ends: EndRecord[], playerId: number): MastersScore | null {
+  let success = 0
+  let total = 0
+
+  for (const end of ends) {
+    const entry = end.balls.find((ball) => ball.playerId === playerId)
+    if (!entry) {
+      continue
+    }
+    for (let i = 0; i < entry.notes.length; i++) {
+      if (!isCochonnetShot(entry, i)) {
         continue
       }
       total++

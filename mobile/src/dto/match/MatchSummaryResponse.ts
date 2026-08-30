@@ -27,6 +27,7 @@ export interface MatchSummaryPlayerDto {
   m2: number
   point?: MatchSummaryShotBreakdownDto | null
   tir?: MatchSummaryShotBreakdownDto | null
+  cochonnet?: MatchSummaryShotBreakdownDto | null
   endTotals?: MatchSummaryEndTotalDto[]
 }
 

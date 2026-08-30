@@ -16,7 +16,7 @@
       <div class="chart-box">
         <Chart type="bar" :data="chart.data" :options="chart.options" />
       </div>
-      <MatchSummaryShotDrawer :point="point" :tir="tir" />
+      <MatchSummaryShotDrawer :point="point" :tir="tir" :cochonnet="cochonnet" />
     </div>
   </div>
 </template>
@@ -47,6 +47,7 @@ const { t } = useI18n()
 const overall = computed(() => mergeTeamBreakdown(props.players))
 const point = computed(() => mergeTeamShotBreakdown(props.players, 'point'))
 const tir = computed(() => mergeTeamShotBreakdown(props.players, 'tir'))
+const cochonnet = computed(() => mergeTeamShotBreakdown(props.players, 'cochonnet'))
 const average = computed(() => overall.value?.average ?? null)
 const chart = computed(() => buildTeamDistributionChart(props.players, t))
 </script>

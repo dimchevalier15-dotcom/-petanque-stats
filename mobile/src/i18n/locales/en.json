@@ -745,7 +745,7 @@
       "prevEnd": "Previous end",
       "nextEnd": "Next end"
     },
-    "shots": { "point": "Point", "tir": "Shot" },
+    "shots": { "point": "Point", "tir": "Shot", "cochonnet": "Pig shot" },
     "roles": {
       "title": "Change roles",
       "hint": "Roles for this end — tap to change"

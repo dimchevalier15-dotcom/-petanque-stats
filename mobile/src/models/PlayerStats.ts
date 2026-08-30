@@ -64,6 +64,7 @@ export interface PlayerStats {
   overall: MatchSummaryShotBreakdown | null
   point: MatchSummaryShotBreakdown | null
   tir: MatchSummaryShotBreakdown | null
+  cochonnet: MatchSummaryShotBreakdown | null
   evolution: PlayerStatsEvolutionPoint[]
   byNature: PlayerStatsByNature[]
   byFormat: PlayerStatsByFormat[]

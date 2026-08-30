@@ -93,6 +93,7 @@ export function buildMatchSubmission(
           notes: ball.notes,
           shotTypes: ball.shotTypes,
           distances: ball.distances,
+          isCochonnet: ball.isCochonnet,
         })),
         roles: playersForEndRoles(end).map((playerId) => ({
           playerId,

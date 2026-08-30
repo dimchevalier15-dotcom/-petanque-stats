@@ -39,14 +39,25 @@ class GameBall
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $distance = null;
 
-    public function __construct(GameEnd $end, Player $player, int $index, int $note, string $shotType = 'point', ?float $distance = null)
-    {
+    #[ORM\Column(name: 'is_cochonnet', type: 'boolean', options: ['default' => false])]
+    private bool $isCochonnet = false;
+
+    public function __construct(
+        GameEnd $end,
+        Player $player,
+        int $index,
+        int $note,
+        string $shotType = 'point',
+        ?float $distance = null,
+        bool $isCochonnet = false,
+    ) {
         $this->end = $end;
         $this->player = $player;
         $this->index = $index;
         $this->note = $note;
         $this->shotType = in_array($shotType, ['point','tir'], true) ? $shotType : 'point';
         $this->distance = $distance;
+        $this->isCochonnet = $isCochonnet;
     }
 
     public function getId(): ?int { return $this->id; }
@@ -54,4 +65,5 @@ class GameBall
     public function getNote(): int { return $this->note; }
     public function getShotType(): string { return $this->shotType; }
     public function getDistance(): ?float { return $this->distance; }
+    public function isCochonnet(): bool { return $this->isCochonnet; }
 }

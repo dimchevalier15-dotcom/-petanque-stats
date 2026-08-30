@@ -95,6 +95,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('IDENTITY(b.player) as pid, b.shotType as st, COUNT(b.id) as cnt, SUM(b.note) as s')
             ->join('b.end', 'e')
             ->where('e.game = :g')
+            ->andWhere('b.isCochonnet = false')
             ->setParameter('g', $game)
             ->groupBy('pid, st')
             ->getQuery()->getArrayResult();
@@ -119,6 +120,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('IDENTITY(b.player) as pid, b.shotType as st, b.note as n, COUNT(b.id) as c')
             ->join('b.end', 'e')
             ->where('e.game = :g')
+            ->andWhere('b.isCochonnet = false')
             ->setParameter('g', $game)
             ->groupBy('pid, st, n')
             ->getQuery()->getArrayResult();
@@ -272,6 +274,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('b.shotType as st, COUNT(b.id) as cnt, SUM(b.note) as s')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
+            ->andWhere('b.isCochonnet = false')
             ->setParameter('pid', $playerId)
             ->groupBy('st');
 
@@ -295,6 +298,7 @@ final class GameBallRepository extends ServiceEntityRepository
             ->select('b.shotType as st, b.note as n, COUNT(b.id) as c')
             ->join('b.end', 'e')
             ->where('b.player = :pid')
+            ->andWhere('b.isCochonnet = false')
             ->setParameter('pid', $playerId)
             ->groupBy('st, n');
 
@@ -322,6 +326,159 @@ final class GameBallRepository extends ServiceEntityRepository
                 case 0: $map[$st]['p0'] = $c; break;
                 case -1: $map[$st]['m1'] = $c; break;
                 case -2: $map[$st]['m2'] = $c; break;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * @return array<int, array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}>
+     */
+    public function aggregateCochonnetByGame(Game $game): array
+    {
+        return $this->aggregateFlaggedByGame($game, true);
+    }
+
+    /**
+     * @param list<int>|null $gameIds
+     *
+     * @return array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}
+     */
+    public function aggregateCochonnetByPlayerForGames(int $playerId, ?array $gameIds, ?DistanceBucket $distanceBucket = null): array
+    {
+        return $this->aggregateFlaggedByPlayerForGames($playerId, $gameIds, $distanceBucket, true);
+    }
+
+    /**
+     * @return array<int, array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}>
+     */
+    private function aggregateFlaggedByGame(Game $game, bool $isCochonnet): array
+    {
+        $rows = $this->createQueryBuilder('b')
+            ->select('IDENTITY(b.player) as pid, COUNT(b.id) as cnt, SUM(b.note) as s')
+            ->join('b.end', 'e')
+            ->where('e.game = :g')
+            ->andWhere('b.isCochonnet = :flag')
+            ->setParameter('g', $game)
+            ->setParameter('flag', $isCochonnet)
+            ->groupBy('pid')
+            ->getQuery()->getArrayResult();
+
+        $map = [];
+        foreach ($rows as $r) {
+            $map[(int) $r['pid']] = [
+                'count' => (int) $r['cnt'],
+                'sum' => (int) $r['s'],
+                'p2' => 0,
+                'p1' => 0,
+                'p0' => 0,
+                'm1' => 0,
+                'm2' => 0,
+            ];
+        }
+
+        $noteRows = $this->createQueryBuilder('b')
+            ->select('IDENTITY(b.player) as pid, b.note as n, COUNT(b.id) as c')
+            ->join('b.end', 'e')
+            ->where('e.game = :g')
+            ->andWhere('b.isCochonnet = :flag')
+            ->setParameter('g', $game)
+            ->setParameter('flag', $isCochonnet)
+            ->groupBy('pid, n')
+            ->getQuery()->getArrayResult();
+
+        foreach ($noteRows as $r) {
+            $pid = (int) $r['pid'];
+            $n = (int) $r['n'];
+            $c = (int) $r['c'];
+            if (!isset($map[$pid])) {
+                $map[$pid] = [
+                    'count' => 0,
+                    'sum' => 0,
+                    'p2' => 0,
+                    'p1' => 0,
+                    'p0' => 0,
+                    'm1' => 0,
+                    'm2' => 0,
+                ];
+            }
+            switch ($n) {
+                case 2: $map[$pid]['p2'] = $c; break;
+                case 1: $map[$pid]['p1'] = $c; break;
+                case 0: $map[$pid]['p0'] = $c; break;
+                case -1: $map[$pid]['m1'] = $c; break;
+                case -2: $map[$pid]['m2'] = $c; break;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param list<int>|null $gameIds
+     *
+     * @return array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}
+     */
+    private function aggregateFlaggedByPlayerForGames(
+        int $playerId,
+        ?array $gameIds,
+        ?DistanceBucket $distanceBucket,
+        bool $isCochonnet,
+    ): array {
+        $empty = [
+            'count' => 0,
+            'sum' => 0,
+            'p2' => 0,
+            'p1' => 0,
+            'p0' => 0,
+            'm1' => 0,
+            'm2' => 0,
+        ];
+
+        if ($gameIds !== null && $gameIds === []) {
+            return $empty;
+        }
+
+        $qb = $this->createQueryBuilder('b')
+            ->select('COUNT(b.id) as cnt, SUM(b.note) as s')
+            ->join('b.end', 'e')
+            ->where('b.player = :pid')
+            ->andWhere('b.isCochonnet = :flag')
+            ->setParameter('pid', $playerId)
+            ->setParameter('flag', $isCochonnet);
+
+        $this->applyGameIdsFilter($qb, $gameIds);
+        $this->applyDistanceBucketFilter($qb, $distanceBucket);
+
+        $row = $qb->getQuery()->getOneOrNullResult();
+        $map = $empty;
+        if ($row !== null) {
+            $map['count'] = (int) ($row['cnt'] ?? 0);
+            $map['sum'] = (int) ($row['s'] ?? 0);
+        }
+
+        $noteQb = $this->createQueryBuilder('b')
+            ->select('b.note as n, COUNT(b.id) as c')
+            ->join('b.end', 'e')
+            ->where('b.player = :pid')
+            ->andWhere('b.isCochonnet = :flag')
+            ->setParameter('pid', $playerId)
+            ->setParameter('flag', $isCochonnet)
+            ->groupBy('n');
+
+        $this->applyGameIdsFilter($noteQb, $gameIds);
+        $this->applyDistanceBucketFilter($noteQb, $distanceBucket);
+
+        foreach ($noteQb->getQuery()->getArrayResult() as $r) {
+            $n = (int) $r['n'];
+            $c = (int) $r['c'];
+            switch ($n) {
+                case 2: $map['p2'] = $c; break;
+                case 1: $map['p1'] = $c; break;
+                case 0: $map['p0'] = $c; break;
+                case -1: $map['m1'] = $c; break;
+                case -2: $map['m2'] = $c; break;
             }
         }
 

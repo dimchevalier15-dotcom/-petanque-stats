@@ -77,7 +77,7 @@ export function mergeTeamBreakdown(players: MatchSummaryPlayer[]): MatchSummaryS
 
 export function mergeTeamShotBreakdown(
   players: MatchSummaryPlayer[],
-  shot: 'point' | 'tir',
+  shot: 'point' | 'tir' | 'cochonnet',
 ): MatchSummaryShotBreakdown | null {
   return mergeShotBreakdowns(players.map((player) => player[shot]))
 }

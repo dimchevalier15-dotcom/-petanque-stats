@@ -191,6 +191,21 @@
                   </span>
                 </div>
               </div>
+              <div v-if="stats.cochonnet" class="avg-detail-row">
+                <span class="avg-detail-label">{{ t('play.shots.cochonnet') }}</span>
+                <div class="avg-detail-values">
+                  <Tag
+                    :value="formatAvg(stats.cochonnet.average)"
+                    :severity="avgSeverity(stats.cochonnet.average)"
+                  />
+                  <span v-if="successWithMasters(stats.cochonnet)" class="avg-detail-meta">
+                    {{ successWithMasters(stats.cochonnet) }}
+                  </span>
+                  <span class="avg-detail-meta">
+                    {{ t('stats.details.balls', { n: breakdownBallCount(stats.cochonnet) }) }}
+                  </span>
+                </div>
+              </div>
             </div>
           </details>
         </div>
@@ -237,7 +252,18 @@
               <p v-else class="no-data">{{ t('stats.empty.noTirData') }}</p>
             </div>
 
-            <p v-if="!stats.point && !stats.tir" class="no-data">{{ t('stats.empty.noShotBreakdown') }}</p>
+            <div v-if="stats.cochonnet" class="shot-card app-card">
+              <div class="shot-head">
+                <span>{{ t('play.shots.cochonnet') }}</span>
+                <Tag :value="formatAvg(stats.cochonnet.average)" :severity="avgSeverity(stats.cochonnet.average)" />
+              </div>
+              <ShotSuccessRate :breakdown="stats.cochonnet" />
+              <div v-if="cochonnetDistributionChart" class="chart-box chart-bar-sm">
+                <Chart type="bar" :data="cochonnetDistributionChart.data" :options="cochonnetDistributionChart.options" />
+              </div>
+            </div>
+
+            <p v-if="!stats.point && !stats.tir && !stats.cochonnet" class="no-data">{{ t('stats.empty.noShotBreakdown') }}</p>
           </div>
         </section>
 
@@ -353,6 +379,7 @@ const {
   distributionChart,
   pointDistributionChart,
   tirDistributionChart,
+  cochonnetDistributionChart,
   successWithMasters,
   distanceBreakdown,
   emptyTitleKey,

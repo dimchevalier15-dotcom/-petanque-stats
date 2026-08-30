@@ -87,6 +87,7 @@ export function usePlayerStatsCharts(
   distributionChart: ComputedRef<ChartBundle | null>
   pointDistributionChart: ComputedRef<ChartBundle | null>
   tirDistributionChart: ComputedRef<ChartBundle | null>
+  cochonnetDistributionChart: ComputedRef<ChartBundle | null>
 } {
   const showEvolution = computed(() => (stats.value?.evolution.length ?? 0) >= 2)
   const showDistribution = computed(() => (stats.value?.overall?.p2 ?? 0) + (stats.value?.overall?.p1 ?? 0) + (stats.value?.overall?.p0 ?? 0) + (stats.value?.overall?.m1 ?? 0) + (stats.value?.overall?.m2 ?? 0) > 0)
@@ -140,6 +141,7 @@ export function usePlayerStatsCharts(
   const distributionChart = computed(() => buildDistributionChart(stats.value?.overall ?? null))
   const pointDistributionChart = computed(() => buildDistributionChart(stats.value?.point ?? null))
   const tirDistributionChart = computed(() => buildDistributionChart(stats.value?.tir ?? null))
+  const cochonnetDistributionChart = computed(() => buildDistributionChart(stats.value?.cochonnet ?? null))
 
   return {
     showEvolution,
@@ -148,6 +150,7 @@ export function usePlayerStatsCharts(
     distributionChart,
     pointDistributionChart,
     tirDistributionChart,
+    cochonnetDistributionChart,
   }
 }
 

@@ -745,7 +745,7 @@
       "prevEnd": "Predchádzajúca mèna",
       "nextEnd": "Ďalšia mèna"
     },
-    "shots": { "point": "Bod", "tir": "Strela" },
+    "shots": { "point": "Bod", "tir": "Strela", "cochonnet": "Strela na cochonnet" },
     "roles": {
       "title": "Zmeniť roly",
       "hint": "Roly pre túto mušu — klepnutím zmeníte"

@@ -187,6 +187,7 @@ final class MatchRecordingService
             $notes = array_values($ballDto->notes);
             $shots = array_values($ballDto->shotTypes ?? []);
             $distances = array_values($ballDto->distances ?? []);
+            $cochonnetFlags = array_values($ballDto->isCochonnet ?? []);
             $max = min($allowedPerPlayer, count($notes));
 
             for ($i = 0; $i < $max; $i++) {
@@ -214,7 +215,9 @@ final class MatchRecordingService
                     continue;
                 }
 
-                $this->em->persist(new GameBall($end, $player, $i, $note, $shot, $distance));
+                $isCochonnet = isset($cochonnetFlags[$i]) && $cochonnetFlags[$i] === true;
+
+                $this->em->persist(new GameBall($end, $player, $i, $note, $shot, $distance, $isCochonnet));
             }
         }
     }

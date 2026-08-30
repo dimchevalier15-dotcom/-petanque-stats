@@ -2,7 +2,7 @@
  * @vitest-environment node
  */
 import { describe, expect, it } from 'vitest'
-import { formatMasters, playerMastersFromEnds, playerShotMastersFromEnds, shotMasters, shotSuccessRate } from './matchSuccessRate'
+import { formatMasters, playerCochonnetMastersFromEnds, playerMastersFromEnds, playerShotMastersFromEnds, shotMasters, shotSuccessRate } from './matchSuccessRate'
 import type { EndRecord } from '../models/MatchPlay'
 
 describe('shotSuccessRate', () => {
@@ -96,5 +96,44 @@ describe('playerShotMastersFromEnds', () => {
 
     expect(playerShotMastersFromEnds(ends, 1, 'point')).toEqual({ success: 1, total: 2 })
     expect(playerShotMastersFromEnds(ends, 1, 'tir')).toEqual({ success: 1, total: 2 })
+  })
+
+  it('excludes cochonnet shots from tir masters', () => {
+    const ends: EndRecord[] = [
+      {
+        index: 1,
+        balls: [
+          {
+            playerId: 1,
+            notes: [1, 2, -1],
+            shotTypes: ['tir', 'tir', 'tir'],
+            distances: [],
+            isCochonnet: [false, true, false],
+          },
+        ],
+      },
+    ]
+
+    expect(playerShotMastersFromEnds(ends, 1, 'tir')).toEqual({ success: 1, total: 2 })
+  })
+
+  it('counts cochonnet masters separately', () => {
+    const ends: EndRecord[] = [
+      {
+        index: 1,
+        balls: [
+          {
+            playerId: 1,
+            notes: [2, 1],
+            shotTypes: ['tir', 'tir'],
+            distances: [],
+            isCochonnet: [true, true],
+          },
+        ],
+      },
+    ]
+
+    expect(playerCochonnetMastersFromEnds(ends, 1)).toEqual({ success: 2, total: 2 })
+    expect(playerShotMastersFromEnds(ends, 1, 'tir')).toBeNull()
   })
 })

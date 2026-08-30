@@ -118,6 +118,7 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
     distributionChart,
     pointDistributionChart,
     tirDistributionChart,
+    cochonnetDistributionChart,
   } = usePlayerStatsCharts(stats, t)
 
   function successWithMasters(breakdown: MatchSummaryShotBreakdown | null | undefined): string | null {
@@ -194,7 +195,7 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
     }
   })
 
-  const showAverageDetails = computed(() => !!(stats.value?.point || stats.value?.tir))
+  const showAverageDetails = computed(() => !!(stats.value?.point || stats.value?.tir || stats.value?.cochonnet))
 
   function setNatureFilter(value: MatchNature | 'all'): void {
     natureFilter.value = value
@@ -302,6 +303,7 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
     distributionChart,
     pointDistributionChart,
     tirDistributionChart,
+    cochonnetDistributionChart,
     successWithMasters,
     distanceBreakdown,
     emptyTitleKey,

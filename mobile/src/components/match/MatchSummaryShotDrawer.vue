@@ -1,5 +1,5 @@
 <template>
-  <details v-if="pointChart || tirChart" class="shots-drawer">
+  <details v-if="pointChart || tirChart || cochonnetChart" class="shots-drawer">
     <summary class="shots-drawer-summary">{{ t('summary.sections.shotDetails') }}</summary>
     <div class="shots-grid">
       <div v-if="pointChart && point" class="shot-block">
@@ -23,6 +23,17 @@
           <Chart type="bar" :data="tirChart.data" :options="tirChart.options" />
         </div>
       </div>
+
+      <div v-if="cochonnetChart && cochonnet" class="shot-block">
+        <div class="shot-head">
+          <span>{{ t('play.shots.cochonnet') }}</span>
+          <Tag :value="formatAvg(cochonnet.average)" :severity="avgSeverity(cochonnet.average)" />
+        </div>
+        <ShotSuccessRate :breakdown="cochonnet" />
+        <div class="chart-box chart-box-sm">
+          <Chart type="bar" :data="cochonnetChart.data" :options="cochonnetChart.options" />
+        </div>
+      </div>
     </div>
   </details>
 </template>
@@ -40,12 +51,14 @@ import ShotSuccessRate from '../stats/ShotSuccessRate.vue'
 const props = defineProps<{
   point?: MatchSummaryShotBreakdown | null
   tir?: MatchSummaryShotBreakdown | null
+  cochonnet?: MatchSummaryShotBreakdown | null
 }>()
 
 const { t } = useI18n()
 
 const pointChart = computed(() => buildPlayerShotChart(props.point, t))
 const tirChart = computed(() => buildPlayerShotChart(props.tir, t))
+const cochonnetChart = computed(() => buildPlayerShotChart(props.cochonnet, t))
 </script>
 
 <style scoped>

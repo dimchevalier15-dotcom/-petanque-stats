@@ -15,6 +15,7 @@ export function mapPlayerStats(dto: PlayerStatsResponseDto): PlayerStats {
     overall: dto.overall,
     point: dto.point,
     tir: dto.tir,
+    cochonnet: dto.cochonnet,
     evolution: dto.evolution.map((p) => ({ ...p })),
     byNature: dto.byNature.map((n) => ({
       ...n,

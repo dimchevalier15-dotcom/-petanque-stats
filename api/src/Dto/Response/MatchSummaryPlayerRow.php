@@ -20,6 +20,7 @@ final class MatchSummaryPlayerRow
         public int $m2,
         public ?MatchSummaryShotBreakdown $point = null,
         public ?MatchSummaryShotBreakdown $tir = null,
+        public ?MatchSummaryShotBreakdown $cochonnet = null,
         /** @param list<MatchSummaryEndTotal> $endTotals */
         public array $endTotals = [],
     ) {

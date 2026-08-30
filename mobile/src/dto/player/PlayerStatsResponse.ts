@@ -51,6 +51,7 @@ export interface PlayerStatsResponseDto {
   overall: MatchSummaryShotBreakdownDto | null
   point: MatchSummaryShotBreakdownDto | null
   tir: MatchSummaryShotBreakdownDto | null
+  cochonnet: MatchSummaryShotBreakdownDto | null
   evolution: PlayerStatsEvolutionPointDto[]
   byNature: PlayerStatsByNatureDto[]
   byFormat: PlayerStatsByFormatDto[]

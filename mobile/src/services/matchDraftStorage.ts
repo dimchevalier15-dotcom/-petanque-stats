@@ -8,16 +8,14 @@ import {
   type MatchSetup,
 } from '../models/MatchDraft'
 import { inferStartingRoles } from '../utils/matchRoles'
+import { normalizeBallEntry } from '../utils/matchBallFlags'
 
 const STORAGE_KEY = 'match_draft'
 
 function normalizeEnd(end: EndRecord): EndRecord {
   return {
     ...end,
-    balls: end.balls.map((ball) => ({
-      ...ball,
-      distances: ball.distances ?? ball.notes.map(() => null),
-    })),
+    balls: end.balls.map((ball) => normalizeBallEntry(ball)),
   }
 }
 

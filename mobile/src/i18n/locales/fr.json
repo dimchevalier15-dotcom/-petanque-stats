@@ -745,7 +745,7 @@
       "prevEnd": "Mène précédente",
       "nextEnd": "Mène suivante"
     },
-    "shots": { "point": "Point", "tir": "Tir" },
+    "shots": { "point": "Point", "tir": "Tir", "cochonnet": "Tir de cochonnet" },
     "roles": {
       "title": "Changer les rôles",
       "hint": "Rôles pour cette mène — touchez pour changer"

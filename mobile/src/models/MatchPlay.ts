@@ -19,6 +19,8 @@ export interface EndBallEntry {
   shotTypes: ('point' | 'tir')[]
   // Optional distance in meters for each ball, aligned with notes by index. null = not set.
   distances: (number | null)[]
+  // Cochonnet shots are tracked separately and excluded from tir statistics.
+  isCochonnet?: boolean[]
 }
 
 export interface EndRecord {

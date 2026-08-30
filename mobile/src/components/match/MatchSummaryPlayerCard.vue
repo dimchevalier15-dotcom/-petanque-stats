@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <MatchSummaryShotDrawer :point="player.point" :tir="player.tir" />
+    <MatchSummaryShotDrawer :point="player.point" :tir="player.tir" :cochonnet="player.cochonnet" />
 
     <p v-if="!overallChart && !player.point && !player.tir" class="no-data">
       {{ t('summary.empty.noPlayerData') }}

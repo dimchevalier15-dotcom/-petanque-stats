@@ -20,6 +20,7 @@ final class PlayerStatsResponse
         public ?MatchSummaryShotBreakdown $overall,
         public ?MatchSummaryShotBreakdown $point,
         public ?MatchSummaryShotBreakdown $tir,
+        public ?MatchSummaryShotBreakdown $cochonnet,
         public array $evolution,
         public array $byNature,
         public array $byFormat,

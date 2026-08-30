@@ -46,6 +46,10 @@
                   <span class="recap-stat-label">{{ t('play.shots.tir') }}</span>
                   <span class="recap-stat-value">{{ tirMastersLabel(playerId) }}</span>
                 </span>
+                <span v-if="cochonnetMastersLabel(playerId)" class="recap-stat recap-stat--cochonnet">
+                  <span class="recap-stat-label">{{ t('play.shots.cochonnet') }}</span>
+                  <span class="recap-stat-value">{{ cochonnetMastersLabel(playerId) }}</span>
+                </span>
               </div>
             </article>
           </section>
@@ -62,6 +66,10 @@
                 <span v-if="tirMastersLabel(playerId)" class="recap-stat recap-stat--tir">
                   <span class="recap-stat-label">{{ t('play.shots.tir') }}</span>
                   <span class="recap-stat-value">{{ tirMastersLabel(playerId) }}</span>
+                </span>
+                <span v-if="cochonnetMastersLabel(playerId)" class="recap-stat recap-stat--cochonnet">
+                  <span class="recap-stat-label">{{ t('play.shots.cochonnet') }}</span>
+                  <span class="recap-stat-value">{{ cochonnetMastersLabel(playerId) }}</span>
                 </span>
               </div>
             </article>
@@ -289,7 +297,7 @@ import type { PlayerRole } from '../models/Match'
 import type { LiveMatchData } from '../models/LiveMatch'
 import type { EndRecord } from '../models/MatchPlay'
 import { liveMatchesService } from '../services/liveMatches'
-import { formatMasters, playerMastersFromEnds, playerShotMastersFromEnds } from '../composables/matchSuccessRate'
+import { formatMasters, playerCochonnetMastersFromEnds, playerMastersFromEnds, playerShotMastersFromEnds } from '../composables/matchSuccessRate'
 import { teamSlotsForEnd } from '../utils/matchSubstitutions'
 
 const POLL_INTERVAL_MS = 5000
@@ -443,6 +451,12 @@ function pointMastersLabel(playerId: number): string | null {
 function tirMastersLabel(playerId: number): string | null {
   if (!matchData.value) return null
   const score = playerShotMastersFromEnds(matchData.value.ends, playerId, 'tir')
+  return score ? formatMasters(score) : null
+}
+
+function cochonnetMastersLabel(playerId: number): string | null {
+  if (!matchData.value) return null
+  const score = playerCochonnetMastersFromEnds(matchData.value.ends, playerId)
   return score ? formatMasters(score) : null
 }
 

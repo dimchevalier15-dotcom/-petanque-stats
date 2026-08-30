@@ -1,6 +1,7 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 import type { BallNote, EndRecord } from '../models/MatchPlay'
+import { isCochonnetShot } from '../utils/matchBallFlags'
 import { formatMasters, type MastersScore } from './matchSuccessRate'
 
 export type { MastersScore }
@@ -13,6 +14,7 @@ export interface PlayerEndFormSeries {
   tirAverage: number | null
   pointMasters: MastersScore | null
   tirMasters: MastersScore | null
+  cochonnetMasters: MastersScore | null
   hasData: boolean
 }
 
@@ -47,9 +49,29 @@ function forEachShotNote(
       continue
     }
     for (let i = 0; i < entry.notes.length; i++) {
-      if (entry.shotTypes[i] === shotType) {
-        fn(entry.notes[i])
+      if (entry.shotTypes[i] !== shotType || isCochonnetShot(entry, i)) {
+        continue
       }
+      fn(entry.notes[i])
+    }
+  }
+}
+
+function forEachCochonnetNote(
+  completedEnds: EndRecord[],
+  playerId: number,
+  fn: (note: BallNote) => void,
+): void {
+  for (const end of completedEnds) {
+    const entry = end.balls.find((b) => b.playerId === playerId)
+    if (!entry) {
+      continue
+    }
+    for (let i = 0; i < entry.notes.length; i++) {
+      if (!isCochonnetShot(entry, i)) {
+        continue
+      }
+      fn(entry.notes[i])
     }
   }
 }
@@ -88,6 +110,20 @@ function shotTypeMasters(
   return total > 0 ? { success, total } : null
 }
 
+function cochonnetMasters(completedEnds: EndRecord[], playerId: number): MastersScore | null {
+  let success = 0
+  let total = 0
+
+  forEachCochonnetNote(completedEnds, playerId, (note) => {
+    total++
+    if (note >= 1) {
+      success++
+    }
+  })
+
+  return total > 0 ? { success, total } : null
+}
+
 export function buildPlayerEndFormSeries(
   ends: EndRecord[],
   currentEndIndex: number,
@@ -115,6 +151,7 @@ export function buildPlayerEndFormSeries(
     tirAverage: shotTypeAverage(completedEnds, playerId, 'tir'),
     pointMasters: shotTypeMasters(completedEnds, playerId, 'point'),
     tirMasters: shotTypeMasters(completedEnds, playerId, 'tir'),
+    cochonnetMasters: cochonnetMasters(completedEnds, playerId),
     hasData: totals.length > 0,
   }
 }

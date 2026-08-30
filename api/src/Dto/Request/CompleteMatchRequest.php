@@ -115,4 +115,11 @@ final class CompleteMatchEndBallDto
      * @var list<float|null>
      */
     public array $distances = [];
+
+    /**
+     * Cochonnet shots are tracked separately and excluded from tir statistics.
+     *
+     * @var list<bool>
+     */
+    public array $isCochonnet = [];
 }

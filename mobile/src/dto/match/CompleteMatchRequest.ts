@@ -7,6 +7,7 @@ export interface EndBallDto {
   notes: BallNote[]
   shotTypes: ('point' | 'tir')[]
   distances?: (number | null)[]
+  isCochonnet?: boolean[]
 }
 
 export interface EndRoleDto {

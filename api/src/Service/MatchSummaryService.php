@@ -53,6 +53,7 @@ final class MatchSummaryService
         // Aggregates of notes per player (overall)
         $agg = $this->balls->aggregateByGame($game);
         $shotAgg = $this->balls->aggregateByGamePerShot($game);
+        $cochonnetAgg = $this->balls->aggregateCochonnetByGame($game);
         $notesByEnd = $this->balls->sumNotesByPlayerAndEnd($game);
         $endIndexes = [];
         $canceledEndIndexes = [];
@@ -88,6 +89,10 @@ final class MatchSummaryService
             if (isset($shotAgg[$pid]['tir'])) {
                 $tir = $this->shotBreakdowns->fromAggregate($shotAgg[$pid]['tir']);
             }
+            $cochonnet = null;
+            if (isset($cochonnetAgg[$pid])) {
+                $cochonnet = $this->shotBreakdowns->fromAggregate($cochonnetAgg[$pid]);
+            }
 
             $endTotals = [];
             foreach ($endIndexes as $endIndex) {
@@ -111,6 +116,7 @@ final class MatchSummaryService
                 m2: (int) $s['m2'],
                 point: $point,
                 tir: $tir,
+                cochonnet: $cochonnet,
                 endTotals: $endTotals,
             );
         }

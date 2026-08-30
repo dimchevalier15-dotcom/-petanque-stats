@@ -123,6 +123,7 @@ final class PlayerStatsService
                 overall: null,
                 point: null,
                 tir: null,
+                cochonnet: null,
                 evolution: [],
                 byNature: [],
                 byFormat: [],
@@ -147,6 +148,8 @@ final class PlayerStatsService
         $overall = $this->toBreakdown($overallRaw);
         $point = isset($shotRaw['point']) ? $this->toBreakdown($shotRaw['point']) : null;
         $tir = isset($shotRaw['tir']) ? $this->toBreakdown($shotRaw['tir']) : null;
+        $cochonnetRaw = $this->balls->aggregateCochonnetByPlayerForGames((int) $playerId, $gameIds, $distanceBucket);
+        $cochonnet = $cochonnetRaw['count'] > 0 ? $this->toBreakdown($cochonnetRaw) : null;
 
         $evolution = $this->buildEvolution($summaryGames, (int) $playerId, $perGameRaw);
         $byNature = $this->buildByNature($games, (int) $playerId, $distanceBucket, $perGameRaw);
@@ -170,6 +173,7 @@ final class PlayerStatsService
             overall: $overall,
             point: $point,
             tir: $tir,
+            cochonnet: $cochonnet,
             evolution: $evolution,
             byNature: $byNature,
             byFormat: $byFormat,
@@ -430,6 +434,7 @@ final class PlayerStatsService
             overall: null,
             point: null,
             tir: null,
+            cochonnet: null,
             evolution: [],
             byNature: [],
             byFormat: [],

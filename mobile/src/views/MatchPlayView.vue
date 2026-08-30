@@ -204,7 +204,7 @@
         <div class="form-chart-box">
           <Chart type="line" :data="formChart.data" :options="formChart.options" />
         </div>
-        <div v-if="formChartSeries && (formChartSeries.pointAverage !== null || formChartSeries.tirAverage !== null)" class="form-chart-stats">
+        <div v-if="formChartSeries && (formChartSeries.pointAverage !== null || formChartSeries.tirAverage !== null || formChartSeries.cochonnetMasters)" class="form-chart-stats">
           <div v-if="formChartSeries.pointAverage !== null" class="form-chart-stat">
             <span>{{ t('play.formChart.pointAverage') }}</span>
             <div class="form-chart-stat-values">
@@ -223,6 +223,12 @@
               </span>
             </div>
           </div>
+          <div v-if="formChartSeries.cochonnetMasters" class="form-chart-stat">
+            <span>{{ t('play.shots.cochonnet') }}</span>
+            <div class="form-chart-stat-values">
+              <span class="form-chart-masters">({{ formatMasters(formChartSeries.cochonnetMasters) }})</span>
+            </div>
+          </div>
         </div>
       </div>
       <p v-else class="form-chart-empty">{{ t('play.formChart.empty') }}</p>
@@ -233,6 +239,10 @@
         <div class="shot-type">
           <SelectButton v-model="shotType" :options="shotOptions" optionLabel="label" optionValue="value" size="small" />
         </div>
+        <label v-if="shotType === 'tir'" class="cochonnet-toggle">
+          <input v-model="cochonnetShot" type="checkbox" class="cochonnet-toggle-input" />
+          <span>{{ t('play.shots.cochonnet') }}</span>
+        </label>
         <div class="note-picker" :class="{ 'note-picker--simple': setup.statisticsMode === 'simple' }">
           <Button
             v-for="opt in notesOptions()"
@@ -705,6 +715,7 @@ function openFormChart(playerId: number) {
 
 const noteCtx = ref<{ playerId: number; noteIndex: number } | null>(null)
 const shotType = ref<ShotType>('point')
+const cochonnetShot = ref(false)
 const shotOptions = computed(() => [
   { label: t('play.shots.point'), value: 'point' as ShotType },
   { label: t('play.shots.tir'), value: 'tir' as ShotType },
@@ -717,6 +728,12 @@ function shotAt(playerId: number, idx: number): ShotType | undefined {
   return v as ShotType | undefined
 }
 
+function cochonnetAt(playerId: number, idx: number): boolean {
+  const e = currentEnd.value
+  const entry = e.balls.find((b) => b.playerId === playerId)
+  return entry?.isCochonnet?.[idx] === true
+}
+
 function openNote(event: Event, playerId: number, noteIndex: number) {
   if (!canEnterBall(playerId, noteIndex)) {
     return
@@ -725,11 +742,17 @@ function openNote(event: Event, playerId: number, noteIndex: number) {
     startTimerIfIdle()
   }
   noteCtx.value = { playerId, noteIndex }
-  // initialize shot type from existing note or default map
   const existing = shotAt(playerId, noteIndex)
   shotType.value = existing ?? shotDefaultFor(playerId)
+  cochonnetShot.value = cochonnetAt(playerId, noteIndex)
   op.value?.toggle(event)
 }
+
+watch(shotType, (value) => {
+  if (value !== 'tir') {
+    cochonnetShot.value = false
+  }
+})
 
 function roleLabel(role: PlayerRole): string {
   return t(`matches.roles.${role}`)
@@ -737,7 +760,13 @@ function roleLabel(role: PlayerRole): string {
 
 function applyNote(val: -2 | -1 | 0 | 1 | 2) {
   if (!noteCtx.value) return
-  setNoteWithShot(noteCtx.value.playerId, noteCtx.value.noteIndex, val, shotType.value)
+  setNoteWithShot(
+    noteCtx.value.playerId,
+    noteCtx.value.noteIndex,
+    val,
+    shotType.value,
+    cochonnetShot.value,
+  )
   op.value?.hide()
 }
 
@@ -1926,6 +1955,23 @@ onMounted(async () => {
   justify-content: center;
   min-height: 2.5rem;
   font-weight: 700;
+}
+
+.cochonnet-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.cochonnet-toggle-input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--app-primary);
 }
 
 .note-picker {

@@ -12,6 +12,7 @@ import {
   teamForActivePlayer,
   teamSlotsForEnd,
 } from '../utils/matchSubstitutions'
+import { normalizeBallEntry } from '../utils/matchBallFlags'
 import type { TeamSubstitution } from '../models/MatchPlay'
 import { matchScore, openingScoresForTarget, scoreFromEnds } from '../utils/matchScore'
 import {
@@ -89,7 +90,10 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   const currentEndIndex = ref(initial?.currentEndIndex ?? 0)
   const ends = reactive<EndRecord[]>(
     initial?.ends?.length
-      ? initial.ends.map((end) => ({ ...end, balls: end.balls.map((b) => ({ ...b, distances: b.distances ?? [] })) }))
+      ? initial.ends.map((end) => ({
+          ...end,
+          balls: end.balls.map((b) => normalizeBallEntry({ ...b, distances: b.distances ?? [] })),
+        }))
       : [{ index: 1, balls: [], winner: undefined, points: undefined, canceled: false }],
   )
 
@@ -191,6 +195,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
         notes: [] as BallNote[],
         shotTypes: [] as ('point' | 'tir')[],
         distances: [] as (number | null)[],
+        isCochonnet: [] as boolean[],
       }))
     } else {
       for (const playerId of trackedIds) {
@@ -200,11 +205,15 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
             notes: [] as BallNote[],
             shotTypes: [] as ('point' | 'tir')[],
             distances: [] as (number | null)[],
+            isCochonnet: [] as boolean[],
           })
         }
       }
     }
     for (const entry of end.balls) {
+      if (!entry.isCochonnet) {
+        entry.isCochonnet = entry.notes.map(() => false)
+      }
       if (entry.notes.length > ballsPerPlayer.value) {
         entry.notes = entry.notes.slice(0, ballsPerPlayer.value)
       }
@@ -236,6 +245,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
           notes: [...ball.notes],
           shotTypes: [...ball.shotTypes],
           distances: [...(ball.distances ?? [])],
+          isCochonnet: [...(ball.isCochonnet ?? ball.notes.map(() => false))],
         })),
       })),
       distanceEstimate: distanceEstimate.value,
@@ -349,6 +359,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     noteIndex: number,
     value: BallNote | null,
     shotType?: 'point' | 'tir',
+    isCochonnet = false,
   ): void {
     const end = ends[currentEndIndex.value]
     ensureEndStructure(end)
@@ -358,12 +369,14 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     if (noteIndex >= max) return
 
     const defaultShot = shotType ?? shotDefaultFor(playerId)
+    const cochonnetFlag = defaultShot === 'tir' && isCochonnet
 
     if (value === null) {
       if (noteIndex < entry.notes.length) {
         entry.notes.splice(noteIndex, 1)
         entry.shotTypes.splice(noteIndex, 1)
         entry.distances.splice(noteIndex, 1)
+        entry.isCochonnet?.splice(noteIndex, 1)
       }
       return
     }
@@ -371,6 +384,10 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     if (noteIndex < entry.notes.length) {
       entry.notes[noteIndex] = value
       entry.shotTypes[noteIndex] = defaultShot
+      if (!entry.isCochonnet) {
+        entry.isCochonnet = entry.notes.map(() => false)
+      }
+      entry.isCochonnet[noteIndex] = cochonnetFlag
       return
     }
 
@@ -379,6 +396,10 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       entry.notes.push(value)
       entry.shotTypes.push(defaultShot)
       entry.distances.push(distanceEstimate.value)
+      if (!entry.isCochonnet) {
+        entry.isCochonnet = []
+      }
+      entry.isCochonnet.push(cochonnetFlag)
       maybeRotateOnFirstBall(playerId, end, ballsBefore)
     }
   }
