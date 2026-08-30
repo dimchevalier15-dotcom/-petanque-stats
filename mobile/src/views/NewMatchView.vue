@@ -50,6 +50,37 @@
         </div>
       </section>
 
+      <details class="in-progress-panel app-card app-card--muted" open>
+        <summary class="in-progress-summary">{{ t('matches.create.inProgress.title') }}</summary>
+        <p class="in-progress-hint">{{ t('matches.create.inProgress.hint') }}</p>
+        <div class="in-progress-scores">
+          <label class="app-field">
+            <span>{{ teamALabel }}</span>
+            <InputText
+              v-model.number="openingScoreA"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              :max="13"
+              fluid
+            />
+          </label>
+          <span class="in-progress-sep" aria-hidden="true">–</span>
+          <label class="app-field">
+            <span>{{ teamBLabel }}</span>
+            <InputText
+              v-model.number="openingScoreB"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              :max="13"
+              fluid
+            />
+          </label>
+        </div>
+        <p v-if="openingScoreError" class="form-banner" role="alert">{{ openingScoreError }}</p>
+      </details>
+
       <div class="start-bar">
         <Button
           type="submit"
@@ -116,6 +147,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import SelectButton from 'primevue/selectbutton'
@@ -139,8 +171,15 @@ const {
   formError,
   showDuplicateError,
   addSelf,
+  openingScoreA,
+  openingScoreB,
+  openingScoreError,
+  teamNamePlaceholder,
   submit,
 } = setup
+
+const teamALabel = computed(() => teamNamePlaceholder('A'))
+const teamBLabel = computed(() => teamNamePlaceholder('B'))
 
 const resumeDialog = ref(draft.value !== null)
 const abandonDialog = ref(false)
@@ -175,7 +214,6 @@ function confirmAbandon(): void {
 
 <style scoped>
 .new-match {
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--app-space-xl));
   min-width: 0;
 }
 
@@ -297,7 +335,7 @@ function confirmAbandon(): void {
 
 .start-bar {
   position: sticky;
-  bottom: calc(var(--app-nav-h) + env(safe-area-inset-bottom, 0px));
+  bottom: calc(var(--app-nav-h) + env(safe-area-inset-bottom, 0px) + var(--app-space-sm));
   z-index: 10;
   padding-top: var(--app-space-xs);
   background: linear-gradient(to top, var(--app-bg) 75%, transparent);
@@ -307,5 +345,42 @@ function confirmAbandon(): void {
   width: 100%;
   min-height: 3rem;
   font-weight: 700;
+}
+
+.in-progress-panel {
+  padding: var(--app-space-md);
+}
+
+.in-progress-summary {
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--app-text);
+  list-style: none;
+}
+
+.in-progress-summary::-webkit-details-marker {
+  display: none;
+}
+
+.in-progress-hint {
+  margin: var(--app-space-sm) 0 0;
+  color: var(--app-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.in-progress-scores {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--app-space-sm);
+  align-items: end;
+  margin-top: var(--app-space-md);
+}
+
+.in-progress-sep {
+  padding-bottom: 0.625rem;
+  font-weight: 800;
+  color: var(--app-text-subtle);
 }
 </style>

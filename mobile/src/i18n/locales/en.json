@@ -663,7 +663,12 @@
       "trackPlayer": "Track stats",
       "addProvisional": "Add “{name}” to the match",
       "provisionalBadge": "To link at the end",
-      "addSelf": "Me"
+      "addSelf": "Me",
+      "inProgress": {
+        "title": "Join a match in progress",
+        "hint": "Enter the current score if you are joining a match that has already started. Statistics only cover ends played from now on.",
+        "invalid": "The starting score is not valid."
+      }
     },
     "players": {
       "title": "Match players",

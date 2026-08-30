@@ -31,5 +31,7 @@ export interface CompleteMatchRequestDto {
   teamB: number[]
   trackedPlayers: number[]
   substitutions?: TeamSubstitution[]
+  openingScoreA?: number
+  openingScoreB?: number
   ends: EndDto[]
 }

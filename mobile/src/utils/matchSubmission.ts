@@ -79,6 +79,8 @@ export function buildMatchSubmission(
     teamB: setup.teamB,
     trackedPlayers: trackedPlayersForSubmission(setup.trackedPlayers, substitutions),
     substitutions: substitutions.map((substitution) => ({ ...substitution })),
+    openingScoreA: state.openingScoreA ?? 0,
+    openingScoreB: state.openingScoreB ?? 0,
     ends: state.ends
       .filter((end) => end.canceled === true || (end.winner !== undefined && end.points !== undefined))
       .map((end) => ({

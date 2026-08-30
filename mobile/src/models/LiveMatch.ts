@@ -15,6 +15,8 @@ export interface LiveMatchData {
   distanceEstimate: number | null
   currentRoles: Record<number, PlayerRole>
   substitutions?: TeamSubstitution[]
+  openingScoreA?: number
+  openingScoreB?: number
   playerNames: Record<number, string>
   shortPlayerNames: Record<number, string>
   teamALabel?: string

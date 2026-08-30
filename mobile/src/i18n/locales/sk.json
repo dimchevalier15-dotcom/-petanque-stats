@@ -663,7 +663,12 @@
       "trackPlayer": "Analyzovať",
       "addProvisional": "Pridať „{name}“ do zápasu",
       "provisionalBadge": "Priradiť po zápase",
-      "addSelf": "Ja"
+      "addSelf": "Ja",
+      "inProgress": {
+        "title": "Pripojiť sa k prebiehajúcemu zápasu",
+        "hint": "Zadajte aktuálne skóre, ak sa pripájate k už začatému zápasu. Štatistiky zahŕňajú len mèny odteraz.",
+        "invalid": "Počiatočné skóre nie je platné."
+      }
     },
     "players": {
       "title": "Hráči zápasu",

@@ -53,6 +53,9 @@ final class MatchRecordingService
         $trackedSet = array_fill_keys($tracked, true);
 
         $this->em->wrapInTransaction(function () use ($req, $game, $matchPlayerSet, $trackedSet, $allowedPerPlayer, $maxPointsPerEnd): void {
+            $game->setOpeningScoreA(max(0, $req->openingScoreA));
+            $game->setOpeningScoreB(max(0, $req->openingScoreB));
+
             // Idempotency: replace any previous completion data instead of duplicating it.
             $this->ends->deleteByGame($game);
 

@@ -37,6 +37,12 @@ final class CompleteMatchRequest
     /** @var list<CompleteMatchEndDto> */
     #[Assert\NotBlank]
     public array $ends = [];
+
+    #[Assert\GreaterThanOrEqual(0)]
+    public int $openingScoreA = 0;
+
+    #[Assert\GreaterThanOrEqual(0)]
+    public int $openingScoreB = 0;
 }
 
 final class CompleteMatchSubstitutionDto

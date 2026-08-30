@@ -286,8 +286,12 @@ const teamBSlots = computed(() => {
   return teamSlotsForEnd(matchData.value.teamB, 'B', substitutions.value, currentEnd.value.index)
 })
 
-const scoreA = computed(() => computeScore('A', matchData.value?.ends ?? []))
-const scoreB = computed(() => computeScore('B', matchData.value?.ends ?? []))
+const scoreA = computed(
+  () => (matchData.value?.openingScoreA ?? 0) + computeScore('A', matchData.value?.ends ?? []),
+)
+const scoreB = computed(
+  () => (matchData.value?.openingScoreB ?? 0) + computeScore('B', matchData.value?.ends ?? []),
+)
 
 const scoredEnds = computed(() =>
   (matchData.value?.ends ?? []).filter((end) => end.canceled || end.points !== undefined),

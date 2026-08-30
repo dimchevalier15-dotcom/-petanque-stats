@@ -75,6 +75,8 @@ function migrateFromV1(draft: MatchDraftV1): MatchDraft {
     distanceEstimate: draft.distanceEstimate,
     currentRoles: draft.currentRoles,
     substitutions: draft.substitutions ?? [],
+    openingScoreA: 0,
+    openingScoreB: 0,
   }
 }
 
@@ -162,6 +164,8 @@ export function saveMatchDraft(
       distanceEstimate: playState.distanceEstimate,
       currentRoles: { ...playState.currentRoles },
       substitutions: playState.substitutions?.map((sub) => ({ ...sub })) ?? [],
+      openingScoreA: playState.openingScoreA ?? 0,
+      openingScoreB: playState.openingScoreB ?? 0,
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(draft))
   } catch {

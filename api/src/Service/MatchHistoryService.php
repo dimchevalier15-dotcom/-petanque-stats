@@ -77,8 +77,8 @@ final class MatchHistoryService
                 continue;
             }
             $sum = $this->ends->sumPointsByTeam($g);
-            $scoreA = $sum['A'] ?? 0;
-            $scoreB = $sum['B'] ?? 0;
+            $scoreA = $g->getOpeningScoreA() + ($sum['A'] ?? 0);
+            $scoreB = $g->getOpeningScoreB() + ($sum['B'] ?? 0);
             $winner = $scoreA >= $scoreB ? 'A' : 'B';
             $victory = $this->resolveVictory($g, $playerId, $winner);
 

@@ -38,6 +38,9 @@ export interface MatchPlayState {
   distanceEstimate: number | null
   currentRoles: Record<number, PlayerRole>
   substitutions?: TeamSubstitution[]
+  /** Score before the first recorded end (joining a match already in progress). */
+  openingScoreA?: number
+  openingScoreB?: number
 }
 
 /**

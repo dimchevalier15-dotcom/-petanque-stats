@@ -38,8 +38,8 @@ final class MatchSummaryService
 
         $endsCount = $this->ends->countByGame($game);
         $sum = $this->ends->sumPointsByTeam($game);
-        $scoreA = $sum['A'] ?? 0;
-        $scoreB = $sum['B'] ?? 0;
+        $scoreA = $game->getOpeningScoreA() + ($sum['A'] ?? 0);
+        $scoreB = $game->getOpeningScoreB() + ($sum['B'] ?? 0);
         $winner = $scoreA >= $scoreB ? 'A' : 'B';
 
         // Determine tracked players and their team mapping

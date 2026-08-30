@@ -13,6 +13,7 @@ import {
 } from '../models/Match'
 import { defaultRoleFor, roleToShot } from '../utils/matchRoles'
 import { nextProvisionalId, participantFromPlayer, provisionalParticipant } from '../utils/matchParticipants'
+import { normalizeOpeningScore } from '../utils/matchScore'
 
 export type MatchTeamSide = 'A' | 'B'
 
@@ -57,6 +58,9 @@ export interface UseNewMatchSetupReturn {
   setTrackedFor: (team: MatchTeamSide, slot: number, value: boolean) => void
   roleFor: (team: MatchTeamSide, slot: number) => PlayerRole
   setRoleFor: (team: MatchTeamSide, slot: number, role: PlayerRole) => void
+  openingScoreA: Ref<number>
+  openingScoreB: Ref<number>
+  openingScoreError: Ref<string>
   submit: () => void
 }
 
@@ -75,6 +79,9 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
   const statisticsMode = ref<StatisticsMode>('standard')
   const teamAName = ref('')
   const teamBName = ref('')
+  const openingScoreA = ref(0)
+  const openingScoreB = ref(0)
+  const openingScoreError = ref('')
   const tracked = reactive<Record<number, boolean>>({})
   const submitting = ref(false)
   const attemptedSubmit = ref(false)
@@ -388,6 +395,16 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
 
     if (!validateAll()) return
 
+    const scoreA = normalizeOpeningScore(openingScoreA.value, DEFAULT_TARGET_SCORE)
+    const scoreB = normalizeOpeningScore(openingScoreB.value, DEFAULT_TARGET_SCORE)
+    if (scoreA >= DEFAULT_TARGET_SCORE && scoreB >= DEFAULT_TARGET_SCORE) {
+      openingScoreError.value = t('matches.create.inProgress.invalid')
+      return
+    }
+    openingScoreA.value = scoreA
+    openingScoreB.value = scoreB
+    openingScoreError.value = ''
+
     submitting.value = true
     try {
       const setup = buildSetup()
@@ -399,6 +416,8 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
           distanceEstimate: null,
           currentRoles: { ...setup.startingRoles },
           substitutions: [],
+          openingScoreA: scoreA,
+          openingScoreB: scoreB,
         },
         auth.user?.id ?? null,
       )
@@ -445,6 +464,9 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
     setTrackedFor,
     roleFor,
     setRoleFor,
+    openingScoreA,
+    openingScoreB,
+    openingScoreError,
     submit,
   }
 }

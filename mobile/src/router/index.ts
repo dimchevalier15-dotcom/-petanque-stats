@@ -82,7 +82,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/CoachPlayerHistoryView.vue'),
     meta: { layout: 'focus', requiresCoach: true },
   },
-  { path: '/match/new', name: 'newMatch', component: NewMatchView, meta: { layout: 'focus' } },
+  { path: '/match/new', name: 'newMatch', component: NewMatchView, meta: { layout: 'main' } },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView, meta: { layout: 'focus' } },
   { path: '/matches/history', name: 'matchHistory', component: MatchHistoryView, meta: { layout: 'main' } },
   { path: '/matches/guidelines', name: 'guidelines', component: GuidelinessView, meta: { layout: 'focus' } },

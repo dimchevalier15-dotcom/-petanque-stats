@@ -13,6 +13,7 @@ import {
   teamSlotsForEnd,
 } from '../utils/matchSubstitutions'
 import type { TeamSubstitution } from '../models/MatchPlay'
+import { matchScore } from '../utils/matchScore'
 import {
   cycleTripletteRole,
   inferStartingRoles,
@@ -82,6 +83,9 @@ function resolveInitialCurrentRoles(setup: MatchSetup, initial?: MatchPlayState)
 }
 
 export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPersist?: (state: MatchPlayState) => void) {
+  const openingScoreA = initial?.openingScoreA ?? 0
+  const openingScoreB = initial?.openingScoreB ?? 0
+
   const currentEndIndex = ref(initial?.currentEndIndex ?? 0)
   const ends = reactive<EndRecord[]>(
     initial?.ends?.length
@@ -237,6 +241,8 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       distanceEstimate: distanceEstimate.value,
       currentRoles: { ...currentRoles },
       substitutions: substitutions.map((sub) => ({ ...sub })),
+      openingScoreA,
+      openingScoreB,
     }
   }
 
@@ -253,17 +259,9 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   const scoreB = ref(0)
 
   function recomputeGlobalScore(): void {
-    let a = 0
-    let b = 0
-    for (const e of ends) {
-      if (e.canceled) continue
-      if (e.winner && e.points) {
-        if (e.winner === 'A') a += e.points
-        else b += e.points
-      }
-    }
-    scoreA.value = a
-    scoreB.value = b
+    const total = matchScore(ends, openingScoreA, openingScoreB)
+    scoreA.value = total.scoreA
+    scoreB.value = total.scoreB
   }
 
   watch(ends, () => recomputeGlobalScore(), { deep: true })

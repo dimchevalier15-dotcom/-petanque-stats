@@ -63,6 +63,12 @@ class Game
     #[ORM\JoinColumn(name: 'created_by_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?User $createdBy = null;
 
+    #[ORM\Column(name: 'opening_score_a', type: 'integer', options: ['default' => 0])]
+    private int $openingScoreA = 0;
+
+    #[ORM\Column(name: 'opening_score_b', type: 'integer', options: ['default' => 0])]
+    private int $openingScoreB = 0;
+
     public function __construct(GameType $type, int $targetScore = 13, string $statisticsMode = 'standard')
     {
         $this->type = $type;
@@ -105,5 +111,25 @@ class Game
     public function setCreatedBy(User $createdBy): void
     {
         $this->createdBy = $createdBy;
+    }
+
+    public function getOpeningScoreA(): int
+    {
+        return $this->openingScoreA;
+    }
+
+    public function getOpeningScoreB(): int
+    {
+        return $this->openingScoreB;
+    }
+
+    public function setOpeningScoreA(int $openingScoreA): void
+    {
+        $this->openingScoreA = max(0, $openingScoreA);
+    }
+
+    public function setOpeningScoreB(int $openingScoreB): void
+    {
+        $this->openingScoreB = max(0, $openingScoreB);
     }
 }

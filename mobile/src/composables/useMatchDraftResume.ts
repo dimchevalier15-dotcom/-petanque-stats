@@ -4,17 +4,10 @@ import type { MatchDraft } from '../models/MatchDraft'
 import { clearMatchDraft, loadMatchDraft } from '../services/matchDraftStorage'
 import { useAuthStore } from '../stores/auth'
 
+import { matchScore } from '../utils/matchScore'
+
 export function draftScore(draft: MatchDraft): { scoreA: number; scoreB: number } {
-  let scoreA = 0
-  let scoreB = 0
-  for (const end of draft.ends) {
-    if (end.canceled) continue
-    if (end.winner && end.points) {
-      if (end.winner === 'A') scoreA += end.points
-      else scoreB += end.points
-    }
-  }
-  return { scoreA, scoreB }
+  return matchScore(draft.ends, draft.openingScoreA ?? 0, draft.openingScoreB ?? 0)
 }
 
 export function useMatchDraftResume() {

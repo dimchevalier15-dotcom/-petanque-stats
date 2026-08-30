@@ -127,6 +127,8 @@ const playState: MatchPlayState = {
   distanceEstimate: activeDraft?.distanceEstimate ?? null,
   currentRoles: activeDraft?.currentRoles ?? {},
   substitutions: activeDraft?.substitutions ?? [],
+  openingScoreA: activeDraft?.openingScoreA ?? 0,
+  openingScoreB: activeDraft?.openingScoreB ?? 0,
 }
 
 const { saving, save, error: saveError, progress } = useMatchFinalization(setup, {

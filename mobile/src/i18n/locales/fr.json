@@ -663,7 +663,12 @@
       "trackPlayer": "Analyser",
       "addProvisional": "Ajouter « {name} » au match",
       "provisionalBadge": "À rattacher en fin de match",
-      "addSelf": "Moi"
+      "addSelf": "Moi",
+      "inProgress": {
+        "title": "Reprendre un match en cours",
+        "hint": "Indiquez le score actuel si vous rejoignez une partie déjà commencée. Les statistiques ne couvrent que les mènes jouées à partir de maintenant.",
+        "invalid": "Le score de départ n'est pas valide."
+      }
     },
     "players": {
       "title": "Joueurs du match",

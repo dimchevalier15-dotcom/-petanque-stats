@@ -530,6 +530,8 @@ function resolvePlaySession(): { setup: MatchSetup; initial: MatchPlayState } | 
       distanceEstimate: draftForMatch.distanceEstimate,
       currentRoles: draftForMatch.currentRoles,
       substitutions: draftForMatch.substitutions ?? [],
+      openingScoreA: draftForMatch.openingScoreA ?? 0,
+      openingScoreB: draftForMatch.openingScoreB ?? 0,
     },
   }
 }
@@ -1033,6 +1035,8 @@ function buildLiveMatchData(state: MatchPlayState): LiveMatchData {
     distanceEstimate: state.distanceEstimate,
     currentRoles: state.currentRoles,
     substitutions: state.substitutions,
+    openingScoreA: state.openingScoreA ?? 0,
+    openingScoreB: state.openingScoreB ?? 0,
     playerNames: names.value,
     shortPlayerNames: shortNames.value,
     teamALabel: teamALabel.value,
