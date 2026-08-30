@@ -762,6 +762,9 @@
       "endLabel": "M{n}"
     },
     "actions": { "saveEnd": "Enregistrer la mène", "validateEnd": "Valider la mène", "cancelEnd": "Annuler la mène", "finish": "Terminer le match" },
+    "options": {
+      "open": "Options"
+    },
     "substitution": {
       "action": "Changement",
       "title": "Changement de joueur",
@@ -793,7 +796,15 @@
       "confirm": "Terminer",
       "abort": "Retour"
     },
-    "endCanceled": "Mène annulée"
+    "endCanceled": "Mène annulée",
+    "advanced": {
+      "open": "Saisie avancée",
+      "title": "Saisie avancée",
+      "hint": "Vous avez manqué des mènes ? Indiquez le score actuel du match : seules les mènes déjà notées comptent dans les stats. Vous pourrez reprendre la saisie ensuite.",
+      "confirm": "Repère ce score",
+      "abort": "Annuler",
+      "errorBelowRecorded": "Le score ne peut pas être inférieur à ce qui est déjà enregistré dans les mènes notées ({scoreA}–{scoreB})."
+    }
   },
   "history": {
     "title": "Historique des matchs",

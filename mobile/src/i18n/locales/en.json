@@ -762,6 +762,9 @@
       "endLabel": "E{n}"
     },
     "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "cancelEnd": "Cancel end", "finish": "Finish match" },
+    "options": {
+      "open": "Options"
+    },
     "substitution": {
       "action": "Substitution",
       "title": "Player substitution",
@@ -793,7 +796,15 @@
       "confirm": "Finish",
       "abort": "Back"
     },
-    "endCanceled": "End canceled"
+    "endCanceled": "End canceled",
+    "advanced": {
+      "open": "Advanced entry",
+      "title": "Advanced entry",
+      "hint": "Missed some ends? Enter the current match score — only recorded ends count in stats. You can resume ball entry afterwards.",
+      "confirm": "Set this score",
+      "abort": "Cancel",
+      "errorBelowRecorded": "Score cannot be lower than what is already recorded in noted ends ({scoreA}–{scoreB})."
+    }
   },
   "history": {
     "title": "Match history",

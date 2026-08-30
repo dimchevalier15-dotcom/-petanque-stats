@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
 import type { EndRecord } from '../models/MatchPlay'
-import { matchScore, normalizeOpeningScore, scoreFromEnds } from './matchScore'
+import { matchScore, normalizeOpeningScore, openingScoresForTarget, scoreFromEnds } from './matchScore'
 
 const ends: EndRecord[] = [
   { index: 1, balls: [], winner: 'A', points: 3, canceled: false },
@@ -32,5 +32,16 @@ describe('normalizeOpeningScore', () => {
     expect(normalizeOpeningScore(-3, 13)).toBe(0)
     expect(normalizeOpeningScore(99, 13)).toBe(13)
     expect(normalizeOpeningScore(4.8, 13)).toBe(4)
+  })
+})
+
+describe('openingScoresForTarget', () => {
+  it('computes opening scores to reach a target total', () => {
+    expect(openingScoresForTarget(ends, 8, 5, 13)).toEqual({ scoreA: 5, scoreB: 3 })
+  })
+
+  it('rejects targets below recorded ends', () => {
+    expect(openingScoresForTarget(ends, 2, 5, 13)).toBeNull()
+    expect(openingScoresForTarget(ends, 8, 1, 13)).toBeNull()
   })
 })

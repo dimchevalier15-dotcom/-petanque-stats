@@ -13,7 +13,7 @@ import {
   teamSlotsForEnd,
 } from '../utils/matchSubstitutions'
 import type { TeamSubstitution } from '../models/MatchPlay'
-import { matchScore } from '../utils/matchScore'
+import { matchScore, openingScoresForTarget, scoreFromEnds } from '../utils/matchScore'
 import {
   cycleTripletteRole,
   inferStartingRoles,
@@ -83,8 +83,8 @@ function resolveInitialCurrentRoles(setup: MatchSetup, initial?: MatchPlayState)
 }
 
 export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPersist?: (state: MatchPlayState) => void) {
-  const openingScoreA = initial?.openingScoreA ?? 0
-  const openingScoreB = initial?.openingScoreB ?? 0
+  const openingScoreA = ref(initial?.openingScoreA ?? 0)
+  const openingScoreB = ref(initial?.openingScoreB ?? 0)
 
   const currentEndIndex = ref(initial?.currentEndIndex ?? 0)
   const ends = reactive<EndRecord[]>(
@@ -241,8 +241,8 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       distanceEstimate: distanceEstimate.value,
       currentRoles: { ...currentRoles },
       substitutions: substitutions.map((sub) => ({ ...sub })),
-      openingScoreA,
-      openingScoreB,
+      openingScoreA: openingScoreA.value,
+      openingScoreB: openingScoreB.value,
     }
   }
 
@@ -250,7 +250,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     onPersist?.(snapshot())
   }
 
-  watch([currentEndIndex, distanceEstimate], persist)
+  watch([currentEndIndex, distanceEstimate, openingScoreA, openingScoreB], persist)
   watch(ends, persist, { deep: true })
   watch(currentRoles, persist, { deep: true })
   watch(substitutions, persist, { deep: true })
@@ -259,12 +259,13 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   const scoreB = ref(0)
 
   function recomputeGlobalScore(): void {
-    const total = matchScore(ends, openingScoreA, openingScoreB)
+    const total = matchScore(ends, openingScoreA.value, openingScoreB.value)
     scoreA.value = total.scoreA
     scoreB.value = total.scoreB
   }
 
   watch(ends, () => recomputeGlobalScore(), { deep: true })
+  watch([openingScoreA, openingScoreB], () => recomputeGlobalScore())
   recomputeGlobalScore()
 
   const isFinished = computed(() => scoreA.value >= setup.targetScore || scoreB.value >= setup.targetScore)
@@ -486,6 +487,36 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     return trackedSet.value.has(sub.outPlayerId)
   }
 
+  function skipToScore(targetA: number, targetB: number): boolean {
+    const nextOpening = openingScoresForTarget(ends, targetA, targetB, setup.targetScore)
+    if (!nextOpening) {
+      return false
+    }
+
+    openingScoreA.value = nextOpening.scoreA
+    openingScoreB.value = nextOpening.scoreB
+
+    const end = ends[currentEndIndex.value]
+    if (end) {
+      end.balls = []
+      end.winner = undefined
+      end.points = undefined
+      end.canceled = false
+      end.roles = undefined
+      ensureEndStructure(end)
+      snapshotEndRoles(end, currentRoles, allPlayers.value)
+    }
+
+    distanceEstimate.value = null
+    recomputeGlobalScore()
+    persist()
+    return true
+  }
+
+  function minSkipTargetScore(): MatchScore {
+    return scoreFromEnds(ends)
+  }
+
   function colorFor(note: BallNote | undefined): string {
     if (note === undefined) return 'neutral'
     switch (note) {
@@ -543,5 +574,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     substitutionFor,
     hasPlayedBallsInEnd,
     isTracked,
+    skipToScore,
+    minSkipTargetScore,
   }
 }

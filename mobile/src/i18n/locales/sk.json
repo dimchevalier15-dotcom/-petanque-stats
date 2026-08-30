@@ -762,6 +762,9 @@
       "endLabel": "M{n}"
     },
     "actions": { "saveEnd": "Uložiť mènu", "validateEnd": "Potvrdiť mènu", "cancelEnd": "Zrušiť mènu", "finish": "Ukončiť zápas" },
+    "options": {
+      "open": "Možnosti"
+    },
     "substitution": {
       "action": "Striedanie",
       "title": "Striedanie hráča",
@@ -793,7 +796,15 @@
       "confirm": "Ukončiť",
       "abort": "Späť"
     },
-    "endCanceled": "Mèna zrušená"
+    "endCanceled": "Mèna zrušená",
+    "advanced": {
+      "open": "Pokročilý zápis",
+      "title": "Pokročilý zápis",
+      "hint": "Vynechali ste mèny? Zadajte aktuálne skóre zápasu — do štatistík sa počítajú len zaznamenané mèny. Potom môžete pokračovať v zápise.",
+      "confirm": "Nastaviť toto skóre",
+      "abort": "Zrušiť",
+      "errorBelowRecorded": "Skóre nemôže byť nižšie ako už zaznamenané v mènach ({scoreA}–{scoreB})."
+    }
   },
   "history": {
     "title": "História zápasov",

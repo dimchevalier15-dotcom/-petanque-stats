@@ -314,31 +314,24 @@
       </details>
 
       <footer class="play-actions">
-        <Button
-          v-if="canMakeSubstitution"
-          class="substitution-btn"
-          size="small"
-          :label="t('play.substitution.action')"
-          icon="pi pi-sync"
-          severity="secondary"
-          outlined
-          @click="openSubstitutionDialog"
-        />
         <div v-if="canValidateEnd && !scoreDialog" class="play-actions-primary">
           <Button class="validate-end-btn" size="small" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
           <Button class="cancel-end-btn" size="small" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" outlined @click="openCancelDialog" />
         </div>
-        <Button
-          class="live-btn"
-          size="small"
-          :label="t('live.action')"
-          icon="pi pi-eye"
-          :severity="liveIsActive ? 'success' : 'secondary'"
-          outlined
-          @click="openLiveShareDialog"
-        />
-        <Button class="finish-btn" size="small" :label="t('play.actions.finish')" icon="pi pi-flag" severity="secondary" text @click="openFinishDialog" />
+        <div class="play-actions-secondary">
+          <Button
+            class="options-btn"
+            size="small"
+            :label="t('play.options.open')"
+            icon="pi pi-ellipsis-h"
+            severity="secondary"
+            outlined
+            @click="togglePlayOptions"
+          />
+          <Button class="finish-btn" size="small" :label="t('play.actions.finish')" icon="pi pi-flag" severity="secondary" text @click="openFinishDialog" />
+        </div>
       </footer>
+      <Menu ref="playOptionsMenu" :model="playOptionsItems" popup class="play-options-menu" />
     </div>
 
     <Dialog
@@ -424,6 +417,53 @@
     </Dialog>
 
     <Dialog
+      v-model:visible="advancedDialog"
+      :modal="true"
+      :header="t('play.advanced.title')"
+      :dismissableMask="true"
+      class="play-dialog advanced-dialog"
+    >
+      <div class="advanced-content">
+        <p class="advanced-hint">{{ t('play.advanced.hint') }}</p>
+        <div class="advanced-scores">
+          <label class="advanced-score-field">
+            <span class="advanced-score-label">{{ teamALabel }}</span>
+            <InputText
+              v-model.number="skipTargetA"
+              type="number"
+              inputmode="numeric"
+              :min="minSkipScore.scoreA"
+              :max="setup.targetScore"
+              class="advanced-score-input"
+            />
+          </label>
+          <span class="advanced-score-sep">–</span>
+          <label class="advanced-score-field">
+            <span class="advanced-score-label">{{ teamBLabel }}</span>
+            <InputText
+              v-model.number="skipTargetB"
+              type="number"
+              inputmode="numeric"
+              :min="minSkipScore.scoreB"
+              :max="setup.targetScore"
+              class="advanced-score-input"
+            />
+          </label>
+        </div>
+        <p v-if="skipError" class="substitution-error" role="alert">{{ skipError }}</p>
+        <div class="actions">
+          <Button :label="t('play.advanced.abort')" severity="secondary" @click="advancedDialog = false" />
+          <Button
+            :label="t('play.advanced.confirm')"
+            icon="pi pi-forward"
+            :disabled="!canConfirmSkip"
+            @click="confirmSkipEnds"
+          />
+        </div>
+      </div>
+    </Dialog>
+
+    <Dialog
       v-model:visible="liveShareDialog"
       :modal="true"
       :header="t('live.share.title')"
@@ -462,6 +502,7 @@ import Chart from 'primevue/chart'
 import OverlayPanel from 'primevue/overlaypanel'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
+import Menu from 'primevue/menu'
 import SelectButton from 'primevue/selectbutton'
 import Tag from 'primevue/tag'
 import MatchParticipantSelect from '../components/match/MatchParticipantSelect.vue'
@@ -491,6 +532,7 @@ import type { MatchDraft, MatchParticipant, MatchPlayState, MatchSetup } from '.
 import type { LiveMatchData } from '../models/LiveMatch'
 import { loadMatchDraft, saveMatchDraft } from '../services/matchDraftStorage'
 import { useLiveMatchSync } from '../composables/useLiveMatchSync'
+import { openingScoresForTarget } from '../utils/matchScore'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -582,6 +624,7 @@ const {
   ends,
   scoreA,
   scoreB,
+  isFinished,
   ballsPerPlayer,
   goPrevEnd,
   goNextEnd,
@@ -608,6 +651,8 @@ const {
   hasPlayedBallsInEnd,
   isTracked,
   substitutions,
+  skipToScore,
+  minSkipTargetScore,
 } = useMatchPlay(setup, initialPlayState, persistPlayState)
 
 const {
@@ -730,6 +775,8 @@ function ballLabel(playerId: number, idx: number): string {
 }
 
 const substitutionDialog = ref(false)
+const playOptionsMenu = ref<InstanceType<typeof Menu> | null>(null)
+
 const substitutionTeam = ref<TeamSide | null>(null)
 const substitutionOutPlayerId = ref<number | null>(null)
 const substitutionInPlayer = ref<MatchParticipant | null>(null)
@@ -929,6 +976,38 @@ function confirmCancelEnd() {
 }
 
 const finishDialog = ref(false)
+const advancedDialog = ref(false)
+const skipTargetA = ref(0)
+const skipTargetB = ref(0)
+const skipError = ref('')
+
+const minSkipScore = computed(() => minSkipTargetScore())
+
+const canConfirmSkip = computed(() => {
+  if (!Number.isFinite(skipTargetA.value) || !Number.isFinite(skipTargetB.value)) {
+    return false
+  }
+  return openingScoresForTarget(ends, skipTargetA.value, skipTargetB.value, setup.targetScore) !== null
+})
+
+function openAdvancedDialog(): void {
+  skipTargetA.value = scoreA.value
+  skipTargetB.value = scoreB.value
+  skipError.value = ''
+  advancedDialog.value = true
+}
+
+function confirmSkipEnds(): void {
+  skipError.value = ''
+  const ok = skipToScore(skipTargetA.value, skipTargetB.value)
+  if (!ok) {
+    const min = minSkipScore.value
+    skipError.value = t('play.advanced.errorBelowRecorded', { scoreA: min.scoreA, scoreB: min.scoreB })
+    return
+  }
+  advancedDialog.value = false
+}
+
 const finishError = ref('')
 
 function openFinishDialog() {
@@ -1075,6 +1154,40 @@ async function openLiveShareDialog(): Promise<void> {
   if (liveUrl.value) {
     liveShareDialog.value = true
   }
+}
+
+const playOptionsItems = computed(() => {
+  const items: Array<{ label: string; icon: string; command: () => void }> = []
+
+  if (!isFinished.value) {
+    items.push({
+      label: t('play.advanced.open'),
+      icon: 'pi pi-sliders-h',
+      command: () => openAdvancedDialog(),
+    })
+  }
+
+  if (canMakeSubstitution.value) {
+    items.push({
+      label: t('play.substitution.action'),
+      icon: 'pi pi-sync',
+      command: () => openSubstitutionDialog(),
+    })
+  }
+
+  items.push({
+    label: t('live.action'),
+    icon: 'pi pi-eye',
+    command: () => {
+      void openLiveShareDialog()
+    },
+  })
+
+  return items
+})
+
+function togglePlayOptions(event: Event): void {
+  playOptionsMenu.value?.toggle(event)
 }
 
 async function copyLiveLink(): Promise<void> {
@@ -1728,6 +1841,11 @@ onMounted(async () => {
   gap: 0.25rem;
 }
 
+.play-actions-secondary {
+  gap: 0.25rem;
+  align-items: center;
+}
+
 .play-actions :deep(.p-button) {
   width: 100%;
   height: 1.75rem;
@@ -1739,6 +1857,52 @@ onMounted(async () => {
 .play-actions :deep(.p-button-label),
 .play-actions :deep(.p-button-icon) {
   font-size: 0.75rem;
+}
+
+.advanced-content {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.advanced-hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+  line-height: 1.45;
+}
+
+.advanced-scores {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.advanced-score-field {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 5rem;
+}
+
+.advanced-score-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.advanced-score-input {
+  width: 4.5rem;
+  text-align: center;
+}
+
+.advanced-score-sep {
+  font-size: 1.25rem;
+  font-weight: 700;
+  padding-bottom: 0.5rem;
+  color: var(--app-text-muted);
 }
 
 .validate-end-btn {

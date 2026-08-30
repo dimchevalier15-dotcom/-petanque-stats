@@ -38,3 +38,19 @@ export function normalizeOpeningScore(value: number, targetScore: number): numbe
   if (rounded > targetScore) return targetScore
   return rounded
 }
+
+/** Opening scores so that recorded ends + opening = target totals. */
+export function openingScoresForTarget(
+  ends: EndRecord[],
+  targetA: number,
+  targetB: number,
+  targetScore: number,
+): MatchScore | null {
+  const played = scoreFromEnds(ends)
+  const totalA = normalizeOpeningScore(targetA, targetScore)
+  const totalB = normalizeOpeningScore(targetB, targetScore)
+  if (totalA < played.scoreA || totalB < played.scoreB) {
+    return null
+  }
+  return { scoreA: totalA - played.scoreA, scoreB: totalB - played.scoreB }
+}
