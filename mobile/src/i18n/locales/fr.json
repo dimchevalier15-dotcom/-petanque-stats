@@ -668,14 +668,20 @@
     "players": {
       "title": "Joueurs du match",
       "subtitle": "Dernière étape avant l'enregistrement",
-      "hint": "Certains joueurs ont été saisis pendant la partie. Rattachez-les à un joueur existant ou créez-les pour enregistrer le match.",
-      "kinds": { "new": "Nouveau joueur", "existing": "Joueur existant" },
+      "hint": "Certains joueurs ont été saisis pendant la partie. Vous pouvez les rattacher ou les créer, ou enregistrer sans les lier.",
+      "kinds": {
+        "skip": "Ne pas rattacher",
+        "new": "Nouveau joueur",
+        "existing": "Joueur existant"
+      },
+      "skipHint": "Ce joueur sera enregistré sans statistiques individuelles.",
       "searchPlaceholder": "Rechercher un joueur (3 caractères min.)",
       "searchEmpty": "Aucun joueur trouvé.",
       "incomplete": "Renseignez un prénom et un nom, ou choisissez un joueur existant.",
       "duplicate": "Un joueur ne peut pas occuper deux places dans le même match.",
       "save": "Enregistrer le match",
-      "saveError": "L'enregistrement a échoué. Vos données sont conservées, réessayez."
+      "saveError": "L'enregistrement a échoué. Vos données sont conservées, réessayez.",
+      "tooManyPlaceholders": "Trop de joueurs non rattachés pour enregistrer sans liaison. Rattachez ou créez au moins un joueur."
     },
     "resume": {
       "title": "Partie en cours",

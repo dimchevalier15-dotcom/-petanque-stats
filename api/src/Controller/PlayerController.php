@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Dto\Request\CreatePlayerRequest;
 use App\Dto\Request\SearchPlayersQuery;
 use App\Dto\Response\CreatePlayerResponse;
+use App\Dto\Response\PlaceholderPlayersResponse;
 use App\Dto\Response\PlayerItem;
 use App\Enum\DistanceBucket;
 use App\Enum\GameType;
@@ -67,6 +68,15 @@ final class PlayerController extends AbstractController
         $q->unlinkedOnly = $unlinkedOnly !== null ? filter_var($unlinkedOnly, FILTER_VALIDATE_BOOLEAN) : null;
         $items = $this->playerService->search($q);
         $json = $this->serializer->serialize($items, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/players/placeholders', name: 'api_players_placeholders', methods: ['GET'])]
+    public function placeholders(): JsonResponse
+    {
+        $output = new PlaceholderPlayersResponse($this->playerService->placeholderPlayerIds());
+        $json = $this->serializer->serialize($output, 'json');
+
         return new JsonResponse($json, 200, [], true);
     }
 
@@ -138,7 +148,7 @@ final class PlayerController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    #[Route('/api/players/{id}', name: 'api_players_get', methods: ['GET'])]
+    #[Route('/api/players/{id}', name: 'api_players_get', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function getOne(int $id): JsonResponse
     {
         $item = $this->playerService->getOne($id);

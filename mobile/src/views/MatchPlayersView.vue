@@ -25,6 +25,10 @@
         @update:model-value="(player) => onPlayerSelected(entry, player)"
       />
 
+      <p v-else-if="entry.kind === 'skip'" class="resolve-skip-hint">
+        {{ t('matches.players.skipHint') }}
+      </p>
+
       <div v-else class="resolve-form">
         <label class="app-field">
           <span>{{ t('players.fields.firstName') }}</span>
@@ -125,7 +129,7 @@ const playState: MatchPlayState = {
   substitutions: activeDraft?.substitutions ?? [],
 }
 
-const { saving, save, progress } = useMatchFinalization(setup, {
+const { saving, save, error: saveError, progress } = useMatchFinalization(setup, {
   serverId: activeDraft?.serverId ?? null,
   resolvedPlayers: activeDraft?.resolvedPlayers ?? {},
 })
@@ -141,8 +145,9 @@ const showErrors = ref(false)
 const errorMessage = ref('')
 
 const kindOptions = computed(() => [
-  { label: t('matches.players.kinds.new'), value: 'new' as const },
+  { label: t('matches.players.kinds.skip'), value: 'skip' as const },
   { label: t('matches.players.kinds.existing'), value: 'existing' as const },
+  { label: t('matches.players.kinds.new'), value: 'new' as const },
 ])
 
 /** Player ids already taken by a real participant of this match. */
@@ -179,7 +184,10 @@ async function onSave(): Promise<void> {
 
   const matchId = await save(playState, [...resolutions])
   if (matchId === null) {
-    errorMessage.value = t('matches.players.saveError')
+    errorMessage.value =
+      saveError.value === 'tooManyPlaceholders'
+        ? t('matches.players.tooManyPlaceholders')
+        : t('matches.players.saveError')
     return
   }
 
@@ -219,7 +227,7 @@ async function onSave(): Promise<void> {
 
 .kind-picker :deep(.p-selectbutton) {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   width: 100%;
 }
 
@@ -227,6 +235,13 @@ async function onSave(): Promise<void> {
   justify-content: center;
   font-size: 0.75rem;
   min-height: 2.25rem;
+}
+
+.resolve-skip-hint {
+  margin: 0;
+  color: var(--app-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
 }
 
 .resolve-form {

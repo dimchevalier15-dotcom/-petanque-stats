@@ -30,4 +30,8 @@ export const playersService = {
     const { data } = await api.get<PlayerItemDto>(`/players/${id}`)
     return toModel(data)
   },
+  async placeholderPlayerIds(): Promise<number[]> {
+    const { data } = await api.get<{ playerIds: number[] }>('/players/placeholders')
+    return data.playerIds
+  },
 }

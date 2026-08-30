@@ -668,14 +668,20 @@
     "players": {
       "title": "Match players",
       "subtitle": "Last step before saving",
-      "hint": "Some players were typed in during the match. Link them to an existing player or create them to save the match.",
-      "kinds": { "new": "New player", "existing": "Existing player" },
+      "hint": "Some players were typed in during the match. You can link or create them, or save without linking.",
+      "kinds": {
+        "skip": "Do not link",
+        "new": "New player",
+        "existing": "Existing player"
+      },
+      "skipHint": "This player will be saved without individual statistics.",
       "searchPlaceholder": "Search a player (min. 3 characters)",
       "searchEmpty": "No player found.",
       "incomplete": "Enter a first and last name, or pick an existing player.",
       "duplicate": "A player cannot take two spots in the same match.",
       "save": "Save match",
-      "saveError": "Saving failed. Your data is kept, please try again."
+      "saveError": "Saving failed. Your data is kept, please try again.",
+      "tooManyPlaceholders": "Too many unlinked players to save without linking. Link or create at least one player."
     },
     "resume": {
       "title": "Match in progress",

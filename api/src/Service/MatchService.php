@@ -63,12 +63,11 @@ final class MatchService
             throw MatchValidationException::withErrors(['statisticsMode' => 'Invalid statistics mode.']);
         }
 
-        // Normalize tracked players: default to all if empty
+        // Normalize tracked players: default to all if empty, never track placeholders
         $tracked = $req->trackedPlayers;
         if ($tracked === null || $tracked === []) {
             $tracked = $allIds;
         } else {
-            // Ensure all tracked players are part of the match selection
             $tracked = array_values(array_unique(array_map('intval', $tracked)));
             foreach ($tracked as $pid) {
                 if (!in_array($pid, $allIds, true)) {
@@ -76,6 +75,7 @@ final class MatchService
                 }
             }
         }
+        $tracked = $this->players->filterPlaceholderIds($tracked);
 
         $game = new Game($type, $req->targetScore, $req->statisticsMode);
         $game->setCreatedBy($createdBy);

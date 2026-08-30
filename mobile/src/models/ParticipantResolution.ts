@@ -1,4 +1,4 @@
-export type ParticipantResolutionKind = 'existing' | 'new'
+export type ParticipantResolutionKind = 'skip' | 'existing' | 'new'
 
 /**
  * How a provisional participant becomes a real Player at the end of the match.
@@ -20,7 +20,7 @@ export function resolutionFromLabel(participantId: number, label: string): Parti
   const parts = label.trim().split(/\s+/).filter(Boolean)
   return {
     participantId,
-    kind: 'new',
+    kind: 'skip',
     playerId: null,
     firstName: parts[0] ?? '',
     lastName: parts.slice(1).join(' '),
@@ -30,6 +30,9 @@ export function resolutionFromLabel(participantId: number, label: string): Parti
 }
 
 export function isResolutionComplete(resolution: ParticipantResolution): boolean {
+  if (resolution.kind === 'skip') {
+    return true
+  }
   if (resolution.kind === 'existing') {
     return resolution.playerId !== null
   }

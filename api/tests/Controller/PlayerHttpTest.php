@@ -84,6 +84,33 @@ final class PlayerHttpTest extends WebTestCase
         self::assertSame(200, $client->getResponse()->getStatusCode());
     }
 
+    public function testPlaceholderPlayersEndpointReturnsSixIds(): void
+    {
+        $client = static::createClient();
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
+        $jwtEncoder = static::getContainer()->get(JWTEncoderInterface::class);
+
+        $suffix = bin2hex(random_bytes(4));
+        $user = new User('placeholder-http-'.$suffix.'@test.local');
+        $user->setPassword($hasher->hashPassword($user, 'password123'));
+        $em->persist($user);
+        $em->flush();
+
+        $token = $jwtEncoder->encode([
+            'username' => $user->getEmail(),
+            'sub' => (string) $user->getId(),
+        ]);
+
+        $client->request('GET', '/api/players/placeholders', server: [
+            'HTTP_AUTHORIZATION' => 'Bearer '.$token,
+        ]);
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        $payload = json_decode($client->getResponse()->getContent() ?: '', true);
+        self::assertIsArray($payload['playerIds'] ?? null);
+        self::assertCount(6, $payload['playerIds']);
+    }
+
     /**
      * @param array<string, mixed> $payload
      */

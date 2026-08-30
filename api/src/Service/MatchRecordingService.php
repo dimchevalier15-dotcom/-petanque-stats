@@ -49,7 +49,7 @@ final class MatchRecordingService
         $matchPlayerSet = array_fill_keys($matchPlayerIds, true);
 
         $tracked = $req->trackedPlayers === [] ? array_merge($req->teamA, $req->teamB) : $req->trackedPlayers;
-        $tracked = array_values(array_unique(array_map('intval', $tracked)));
+        $tracked = $this->players->filterPlaceholderIds(array_values(array_unique(array_map('intval', $tracked))));
         $trackedSet = array_fill_keys($tracked, true);
 
         $this->em->wrapInTransaction(function () use ($req, $game, $matchPlayerSet, $trackedSet, $allowedPerPlayer, $maxPointsPerEnd): void {

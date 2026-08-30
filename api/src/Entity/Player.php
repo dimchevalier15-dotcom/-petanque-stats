@@ -37,6 +37,9 @@ class Player
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, unique: true, onDelete: 'SET NULL')]
     private ?User $user = null;
 
+    #[ORM\Column(name: 'placeholder_key', type: 'string', length: 1, nullable: true, unique: true)]
+    private ?string $placeholderKey = null;
+
     public function __construct(string $firstName, string $lastName, string $nickname)
     {
         $this->firstName = $firstName;
@@ -103,5 +106,15 @@ class Player
     public function setUser(?User $user): void
     {
         $this->user = $user;
+    }
+
+    public function getPlaceholderKey(): ?string
+    {
+        return $this->placeholderKey;
+    }
+
+    public function isPlaceholder(): bool
+    {
+        return $this->placeholderKey !== null;
     }
 }

@@ -668,14 +668,20 @@
     "players": {
       "title": "Hráči zápasu",
       "subtitle": "Posledný krok pred uložením",
-      "hint": "Niektorí hráči boli zadaní počas hry. Priraďte ich k existujúcemu hráčovi alebo ich vytvorte, aby ste mohli zápas uložiť.",
-      "kinds": { "new": "Nový hráč", "existing": "Existujúci hráč" },
+      "hint": "Niektorí hráči boli zadaní počas hry. Môžete ich priradiť alebo vytvoriť, alebo uložiť bez priradenia.",
+      "kinds": {
+        "skip": "Nepriradiť",
+        "new": "Nový hráč",
+        "existing": "Existujúci hráč"
+      },
+      "skipHint": "Tento hráč bude uložený bez individuálnych štatistík.",
       "searchPlaceholder": "Hľadať hráča (min. 3 znaky)",
       "searchEmpty": "Nenašiel sa žiadny hráč.",
       "incomplete": "Zadajte meno a priezvisko alebo vyberte existujúceho hráča.",
       "duplicate": "Hráč nemôže obsadiť dve miesta v tom istom zápase.",
       "save": "Uložiť zápas",
-      "saveError": "Uloženie sa nepodarilo. Vaše údaje sú zachované, skúste to znova."
+      "saveError": "Uloženie sa nepodarilo. Vaše údaje sú zachované, skúste to znova.",
+      "tooManyPlaceholders": "Príliš veľa nepriradených hráčov na uloženie bez priradenia. Priraďte alebo vytvorte aspoň jedného hráča."
     },
     "resume": {
       "title": "Prebiehajúci zápas",

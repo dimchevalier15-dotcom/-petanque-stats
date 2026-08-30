@@ -36,7 +36,10 @@ Un participant provisoire porte uniquement :
 - un libellé saisi par l'utilisateur ;
 - un identifiant local.
 
-Un match ne peut pas être enregistré tant qu'il reste un participant provisoire non résolu.
+Un match ne peut pas être enregistré tant qu'il reste un participant provisoire non résolu côté client.
+
+À la fin du match, le rattachement est **optionnel** : les participants non liés sont mappés sur six
+Players techniques en base (Player A à F), exclus du suivi statistique (`match_tracked_players`).
 
 Un Player créé à la fin d'un match est un Player non lié :
 
@@ -88,8 +91,9 @@ afficher un écran de résolution avant le résumé.
 
 ### Écran de résolution
 
-Pour chaque participant provisoire, deux choix :
+Pour chaque participant provisoire, trois choix :
 
+- ne pas rattacher (par défaut) ;
 - rattacher un Player existant, par recherche ;
 - créer un nouveau Player.
 
@@ -116,11 +120,15 @@ En cas d'échec réseau, une nouvelle tentative reprend là où elle s'est arrê
 
 ### Étape 1 - Joueurs
 
-Pour chaque participant provisoire non encore résolu :
+Pour chaque participant provisoire que l'utilisateur choisit de créer ou qui n'est pas encore résolu
+par une tentative précédente :
 
 ```
 POST /api/players
 ```
+
+Les participants laissés en « ne pas rattacher » sont mappés sur les Players techniques A–F
+(voir migration `placeholder_key`), sans appel réseau supplémentaire.
 
 L'identifiant obtenu est mémorisé localement.
 
@@ -218,7 +226,7 @@ Un participant provisoire peut être suivi, changer de rôle et être remplacé.
 
 Un match sans participant provisoire s'enregistre sans écran supplémentaire.
 
-Un match avec participants provisoires impose leur résolution avant l'enregistrement.
+Un match avec participants provisoires propose leur résolution avant l'enregistrement, sans obligation de lier.
 
 Un échec réseau pendant l'enregistrement ne perd aucune donnée et ne crée aucun doublon.
 

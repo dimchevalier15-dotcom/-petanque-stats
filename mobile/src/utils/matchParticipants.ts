@@ -5,6 +5,14 @@ import type { Player } from '../models/Player'
 import { formatPlayerLabel } from '../composables/usePlayerSearch'
 import { allMatchPlayerIds } from './matchSubstitutions'
 
+export const PLACEHOLDER_PLAYER_COUNT = 6
+
+export class TooManyPlaceholderParticipantsError extends Error {
+  constructor() {
+    super('Too many unresolved participants for placeholder mapping')
+  }
+}
+
 /**
  * Provisional participants are numbered downwards from -1 so they can never collide with a
  * persisted Player id. See ADR-001.
@@ -146,4 +154,39 @@ export function containsProvisionalParticipant(payload: CompleteMatchRequestDto)
     ]),
   ]
   return ids.some(isProvisionalParticipant)
+}
+
+/** Maps unresolved provisional ids to placeholder Player ids (A–F), one each. */
+export function assignPlaceholderPlayers(
+  provisionalIds: number[],
+  placeholderPlayerIds: number[],
+  mapping: Record<number, number>,
+): void {
+  if (provisionalIds.length > placeholderPlayerIds.length) {
+    throw new TooManyPlaceholderParticipantsError()
+  }
+
+  const used = new Set(Object.values(mapping))
+  let cursor = 0
+
+  for (const provisionalId of provisionalIds) {
+    while (cursor < placeholderPlayerIds.length && used.has(placeholderPlayerIds[cursor]!)) {
+      cursor += 1
+    }
+    if (cursor >= placeholderPlayerIds.length) {
+      throw new TooManyPlaceholderParticipantsError()
+    }
+
+    const placeholderId = placeholderPlayerIds[cursor]!
+    mapping[provisionalId] = placeholderId
+    used.add(placeholderId)
+    cursor += 1
+  }
+}
+
+export function excludePlayersFromTracked(
+  trackedPlayers: number[],
+  excludedIds: ReadonlySet<number>,
+): number[] {
+  return trackedPlayers.filter((playerId) => !excludedIds.has(playerId))
 }

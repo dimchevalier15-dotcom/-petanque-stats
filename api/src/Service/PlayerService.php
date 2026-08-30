@@ -64,6 +64,14 @@ final class PlayerService
         return $out;
     }
 
+    /**
+     * @return list<int>
+     */
+    public function placeholderPlayerIds(): array
+    {
+        return $this->players->findPlaceholderPlayerIds();
+    }
+
     public function getOne(int $id): ?PlayerItem
     {
         $p = $this->players->find($id);

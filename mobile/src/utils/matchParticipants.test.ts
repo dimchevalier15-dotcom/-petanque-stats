@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest'
 import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
 import type { MatchSetup } from '../models/MatchDraft'
 import {
+  assignPlaceholderPlayers,
   containsProvisionalParticipant,
+  excludePlayersFromTracked,
   isProvisionalParticipant,
   nextProvisionalId,
   participantFromPlayer,
@@ -147,5 +149,23 @@ describe('provisionalParticipant', () => {
       label: 'Marco',
       shortLabel: 'Marco',
     })
+  })
+})
+
+describe('assignPlaceholderPlayers', () => {
+  it('maps each provisional id to a distinct placeholder', () => {
+    const mapping: Record<number, number> = { 5: 5 }
+    assignPlaceholderPlayers([-1, -2], [101, 102, 103], mapping)
+    expect(mapping).toEqual({ 5: 5, '-1': 101, '-2': 102 })
+  })
+
+  it('rejects more provisionals than placeholders', () => {
+    expect(() => assignPlaceholderPlayers([-1, -2, -3], [101, 102], {})).toThrow()
+  })
+})
+
+describe('excludePlayersFromTracked', () => {
+  it('removes placeholder ids from tracked players', () => {
+    expect(excludePlayersFromTracked([5, 101, 7], new Set([101, 102]))).toEqual([5, 7])
   })
 })

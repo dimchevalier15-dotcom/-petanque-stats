@@ -13,9 +13,42 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 final class PlayerRepository extends ServiceEntityRepository
 {
+    /** @var list<string> */
+    public const PLACEHOLDER_KEYS = ['a', 'b', 'c', 'd', 'e', 'f'];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Player::class);
+    }
+
+    /**
+     * @return list<int> Placeholder player ids in A–F order.
+     */
+    public function findPlaceholderPlayerIds(): array
+    {
+        /** @var list<Player> $players */
+        $players = $this->createQueryBuilder('p')
+            ->where('p.placeholderKey IS NOT NULL')
+            ->getQuery()
+            ->getResult();
+
+        $byKey = [];
+        foreach ($players as $player) {
+            $key = $player->getPlaceholderKey();
+            if ($key !== null) {
+                $byKey[$key] = (int) $player->getId();
+            }
+        }
+
+        $ids = [];
+        foreach (self::PLACEHOLDER_KEYS as $key) {
+            if (!isset($byKey[$key])) {
+                throw new \RuntimeException('Missing placeholder player: '.$key);
+            }
+            $ids[] = $byKey[$key];
+        }
+
+        return $ids;
     }
 
     /**
@@ -23,9 +56,10 @@ final class PlayerRepository extends ServiceEntityRepository
      */
     public function searchByQuery(string $q, int $limit = 20): array
     {
-        $qb = $this->createQueryBuilder('p');
+        $qb = $this->createQueryBuilder('p')
+            ->where('p.placeholderKey IS NULL');
         if ($q !== '') {
-            $qb->where($qb->expr()->orX(
+            $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->like('LOWER(p.firstName)', ':q'),
                 $qb->expr()->like('LOWER(p.lastName)', ':q'),
                 $qb->expr()->like('LOWER(p.nickname)', ':q'),
@@ -80,7 +114,8 @@ final class PlayerRepository extends ServiceEntityRepository
     public function searchWithoutClubByQuery(string $q, int $limit = 20): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->where('p.club IS NULL');
+            ->where('p.club IS NULL')
+            ->andWhere('p.placeholderKey IS NULL');
         if ($q !== '') {
             $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->like('LOWER(p.firstName)', ':q'),
@@ -116,7 +151,8 @@ final class PlayerRepository extends ServiceEntityRepository
     public function searchUnlinkedByQuery(string $q, int $limit = 20): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->where('p.user IS NULL');
+            ->where('p.user IS NULL')
+            ->andWhere('p.placeholderKey IS NULL');
         if ($q !== '') {
             $qb->andWhere($qb->expr()->orX(
                 $qb->expr()->like('LOWER(p.firstName)', ':q'),
@@ -129,5 +165,35 @@ final class PlayerRepository extends ServiceEntityRepository
         $res = $qb->getQuery()->getResult();
 
         return $res;
+    }
+
+    /**
+     * @param list<int> $playerIds
+     * @return list<int>
+     */
+    public function filterPlaceholderIds(array $playerIds): array
+    {
+        if ($playerIds === []) {
+            return [];
+        }
+
+        /** @var list<Player> $players */
+        $players = $this->createQueryBuilder('p')
+            ->where('p.id IN (:ids)')
+            ->setParameter('ids', array_map('intval', $playerIds))
+            ->getQuery()
+            ->getResult();
+
+        $placeholderIds = [];
+        foreach ($players as $player) {
+            if ($player->isPlaceholder()) {
+                $placeholderIds[(int) $player->getId()] = true;
+            }
+        }
+
+        return array_values(array_filter(
+            array_map('intval', $playerIds),
+            static fn (int $id): bool => !isset($placeholderIds[$id]),
+        ));
     }
 }

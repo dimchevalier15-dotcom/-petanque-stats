@@ -45,8 +45,11 @@ L'enregistrement se déroule en trois étapes réutilisant les endpoints existan
 La progression est mémorisée dans la sauvegarde locale, ce qui rend l'enregistrement reprenable
 sans créer de doublon.
 
-Le backend reçoit une seule évolution, additive : un champ optionnel `playedAt` sur
+Le backend reçoit une évolution additive : un champ optionnel `playedAt` sur
 `CreateMatchRequest`, pour conserver la date réelle de début de partie.
+
+Six Players techniques (A–F), identifiés par `placeholder_key`, absorbent les participants non
+rattachés. Ils sont exclus de `trackedPlayers` pour ne pas fausser les statistiques.
 
 ---
 
