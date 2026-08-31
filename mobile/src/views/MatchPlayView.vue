@@ -538,6 +538,7 @@ import { clampEndPoints, maxPointsForWinner, maxPointsPerEnd, suggestEndScore } 
 import { matchesService } from '../services/matches'
 import { playersService } from '../services/players'
 import { useAuthStore } from '../stores/auth'
+import { useGuestStore } from '../stores/guest'
 import type { MatchDraft, MatchParticipant, MatchPlayState, MatchSetup } from '../models/MatchDraft'
 import type { LiveMatchData } from '../models/LiveMatch'
 import { loadMatchDraft, saveMatchDraft } from '../services/matchDraftStorage'
@@ -548,6 +549,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const guest = useGuestStore()
 
 const draftId = Number(route.params.id)
 
@@ -569,7 +571,9 @@ function setupFromDraft(draft: MatchDraft): MatchSetup {
   }
 }
 
-const storedDraft = loadMatchDraft(auth.user?.id ?? null)
+const storedDraft = guest.isGuestSession
+  ? loadMatchDraft(null, { guest: true })
+  : loadMatchDraft(auth.user?.id ?? null)
 const draftForMatch = storedDraft !== null && storedDraft.id === draftId ? storedDraft : null
 
 function resolvePlaySession(): { setup: MatchSetup; initial: MatchPlayState } | null {
@@ -590,7 +594,7 @@ function resolvePlaySession(): { setup: MatchSetup; initial: MatchPlayState } | 
 
 const session = resolvePlaySession()
 if (!session) {
-  void router.replace({ name: 'home' })
+  void router.replace(guest.isGuestSession ? { name: 'newMatch' } : { name: 'home' })
 }
 
 const setup: MatchSetup = session?.setup ?? {
@@ -615,8 +619,12 @@ let syncLiveOnPersist: (() => Promise<void>) | null = null
 function persistPlayState(state: MatchPlayState): void {
   if (!session) return
   latestPlayState.value = state
-  saveMatchDraft(session.setup, state, auth.user?.id ?? null)
-  void syncLiveOnPersist?.()
+  saveMatchDraft(session.setup, state, auth.user?.id ?? null, {
+    guest: guest.isGuestSession,
+  })
+  if (!guest.isGuestSession) {
+    void syncLiveOnPersist?.()
+  }
 }
 
 // Team names come from the local draft: nothing is fetched during the match (ADR-001).
@@ -1098,6 +1106,13 @@ const knownParticipantIds = computed(() =>
  * into real Players, on a dedicated screen. See US-021.
  */
 async function onFinish(): Promise<boolean> {
+  if (guest.isGuestSession) {
+    const state = latestPlayState.value
+    if (!state) return false
+    void router.push({ name: 'guestMatchSummary', params: { id: draftId } })
+    return true
+  }
+
   await syncLiveMatch()
   await finishLiveMatch()
 
@@ -1204,13 +1219,15 @@ const playOptionsItems = computed(() => {
     })
   }
 
-  items.push({
-    label: t('live.action'),
-    icon: 'pi pi-eye',
-    command: () => {
-      void openLiveShareDialog()
-    },
-  })
+  if (!guest.isGuestSession) {
+    items.push({
+      label: t('live.action'),
+      icon: 'pi pi-eye',
+      command: () => {
+        void openLiveShareDialog()
+      },
+    })
+  }
 
   return items
 })
@@ -1251,6 +1268,10 @@ function shortNameFor(pid: number): string {
 
 onMounted(async () => {
   if (!session) return
+
+  if (guest.isGuestSession) {
+    return
+  }
 
   // Only a draft saved before ADR-001 can miss labels: it also carries a server match id.
   const serverMatchId = progress.serverId

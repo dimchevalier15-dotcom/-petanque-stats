@@ -30,6 +30,7 @@ import { useI18n } from 'vue-i18n'
 import AutoComplete from 'primevue/autocomplete'
 import type { MatchParticipant } from '../../models/MatchDraft'
 import { playersService } from '../../services/players'
+import { useAuthStore } from '../../stores/auth'
 import { participantFromPlayer, PROVISIONAL_OPTION_ID } from '../../utils/matchParticipants'
 
 const MIN_QUERY_LENGTH = 2
@@ -57,6 +58,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const auth = useAuthStore()
 
 const selected = ref<MatchParticipant | null>(props.modelValue)
 const suggestions = ref<MatchParticipant[]>([])
@@ -88,6 +90,11 @@ function onComplete(event: { query: string }): void {
 
   // The provisional option is offered immediately: adding a name never waits for the network.
   suggestions.value = [createOption(query)]
+  if (!auth.isAuthenticated) {
+    searching.value = false
+    return
+  }
+
   searching.value = true
 
   searchTimer = window.setTimeout(async () => {

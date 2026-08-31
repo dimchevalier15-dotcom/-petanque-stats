@@ -3,6 +3,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { saveMatchDraft } from '../services/matchDraftStorage'
 import { useAuthStore } from '../stores/auth'
+import { useGuestStore } from '../stores/guest'
 import type { MatchParticipant, MatchSetup } from '../models/MatchDraft'
 import {
   DEFAULT_TARGET_SCORE,
@@ -74,6 +75,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
   const { t } = useI18n()
   const router = useRouter()
   const auth = useAuthStore()
+  const guest = useGuestStore()
 
   const type = ref<MatchType>('doublette')
   const statisticsMode = ref<StatisticsMode>('standard')
@@ -413,6 +415,10 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
     submitting.value = true
     try {
       const setup = buildSetup()
+      const isGuest = guest.isGuestSession || !auth.isAuthenticated
+      if (isGuest && !guest.isGuestSession) {
+        guest.enterGuestMode()
+      }
       saveMatchDraft(
         setup,
         {
@@ -425,6 +431,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
           openingScoreB: scoreB,
         },
         auth.user?.id ?? null,
+        { guest: isGuest },
       )
 
       router.push({ name: 'matchScore', params: { id: setup.id } })

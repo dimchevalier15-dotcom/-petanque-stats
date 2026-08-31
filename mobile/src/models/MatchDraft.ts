@@ -54,10 +54,14 @@ export interface MatchDraftProgress {
   resolvedPlayers: Record<number, number>
 }
 
+export type MatchDraftOwner = 'guest' | 'user'
+
 export interface MatchDraft extends MatchSetup, MatchPlayState, MatchDraftProgress {
   version: 2
   userId: number | null
   savedAt: string
+  /** Distinguishes guest-only drafts from logged-out user drafts (both may use userId null). */
+  draftOwner?: MatchDraftOwner
 }
 
 /** Draft format used before ADR-001, still readable so an ongoing match survives an update. */

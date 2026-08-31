@@ -21,6 +21,7 @@ import { GUEST_ONLY_ROUTE_NAMES, LEGAL_PATHS, PUBLIC_ROUTE_NAMES } from './publi
 import { userHasMasterAccess } from '../models/UserRole'
 import { userIsCoach } from '../composables/useIsCoach'
 import { useAuthStore } from '../stores/auth'
+import { useGuestStore } from '../stores/guest'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', redirect: { name: 'home' } },
@@ -90,6 +91,18 @@ const routes: RouteRecordRaw[] = [
   { path: '/matches/:id/players', name: 'matchPlayers', component: () => import('../views/MatchPlayersView.vue'), meta: { layout: 'focus' } },
   { path: '/live/:uuid', name: 'liveMatch', component: () => import('../views/LiveMatchView.vue'), meta: { layout: 'focus' } },
   { path: '/matches/:id/summary', name: 'matchSummary', component: () => import('../views/MatchSummaryView.vue'), meta: { layout: 'focus' } },
+  {
+    path: '/matches/:id/guest-summary',
+    name: 'guestMatchSummary',
+    component: () => import('../views/GuestMatchSummaryView.vue'),
+    meta: { layout: 'focus' },
+  },
+  {
+    path: '/guest/save-match',
+    name: 'guestMatchSave',
+    component: () => import('../views/GuestMatchSaveView.vue'),
+    meta: { layout: 'focus' },
+  },
   { path: '/matches/:id/context', name: 'matchContext', component: () => import('../views/MatchContextView.vue'), meta: { layout: 'focus' } },
   { path: '/stats', name: 'myStats', component: MyStatsView, meta: { layout: 'main' } },
   { path: '/shooting', name: 'shootingHome', component: ShootingHomeView, meta: { layout: 'main' } },
@@ -115,11 +128,16 @@ router.beforeEach(async (to) => {
   const isPublic = to.name && publicRouteNames.has(String(to.name))
   const isGuestOnly = to.name && guestOnlyRouteNames.has(String(to.name))
   const token = localStorage.getItem('auth_token')
+  const guest = useGuestStore()
+
   if (!token && !isPublic) {
     return { name: 'login' }
   }
   if (token && isGuestOnly) {
     return { name: 'home' }
+  }
+  if (token && guest.isGuestSession) {
+    guest.leaveGuestMode()
   }
   if (to.meta.requiresAdmin) {
     const auth = useAuthStore()

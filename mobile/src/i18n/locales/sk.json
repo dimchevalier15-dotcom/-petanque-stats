@@ -133,6 +133,21 @@
       "content": "Obrazovka čoskoro."
     }
   },
+  "guest": {
+    "entry": {
+      "prompt": "Chcete len hrať?",
+      "playWithoutAccount": "Spustiť zápas hneď, bez účtu"
+    },
+    "summary": {
+      "saveTitle": "Uchovať tento zápas?",
+      "saveHint": "Vaše štatistiky sú k dispozícii pre tento zápas. Vytvorte účet alebo sa prihláste, aby ste ho uložili a mali históriu.",
+      "createAccount": "Vytvoriť účet",
+      "login": "Už mám účet — Prihlásiť sa"
+    },
+    "save": {
+      "inProgress": "Ukladanie zápasu…"
+    }
+  },
   "auth": {
     "email": "Email",
     "password": "Heslo",

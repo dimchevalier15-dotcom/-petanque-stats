@@ -133,6 +133,21 @@
       "content": "Screen coming soon."
     }
   },
+  "guest": {
+    "entry": {
+      "prompt": "Just want to play?",
+      "playWithoutAccount": "Start a match right away, without an account"
+    },
+    "summary": {
+      "saveTitle": "Keep this match?",
+      "saveHint": "Your stats are available for this match. Create an account or sign in to save it and build your history.",
+      "createAccount": "Create my account",
+      "login": "I already have an account — Sign in"
+    },
+    "save": {
+      "inProgress": "Saving your match…"
+    }
+  },
   "auth": {
     "email": "Email",
     "password": "Password",

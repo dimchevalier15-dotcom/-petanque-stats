@@ -8,6 +8,9 @@ export const PUBLIC_ROUTE_NAMES = [
   'legal',
   'deleteAccount',
   'liveMatch',
+  'newMatch',
+  'matchScore',
+  'guestMatchSummary',
 ] as const
 
 export const GUEST_ONLY_ROUTE_NAMES = ['login', 'register'] as const

@@ -133,6 +133,21 @@
       "content": "Écran à venir."
     }
   },
+  "guest": {
+    "entry": {
+      "prompt": "Vous voulez simplement jouer ?",
+      "playWithoutAccount": "Lancer un match tout de suite, sans compte"
+    },
+    "summary": {
+      "saveTitle": "Conserver ce match ?",
+      "saveHint": "Vos statistiques sont disponibles pour ce match. Créez un compte ou connectez-vous pour le sauvegarder et retrouver votre historique.",
+      "createAccount": "Créer mon compte",
+      "login": "J'ai déjà un compte — Se connecter"
+    },
+    "save": {
+      "inProgress": "Enregistrement de votre match…"
+    }
+  },
   "auth": {
     "email": "Email",
     "password": "Mot de passe",

@@ -94,6 +94,19 @@ describe('matchDraftStorage', () => {
     expect(loadMatchDraft(8)).toBeNull()
   })
 
+  it('isolates guest drafts from authenticated user drafts', () => {
+    saveMatchDraft(setup, playState, 7)
+    saveMatchDraft(setup, playState, null, { guest: true })
+
+    expect(loadMatchDraft(7)).toBeNull()
+    expect(loadMatchDraft(null, { guest: true })?.draftOwner).toBe('guest')
+  })
+
+  it('does not load a guest draft as a user draft', () => {
+    saveMatchDraft(setup, playState, null, { guest: true })
+    expect(loadMatchDraft(null)).toBeNull()
+  })
+
   it('clears the stored draft', () => {
     saveMatchDraft(setup, playState, null)
     clearMatchDraft()

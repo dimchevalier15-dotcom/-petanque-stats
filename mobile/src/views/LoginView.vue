@@ -22,8 +22,20 @@
       <Button type="submit" :label="t('auth.login.submit')" :disabled="loading" class="w-full" />
       <p class="alt">
         {{ t('auth.noAccount') }}
-        <router-link :to="{ name: 'register' }">{{ t('auth.register.link') }}</router-link>
+        <router-link :to="registerLink">{{ t('auth.register.link') }}</router-link>
       </p>
+      <div class="guest-entry">
+        <p class="guest-entry-label">{{ t('guest.entry.prompt') }}</p>
+        <Button
+          type="button"
+          :label="t('guest.entry.playWithoutAccount')"
+          severity="secondary"
+          outlined
+          class="w-full"
+          icon="pi pi-play"
+          @click="playWithoutAccount"
+        />
+      </div>
       <AuthLegalNotice />
     </form>
   </section>
@@ -34,30 +46,53 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useGuestStore } from '../stores/guest'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import AuthLegalNotice from '../components/legal/AuthLegalNotice.vue'
+import { routeAfterGuestAuth } from '../composables/useGuestMatchConversion'
+import {
+  hasSaveGuestMatchQuery,
+  saveGuestMatchQuery,
+} from '../utils/guestMatchQuery'
 import { isSafeInternalPath } from '../utils/internalRedirect'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const guest = useGuestStore()
 
 const email = ref('')
 const password = ref('')
 
 const loading = computed(() => auth.loading)
 const errorMessage = computed(() => (auth.lastError ? t(auth.lastError) : ''))
+const registerLink = computed(() => ({
+  name: 'register',
+  query: hasSaveGuestMatchQuery(route.query.saveGuestMatch) ? saveGuestMatchQuery() : {},
+}))
 
 async function onSubmit() {
   await auth.login(email.value, password.value)
-  if (auth.isAuthenticated) {
-    const redirect = route.query.redirect
-    router.push(isSafeInternalPath(redirect) ? redirect : { name: 'home' })
+  if (!auth.isAuthenticated) {
+    return
   }
+
+  if (hasSaveGuestMatchQuery(route.query.saveGuestMatch) && auth.user?.id) {
+    routeAfterGuestAuth(router, auth.user.id)
+    return
+  }
+
+  const redirect = route.query.redirect
+  router.push(isSafeInternalPath(redirect) ? redirect : { name: 'home' })
+}
+
+function playWithoutAccount(): void {
+  guest.enterGuestMode()
+  router.push({ name: 'newMatch' })
 }
 </script>
 
@@ -97,6 +132,20 @@ async function onSubmit() {
 }
 
 .alt {
+  margin: 0;
+  font-size: 0.875rem;
+  text-align: center;
+  color: var(--app-text-muted);
+}
+
+.guest-entry {
+  display: grid;
+  gap: var(--app-space-sm);
+  padding-top: var(--app-space-md);
+  border-top: 1px solid var(--app-border);
+}
+
+.guest-entry-label {
   margin: 0;
   font-size: 0.875rem;
   text-align: center;

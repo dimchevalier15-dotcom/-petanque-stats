@@ -1,7 +1,11 @@
 <template>
-  <PageHeader :title="t('matches.create.title')" :subtitle="t('matches.create.subtitle')" :back-to="{ name: 'home' }" />
+  <PageHeader
+    :title="t('matches.create.title')"
+    :subtitle="t('matches.create.subtitle')"
+    :back-to="backTo"
+  />
 
-  <section class="new-match">
+  <section class="new-match" :class="{ 'new-match--guest': guest.isGuestSession }">
     <form class="setup-form" @submit.prevent="submit">
       <section class="type-bar" :aria-label="t('matches.create.typeSection')">
         <SelectButton
@@ -145,7 +149,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
@@ -155,9 +159,17 @@ import PageHeader from '../components/layout/PageHeader.vue'
 import MatchTeamPanel from '../components/match/MatchTeamPanel.vue'
 import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
 import { useNewMatchSetup } from '../composables/useNewMatchSetup'
+import { useGuestStore } from '../stores/guest'
+import { useAuthStore } from '../stores/auth'
 
 const { t } = useI18n()
+const guest = useGuestStore()
+const auth = useAuthStore()
 const { draft, resume, abandon } = useMatchDraftResume()
+
+const backTo = computed(() =>
+  guest.isGuestSession ? { name: 'login' } : { name: 'home' },
+)
 
 const setup = useNewMatchSetup()
 const {
@@ -210,6 +222,12 @@ function confirmAbandon(): void {
   abandonDialog.value = false
   resumeDialog.value = false
 }
+
+onMounted(() => {
+  if (!auth.isAuthenticated) {
+    guest.enterGuestMode()
+  }
+})
 </script>
 
 <style scoped>
@@ -339,6 +357,10 @@ function confirmAbandon(): void {
   z-index: 10;
   padding-top: var(--app-space-xs);
   background: linear-gradient(to top, var(--app-bg) 75%, transparent);
+}
+
+.new-match--guest .start-bar {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--app-space-sm));
 }
 
 .start-btn {

@@ -108,13 +108,30 @@ function parseDraft(value: unknown): MatchDraft | null {
  * Persists the in-progress match in localStorage.
  * Works in Capacitor WebView (Play Store builds): same API as in the browser.
  */
-export function loadMatchDraft(expectedUserId: number | null): MatchDraft | null {
+export interface LoadMatchDraftOptions {
+  guest?: boolean
+}
+
+function isGuestDraft(draft: MatchDraft): boolean {
+  return draft.draftOwner === 'guest'
+}
+
+export function loadMatchDraft(
+  expectedUserId: number | null,
+  options?: LoadMatchDraftOptions,
+): MatchDraft | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed = parseDraft(JSON.parse(raw) as unknown)
     if (parsed === null) {
       clearMatchDraft()
+      return null
+    }
+    if (options?.guest) {
+      return isGuestDraft(parsed) ? normalizeDraft(parsed) : null
+    }
+    if (isGuestDraft(parsed)) {
       return null
     }
     if (parsed.userId !== expectedUserId) {
@@ -144,16 +161,23 @@ function readProgress(setupId: number): MatchDraftProgress {
   return { serverId: stored.serverId, resolvedPlayers: stored.resolvedPlayers }
 }
 
+export interface SaveMatchDraftOptions {
+  guest?: boolean
+}
+
 export function saveMatchDraft(
   setup: MatchSetup,
   playState: MatchPlayState,
   userId: number | null,
+  options?: SaveMatchDraftOptions,
 ): void {
   try {
     const progress = readProgress(setup.id)
+    const isGuest = options?.guest === true
     const draft: MatchDraft = {
       version: 2,
-      userId,
+      userId: isGuest ? null : userId,
+      draftOwner: isGuest ? 'guest' : 'user',
       savedAt: new Date().toISOString(),
       ...progress,
       ...setup,
@@ -188,14 +212,39 @@ export function saveMatchDraftProgress(progress: Partial<MatchDraftProgress>): v
   }
 }
 
-export function clearMatchDraft(): void {
+export function clearMatchDraft(options?: LoadMatchDraftOptions): void {
   try {
+    const stored = loadStoredDraft()
+    if (stored && options?.guest && !isGuestDraft(stored)) {
+      return
+    }
+    if (stored && !options?.guest && isGuestDraft(stored)) {
+      return
+    }
     localStorage.removeItem(STORAGE_KEY)
   } catch {
     // ignore
   }
 }
 
-export function hasMatchDraft(expectedUserId: number | null): boolean {
-  return loadMatchDraft(expectedUserId) !== null
+export function hasMatchDraft(
+  expectedUserId: number | null,
+  options?: LoadMatchDraftOptions,
+): boolean {
+  return loadMatchDraft(expectedUserId, options) !== null
+}
+
+/** Converts a finished guest draft into a user-owned draft ready for server save. */
+export function transferGuestDraftToUser(userId: number, draft: MatchDraft): void {
+  try {
+    const transferred: MatchDraft = {
+      ...draft,
+      userId,
+      draftOwner: 'user',
+      savedAt: new Date().toISOString(),
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(transferred))
+  } catch {
+    // Save flow will surface failures to the user.
+  }
 }

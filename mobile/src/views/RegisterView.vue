@@ -82,8 +82,20 @@
       <Button type="submit" :label="t('auth.register.submit')" :disabled="loading" class="w-full" />
       <p class="alt">
         {{ t('auth.haveAccount') }}
-        <router-link :to="{ name: 'login' }">{{ t('auth.login.link') }}</router-link>
+        <router-link :to="loginLink">{{ t('auth.login.link') }}</router-link>
       </p>
+      <div v-if="!hasSaveGuestMatch" class="guest-entry">
+        <p class="guest-entry-label">{{ t('guest.entry.prompt') }}</p>
+        <Button
+          type="button"
+          :label="t('guest.entry.playWithoutAccount')"
+          severity="secondary"
+          outlined
+          class="w-full"
+          icon="pi pi-play"
+          @click="playWithoutAccount"
+        />
+      </div>
       <AuthLegalNotice />
     </form>
   </section>
@@ -92,8 +104,9 @@
 <script setup lang="ts">
 import { ref, computed, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useGuestStore } from '../stores/guest'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
@@ -101,6 +114,11 @@ import Message from 'primevue/message'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
 import ClubSelect from '../components/players/ClubSelect.vue'
 import AuthLegalNotice from '../components/legal/AuthLegalNotice.vue'
+import { routeAfterGuestAuth } from '../composables/useGuestMatchConversion'
+import {
+  hasSaveGuestMatchQuery,
+  saveGuestMatchQuery,
+} from '../utils/guestMatchQuery'
 import { authService } from '../services/auth'
 import type { Player } from '../models/Player'
 import type { RegisterRequest } from '../dto/auth/RegisterRequest'
@@ -115,8 +133,16 @@ type FieldErrors = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const guest = useGuestStore()
+
+const hasSaveGuestMatch = computed(() => hasSaveGuestMatchQuery(route.query.saveGuestMatch))
+const loginLink = computed(() => ({
+  name: 'login',
+  query: hasSaveGuestMatch.value ? saveGuestMatchQuery() : {},
+}))
 
 const email = ref('')
 const password = ref('')
@@ -211,8 +237,17 @@ async function onSubmit() {
   }
 
   if (auth.isAuthenticated) {
+    if (hasSaveGuestMatch.value && auth.user?.id) {
+      routeAfterGuestAuth(router, auth.user.id)
+      return
+    }
     router.push({ name: 'home' })
   }
+}
+
+function playWithoutAccount(): void {
+  guest.enterGuestMode()
+  router.push({ name: 'newMatch' })
 }
 </script>
 
@@ -273,6 +308,20 @@ async function onSubmit() {
 }
 
 .alt {
+  margin: 0;
+  font-size: 0.875rem;
+  text-align: center;
+  color: var(--app-text-muted);
+}
+
+.guest-entry {
+  display: grid;
+  gap: var(--app-space-sm);
+  padding-top: var(--app-space-md);
+  border-top: 1px solid var(--app-border);
+}
+
+.guest-entry-label {
   margin: 0;
   font-size: 0.875rem;
   text-align: center;
