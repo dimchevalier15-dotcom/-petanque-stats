@@ -9,32 +9,33 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\Support\WebDatabaseTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class LiveMatchHttpTest extends WebTestCase
+final class LiveMatchHttpTest extends WebDatabaseTestCase
 {
     public function testGetLiveMatchIsPublic(): void
     {
-        $client = static::createClient();
+        $client = $this->createDatabaseClient();
         $em = static::getContainer()->get(EntityManagerInterface::class);
 
-        $liveMatch = new LiveMatch('11111111-1111-4111-8111-111111111111', ['scoreA' => 0]);
+        $uuid = $this->createUuid();
+        $liveMatch = new LiveMatch($uuid, ['scoreA' => 0]);
         $em->persist($liveMatch);
         $em->flush();
 
-        $client->request('GET', '/api/live-matches/11111111-1111-4111-8111-111111111111');
+        $client->request('GET', '/api/live-matches/'.$uuid);
 
         self::assertSame(200, $client->getResponse()->getStatusCode());
         $payload = json_decode($client->getResponse()->getContent() ?: '', true);
-        self::assertSame('11111111-1111-4111-8111-111111111111', $payload['uuid']);
+        self::assertSame($uuid, $payload['uuid']);
         self::assertSame('active', $payload['status']);
         self::assertSame(['scoreA' => 0], $payload['data']);
     }
 
     public function testCreateUpdateAndFinishRequireAuthentication(): void
     {
-        $client = static::createClient();
+        $client = $this->createDatabaseClient();
 
         $client->request('POST', '/api/live-matches', server: ['CONTENT_TYPE' => 'application/json'], content: json_encode(['data' => ['scoreA' => 0]], JSON_THROW_ON_ERROR));
         self::assertSame(401, $client->getResponse()->getStatusCode());
@@ -48,7 +49,7 @@ final class LiveMatchHttpTest extends WebTestCase
 
     public function testAuthenticatedLiveMatchLifecycle(): void
     {
-        $client = static::createClient();
+        $client = $this->createDatabaseClient();
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         $jwtEncoder = static::getContainer()->get(JWTEncoderInterface::class);
@@ -108,5 +109,14 @@ final class LiveMatchHttpTest extends WebTestCase
         ];
         $content = $payload !== null ? json_encode($payload, JSON_THROW_ON_ERROR) : null;
         $client->request($method, $uri, server: $server, content: $content);
+    }
+
+    private function createUuid(): string
+    {
+        $bytes = random_bytes(16);
+        $bytes[6] = chr((ord($bytes[6]) & 0x0f) | 0x40);
+        $bytes[8] = chr((ord($bytes[8]) & 0x3f) | 0x80);
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($bytes), 4));
     }
 }

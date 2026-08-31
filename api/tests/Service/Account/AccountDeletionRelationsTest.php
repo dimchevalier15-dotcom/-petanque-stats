@@ -18,10 +18,10 @@ use App\Service\Auth\AuthTokenIssuer;
 use App\Service\MatchService;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class AccountDeletionRelationsTest extends KernelTestCase
+final class AccountDeletionRelationsTest extends KernelDatabaseTestCase
 {
     private EntityManagerInterface $em;
     private AccountDeletionService $deletion;
@@ -31,7 +31,7 @@ final class AccountDeletionRelationsTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
         $this->deletion = static::getContainer()->get(AccountDeletionService::class);
         $this->jwtEncoder = static::getContainer()->get(JWTEncoderInterface::class);

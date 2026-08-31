@@ -185,7 +185,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
@@ -206,9 +206,11 @@ import {
 import { useStatsDateRange } from '../composables/useStatsDateRange'
 import { SHOOTING_DISTANCES, SHOOTING_WORKSHOPS, type ShootingContextNature, type ShootingStats } from '../models/Shooting'
 import { shootingSessionsService } from '../services/shootingSessions'
+import { useImpersonationStore } from '../stores/impersonation'
 
 const { t } = useI18n()
 const router = useRouter()
+const impersonation = useImpersonationStore()
 
 const loading = ref(true)
 const refreshing = ref(false)
@@ -305,6 +307,15 @@ function onDateRangeChange(): void {
 }
 
 onMounted(load)
+
+watch(
+  () => impersonation.player?.id ?? null,
+  (next, prev) => {
+    if (next !== prev) {
+      load()
+    }
+  },
+)
 </script>
 
 <style scoped>

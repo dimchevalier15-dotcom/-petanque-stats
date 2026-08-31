@@ -8,14 +8,14 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\Support\WebDatabaseTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class AccountDeletionHttpTest extends WebTestCase
+final class AccountDeletionHttpTest extends WebDatabaseTestCase
 {
     public function testDeleteAccountRequiresAuthentication(): void
     {
-        $client = static::createClient();
+        $client = $this->createDatabaseClient();
         $client->request('DELETE', '/api/account');
 
         self::assertSame(401, $client->getResponse()->getStatusCode());
@@ -23,7 +23,7 @@ final class AccountDeletionHttpTest extends WebTestCase
 
     public function testDeleteAccountRemovesOnlyTheAuthenticatedUserAndInvalidatesTheToken(): void
     {
-        $client = static::createClient();
+        $client = $this->createDatabaseClient();
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         $jwtEncoder = static::getContainer()->get(JWTEncoderInterface::class);
@@ -64,7 +64,7 @@ final class AccountDeletionHttpTest extends WebTestCase
 
     public function testUserBTokenCannotDeleteUserA(): void
     {
-        $client = static::createClient();
+        $client = $this->createDatabaseClient();
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         $jwtEncoder = static::getContainer()->get(JWTEncoderInterface::class);

@@ -20,12 +20,14 @@ use App\Repository\PlayerRepository;
 use App\Repository\TrainingAttemptRepository;
 use App\Repository\TrainingSessionRepository;
 use App\Service\Auth\CurrentUserService;
+use App\Service\PlayerViewContextResolver;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class TrainingSessionService
 {
     public function __construct(
         private CurrentUserService $currentUser,
+        private PlayerViewContextResolver $playerViewContext,
         private PlayerRepository $players,
         private TrainingSessionRepository $sessions,
         private TrainingAttemptRepository $attempts,
@@ -60,14 +62,9 @@ final class TrainingSessionService
         return $session !== null ? $this->toStartedResponse($session) : null;
     }
 
-    /**
-     * @throws NoLinkedPlayerException
-     * @throws TrainingSessionNotFoundException
-     * @throws TrainingSessionAccessDeniedException
-     */
-    public function getSummary(string $token, int $sessionId): TrainingSessionSummaryResponse
+    public function getSummary(string $token, int $sessionId, ?int $impersonatePlayerId = null): TrainingSessionSummaryResponse
     {
-        $session = $this->getOwnedSession($token, $sessionId);
+        $session = $this->getViewableSession($token, $sessionId, $impersonatePlayerId);
 
         return $this->toSummaryResponse($session);
     }
@@ -153,13 +150,18 @@ final class TrainingSessionService
         $this->em->flush();
     }
 
-    /**
-     * @throws NoLinkedPlayerException
-     */
-    public function history(string $token, int $page = 1, int $pageSize = 20): TrainingSessionHistoryResponse
-    {
-        $player = $this->resolveOwnPlayer($token);
-        [$total, $sessions] = $this->sessions->findHistoryForPlayer((int) $player->getId(), $page, $pageSize);
+    public function history(
+        string $token,
+        int $page = 1,
+        int $pageSize = 20,
+        ?int $impersonatePlayerId = null,
+    ): TrainingSessionHistoryResponse {
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+        if ($context->playerId === null) {
+            return new TrainingSessionHistoryResponse(page: $page, pageSize: $pageSize, total: 0, items: []);
+        }
+
+        [$total, $sessions] = $this->sessions->findHistoryForPlayer($context->playerId, $page, $pageSize);
 
         $items = array_map(
             fn (TrainingSession $s): TrainingSessionHistoryItemResponse => $this->toHistoryItem($s),
@@ -181,6 +183,29 @@ final class TrainingSessionService
         }
 
         return $player;
+    }
+
+    /**
+     * @throws TrainingSessionNotFoundException
+     * @throws TrainingSessionAccessDeniedException
+     */
+    private function getViewableSession(string $token, int $sessionId, ?int $impersonatePlayerId = null): TrainingSession
+    {
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+        if ($context->playerId === null) {
+            throw new TrainingSessionAccessDeniedException();
+        }
+
+        $session = $this->sessions->find($sessionId);
+        if ($session === null) {
+            throw new TrainingSessionNotFoundException();
+        }
+
+        if ((int) $session->getPlayer()->getId() !== $context->playerId) {
+            throw new TrainingSessionAccessDeniedException();
+        }
+
+        return $session;
     }
 
     /**

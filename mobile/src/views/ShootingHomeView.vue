@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
@@ -79,11 +79,13 @@ import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
 import { useDateFormat } from '../composables/useDateFormat'
 import { shootingSessionsService } from '../services/shootingSessions'
+import { useImpersonationStore } from '../stores/impersonation'
 import type { ShootingSessionHistoryItem, ShootingSessionStarted } from '../models/Shooting'
 
 const { t } = useI18n()
 const { formatShortDate } = useDateFormat()
 const router = useRouter()
+const impersonation = useImpersonationStore()
 
 const items = ref<ShootingSessionHistoryItem[]>([])
 const page = ref(1)
@@ -164,6 +166,17 @@ onMounted(async () => {
   }
   loadHistory()
 })
+
+watch(
+  () => impersonation.player?.id ?? null,
+  (next, prev) => {
+    if (next !== prev) {
+      items.value = []
+      page.value = 1
+      loadHistory()
+    }
+  },
+)
 </script>
 
 <style scoped>

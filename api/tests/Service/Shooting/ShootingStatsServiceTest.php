@@ -10,14 +10,13 @@ use App\Dto\Request\UpdateShootingSessionContextRequest;
 use App\Entity\Player;
 use App\Entity\User;
 use App\Enum\ShootingContextNature;
-use App\Service\Shooting\NoLinkedPlayerException;
 use App\Service\Shooting\ShootingSessionService;
 use App\Service\Shooting\ShootingStatsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 
-final class ShootingStatsServiceTest extends KernelTestCase
+final class ShootingStatsServiceTest extends KernelDatabaseTestCase
 {
     private EntityManagerInterface $em;
     private ShootingSessionService $sessions;
@@ -26,7 +25,7 @@ final class ShootingStatsServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->sessions = $container->get(ShootingSessionService::class);
@@ -38,8 +37,10 @@ final class ShootingStatsServiceTest extends KernelTestCase
     {
         $token = $this->createUserWithoutLinkedPlayer();
 
-        $this->expectException(NoLinkedPlayerException::class);
-        $this->stats->stats($token);
+        $res = $this->stats->stats($token);
+
+        self::assertSame('no_sessions', $res->status);
+        self::assertSame(0, $res->summary->sessionsCount);
     }
 
     public function testStatsReturnsNoSessionsWhenThePlayerHasNeverFinishedASession(): void
@@ -96,6 +97,22 @@ final class ShootingStatsServiceTest extends KernelTestCase
         self::assertSame(1, $trainingOnly->summary->sessionsCount);
         self::assertSame(1, $competitionOnly->summary->sessionsCount);
         self::assertSame(100, $competitionOnly->summary->bestSessionScore);
+    }
+
+    public function testStatsCanBeLoadedForImpersonatedPlayer(): void
+    {
+        [$token, $player] = $this->createUserWithLinkedPlayer();
+        $playerId = (int) $player->getId();
+        $coachToken = $this->createUserWithoutLinkedPlayer();
+
+        $started = $this->sessions->start($token);
+        $this->sessions->complete($token, $started->id, $this->buildRequest(fn (int $w) => $w === 5 ? 'successful' : 'carreau'));
+
+        $res = $this->stats->stats($coachToken, null, null, $playerId);
+
+        self::assertSame('ok', $res->status);
+        self::assertSame(1, $res->summary->sessionsCount);
+        self::assertSame(100, $res->summary->bestSessionScore);
     }
 
     /**

@@ -14,10 +14,10 @@ use App\Service\Auth\InvalidAuthTokenException;
 use App\Service\Auth\RegistrationService;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class EmailVerificationServiceTest extends KernelTestCase
+final class EmailVerificationServiceTest extends KernelDatabaseTestCase
 {
     private EntityManagerInterface $em;
     private AuthTokenIssuer $issuer;
@@ -26,7 +26,7 @@ final class EmailVerificationServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->issuer = $container->get(AuthTokenIssuer::class);

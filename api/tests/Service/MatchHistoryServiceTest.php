@@ -15,9 +15,9 @@ use App\Service\MatchService;
 use App\Tests\Support\MatchTestHelpers;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 
-final class MatchHistoryServiceTest extends KernelTestCase
+final class MatchHistoryServiceTest extends KernelDatabaseTestCase
 {
     use MatchTestHelpers;
 
@@ -26,7 +26,7 @@ final class MatchHistoryServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->matchService = $container->get(MatchService::class);
@@ -67,14 +67,14 @@ final class MatchHistoryServiceTest extends KernelTestCase
         $playerId = (int) $player->getId();
         [$matchId] = $this->createHeadToHeadForPlayers($playerId, $opponentId);
 
-        $this->completeHeadToHead($matchId, $playerId, $opponentId, 4);
+        $this->completeHeadToHead($matchId, $playerId, $opponentId, 3);
 
         $res = $this->history->historyForToken($token);
 
         self::assertSame(1, $res->total);
         self::assertCount(1, $res->items);
         self::assertSame($matchId, $res->items[0]->id);
-        self::assertSame(4, $res->items[0]->scoreA);
+        self::assertSame(3, $res->items[0]->scoreA);
         self::assertSame(0, $res->items[0]->scoreB);
         self::assertTrue($res->items[0]->victory);
     }

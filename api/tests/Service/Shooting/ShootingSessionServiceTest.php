@@ -17,7 +17,7 @@ use App\Service\Shooting\ShootingSessionNotFoundException;
 use App\Service\Shooting\ShootingSessionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 
 /**
  * Functional tests: ShootingSessionService's collaborators (CurrentUserService,
@@ -26,7 +26,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * the test database instead, which also verifies the authorization rules
  * end-to-end.
  */
-final class ShootingSessionServiceTest extends KernelTestCase
+final class ShootingSessionServiceTest extends KernelDatabaseTestCase
 {
     private EntityManagerInterface $em;
     private ShootingSessionService $service;
@@ -34,7 +34,7 @@ final class ShootingSessionServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->service = $container->get(ShootingSessionService::class);
@@ -192,6 +192,36 @@ final class ShootingSessionServiceTest extends KernelTestCase
         $history = $this->service->history($token, 1, 20);
 
         self::assertSame(2, $history->total);
+    }
+
+    public function testHistoryCanBeLoadedForImpersonatedPlayer(): void
+    {
+        [$token, $player] = $this->createUserWithLinkedPlayer();
+        $playerId = (int) $player->getId();
+        $coachToken = $this->createUserWithoutLinkedPlayer();
+
+        $started = $this->service->start($token);
+        $this->service->complete($token, $started->id, $this->buildRequest(fn () => 'touched'));
+
+        $history = $this->service->history($coachToken, 1, 20, $playerId);
+
+        self::assertSame(1, $history->total);
+        self::assertSame($started->id, $history->items[0]->id);
+    }
+
+    public function testSummaryCanBeLoadedForImpersonatedPlayer(): void
+    {
+        [$token, $player] = $this->createUserWithLinkedPlayer();
+        $playerId = (int) $player->getId();
+        $coachToken = $this->createUserWithoutLinkedPlayer();
+
+        $started = $this->service->start($token);
+        $this->service->complete($token, $started->id, $this->buildRequest(fn () => 'touched'));
+
+        $ownerSummary = $this->service->getSummary($token, $started->id);
+        $summary = $this->service->getSummary($coachToken, $started->id, $playerId);
+        self::assertSame($started->id, $summary->id);
+        self::assertSame($ownerSummary->totalScore, $summary->totalScore);
     }
 
     /**

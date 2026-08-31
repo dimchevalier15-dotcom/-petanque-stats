@@ -12,9 +12,9 @@ use App\Service\MatchService;
 use App\Tests\Support\MatchTestHelpers;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 
-final class GameBallRepositoryTest extends KernelTestCase
+final class GameBallRepositoryTest extends KernelDatabaseTestCase
 {
     use MatchTestHelpers;
 
@@ -22,7 +22,7 @@ final class GameBallRepositoryTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->matchService = $container->get(MatchService::class);

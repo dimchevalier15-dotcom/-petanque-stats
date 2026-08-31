@@ -11,12 +11,12 @@ use App\Enum\GameType;
 use App\Security\Voter\GameVoter;
 use App\Service\MatchService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-final class GameVoterTest extends KernelTestCase
+final class GameVoterTest extends KernelDatabaseTestCase
 {
     private EntityManagerInterface $em;
     private MatchService $matchService;
@@ -25,7 +25,7 @@ final class GameVoterTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->matchService = $container->get(MatchService::class);

@@ -20,9 +20,9 @@ use App\Service\PlayerStatsService;
 use App\Tests\Support\MatchTestHelpers;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 
-final class PlayerStatsServiceTest extends KernelTestCase
+final class PlayerStatsServiceTest extends KernelDatabaseTestCase
 {
     use MatchTestHelpers;
 
@@ -30,7 +30,7 @@ final class PlayerStatsServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->matchService = $container->get(MatchService::class);

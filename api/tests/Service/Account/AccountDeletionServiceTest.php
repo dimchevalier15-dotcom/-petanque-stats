@@ -12,10 +12,10 @@ use App\Service\Auth\AuthTokenIssuer;
 use App\Service\Auth\InvalidTokenException;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class AccountDeletionServiceTest extends KernelTestCase
+final class AccountDeletionServiceTest extends KernelDatabaseTestCase
 {
     private EntityManagerInterface $em;
     private AccountDeletionService $deletion;
@@ -24,7 +24,7 @@ final class AccountDeletionServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
         $this->deletion = static::getContainer()->get(AccountDeletionService::class);
         $this->jwtEncoder = static::getContainer()->get(JWTEncoderInterface::class);

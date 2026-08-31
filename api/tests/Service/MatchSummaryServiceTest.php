@@ -16,9 +16,9 @@ use App\Service\MatchSummaryService;
 use App\Tests\Support\MatchTestHelpers;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 
-final class MatchSummaryServiceTest extends KernelTestCase
+final class MatchSummaryServiceTest extends KernelDatabaseTestCase
 {
     use MatchTestHelpers;
 
@@ -26,7 +26,7 @@ final class MatchSummaryServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->matchService = $container->get(MatchService::class);

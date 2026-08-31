@@ -8,6 +8,7 @@ use App\Dto\Request\CompleteShootingSessionRequest;
 use App\Dto\Request\UpdateShootingSessionContextRequest;
 use App\Enum\ShootingContextNature;
 use App\Http\StatsDateRangeResolver;
+use App\Security\ImpersonationResolver;
 use App\Service\Auth\InvalidTokenException;
 use App\Service\Shooting\InvalidShootingSessionStructureException;
 use App\Service\Shooting\NoLinkedPlayerException;
@@ -28,6 +29,7 @@ final class ShootingSessionController extends AbstractController
     public function __construct(
         private ShootingSessionService $service,
         private ShootingStatsService $statsService,
+        private ImpersonationResolver $impersonation,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {
@@ -73,7 +75,8 @@ final class ShootingSessionController extends AbstractController
                 }
             }
 
-            $res = $this->statsService->stats($token, $contextNature, $dateRange);
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->statsService->stats($token, $contextNature, $dateRange, $impersonatePlayerId);
             return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
         });
     }
@@ -84,7 +87,8 @@ final class ShootingSessionController extends AbstractController
         return $this->withToken($request, function (string $token) use ($request) {
             $page = $request->query->get('page') !== null ? max(1, (int) $request->query->get('page')) : 1;
             $size = $request->query->get('size') !== null ? max(1, (int) $request->query->get('size')) : 20;
-            $res = $this->service->history($token, $page, $size);
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->service->history($token, $page, $size, $impersonatePlayerId);
             return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
         });
     }
@@ -92,9 +96,10 @@ final class ShootingSessionController extends AbstractController
     #[Route('/api/shooting-sessions/{id}', name: 'api_shooting_sessions_get', methods: ['GET'])]
     public function getOne(int $id, Request $request): JsonResponse
     {
-        return $this->withToken($request, function (string $token) use ($id) {
+        return $this->withToken($request, function (string $token) use ($id, $request) {
             try {
-                $res = $this->service->getSummary($token, $id);
+                $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+                $res = $this->service->getSummary($token, $id, $impersonatePlayerId);
                 return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
             } catch (ShootingSessionNotFoundException) {
                 return new JsonResponse(['message' => 'Not found'], 404);

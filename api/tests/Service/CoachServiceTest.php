@@ -8,148 +8,60 @@ use App\Entity\Club;
 use App\Entity\Country;
 use App\Entity\Player;
 use App\Entity\User;
-use App\Repository\GameBallRepository;
-use App\Repository\GameRepository;
-use App\Repository\PlayerRepository;
-use App\Service\CoachAccessService;
 use App\Service\CoachService;
 use App\Service\PlayerAlreadyHasClubException;
-use App\Service\PlayerItemMapper;
 use App\ValueObject\DateRange;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Tests\Support\KernelDatabaseTestCase;
 
-final class CoachAccessServiceTest extends TestCase
+final class CoachServiceTest extends KernelDatabaseTestCase
 {
-    public function testRequireCoachClubIdThrowsWhenNotCoach(): void
-    {
-        $service = new CoachAccessService($this->createMock(PlayerRepository::class));
-        $user = new User('coach@test.fr');
+    private EntityManagerInterface $em;
+    private CoachService $service;
 
-        $this->expectException(AccessDeniedHttpException::class);
-        $service->requireCoachClubId($user);
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $container = static::getContainer();
+        $this->em = $container->get(EntityManagerInterface::class);
+        $this->service = $container->get(CoachService::class);
     }
 
-    public function testAssertCoachCanViewPlayerRejectsOtherClub(): void
-    {
-        $country = new Country('FR', 'France');
-        $clubA = new Club('Club A', $country);
-        $clubB = new Club('Club B', $country);
-
-        $player = new Player('Jean', 'Dupont', 'Jojo');
-        $player->setClub($clubB);
-
-        $players = $this->createMock(PlayerRepository::class);
-        $players->method('find')->willReturn($player);
-
-        $user = new User('coach@test.fr');
-        $user->setCoachForClub($clubA);
-
-        $service = new CoachAccessService($players);
-
-        $this->expectException(NotFoundHttpException::class);
-        $service->assertCoachCanViewPlayer($user, 1);
-    }
-}
-
-final class CoachServiceTest extends TestCase
-{
     public function testListPlayersForCoachReturnsShotSummaries(): void
     {
-        $country = new Country('FR', 'France');
-        $club = new Club('Test Club', $country);
-
-        $player = new Player('Marie', 'Martin', 'Mimi');
-        $player->setClub($club);
-
-        $players = $this->createMock(PlayerRepository::class);
-        $players->method('findByClubId')->willReturn([$player]);
-
-        $games = $this->createMock(GameRepository::class);
-        $games->expects(self::once())
-            ->method('findCompletedGamesForPlayer')
-            ->with(self::anything(), null, self::isInstanceOf(DateRange::class))
-            ->willReturn([]);
-
-        $balls = $this->createMock(GameBallRepository::class);
-        $mapper = new PlayerItemMapper();
-        $em = $this->createMock(EntityManagerInterface::class);
-
-        $user = new User('coach@test.fr');
-        $user->setCoachForClub($club);
-
-        $service = new CoachService($players, $games, $balls, $mapper, $em);
+        [$club, $coach, $player] = $this->createCoachWithClubPlayer();
         $range = DateRange::fromQueryStrings('2026-01-01', '2026-01-31');
 
-        $res = $service->listPlayersForCoach($user, $range);
+        $res = $this->service->listPlayersForCoach($coach, $range);
 
         self::assertSame('Test Club', $res->clubName);
         self::assertSame('2026-01-01', $res->from);
         self::assertSame('2026-01-31', $res->to);
         self::assertCount(1, $res->items);
         self::assertSame('Marie', $res->items[0]->firstName);
+        self::assertSame((int) $player->getId(), $res->items[0]->id);
         self::assertNull($res->items[0]->point->average);
         self::assertNull($res->items[0]->point->successCount);
+        self::assertSame($club->getName(), $res->clubName);
     }
 
     public function testListPlayersForCoachWithoutDateRangeDoesNotFilterByDate(): void
     {
-        $country = new Country('FR', 'France');
-        $club = new Club('Test Club', $country);
+        [, $coach] = $this->createCoachWithClubPlayer();
 
-        $player = new Player('Marie', 'Martin', 'Mimi');
-        $player->setClub($club);
-
-        $players = $this->createMock(PlayerRepository::class);
-        $players->method('findByClubId')->willReturn([$player]);
-
-        $games = $this->createMock(GameRepository::class);
-        $games->expects(self::once())
-            ->method('findCompletedGamesForPlayer')
-            ->with(self::anything(), null, null)
-            ->willReturn([]);
-
-        $balls = $this->createMock(GameBallRepository::class);
-        $mapper = new PlayerItemMapper();
-        $em = $this->createMock(EntityManagerInterface::class);
-
-        $user = new User('coach@test.fr');
-        $user->setCoachForClub($club);
-
-        $service = new CoachService($players, $games, $balls, $mapper, $em);
-
-        $res = $service->listPlayersForCoach($user, null);
+        $res = $this->service->listPlayersForCoach($coach, null);
 
         self::assertNull($res->from);
         self::assertNull($res->to);
+        self::assertCount(1, $res->items);
     }
 
     public function testAttachPlayerToCoachClubAssignsClub(): void
     {
-        $country = new Country('FR', 'France');
-        $club = new Club('Test Club', $country);
-        $player = new Player('Paul', 'Durand', 'Paulo');
+        [$club, $coach] = $this->createCoachWithClub();
+        $player = $this->createPlayer('Paul', 'Durand', 'Paulo');
 
-        $players = $this->createMock(PlayerRepository::class);
-        $players->method('find')->willReturn($player);
-
-        $em = $this->createMock(EntityManagerInterface::class);
-        $em->expects(self::once())->method('flush');
-
-        $user = new User('coach@test.fr');
-        $user->setCoachForClub($club);
-
-        $service = new CoachService(
-            $players,
-            $this->createMock(GameRepository::class),
-            $this->createMock(GameBallRepository::class),
-            new PlayerItemMapper(),
-            $em,
-        );
-
-        $item = $service->attachPlayerToCoachClub($user, 1);
+        $item = $this->service->attachPlayerToCoachClub($coach, (int) $player->getId());
 
         self::assertSame('Paul', $item->firstName);
         self::assertSame($club, $player->getClub());
@@ -158,27 +70,88 @@ final class CoachServiceTest extends TestCase
 
     public function testAttachPlayerToCoachClubRejectsPlayerWithClub(): void
     {
-        $country = new Country('FR', 'France');
-        $club = new Club('Test Club', $country);
-        $otherClub = new Club('Other', $country);
-        $player = new Player('Paul', 'Durand', 'Paulo');
-        $player->setClub($otherClub);
+        [, $otherClub, $player] = $this->createTwoClubsAndPlayerInSecondClub();
+        [, $coach] = $this->createCoachWithClub();
 
-        $players = $this->createMock(PlayerRepository::class);
-        $players->method('find')->willReturn($player);
-
-        $user = new User('coach@test.fr');
-        $user->setCoachForClub($club);
-
-        $service = new CoachService(
-            $players,
-            $this->createMock(GameRepository::class),
-            $this->createMock(GameBallRepository::class),
-            new PlayerItemMapper(),
-            $this->createMock(EntityManagerInterface::class),
-        );
+        self::assertSame($otherClub, $player->getClub());
 
         $this->expectException(PlayerAlreadyHasClubException::class);
-        $service->attachPlayerToCoachClub($user, 1);
+        $this->service->attachPlayerToCoachClub($coach, (int) $player->getId());
+    }
+
+    /**
+     * @return array{0:Club,1:User}
+     */
+    private function createCoachWithClub(): array
+    {
+        $suffix = bin2hex(random_bytes(4));
+        $country = $this->createUniqueCountry('Country '.$suffix);
+        $club = new Club('Test Club', $country);
+        $coach = new User('coach-'.$suffix.'@test.fr');
+        $coach->setCoachForClub($club);
+
+        $this->em->persist($club);
+        $this->em->persist($coach);
+        $this->em->flush();
+
+        return [$club, $coach];
+    }
+
+    /**
+     * @return array{0:Club,1:User,2:Player}
+     */
+    private function createCoachWithClubPlayer(): array
+    {
+        [$club, $coach] = $this->createCoachWithClub();
+        $player = $this->createPlayer('Marie', 'Martin', 'Mimi');
+        $player->setClub($club);
+        $this->em->flush();
+
+        return [$club, $coach, $player];
+    }
+
+    private function createPlayer(string $firstName, string $lastName, string $nickname): Player
+    {
+        $player = new Player($firstName, $lastName, $nickname);
+        $this->em->persist($player);
+        $this->em->flush();
+
+        return $player;
+    }
+
+    /**
+     * @return array{0:Club,1:Club,2:Player}
+     */
+    private function createTwoClubsAndPlayerInSecondClub(): array
+    {
+        $suffix = bin2hex(random_bytes(4));
+        $country = $this->createUniqueCountry('Country '.$suffix);
+        $clubA = new Club('Club A '.$suffix, $country);
+        $clubB = new Club('Club B '.$suffix, $country);
+        $player = new Player('Jean', 'Dupont', 'Jojo');
+        $player->setClub($clubB);
+
+        $this->em->persist($clubA);
+        $this->em->persist($clubB);
+        $this->em->persist($player);
+        $this->em->flush();
+
+        return [$clubA, $clubB, $player];
+    }
+
+    private function createUniqueCountry(string $name): Country
+    {
+        for ($attempt = 0; $attempt < 20; ++$attempt) {
+            $isoCode = strtoupper(substr(bin2hex(random_bytes(4)), $attempt, 2));
+            $existing = $this->em->getRepository(Country::class)->findOneBy(['isoCode' => $isoCode]);
+            if ($existing === null) {
+                $country = new Country($isoCode, $name);
+                $this->em->persist($country);
+
+                return $country;
+            }
+        }
+
+        throw new \RuntimeException('Could not generate a unique country ISO code.');
     }
 }

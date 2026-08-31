@@ -23,12 +23,14 @@ use App\Repository\PlayerRepository;
 use App\Repository\ShootingSessionRepository;
 use App\Repository\ShootingShotRepository;
 use App\Service\Auth\CurrentUserService;
+use App\Service\PlayerViewContextResolver;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class ShootingSessionService
 {
     public function __construct(
         private CurrentUserService $currentUser,
+        private PlayerViewContextResolver $playerViewContext,
         private PlayerRepository $players,
         private ShootingSessionRepository $sessions,
         private ShootingShotRepository $shots,
@@ -64,14 +66,9 @@ final class ShootingSessionService
         return $session !== null ? $this->toStartedResponse($session) : null;
     }
 
-    /**
-     * @throws NoLinkedPlayerException
-     * @throws ShootingSessionNotFoundException
-     * @throws ShootingSessionAccessDeniedException
-     */
-    public function getSummary(string $token, int $sessionId): ShootingSessionSummaryResponse
+    public function getSummary(string $token, int $sessionId, ?int $impersonatePlayerId = null): ShootingSessionSummaryResponse
     {
-        $session = $this->getOwnedSession($token, $sessionId);
+        $session = $this->getViewableSession($token, $sessionId, $impersonatePlayerId);
 
         return $this->toSummaryResponse($session);
     }
@@ -145,13 +142,18 @@ final class ShootingSessionService
         return $this->toSummaryResponse($session);
     }
 
-    /**
-     * @throws NoLinkedPlayerException
-     */
-    public function history(string $token, int $page = 1, int $pageSize = 20): ShootingSessionHistoryResponse
-    {
-        $player = $this->resolveOwnPlayer($token);
-        [$total, $sessions] = $this->sessions->findHistoryForPlayer((int) $player->getId(), $page, $pageSize);
+    public function history(
+        string $token,
+        int $page = 1,
+        int $pageSize = 20,
+        ?int $impersonatePlayerId = null,
+    ): ShootingSessionHistoryResponse {
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+        if ($context->playerId === null) {
+            return new ShootingSessionHistoryResponse(page: $page, pageSize: $pageSize, total: 0, items: []);
+        }
+
+        [$total, $sessions] = $this->sessions->findHistoryForPlayer($context->playerId, $page, $pageSize);
 
         $items = array_map(
             static fn (ShootingSession $s): ShootingSessionHistoryItemResponse => new ShootingSessionHistoryItemResponse(
@@ -181,6 +183,29 @@ final class ShootingSessionService
         }
 
         return $player;
+    }
+
+    /**
+     * @throws ShootingSessionNotFoundException
+     * @throws ShootingSessionAccessDeniedException
+     */
+    private function getViewableSession(string $token, int $sessionId, ?int $impersonatePlayerId = null): ShootingSession
+    {
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+        if ($context->playerId === null) {
+            throw new ShootingSessionAccessDeniedException();
+        }
+
+        $session = $this->sessions->find($sessionId);
+        if ($session === null) {
+            throw new ShootingSessionNotFoundException();
+        }
+
+        if ((int) $session->getPlayer()->getId() !== $context->playerId) {
+            throw new ShootingSessionAccessDeniedException();
+        }
+
+        return $session;
     }
 
     /**

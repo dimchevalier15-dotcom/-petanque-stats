@@ -9,14 +9,14 @@ use App\Enum\AuthTokenPurpose;
 use App\Service\Auth\AuthTokenIssuer;
 use App\Service\Auth\PasswordResetService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\Support\WebDatabaseTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class AuthTransactionalEmailHttpTest extends WebTestCase
+final class AuthTransactionalEmailHttpTest extends WebDatabaseTestCase
 {
     public function testForgotPasswordExistingAndUnknownEmailsHaveIdenticalResponses(): void
     {
-        $client = static::createClient();
+        $client = $this->createDatabaseClient();
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
 
@@ -39,7 +39,7 @@ final class AuthTransactionalEmailHttpTest extends WebTestCase
 
     public function testResetPasswordHttpSuccessDoesNotReturnToken(): void
     {
-        $client = static::createClient();
+        $client = $this->createDatabaseClient();
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
         $issuer = static::getContainer()->get(AuthTokenIssuer::class);

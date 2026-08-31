@@ -18,9 +18,9 @@ use App\Service\Training\TrainingSessionService;
 use App\Service\Training\TrainingStatsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 
-final class TrainingSessionServiceTest extends KernelTestCase
+final class TrainingSessionServiceTest extends KernelDatabaseTestCase
 {
     private EntityManagerInterface $em;
     private TrainingSessionService $service;
@@ -29,7 +29,7 @@ final class TrainingSessionServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->service = $container->get(TrainingSessionService::class);
@@ -214,6 +214,65 @@ final class TrainingSessionServiceTest extends KernelTestCase
 
         $statsB = $this->statsService->stats($tokenB);
         self::assertSame('no_sessions', $statsB->status);
+    }
+
+    public function testStatsCanBeLoadedForImpersonatedPlayer(): void
+    {
+        [$token, $player] = $this->createUserWithLinkedPlayer();
+        $playerId = (int) $player->getId();
+        $coachToken = $this->createUserWithoutLinkedPlayer();
+
+        $req = new CreateTrainingSessionRequest();
+        $req->type = 'point';
+        $req->distance = 7.0;
+        $req->plannedBalls = 2;
+
+        $session = $this->service->create($token, $req);
+        $this->recordAttempt($token, $session->id, 'perfect');
+        $this->recordAttempt($token, $session->id, 'perfect');
+
+        $stats = $this->statsService->stats($coachToken, null, null, $playerId);
+        self::assertSame('ok', $stats->status);
+        self::assertSame(1, $stats->summary->sessionsCount);
+        self::assertSame(2, $stats->summary->totalBalls);
+    }
+
+    public function testHistoryCanBeLoadedForImpersonatedPlayer(): void
+    {
+        [$token, $player] = $this->createUserWithLinkedPlayer();
+        $playerId = (int) $player->getId();
+        $coachToken = $this->createUserWithoutLinkedPlayer();
+
+        $req = new CreateTrainingSessionRequest();
+        $req->type = 'point';
+        $req->distance = 7.0;
+        $req->plannedBalls = 1;
+
+        $session = $this->service->create($token, $req);
+        $this->recordAttempt($token, $session->id, 'perfect');
+
+        $history = $this->service->history($coachToken, 1, 20, $playerId);
+        self::assertSame(1, $history->total);
+        self::assertSame($session->id, $history->items[0]->id);
+    }
+
+    public function testSummaryCanBeLoadedForImpersonatedPlayer(): void
+    {
+        [$token, $player] = $this->createUserWithLinkedPlayer();
+        $playerId = (int) $player->getId();
+        $coachToken = $this->createUserWithoutLinkedPlayer();
+
+        $req = new CreateTrainingSessionRequest();
+        $req->type = 'point';
+        $req->distance = 7.0;
+        $req->plannedBalls = 1;
+
+        $session = $this->service->create($token, $req);
+        $this->recordAttempt($token, $session->id, 'perfect');
+
+        $summary = $this->service->getSummary($coachToken, $session->id, $playerId);
+        self::assertSame($session->id, $summary->id);
+        self::assertSame(2, $summary->totalScore);
     }
 
     public function testInvalidResultIsRejected(): void

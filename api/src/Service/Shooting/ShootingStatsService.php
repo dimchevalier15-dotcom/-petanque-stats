@@ -12,34 +12,32 @@ use App\Dto\Response\ShootingStatsResultResponse;
 use App\Dto\Response\ShootingStatsSummaryResponse;
 use App\Dto\Response\ShootingStatsWorkshopResponse;
 use App\Enum\ShootingContextNature;
-use App\Repository\PlayerRepository;
 use App\Repository\ShootingSessionRepository;
 use App\Repository\ShootingShotRepository;
-use App\Service\Auth\CurrentUserService;
+use App\Service\PlayerViewContextResolver;
 use App\ValueObject\DateRange;
 
 final class ShootingStatsService
 {
     public function __construct(
-        private CurrentUserService $currentUser,
-        private PlayerRepository $players,
+        private PlayerViewContextResolver $playerViewContext,
         private ShootingSessionRepository $sessions,
         private ShootingShotRepository $shots,
     ) {
     }
 
-    /**
-     * @throws NoLinkedPlayerException
-     */
-    public function stats(string $token, ?ShootingContextNature $contextNature = null, ?DateRange $dateRange = null): ShootingStatsResponse
-    {
-        $user = $this->currentUser->getUserFromToken($token);
-        $player = $this->players->findOneByUserId((int) $user->getId());
-        if ($player === null) {
-            throw new NoLinkedPlayerException();
-        }
+    public function stats(
+        string $token,
+        ?ShootingContextNature $contextNature = null,
+        ?DateRange $dateRange = null,
+        ?int $impersonatePlayerId = null,
+    ): ShootingStatsResponse {
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+        $playerId = $context->playerId;
 
-        $playerId = (int) $player->getId();
+        if ($playerId === null) {
+            return $this->emptyResponse();
+        }
         $sessionsCount = $this->sessions->countCompletedForPlayer($playerId, $contextNature, $dateRange);
 
         if ($sessionsCount === 0) {

@@ -15,14 +15,14 @@ use App\Service\MatchRecordingService;
 use App\Service\MatchService;
 use App\Tests\Support\MatchTestHelpers;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 
 /**
  * Functional tests for the optional per-ball distance (in meters).
  * Services are declared final and cannot be mocked, so we exercise the real
  * services against the test database, like the rest of the test suite.
  */
-final class MatchRecordingServiceTest extends KernelTestCase
+final class MatchRecordingServiceTest extends KernelDatabaseTestCase
 {
     use MatchTestHelpers;
 
@@ -30,7 +30,7 @@ final class MatchRecordingServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $container = static::getContainer();
         $this->em = $container->get(EntityManagerInterface::class);
         $this->matchService = $container->get(MatchService::class);

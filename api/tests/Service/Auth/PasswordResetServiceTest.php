@@ -13,10 +13,10 @@ use App\Service\Auth\RegistrationValidationException;
 use App\Dto\Request\ResetPasswordRequest;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use App\Tests\Support\KernelDatabaseTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class PasswordResetServiceTest extends KernelTestCase
+final class PasswordResetServiceTest extends KernelDatabaseTestCase
 {
     private EntityManagerInterface $em;
     private AuthTokenIssuer $issuer;
@@ -25,7 +25,7 @@ final class PasswordResetServiceTest extends KernelTestCase
 
     protected function setUp(): void
     {
-        self::bootKernel();
+        parent::setUp();
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
         $this->issuer = static::getContainer()->get(AuthTokenIssuer::class);
         $this->reset = static::getContainer()->get(PasswordResetService::class);

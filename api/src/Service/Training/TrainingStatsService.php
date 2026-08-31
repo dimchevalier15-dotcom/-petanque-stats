@@ -10,34 +10,32 @@ use App\Dto\Response\TrainingStatsResponse;
 use App\Dto\Response\TrainingStatsSummaryResponse;
 use App\Dto\Response\TrainingStatsTypeResponse;
 use App\Enum\TrainingType;
-use App\Repository\PlayerRepository;
 use App\Repository\TrainingAttemptRepository;
 use App\Repository\TrainingSessionRepository;
-use App\Service\Auth\CurrentUserService;
+use App\Service\PlayerViewContextResolver;
 use App\ValueObject\DateRange;
 
 final class TrainingStatsService
 {
     public function __construct(
-        private CurrentUserService $currentUser,
-        private PlayerRepository $players,
+        private PlayerViewContextResolver $playerViewContext,
         private TrainingSessionRepository $sessions,
         private TrainingAttemptRepository $attempts,
     ) {
     }
 
-    /**
-     * @throws NoLinkedPlayerException
-     */
-    public function stats(string $token, ?TrainingType $type = null, ?DateRange $dateRange = null): TrainingStatsResponse
-    {
-        $user = $this->currentUser->getUserFromToken($token);
-        $player = $this->players->findOneByUserId((int) $user->getId());
-        if ($player === null) {
-            throw new NoLinkedPlayerException();
-        }
+    public function stats(
+        string $token,
+        ?TrainingType $type = null,
+        ?DateRange $dateRange = null,
+        ?int $impersonatePlayerId = null,
+    ): TrainingStatsResponse {
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+        $playerId = $context->playerId;
 
-        $playerId = (int) $player->getId();
+        if ($playerId === null) {
+            return $this->emptyResponse();
+        }
         $sessionsCount = $this->sessions->countCompletedForPlayer($playerId, $type, $dateRange);
 
         if ($sessionsCount === 0) {
