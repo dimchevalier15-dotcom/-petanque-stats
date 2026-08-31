@@ -92,6 +92,18 @@
           <i class="pi pi-book" aria-hidden="true" />
           <span>{{ t('doc.title') }}</span>
         </button>
+        <button
+          v-if="pendingValidationCount > 0"
+          type="button"
+          class="quick-item app-card quick-item--validation"
+          @click="goPendingValidation"
+        >
+          <span class="quick-icon-wrap">
+            <i class="pi pi-question-circle" aria-hidden="true" />
+            <span class="pending-badge">{{ pendingValidationCount }}</span>
+          </span>
+          <span>{{ t('validation.menu') }}</span>
+        </button>
         <button type="button" class="quick-item app-card" @click="goSettings">
           <i class="pi pi-cog" aria-hidden="true" />
           <span>{{ t('home.actions.settings') }}</span>
@@ -120,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import Menu from 'primevue/menu'
@@ -132,6 +144,7 @@ import AppPage from '../components/layout/AppPage.vue'
 import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
 import { useIsAdmin } from '../composables/useIsAdmin'
 import { useAuthStore } from '../stores/auth'
+import { matchesService } from '../services/matches'
 
 const { t } = useI18n()
 const { currentLanguage, languageItems } = useLocaleSwitcher()
@@ -142,6 +155,8 @@ const { draft, resume, abandon } = useMatchDraftResume()
 const verifyNotice = ref('')
 const verifyNoticeSeverity = ref<'success' | 'error'>('success')
 const abandonDialog = ref(false)
+
+const pendingValidationCount = computed(() => auth.user?.pendingValidationCount ?? 0)
 
 const currentScore = computed(() => {
   if (!draft.value) return { scoreA: 0, scoreB: 0 }
@@ -162,6 +177,9 @@ function goTraining(): void {
 }
 function goSettings(): void {
   router.push({ name: 'settings' })
+}
+function goPendingValidation(): void {
+  router.push({ name: 'pendingValidation' })
 }
 function goAdmin(): void {
   router.push({ name: 'adminHome' })
@@ -195,6 +213,22 @@ const languageMenu = ref()
 function toggleLanguageMenu(event: Event) {
   languageMenu.value.toggle(event)
 }
+
+async function refreshPendingCount(): Promise<void> {
+  if (!auth.user?.playerId) {
+    return
+  }
+  try {
+    const count = await matchesService.getPendingValidationCount()
+    if (auth.user) {
+      auth.user = { ...auth.user, pendingValidationCount: count }
+    }
+  } catch {
+    // Non-blocking: badge falls back to last known count from /auth/me
+  }
+}
+
+onMounted(refreshPendingCount)
 </script>
 
 <style scoped>
@@ -345,6 +379,29 @@ function toggleLanguageMenu(event: Event) {
 
 .quick-item--danger i {
   color: #c24141;
+}
+
+.quick-item--validation .quick-icon-wrap {
+  position: relative;
+  display: inline-grid;
+}
+
+.pending-badge {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.55rem;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .resume-card {

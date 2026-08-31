@@ -41,4 +41,6 @@ export interface MatchSummary {
   endIndexes?: number[]
   canceledEndIndexes?: number[]
   players: MatchSummaryPlayer[]
+  myMatchPlayerId?: number | null
+  myHasValidatedMatch?: boolean | null
 }

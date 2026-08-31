@@ -1,5 +1,4 @@
 import type { ComposerTranslation } from 'vue-i18n'
-import type { MatchHistoryItem } from '../models/MatchHistory'
 import { useMatchContextOptions } from './useMatchContextOptions'
 
 export interface MatchHistoryContextLabels {
@@ -8,10 +7,16 @@ export interface MatchHistoryContextLabels {
   stage?: string
 }
 
+export interface MatchHistoryContextSource {
+  nature?: string | null
+  competitionLabel?: string | null
+  competitionStage?: string | null
+}
+
 export function useMatchHistoryContext(t: ComposerTranslation) {
   const { natureOptions, competitionStageOptions } = useMatchContextOptions(t)
 
-  function contextLabels(item: MatchHistoryItem): MatchHistoryContextLabels {
+  function contextLabels(item: MatchHistoryContextSource): MatchHistoryContextLabels {
     const labels: MatchHistoryContextLabels = {}
 
     if (item.nature) {
@@ -27,8 +32,8 @@ export function useMatchHistoryContext(t: ComposerTranslation) {
     return labels
   }
 
-  function hasContext(item: MatchHistoryItem): boolean {
-    return item.nature !== null || item.competitionLabel !== null || item.competitionStage !== null
+  function hasContext(item: MatchHistoryContextSource): boolean {
+    return !!(item.nature || item.competitionLabel || item.competitionStage)
   }
 
   return { contextLabels, hasContext }

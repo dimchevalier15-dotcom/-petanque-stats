@@ -81,4 +81,66 @@ final class GameParticipantRepository extends ServiceEntityRepository
         }
         return $map;
     }
+
+    public function findByGameAndPlayer(Game $game, int $playerId): ?GameParticipant
+    {
+        return $this->createQueryBuilder('gp')
+            ->where('gp.game = :game')
+            ->andWhere('IDENTITY(gp.player) = :playerId')
+            ->setParameter('game', $game)
+            ->setParameter('playerId', $playerId)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function countPendingValidationForPlayer(int $playerId): int
+    {
+        return (int) $this->createQueryBuilder('gp')
+            ->select('COUNT(gp.id)')
+            ->join('gp.game', 'g')
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
+            ->where('gp.player = :pid')
+            ->andWhere('gp.hasValidatedMatch IS NULL')
+            ->setParameter('pid', $playerId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @return list<GameParticipant>
+     */
+    public function findPendingValidationForPlayer(int $playerId): array
+    {
+        /** @var list<GameParticipant> $items */
+        $items = $this->createQueryBuilder('gp')
+            ->addSelect('g')
+            ->join('gp.game', 'g')
+            ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
+            ->where('gp.player = :pid')
+            ->andWhere('gp.hasValidatedMatch IS NULL')
+            ->setParameter('pid', $playerId)
+            ->groupBy('gp.id')
+            ->orderBy('g.playedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return $items;
+    }
+
+    /**
+     * @return list<array{team: string, position: int, firstName: string, lastName: string, nickname: string}>
+     */
+    public function listParticipantsByGame(Game $game): array
+    {
+        return $this->createQueryBuilder('gp')
+            ->select('gp.team as team, gp.position as position, p.firstName as firstName, p.lastName as lastName, p.nickname as nickname')
+            ->join('gp.player', 'p')
+            ->where('gp.game = :game')
+            ->setParameter('game', $game)
+            ->orderBy('gp.team', 'ASC')
+            ->addOrderBy('gp.position', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

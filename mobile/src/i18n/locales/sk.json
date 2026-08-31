@@ -21,6 +21,16 @@
     "stats": "Stats",
     "back": "Späť"
   },
+  "validation": {
+    "menu": "Zápasy na overenie",
+    "title": "Zápasy na overenie",
+    "empty": "Žiadne zápasy nečakajú na overenie.",
+    "vs": "vs",
+    "accept": "Hral som",
+    "reject": "Nehral som",
+    "summaryTitle": "Moja účasť",
+    "summaryHint": "Potvrďte, či ste sa tohto zápasu skutočne zúčastnili. Ovplyvní to vašu históriu a štatistiky."
+  },
   "summary": {
     "title": "Zhrnutie zápasu",
     "winner": "Víťazstvo {team}",
@@ -486,6 +496,12 @@
       "empty": "Žiadni neprepojení hráči nezodpovedajú vášmu hľadaniu.",
       "linkAction": "Prepojiť tohto hráča"
     },
+    "validation": {
+      "title": "Overovanie zápasov",
+      "hint": "Keď vás niekto iný pridá do zápasu, musíte potvrdiť, že ste sa skutočne zúčastnili, než sa zápas započíta do vašich štatistík.",
+      "toggle": "Vyžadovať overenie pri každom zápase",
+      "saved": "Preferencia uložená."
+    },
     "errors": {
       "loadFailed": "Nepodarilo sa načítať informácie o účte.",
       "profileSaveFailed": "Nepodarilo sa uložiť profil. Skúste znova.",
@@ -494,6 +510,7 @@
       "playerAlreadyLinked": "Tento hráč je už prepojený s iným účtom.",
       "playerNotFound": "Tento hráč už neexistuje alebo nie je dostupný.",
       "userAlreadyHasPlayer": "Váš účet je už prepojený s hráčom.",
+      "preferencesSaveFailed": "Nepodarilo sa uložiť preferenciu. Skúste znova.",
       "deleteFailed": "Účet sa nepodarilo odstrániť. Skúste znova."
     },
     "legal": {

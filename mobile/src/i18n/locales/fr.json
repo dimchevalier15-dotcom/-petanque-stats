@@ -21,6 +21,16 @@
     "stats": "Stats",
     "back": "Retour"
   },
+  "validation": {
+    "menu": "Matchs à valider",
+    "title": "Matchs à valider",
+    "empty": "Aucun match en attente de validation.",
+    "vs": "vs",
+    "accept": "J'ai joué",
+    "reject": "Je n'ai pas joué",
+    "summaryTitle": "Ma participation",
+    "summaryHint": "Confirmez si vous avez réellement participé à ce match. Cela affecte votre historique et vos statistiques."
+  },
   "summary": {
     "title": "Résumé du match",
     "winner": "Victoire {team}",
@@ -486,6 +496,12 @@
       "empty": "Aucun joueur non lié ne correspond à votre recherche.",
       "linkAction": "Lier ce joueur"
     },
+    "validation": {
+      "title": "Validation des matchs",
+      "hint": "Lorsque quelqu'un d'autre vous ajoute à un match, vous devrez confirmer que vous avez bien participé avant que ce match soit pris en compte dans vos statistiques.",
+      "toggle": "Demander la validation à chaque match",
+      "saved": "Préférence enregistrée."
+    },
     "errors": {
       "loadFailed": "Impossible de charger les informations du compte.",
       "profileSaveFailed": "Impossible d'enregistrer le profil. Veuillez réessayer.",
@@ -494,6 +510,7 @@
       "playerAlreadyLinked": "Ce joueur est déjà lié à un autre compte.",
       "playerNotFound": "Ce joueur n'existe plus ou n'est plus disponible.",
       "userAlreadyHasPlayer": "Votre compte est déjà lié à un joueur.",
+      "preferencesSaveFailed": "Impossible d'enregistrer la préférence. Veuillez réessayer.",
       "deleteFailed": "Impossible de supprimer le compte. Veuillez réessayer."
     },
     "legal": {

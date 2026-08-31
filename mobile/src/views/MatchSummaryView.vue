@@ -77,6 +77,34 @@
         </ul>
       </section>
 
+      <section v-if="canManageValidation" class="panel app-card validation-panel">
+        <h3>{{ t('validation.summaryTitle') }}</h3>
+        <p class="panel-hint">{{ t('validation.summaryHint') }}</p>
+        <div class="validation-actions">
+          <Button
+            v-if="myHasValidatedMatch !== true"
+            :label="t('validation.accept')"
+            icon="pi pi-check"
+            severity="success"
+            :loading="validationLoading && validationTarget === true"
+            :disabled="validationLoading"
+            class="w-full"
+            @click="updateMyValidation(true)"
+          />
+          <Button
+            v-if="myHasValidatedMatch !== false"
+            :label="t('validation.reject')"
+            icon="pi pi-times"
+            severity="danger"
+            outlined
+            :loading="validationLoading && validationTarget === false"
+            :disabled="validationLoading"
+            class="w-full"
+            @click="updateMyValidation(false)"
+          />
+        </div>
+      </section>
+
       <div class="app-actions">
         <Button
           :label="contextActionLabel"
@@ -113,16 +141,22 @@ import {
 } from '../composables/useMatchSummaryCharts'
 import { matchesService } from '../services/matches'
 import { competitionsService } from '../services/competitions'
+import { useAuthStore } from '../stores/auth'
 
 const { t } = useI18n()
 const { natureOptions, competitionStageOptions, terrainTypeOptions } = useMatchContextOptions(t)
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 
 const matchId = Number(route.params.id)
 const summary = ref<MatchSummary>({ matchId, scoreA: 0, scoreB: 0, winner: 'A', ends: 0, players: [] })
 const context = ref<MatchContext | null>(null)
 const competitions = ref<Competition[]>([])
+const myMatchPlayerId = ref<number | null>(null)
+const myHasValidatedMatch = ref<boolean | null>(null)
+const validationLoading = ref(false)
+const validationTarget = ref<boolean | null>(null)
 const { teamALabel, teamBLabel, labelForTeam } = useMatchTeamLabels(context, t)
 
 const teamA = computed<MatchSummaryPlayer[]>(() => summary.value.players.filter((p) => p.team === 'A'))
@@ -182,6 +216,7 @@ const contextSummary = computed<string[]>(() => {
 
 const winnerText = computed(() => t('summary.winner', { team: labelForTeam(summary.value.winner) }))
 const winnerClass = computed(() => (summary.value.winner === 'A' ? 'hero-a' : 'hero-b'))
+const canManageValidation = computed(() => myMatchPlayerId.value !== null)
 
 async function load() {
   if (!matchId) {
@@ -197,8 +232,29 @@ async function load() {
     summary.value = summaryData
     context.value = contextData
     competitions.value = competitionList
+    myMatchPlayerId.value = summaryData.myMatchPlayerId ?? null
+    myHasValidatedMatch.value = summaryData.myHasValidatedMatch ?? null
   } catch {
     router.replace({ name: 'home' })
+  }
+}
+
+async function updateMyValidation(validated: boolean) {
+  if (myMatchPlayerId.value === null) {
+    return
+  }
+  validationLoading.value = true
+  validationTarget.value = validated
+  try {
+    await matchesService.updateValidation(myMatchPlayerId.value, validated)
+    myHasValidatedMatch.value = validated
+    if (auth.user) {
+      const count = await matchesService.getPendingValidationCount()
+      auth.user = { ...auth.user, pendingValidationCount: count }
+    }
+  } finally {
+    validationLoading.value = false
+    validationTarget.value = null
   }
 }
 
@@ -339,6 +395,15 @@ onMounted(load)
   display: grid;
   gap: 0.25rem;
   font-size: 0.875rem;
+}
+
+.validation-panel {
+  gap: var(--app-space-sm);
+}
+
+.validation-actions {
+  display: grid;
+  gap: var(--app-space-sm);
 }
 
 .w-full {

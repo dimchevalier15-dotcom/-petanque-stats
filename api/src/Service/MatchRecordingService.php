@@ -30,6 +30,7 @@ final class MatchRecordingService
         private GameParticipantRepository $participants,
         private PlayerRepository $players,
         private EntityManagerInterface $em,
+        private GameParticipantValidationResolver $validationResolver,
     ) {
     }
 
@@ -147,6 +148,11 @@ final class MatchRecordingService
                 continue;
             }
 
+            $creator = $game->getCreatedBy();
+            $validated = $creator !== null
+                ? $this->validationResolver->resolveInitialValue($player, $creator)
+                : true;
+
             $this->em->persist(new GameParticipant(
                 $game,
                 $player,
@@ -154,6 +160,7 @@ final class MatchRecordingService
                 $positionIndex + 1,
                 $outParticipant->getDefaultShotType(),
                 $outParticipant->getStartingRole(),
+                $validated,
             ));
             $matchPlayerSet[$inId] = true;
             $substitutionsByTeam[$team] = true;

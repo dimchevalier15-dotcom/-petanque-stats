@@ -21,6 +21,16 @@
     "stats": "Stats",
     "back": "Back"
   },
+  "validation": {
+    "menu": "Matches to validate",
+    "title": "Matches to validate",
+    "empty": "No matches pending validation.",
+    "vs": "vs",
+    "accept": "I played",
+    "reject": "I did not play",
+    "summaryTitle": "My participation",
+    "summaryHint": "Confirm whether you actually played this match. This affects your history and statistics."
+  },
   "summary": {
     "title": "Match summary",
     "winner": "{team} wins",
@@ -486,6 +496,12 @@
       "empty": "No unlinked players match your search.",
       "linkAction": "Link this player"
     },
+    "validation": {
+      "title": "Match validation",
+      "hint": "When someone else adds you to a match, you will need to confirm that you actually played before the match is included in your statistics.",
+      "toggle": "Require validation for every match",
+      "saved": "Preference saved."
+    },
     "errors": {
       "loadFailed": "Unable to load account information.",
       "profileSaveFailed": "Unable to save profile. Please try again.",
@@ -494,6 +510,7 @@
       "playerAlreadyLinked": "This player is already linked to another account.",
       "playerNotFound": "This player no longer exists or is unavailable.",
       "userAlreadyHasPlayer": "Your account is already linked to a player.",
+      "preferencesSaveFailed": "Unable to save preference. Please try again.",
       "deleteFailed": "Unable to delete the account. Please try again."
     },
     "legal": {

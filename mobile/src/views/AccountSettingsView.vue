@@ -74,6 +74,19 @@
       </section>
     </template>
 
+    <section v-if="linkedPlayer" class="preferences-card app-card">
+      <h3 class="section-title">{{ t('settings.validation.title') }}</h3>
+      <p class="hint">{{ t('settings.validation.hint') }}</p>
+
+      <label class="toggle-row">
+        <InputSwitch v-model="requiresMatchValidation" :disabled="savingPreferences" @change="onSavePreferences" />
+        <span>{{ t('settings.validation.toggle') }}</span>
+      </label>
+
+      <Message v-if="preferencesSaved" severity="success">{{ t('settings.validation.saved') }}</Message>
+      <Message v-if="preferencesErrorKey" severity="error">{{ t(preferencesErrorKey) }}</Message>
+    </section>
+
     <section class="legal-card app-card">
       <h3 class="section-title">{{ t('settings.legal.title') }}</h3>
       <nav class="legal-links" :aria-label="t('settings.legal.title')">
@@ -93,6 +106,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
+import InputSwitch from 'primevue/inputswitch'
 import Message from 'primevue/message'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
@@ -113,6 +127,10 @@ const loading = ref(true)
 const linking = ref(false)
 const savingProfile = ref(false)
 const profileSaved = ref(false)
+const preferencesSaved = ref(false)
+const savingPreferences = ref(false)
+const preferencesErrorKey = ref<string | null>(null)
+const requiresMatchValidation = ref(false)
 const linkedPlayer = ref<Player | null>(null)
 const selectedPlayer = ref<Player | null>(null)
 const errorKey = ref<string | null>(null)
@@ -161,6 +179,8 @@ async function loadLinkedPlayer() {
     if (linkedPlayer.value) {
       syncProfileForm(linkedPlayer.value)
     }
+    const prefs = await accountService.getPreferences()
+    requiresMatchValidation.value = prefs.requiresMatchValidation
   } catch {
     errorKey.value = 'settings.errors.loadFailed'
   } finally {
@@ -251,6 +271,24 @@ async function onLink() {
   }
 }
 
+async function onSavePreferences() {
+  savingPreferences.value = true
+  preferencesSaved.value = false
+  preferencesErrorKey.value = null
+  try {
+    const prefs = await accountService.updatePreferences(requiresMatchValidation.value)
+    requiresMatchValidation.value = prefs.requiresMatchValidation
+    if (auth.user) {
+      auth.user = { ...auth.user, requiresMatchValidation: prefs.requiresMatchValidation }
+    }
+    preferencesSaved.value = true
+  } catch {
+    preferencesErrorKey.value = 'settings.errors.preferencesSaveFailed'
+  } finally {
+    savingPreferences.value = false
+  }
+}
+
 onMounted(loadLinkedPlayer)
 </script>
 
@@ -258,6 +296,7 @@ onMounted(loadLinkedPlayer)
 .state-card,
 .profile-card,
 .link-card,
+.preferences-card,
 .legal-card {
   padding: var(--app-space-lg);
   display: grid;
@@ -284,6 +323,14 @@ onMounted(loadLinkedPlayer)
   font-size: 0.875rem;
   color: var(--app-text-muted);
   line-height: 1.45;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-md);
+  font-size: 0.9375rem;
+  font-weight: 600;
 }
 
 .field-error {

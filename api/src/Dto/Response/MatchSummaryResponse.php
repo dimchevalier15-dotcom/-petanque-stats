@@ -22,6 +22,8 @@ final class MatchSummaryResponse
         /** @param list<int> $canceledEndIndexes */
         public array $canceledEndIndexes,
         public array $players,
+        public ?int $myMatchPlayerId = null,
+        public ?bool $myHasValidatedMatch = null,
     ) {
     }
 }

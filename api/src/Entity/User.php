@@ -39,6 +39,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(name: 'coach_for_club_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Club $coachForClub = null;
 
+    #[ORM\Column(name: 'requires_match_validation', type: 'boolean', options: ['default' => false])]
+    private bool $requiresMatchValidation = false;
+
     public function __construct(string $email)
     {
         $this->email = $email;
@@ -144,5 +147,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
+    }
+
+    public function requiresMatchValidation(): bool
+    {
+        return $this->requiresMatchValidation;
+    }
+
+    public function setRequiresMatchValidation(bool $requiresMatchValidation): void
+    {
+        $this->requiresMatchValidation = $requiresMatchValidation;
     }
 }

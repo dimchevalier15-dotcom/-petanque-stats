@@ -86,6 +86,12 @@ const routes: RouteRecordRaw[] = [
   { path: '/match/new', name: 'newMatch', component: NewMatchView, meta: { layout: 'main' } },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView, meta: { layout: 'focus' } },
   { path: '/matches/history', name: 'matchHistory', component: MatchHistoryView, meta: { layout: 'main' } },
+  {
+    path: '/matches/pending-validation',
+    name: 'pendingValidation',
+    component: () => import('../views/PendingValidationView.vue'),
+    meta: { layout: 'focus' },
+  },
   { path: '/matches/guidelines', name: 'guidelines', component: GuidelinessView, meta: { layout: 'focus' } },
   { path: '/matches/:id/score', name: 'matchScore', component: () => import('../views/MatchPlayView.vue'), meta: { layout: 'play' } },
   { path: '/matches/:id/players', name: 'matchPlayers', component: () => import('../views/MatchPlayersView.vue'), meta: { layout: 'focus' } },

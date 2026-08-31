@@ -6,8 +6,10 @@ namespace App\Controller\Account;
 
 use App\Dto\Request\LinkPlayerRequest;
 use App\Dto\Request\UpdatePlayerProfileRequest;
+use App\Dto\Request\UpdateUserPreferencesRequest;
 use App\Service\Account\AccountDeletionService;
 use App\Service\Account\AccountPlayerService;
+use App\Service\Account\UserPreferencesService;
 use App\Service\Account\NoLinkedPlayerException;
 use App\Service\Account\PlayerAlreadyLinkedException;
 use App\Service\Account\PlayerNotFoundException;
@@ -26,6 +28,7 @@ final class AccountController extends AbstractController
     public function __construct(
         private AccountPlayerService $accountPlayerService,
         private AccountDeletionService $accountDeletionService,
+        private UserPreferencesService $userPreferencesService,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {
@@ -136,6 +139,44 @@ final class AccountController extends AbstractController
             return new JsonResponse(['error' => 'player_not_found'], 404);
         } catch (ClubNotFoundException) {
             return new JsonResponse(['errors' => ['clubId' => 'Club not found.']], 400);
+        }
+    }
+
+    #[Route('/api/account/preferences', name: 'api_account_preferences_get', methods: ['GET'])]
+    public function getPreferences(Request $request): JsonResponse
+    {
+        $token = $this->extractToken($request);
+        if ($token === null) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+
+        try {
+            $prefs = $this->userPreferencesService->getPreferences($token);
+            $json = $this->serializer->serialize($prefs, 'json');
+
+            return new JsonResponse($json, 200, [], true);
+        } catch (InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+    }
+
+    #[Route('/api/account/preferences', name: 'api_account_preferences_update', methods: ['PUT'])]
+    public function updatePreferences(Request $request): JsonResponse
+    {
+        $token = $this->extractToken($request);
+        if ($token === null) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+
+        try {
+            /** @var UpdateUserPreferencesRequest $input */
+            $input = $this->serializer->deserialize($request->getContent(), UpdateUserPreferencesRequest::class, 'json');
+            $prefs = $this->userPreferencesService->updatePreferences($token, $input);
+            $json = $this->serializer->serialize($prefs, 'json');
+
+            return new JsonResponse($json, 200, [], true);
+        } catch (InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
         }
     }
 

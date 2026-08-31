@@ -12,4 +12,6 @@ export interface User {
   isAdmin?: boolean
   coachForClubId?: number | null
   coachForClubName?: string | null
+  requiresMatchValidation?: boolean
+  pendingValidationCount?: number
 }

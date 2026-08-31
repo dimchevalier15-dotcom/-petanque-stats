@@ -28,7 +28,7 @@ final class MatchSummaryService
     ) {
     }
 
-    public function getSummary(int $matchId): ?MatchSummaryResponse
+    public function getSummary(int $matchId, ?int $viewerPlayerId = null): ?MatchSummaryResponse
     {
         /** @var Game|null $game */
         $game = $this->games->find($matchId);
@@ -131,6 +131,30 @@ final class MatchSummaryService
             endIndexes: array_values($endIndexes),
             canceledEndIndexes: array_values($canceledEndIndexes),
             players: $rows,
+            myMatchPlayerId: $this->resolveMyMatchPlayerId($game, $viewerPlayerId),
+            myHasValidatedMatch: $this->resolveMyHasValidatedMatch($game, $viewerPlayerId),
         );
+    }
+
+    private function resolveMyMatchPlayerId(Game $game, ?int $viewerPlayerId): ?int
+    {
+        if ($viewerPlayerId === null) {
+            return null;
+        }
+
+        $participation = $this->participants->findByGameAndPlayer($game, $viewerPlayerId);
+
+        return $participation?->getId() !== null ? (int) $participation->getId() : null;
+    }
+
+    private function resolveMyHasValidatedMatch(Game $game, ?int $viewerPlayerId): ?bool
+    {
+        if ($viewerPlayerId === null) {
+            return null;
+        }
+
+        $participation = $this->participants->findByGameAndPlayer($game, $viewerPlayerId);
+
+        return $participation?->getHasValidatedMatch();
     }
 }

@@ -39,6 +39,10 @@ class GameParticipant
     #[ORM\Column(name: 'starting_role', type: 'string', length: 10, enumType: PlayerRole::class)]
     private PlayerRole $startingRole;
 
+    /** null = pending, false = refused, true = validated */
+    #[ORM\Column(name: 'has_validated_match', type: 'boolean', nullable: true)]
+    private ?bool $hasValidatedMatch = null;
+
     public function __construct(
         Game $game,
         Player $player,
@@ -46,6 +50,7 @@ class GameParticipant
         int $position,
         string $defaultShotType = 'point',
         PlayerRole $startingRole = PlayerRole::POINTEUR,
+        ?bool $hasValidatedMatch = true,
     ) {
         $this->game = $game;
         $this->player = $player;
@@ -53,9 +58,28 @@ class GameParticipant
         $this->position = $position;
         $this->defaultShotType = in_array($defaultShotType, ['point', 'tir'], true) ? $defaultShotType : 'point';
         $this->startingRole = $startingRole;
+        $this->hasValidatedMatch = $hasValidatedMatch;
     }
 
     public function getId(): ?int { return $this->id; }
+    public function getGame(): Game { return $this->game; }
+    public function getPlayer(): Player { return $this->player; }
+    public function getTeam(): string { return $this->team; }
     public function getDefaultShotType(): string { return $this->defaultShotType; }
     public function getStartingRole(): PlayerRole { return $this->startingRole; }
+
+    public function getHasValidatedMatch(): ?bool
+    {
+        return $this->hasValidatedMatch;
+    }
+
+    public function setHasValidatedMatch(?bool $hasValidatedMatch): void
+    {
+        $this->hasValidatedMatch = $hasValidatedMatch;
+    }
+
+    public function isValidatedForPlayer(): bool
+    {
+        return $this->hasValidatedMatch === true;
+    }
 }

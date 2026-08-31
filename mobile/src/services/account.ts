@@ -43,4 +43,16 @@ export const accountService = {
   async deleteAccount(): Promise<void> {
     await api.delete('/account')
   },
+
+  async getPreferences(): Promise<import('../models/UserPreferences').UserPreferences> {
+    const { data } = await api.get<{ requiresMatchValidation: boolean }>('/account/preferences')
+    return { requiresMatchValidation: data.requiresMatchValidation }
+  },
+
+  async updatePreferences(requiresMatchValidation: boolean): Promise<import('../models/UserPreferences').UserPreferences> {
+    const { data } = await api.put<{ requiresMatchValidation: boolean }>('/account/preferences', {
+      requiresMatchValidation,
+    })
+    return { requiresMatchValidation: data.requiresMatchValidation }
+  },
 }

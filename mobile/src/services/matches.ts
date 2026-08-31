@@ -67,4 +67,27 @@ export const matchesService = {
     const { data } = await api.put<MatchContextResponseDto>(`/matches/${matchId}/context`, payload)
     return mapMatchContext(data)
   },
+  async getPendingValidation(): Promise<import('../models/PendingValidation').PendingValidationPage> {
+    const { data } = await api.get<{ total: number; items: Array<{
+      matchPlayerId: number
+      matchId: number
+      date: string
+      type: 'tete_a_tete' | 'doublette' | 'triplette'
+      scoreA: number
+      scoreB: number
+      teamALabel: string
+      teamBLabel: string
+      nature?: string | null
+      competitionLabel?: string | null
+      competitionStage?: string | null
+    }> }>('/matches/pending-validation')
+    return { total: data.total, items: data.items }
+  },
+  async getPendingValidationCount(): Promise<number> {
+    const { data } = await api.get<{ count: number }>('/matches/pending-validation/count')
+    return data.count
+  },
+  async updateValidation(matchPlayerId: number, validated: boolean): Promise<void> {
+    await api.put(`/match-players/${matchPlayerId}/validation`, { validated })
+  },
 }

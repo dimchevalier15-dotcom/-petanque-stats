@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Dto\Request\CompleteMatchRequest;
 use App\Dto\Request\CreateMatchRequest;
 use App\Dto\Request\UpdateMatchContextRequest;
+use App\Dto\Request\UpdateMatchValidationRequest;
 use App\Entity\Game;
 use App\Entity\User;
 use App\Security\Voter\GameVoter;
@@ -17,6 +18,10 @@ use App\Service\MatchRecordingService;
 use App\Service\MatchService;
 use App\Service\MatchSummaryService;
 use App\Service\MatchValidationException;
+use App\Service\MatchValidationOwnershipException;
+use App\Service\MatchValidationService;
+use App\Service\PlayerViewContextResolver;
+use App\Service\Auth\InvalidTokenException;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -38,6 +43,8 @@ final class MatchController extends AbstractController
         private MatchHistoryService $history,
         private MatchContextService $context,
         private ImpersonationResolver $impersonation,
+        private MatchValidationService $validation,
+        private PlayerViewContextResolver $playerViewContext,
     ) {}
 
     #[Route('/api/matches', name: 'api_matches_create', methods: ['POST'])]
@@ -91,9 +98,10 @@ final class MatchController extends AbstractController
 
     #[Route('/api/matches/{id}/summary', name: 'api_matches_summary', methods: ['GET'])]
     #[IsGranted(GameVoter::VIEW, subject: 'game')]
-    public function summary(#[MapEntity] Game $game): JsonResponse
+    public function summary(#[MapEntity] Game $game, Request $request): JsonResponse
     {
-        $res = $this->summary->getSummary((int) $game->getId());
+        $viewerPlayerId = $this->resolveViewerPlayerId($request);
+        $res = $this->summary->getSummary((int) $game->getId(), $viewerPlayerId);
         if ($res === null) {
             return new JsonResponse(['message' => 'Not found'], 404);
         }
@@ -152,11 +160,103 @@ final class MatchController extends AbstractController
         try {
             $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
             $res = $this->history->historyForToken($token, $page, $size, $impersonatePlayerId);
-        } catch (\App\Service\Auth\InvalidTokenException) {
+        } catch (InvalidTokenException) {
             return new JsonResponse(['message' => 'Invalid credentials.'], 401);
         }
         $json = $this->serializer->serialize($res, 'json');
 
         return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/matches/pending-validation', name: 'api_matches_pending_validation', methods: ['GET'])]
+    public function pendingValidation(Request $request): JsonResponse
+    {
+        $token = $this->extractToken($request);
+        if ($token === null) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+
+        try {
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->validation->pendingForToken($token, $impersonatePlayerId);
+        } catch (InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+        $json = $this->serializer->serialize($res, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/matches/pending-validation/count', name: 'api_matches_pending_validation_count', methods: ['GET'])]
+    public function pendingValidationCount(Request $request): JsonResponse
+    {
+        $token = $this->extractToken($request);
+        if ($token === null) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+
+        try {
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->validation->countPendingForToken($token, $impersonatePlayerId);
+        } catch (InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+        $json = $this->serializer->serialize($res, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/match-players/{id}/validation', name: 'api_match_players_validation', methods: ['PUT'])]
+    public function updateValidation(int $id, Request $request): JsonResponse
+    {
+        $token = $this->extractToken($request);
+        if ($token === null) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+
+        /** @var UpdateMatchValidationRequest $input */
+        $input = $this->serializer->deserialize($request->getContent(), UpdateMatchValidationRequest::class, 'json');
+        $violations = $this->validator->validate($input);
+        if (\count($violations) > 0 || $input->validated === null) {
+            return new JsonResponse(['error' => 'invalid_request'], 400);
+        }
+
+        try {
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $this->validation->updateValidation($token, $id, $input->validated, $impersonatePlayerId);
+        } catch (InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        } catch (MatchValidationOwnershipException) {
+            return new JsonResponse(['error' => 'forbidden'], 403);
+        }
+
+        return new JsonResponse(null, 204);
+    }
+
+    private function extractToken(Request $request): ?string
+    {
+        $authHeader = (string) $request->headers->get('Authorization', '');
+        if (!str_starts_with($authHeader, 'Bearer ')) {
+            return null;
+        }
+
+        return substr($authHeader, 7);
+    }
+
+    private function resolveViewerPlayerId(Request $request): ?int
+    {
+        $token = $this->extractToken($request);
+        if ($token === null) {
+            return null;
+        }
+
+        try {
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+
+            return $context->playerId;
+        } catch (InvalidTokenException) {
+            return null;
+        }
     }
 }

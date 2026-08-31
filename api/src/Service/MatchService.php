@@ -21,6 +21,7 @@ final class MatchService
     public function __construct(
         private PlayerRepository $players,
         private EntityManagerInterface $em,
+        private GameParticipantValidationResolver $validationResolver,
     ) {}
 
     /**
@@ -121,14 +122,16 @@ final class MatchService
             $pid = (int) $pid;
             $role = $startingRoles[$pid] ?? $computeDefaultRole($pos);
             $def = $defaults[$pid] ?? $role->defaultShotType();
-            $this->em->persist(new GameParticipant($game, $map[$pid], 'A', $pos++, $def, $role));
+            $validated = $this->validationResolver->resolveInitialValue($map[$pid], $createdBy);
+            $this->em->persist(new GameParticipant($game, $map[$pid], 'A', $pos++, $def, $role, $validated));
         }
         $pos = 1;
         foreach ($req->teamB as $pid) {
             $pid = (int) $pid;
             $role = $startingRoles[$pid] ?? $computeDefaultRole($pos);
             $def = $defaults[$pid] ?? $role->defaultShotType();
-            $this->em->persist(new GameParticipant($game, $map[$pid], 'B', $pos++, $def, $role));
+            $validated = $this->validationResolver->resolveInitialValue($map[$pid], $createdBy);
+            $this->em->persist(new GameParticipant($game, $map[$pid], 'B', $pos++, $def, $role, $validated));
         }
         // Persist tracked players
         foreach ($tracked as $pid) {

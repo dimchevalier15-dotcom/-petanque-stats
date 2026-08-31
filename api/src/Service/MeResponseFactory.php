@@ -6,12 +6,15 @@ namespace App\Service;
 
 use App\Dto\Response\MeResponse;
 use App\Entity\User;
+use App\Repository\GameParticipantRepository;
 use App\Repository\PlayerRepository;
 
 final class MeResponseFactory
 {
-    public function __construct(private PlayerRepository $players)
-    {
+    public function __construct(
+        private PlayerRepository $players,
+        private GameParticipantRepository $participants,
+    ) {
     }
 
     public function fromUser(User $user): MeResponse
@@ -31,6 +34,10 @@ final class MeResponseFactory
             isAdmin: $user->isMaster(),
             coachForClubId: $coachClub?->getId() !== null ? (int) $coachClub->getId() : null,
             coachForClubName: $coachClub?->getName(),
+            requiresMatchValidation: $user->requiresMatchValidation(),
+            pendingValidationCount: $player?->getId() !== null
+                ? $this->participants->countPendingValidationForPlayer((int) $player->getId())
+                : 0,
         );
     }
 }

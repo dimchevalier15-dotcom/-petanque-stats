@@ -59,14 +59,32 @@ final class GameRepository extends ServiceEntityRepository
 
         if ($userId !== null) {
             $qb->leftJoin('g.createdBy', 'creator');
-            $conditions[] = 'creator.id = :userId';
             $qb->setParameter('userId', $userId);
         }
 
         if ($playerId !== null) {
-            $qb->leftJoin('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g AND gp.player = :playerId')
-                ->setParameter('playerId', $playerId);
+            $qb->leftJoin(
+                'App\\Entity\\GameParticipant',
+                'gp',
+                'WITH',
+                'gp.game = g AND gp.player = :playerId AND gp.hasValidatedMatch = true',
+            )->setParameter('playerId', $playerId);
             $conditions[] = 'gp.player IS NOT NULL';
+        }
+
+        if ($userId !== null && $playerId !== null) {
+            $qb->leftJoin(
+                'App\\Entity\\GameParticipant',
+                'anyGp',
+                'WITH',
+                'anyGp.game = g AND anyGp.player = :playerId',
+            );
+            $conditions[] = $qb->expr()->andX(
+                'creator.id = :userId',
+                'anyGp.player IS NULL',
+            );
+        } elseif ($userId !== null) {
+            $conditions[] = 'creator.id = :userId';
         }
 
         if ($conditions === []) {
@@ -95,6 +113,7 @@ final class GameRepository extends ServiceEntityRepository
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
             ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
+            ->andWhere('gp.hasValidatedMatch = true')
             ->setParameter('pid', $playerId)
             ->groupBy('g.id')
             ->orderBy('g.playedAt', 'ASC');
@@ -119,6 +138,7 @@ final class GameRepository extends ServiceEntityRepository
             ->join('App\\Entity\\GameParticipant', 'gp', 'WITH', 'gp.game = g')
             ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g')
             ->where('gp.player = :pid')
+            ->andWhere('gp.hasValidatedMatch = true')
             ->setParameter('pid', $playerId);
 
         $this->applyFilters($qb, $nature, $range, $type, $competitionId);
