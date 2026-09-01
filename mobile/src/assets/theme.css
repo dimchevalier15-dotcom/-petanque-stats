@@ -133,10 +133,15 @@ a {
     var(--app-bg);
 }
 
+.auth-top {
+  display: grid;
+  gap: var(--app-space-sm);
+  margin-bottom: var(--app-space-md);
+}
+
 .auth-lang {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: var(--app-space-md);
 }
 
 .auth-main {

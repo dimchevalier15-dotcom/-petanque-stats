@@ -64,6 +64,8 @@
       </div>
     </div>
 
+    <AppUpdateRecommendedBanner />
+
     <section class="primary-actions">
       <button type="button" class="new-match-cta" @click="goNewMatch">
         <span class="new-match-cta-icon" aria-hidden="true">
@@ -142,6 +144,7 @@ import { useLocaleSwitcher } from '../composables/useLocaleSwitcher'
 import { useRouter } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
 import AppLogo from '../components/layout/AppLogo.vue'
+import AppUpdateRecommendedBanner from '../components/AppUpdateRecommendedBanner.vue'
 import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
 import { useIsAdmin } from '../composables/useIsAdmin'
 import { useAuthStore } from '../stores/auth'

@@ -1,16 +1,17 @@
 <template>
   <ImpersonationBanner />
-  <AppUpdateBanner />
+  <AppUpdateRequiredBlock />
   <component :is="layoutComponent" />
   <Toast />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Toast from 'primevue/toast'
-import AppUpdateBanner from './components/AppUpdateBanner.vue'
+import AppUpdateRequiredBlock from './components/AppUpdateRequiredBlock.vue'
 import ImpersonationBanner from './components/admin/ImpersonationBanner.vue'
+import { useAppUpdateStore } from './stores/appUpdate'
 import MainLayout from './layouts/MainLayout.vue'
 import AuthLayout from './layouts/AuthLayout.vue'
 import FocusLayout from './layouts/FocusLayout.vue'
@@ -28,5 +29,9 @@ const layouts = {
 const layoutComponent = computed(() => {
   const key = (route.meta.layout as keyof typeof layouts) ?? 'main'
   return layouts[key] ?? MainLayout
+})
+
+onMounted(() => {
+  void useAppUpdateStore().checkOnce()
 })
 </script>
