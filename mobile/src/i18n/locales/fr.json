@@ -1,6 +1,14 @@
 {
   "app": {
-    "title": "Pétanque Analytics"
+    "title": "Pétanque Analytics",
+    "update": {
+      "recommendedTitle": "Une nouvelle version est disponible !",
+      "recommendedSubtitle": "Profitez des dernières améliorations.",
+      "requiredTitle": "Mise à jour nécessaire",
+      "requiredSubtitle": "Cette version de Pétanque Analytics n'est plus compatible.",
+      "action": "Mettre à jour",
+      "dismiss": "Fermer"
+    }
   },
   "common": {
     "hello": "Hello World",
@@ -152,7 +160,8 @@
       "saveTitle": "Conserver ce match ?",
       "saveHint": "Vos statistiques sont disponibles pour ce match. Créez un compte ou connectez-vous pour le sauvegarder et retrouver votre historique.",
       "createAccount": "Créer mon compte",
-      "login": "J'ai déjà un compte — Se connecter"
+      "login": "J'ai déjà un compte — Se connecter",
+      "backToLogin": "Retour au menu"
     },
     "save": {
       "inProgress": "Enregistrement de votre match…"
@@ -761,6 +770,18 @@
       "generic": "Impossible de créer le match."
     },
     "score": { "title": "Saisie des mènes", "content": "Écran à venir." }
+  },
+  "notationHelp": {
+    "title": "Comment noter une boule ?",
+    "close": "Fermer",
+    "ariaLabel": "Aide sur la notation",
+    "levels": {
+      "minus2": "Ta boule aggrave la situation",
+      "minus1": "Ta boule n'apporte rien au jeu",
+      "zero": "Boule neutre — elle peut jouer, ou c'est chiqué / une casquette",
+      "plus1": "Le travail est fait",
+      "plus2": "Ta boule fait la différence"
+    }
   },
   "play": {
     "end": "Mène",

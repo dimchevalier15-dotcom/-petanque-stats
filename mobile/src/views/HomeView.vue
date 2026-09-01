@@ -44,7 +44,7 @@
 
     <div class="welcome-card app-card">
       <div class="brand-row">
-        <span class="logo" aria-hidden="true">🥅</span>
+        <AppLogo size="sm" />
         <div>
           <h2 class="app-section-title">{{ t('app.title') }}</h2>
           <p class="app-section-subtitle">{{ t('home.welcome') }}</p>
@@ -141,6 +141,7 @@ import { useI18n } from 'vue-i18n'
 import { useLocaleSwitcher } from '../composables/useLocaleSwitcher'
 import { useRouter } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
+import AppLogo from '../components/layout/AppLogo.vue'
 import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
 import { useIsAdmin } from '../composables/useIsAdmin'
 import { useAuthStore } from '../stores/auth'
@@ -242,11 +243,6 @@ onMounted(refreshPendingCount)
   display: flex;
   align-items: center;
   gap: var(--app-space-md);
-}
-
-.logo {
-  font-size: 1.75rem;
-  line-height: 1;
 }
 
 .connected {

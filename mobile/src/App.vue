@@ -1,5 +1,6 @@
 <template>
   <ImpersonationBanner />
+  <AppUpdateBanner />
   <component :is="layoutComponent" />
   <Toast />
 </template>
@@ -8,6 +9,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Toast from 'primevue/toast'
+import AppUpdateBanner from './components/AppUpdateBanner.vue'
 import ImpersonationBanner from './components/admin/ImpersonationBanner.vue'
 import MainLayout from './layouts/MainLayout.vue'
 import AuthLayout from './layouts/AuthLayout.vue'

@@ -1,6 +1,6 @@
 <template>
   <AppPage>
-    <PageHeader :title="t('summary.title')" />
+    <PageHeader :title="t('summary.title')" :back-to="{ name: 'login' }" />
 
     <section v-if="summary" class="summary">
       <div class="hero-banner app-card" :class="winnerClass">
@@ -88,6 +88,14 @@
             icon="pi pi-sign-in"
             @click="goLogin"
           />
+          <Button
+            class="w-full back-to-login-btn"
+            :label="t('guest.summary.backToLogin')"
+            severity="secondary"
+            text
+            icon="pi pi-home"
+            @click="goBackToLogin"
+          />
         </div>
       </section>
     </section>
@@ -97,7 +105,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Chart from 'primevue/chart'
 import AppPage from '../components/layout/AppPage.vue'
@@ -111,9 +119,9 @@ import {
   buildPlayerComparisonChart,
   hasTrackedData,
 } from '../composables/useMatchSummaryCharts'
-import { loadMatchDraft } from '../services/matchDraftStorage'
+import { clearMatchDraft, loadMatchDraft } from '../services/matchDraftStorage'
 import { buildLocalMatchSummary } from '../utils/buildLocalMatchSummary'
-import { saveGuestMatchQuery } from '../utils/guestMatchQuery'
+import { hasSaveGuestMatchQuery, saveGuestMatchQuery } from '../utils/guestMatchQuery'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -152,6 +160,16 @@ function goRegister(): void {
 function goLogin(): void {
   router.push({ name: 'login', query: saveGuestMatchQuery() })
 }
+
+function goBackToLogin(): void {
+  router.push({ name: 'login' })
+}
+
+onBeforeRouteLeave((to) => {
+  if (to.name === 'login' && !hasSaveGuestMatchQuery(to.query.saveGuestMatch)) {
+    clearMatchDraft({ guest: true })
+  }
+})
 
 onMounted(() => {
   const draft = loadMatchDraft(null, { guest: true })
@@ -289,5 +307,9 @@ onMounted(() => {
 
 .w-full {
   width: 100%;
+}
+
+.back-to-login-btn {
+  margin-top: calc(-1 * var(--app-space-xs));
 }
 </style>

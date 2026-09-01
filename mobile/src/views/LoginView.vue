@@ -1,7 +1,7 @@
 <template>
   <section class="auth-card app-card">
     <div class="auth-brand">
-      <span class="logo" aria-hidden="true">🥅</span>
+      <AppLogo centered />
       <h2>{{ t('auth.login.title') }}</h2>
       <p>{{ t('app.title') }}</p>
     </div>
@@ -52,6 +52,7 @@ import Password from 'primevue/password'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import AuthLegalNotice from '../components/legal/AuthLegalNotice.vue'
+import AppLogo from '../components/layout/AppLogo.vue'
 import { routeAfterGuestAuth } from '../composables/useGuestMatchConversion'
 import {
   hasSaveGuestMatchQuery,
@@ -106,12 +107,6 @@ function playWithoutAccount(): void {
 .auth-brand {
   text-align: center;
   margin-bottom: var(--app-space-lg);
-}
-
-.auth-brand .logo {
-  font-size: 2.5rem;
-  display: block;
-  margin-bottom: var(--app-space-sm);
 }
 
 .auth-brand h2 {
