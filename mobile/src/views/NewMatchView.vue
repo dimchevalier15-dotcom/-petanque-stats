@@ -41,7 +41,10 @@
 
       <section class="stats-block app-card app-card--muted">
         <div class="stats-row">
-          <span class="stats-label">{{ t('matches.stats.mode.title') }}</span>
+          <div class="stats-label-row">
+            <span class="stats-label">{{ t('matches.stats.mode.title') }}</span>
+            <NotationHelpButton compact @click="notationHelpVisible = true" />
+          </div>
           <SelectButton
             v-model="statisticsMode"
             :options="modeOptions"
@@ -146,6 +149,8 @@
       </div>
     </div>
   </Dialog>
+
+  <NotationHelpDialog v-model:visible="notationHelpVisible" />
 </template>
 
 <script setup lang="ts">
@@ -157,6 +162,8 @@ import Dialog from 'primevue/dialog'
 import SelectButton from 'primevue/selectbutton'
 import PageHeader from '../components/layout/PageHeader.vue'
 import MatchTeamPanel from '../components/match/MatchTeamPanel.vue'
+import NotationHelpButton from '../components/match/NotationHelpButton.vue'
+import NotationHelpDialog from '../components/match/NotationHelpDialog.vue'
 import { draftScore, useMatchDraftResume } from '../composables/useMatchDraftResume'
 import { useNewMatchSetup } from '../composables/useNewMatchSetup'
 import { useGuestStore } from '../stores/guest'
@@ -195,6 +202,7 @@ const teamBLabel = computed(() => teamNamePlaceholder('B'))
 
 const resumeDialog = ref(draft.value !== null)
 const abandonDialog = ref(false)
+const notationHelpVisible = ref(false)
 
 const currentScore = computed(() => {
   if (!draft.value) return { scoreA: 0, scoreB: 0 }
@@ -320,6 +328,13 @@ onMounted(() => {
 
 .stats-row {
   display: grid;
+  gap: var(--app-space-sm);
+}
+
+.stats-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--app-space-sm);
 }
 

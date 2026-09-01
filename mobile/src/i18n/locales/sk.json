@@ -1,6 +1,14 @@
 {
   "app": {
-    "title": "Pétanque Analytics"
+    "title": "Pétanque Analytics",
+    "update": {
+      "recommendedTitle": "Je k dispozícii nová verzia!",
+      "recommendedSubtitle": "Využite najnovšie vylepšenia.",
+      "requiredTitle": "Vyžaduje sa aktualizácia",
+      "requiredSubtitle": "Táto verzia Pétanque Analytics už nie je kompatibilná.",
+      "action": "Aktualizovať",
+      "dismiss": "Zavrieť"
+    }
   },
   "common": {
     "hello": "Hello World",
@@ -152,7 +160,8 @@
       "saveTitle": "Uchovať tento zápas?",
       "saveHint": "Vaše štatistiky sú k dispozícii pre tento zápas. Vytvorte účet alebo sa prihláste, aby ste ho uložili a mali históriu.",
       "createAccount": "Vytvoriť účet",
-      "login": "Už mám účet — Prihlásiť sa"
+      "login": "Už mám účet — Prihlásiť sa",
+      "backToLogin": "Späť do menu"
     },
     "save": {
       "inProgress": "Ukladanie zápasu…"
@@ -761,6 +770,18 @@
       "generic": "Zápas sa nepodarilo vytvoriť."
     },
     "score": { "title": "Zápis mèn", "content": "Obrazovka čoskoro." }
+  },
+  "notationHelp": {
+    "title": "Ako hodnotiť guľu?",
+    "close": "Zavrieť",
+    "ariaLabel": "Pomoc s hodnotením",
+    "levels": {
+      "minus2": "Tvoja guľa zhorší situáciu",
+      "minus1": "Tvoja guľa neprináša nič do hry",
+      "zero": "Neutrálna guľa — môže hrať, alebo je to chiqué / casket",
+      "plus1": "Práca je hotová",
+      "plus2": "Tvoja guľa robí rozdiel"
+    }
   },
   "play": {
     "end": "Mèna",

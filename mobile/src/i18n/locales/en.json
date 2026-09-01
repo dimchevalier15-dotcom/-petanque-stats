@@ -1,6 +1,14 @@
 {
   "app": {
-    "title": "Pétanque Analytics"
+    "title": "Pétanque Analytics",
+    "update": {
+      "recommendedTitle": "A new version is available!",
+      "recommendedSubtitle": "Enjoy the latest improvements.",
+      "requiredTitle": "Update required",
+      "requiredSubtitle": "This version of Pétanque Analytics is no longer compatible.",
+      "action": "Update",
+      "dismiss": "Dismiss"
+    }
   },
   "common": {
     "hello": "Hello World",
@@ -152,7 +160,8 @@
       "saveTitle": "Keep this match?",
       "saveHint": "Your stats are available for this match. Create an account or sign in to save it and build your history.",
       "createAccount": "Create my account",
-      "login": "I already have an account — Sign in"
+      "login": "I already have an account — Sign in",
+      "backToLogin": "Back to menu"
     },
     "save": {
       "inProgress": "Saving your match…"
@@ -761,6 +770,18 @@
       "generic": "Could not create the match."
     },
     "score": { "title": "End recording", "content": "Screen coming soon." }
+  },
+  "notationHelp": {
+    "title": "How do you rate a boule?",
+    "close": "Close",
+    "ariaLabel": "Scoring help",
+    "levels": {
+      "minus2": "Your boule makes the situation worse",
+      "minus1": "Your boule brings nothing to the game",
+      "zero": "Neutral boule — it can play, or it's touching but useless",
+      "plus1": "The job is done",
+      "plus2": "Your boule makes the difference"
+    }
   },
   "play": {
     "end": "End",

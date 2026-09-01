@@ -14,7 +14,14 @@
         <span class="end-pill">{{ t('play.end') }} {{ currentEnd.index }}</span>
         <div class="score-row">
           <div class="score-heading">
-            <span class="score-label">{{ t('play.score') }}</span>
+            <div class="score-heading-left">
+              <span class="score-label">{{ t('play.score') }}</span>
+              <NotationHelpButton
+                v-if="setup.statisticsMode === 'standard'"
+                compact
+                @click="notationHelpVisible = true"
+              />
+            </div>
             <button
               type="button"
               class="match-timer"
@@ -236,6 +243,9 @@
 
     <OverlayPanel ref="op" class="note-overlay-panel" appendTo="body">
       <div class="note-overlay">
+        <div v-if="setup.statisticsMode === 'standard'" class="note-overlay-header">
+          <NotationHelpButton compact @click="notationHelpVisible = true" />
+        </div>
         <div class="shot-type">
           <SelectButton v-model="shotType" :options="shotOptions" optionLabel="label" optionValue="value" size="small" />
         </div>
@@ -500,6 +510,8 @@
         </div>
       </div>
     </Dialog>
+
+    <NotationHelpDialog v-model:visible="notationHelpVisible" />
   </section>
 </template>
 
@@ -516,6 +528,8 @@ import Menu from 'primevue/menu'
 import SelectButton from 'primevue/selectbutton'
 import Tag from 'primevue/tag'
 import MatchParticipantSelect from '../components/match/MatchParticipantSelect.vue'
+import NotationHelpButton from '../components/match/NotationHelpButton.vue'
+import NotationHelpDialog from '../components/match/NotationHelpDialog.vue'
 import type { TeamSide } from '../models/MatchPlay'
 import { DEFAULT_TARGET_SCORE, type MatchType, type PlayerRole, type ShotType, type StatisticsMode } from '../models/Match'
 import { totalBallsInEnd } from '../utils/matchRoles'
@@ -812,6 +826,7 @@ function ballLabel(playerId: number, idx: number): string {
 }
 
 const substitutionDialog = ref(false)
+const notationHelpVisible = ref(false)
 const playOptionsMenu = ref<InstanceType<typeof Menu> | null>(null)
 
 const substitutionTeam = ref<TeamSide | null>(null)
@@ -1386,6 +1401,12 @@ onMounted(async () => {
   align-items: baseline;
   justify-content: center;
   gap: 0.5rem;
+}
+
+.score-heading-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .score-label {
@@ -1966,6 +1987,11 @@ onMounted(async () => {
   padding: var(--app-space-xs);
 }
 
+.note-overlay-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .shot-type :deep(.p-selectbutton) {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2195,5 +2221,10 @@ onMounted(async () => {
 
 html.native-app .p-dialog-mask:has(.end-score-dialog) {
   padding-bottom: max(3rem, env(safe-area-inset-bottom, 0px));
+}
+
+.play-options-menu {
+  transform: translateY(calc(-100% - 0.5rem));
+  transform-origin: bottom center;
 }
 </style>
