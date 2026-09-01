@@ -301,6 +301,7 @@ import type { LiveMatchData } from '../models/LiveMatch'
 import type { EndRecord } from '../models/MatchPlay'
 import { liveMatchesService } from '../services/liveMatches'
 import { formatMasters, playerCochonnetMastersFromEnds, playerMastersFromEnds, playerShotMastersFromEnds } from '../composables/matchSuccessRate'
+import { distanceAt as distanceAtShot, noteAt as noteAtShot } from '../utils/matchEndShots'
 import { teamSlotsForEnd } from '../utils/matchSubstitutions'
 
 const POLL_INTERVAL_MS = 5000
@@ -327,7 +328,7 @@ const ballsPerPlayer = computed(() => (matchData.value?.type === 'triplette' ? 2
 
 const currentEnd = computed<EndRecord>(() => {
   const ends = matchData.value?.ends ?? []
-  return ends[viewEndIndex.value] ?? { index: 1, balls: [] }
+  return ends[viewEndIndex.value] ?? { index: 1, shots: [] }
 })
 
 const isViewingCurrentEnd = computed(() => viewEndIndex.value === (matchData.value?.currentEndIndex ?? 0))
@@ -407,8 +408,8 @@ function computeScore(team: 'A' | 'B', ends: EndRecord[]): number {
 }
 
 function endDistanceEstimate(end: EndRecord): number | null {
-  const values = end.balls
-    .flatMap((ball) => ball.distances ?? [])
+  const values = end.shots
+    .map((shot) => shot.distance)
     .filter((distance): distance is number => distance !== null && distance !== undefined)
   if (values.length === 0) return null
   const last = values[values.length - 1]
@@ -427,8 +428,7 @@ function endResultLabel(end: EndRecord): string {
 }
 
 function hasPlayedBallsInEnd(playerId: number, end: EndRecord): boolean {
-  const entry = end.balls.find((ball) => ball.playerId === playerId)
-  return (entry?.notes.length ?? 0) > 0
+  return end.shots.some((shot) => shot.playerId === playerId)
 }
 
 function nameFor(playerId: number): string {
@@ -480,7 +480,7 @@ function recapPlayersForTeam(team: 'A' | 'B'): number[] {
 function hasPlayedInMatch(playerId: number): boolean {
   if (!matchData.value) return false
   return matchData.value.ends.some((end) =>
-    end.balls.some((ball) => ball.playerId === playerId && ball.notes.length > 0),
+    end.shots.some((shot) => shot.playerId === playerId),
   )
 }
 
@@ -495,13 +495,11 @@ function roleLabel(role: PlayerRole): string {
 }
 
 function noteAt(playerId: number, idx: number): number | undefined {
-  const entry = currentEnd.value.balls.find((ball) => ball.playerId === playerId)
-  return entry?.notes[idx]
+  return noteAtShot(currentEnd.value, playerId, idx)
 }
 
 function distanceAt(playerId: number, idx: number): number | null | undefined {
-  const entry = currentEnd.value.balls.find((ball) => ball.playerId === playerId)
-  return entry?.distances?.[idx]
+  return distanceAtShot(currentEnd.value, playerId, idx)
 }
 
 function distanceLabel(playerId: number, idx: number): string | null {

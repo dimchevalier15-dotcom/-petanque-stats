@@ -79,7 +79,7 @@ export function teamForPlayer(
 }
 
 export function totalBallsInEnd(end: EndRecord): number {
-  return end.balls.reduce((sum, entry) => sum + entry.notes.length, 0)
+  return end.shots.length
 }
 
 export function snapshotEndRoles(

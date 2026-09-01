@@ -29,7 +29,7 @@ fix:
 test:
 	$(COMPOSE) exec mobile npm run test
 	$(COMPOSE) exec -e APP_ENV=test api php bin/console doctrine:migrations:migrate --no-interaction
-	$(COMPOSE) exec api php bin/phpunit
+	$(COMPOSE) exec -e APP_ENV=test api php bin/phpunit
 
 sync:
 	$(COMPOSE) exec mobile npx cap sync

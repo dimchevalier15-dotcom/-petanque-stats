@@ -120,7 +120,7 @@ const payload: CompleteMatchRequestDto = {
       winner: 'A',
       points: 3,
       canceled: false,
-      balls: [{ playerId: -1, notes: [1], shotTypes: ['tir'], distances: [null] }],
+      shots: [{ sequenceOrder: 1, playerId: -1, note: 1, shotType: 'tir', distance: null }],
       roles: [{ playerId: -1, role: 'tireur' }],
     },
   ],
@@ -132,7 +132,7 @@ describe('remapSubmission', () => {
 
     expect(remapped.teamA).toEqual([5, 30])
     expect(remapped.substitutions?.[0]?.inPlayerId).toBe(32)
-    expect(remapped.ends[0]?.balls[0]?.playerId).toBe(30)
+    expect(remapped.ends[0]?.shots[0]?.playerId).toBe(30)
     expect(remapped.ends[0]?.roles?.[0]?.playerId).toBe(30)
     expect(containsProvisionalParticipant(remapped)).toBe(false)
   })

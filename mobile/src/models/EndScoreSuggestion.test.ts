@@ -11,21 +11,27 @@ import {
   sumTeamBallResults,
 } from './EndScoreSuggestion'
 
-function endWithBalls(entries: Array<{ playerId: number; notes: number[] }>): EndRecord {
-  return {
-    index: 1,
-    balls: entries.map((entry) => ({
-      playerId: entry.playerId,
-      notes: entry.notes as EndRecord['balls'][number]['notes'],
-      shotTypes: entry.notes.map(() => 'point' as const),
-      distances: entry.notes.map(() => null),
-    })),
+function endWithShots(entries: Array<{ playerId: number; notes: number[] }>): EndRecord {
+  const shots: EndRecord['shots'] = []
+  let sequenceOrder = 1
+  for (const entry of entries) {
+    for (const note of entry.notes) {
+      shots.push({
+        sequenceOrder,
+        playerId: entry.playerId,
+        note: note as EndRecord['shots'][number]['note'],
+        shotType: 'point',
+        distance: null,
+      })
+      sequenceOrder += 1
+    }
   }
+  return { index: 1, shots }
 }
 
 describe('sumTeamBallResults', () => {
   it('sums ball note values for team players', () => {
-    const end = endWithBalls([
+    const end = endWithShots([
       { playerId: 1, notes: [1, 0] },
       { playerId: 2, notes: [1] },
       { playerId: 3, notes: [] },
@@ -36,7 +42,7 @@ describe('sumTeamBallResults', () => {
   })
 
   it('includes negative notes in the sum', () => {
-    const end = endWithBalls([
+    const end = endWithShots([
       { playerId: 1, notes: [2, -1, 0] },
       { playerId: 2, notes: [1, -2] },
     ])
@@ -48,7 +54,7 @@ describe('sumTeamBallResults', () => {
 
 describe('suggestEndScore', () => {
   it('preselects team A when its ball results sum is higher', () => {
-    const end = endWithBalls([
+    const end = endWithShots([
       { playerId: 1, notes: [2, 1, 1] },
       { playerId: 2, notes: [0] },
     ])
@@ -67,7 +73,7 @@ describe('suggestEndScore', () => {
   })
 
   it('preselects team B when its ball results sum is higher', () => {
-    const end = endWithBalls([
+    const end = endWithShots([
       { playerId: 1, notes: [0] },
       { playerId: 2, notes: [2, 1, 1] },
     ])
@@ -86,7 +92,7 @@ describe('suggestEndScore', () => {
   })
 
   it('does not preselect a winner when sums are equal', () => {
-    const end = endWithBalls([
+    const end = endWithShots([
       { playerId: 1, notes: [1, 1] },
       { playerId: 2, notes: [1, 1] },
     ])
@@ -105,7 +111,7 @@ describe('suggestEndScore', () => {
   })
 
   it('caps suggested points to remaining score before target', () => {
-    const end = endWithBalls([
+    const end = endWithShots([
       { playerId: 1, notes: [2, 2, 2, 2, 2] },
       { playerId: 2, notes: [] },
     ])
@@ -124,7 +130,7 @@ describe('suggestEndScore', () => {
   })
 
   it('caps suggested points to 3 in tête-à-tête', () => {
-    const end = endWithBalls([
+    const end = endWithShots([
       { playerId: 1, notes: [2, 2, 2] },
       { playerId: 2, notes: [-2] },
     ])
@@ -143,7 +149,7 @@ describe('suggestEndScore', () => {
   })
 
   it('caps suggested points to 6 in doublette', () => {
-    const end = endWithBalls([
+    const end = endWithShots([
       { playerId: 1, notes: [2, 2, 2] },
       { playerId: 2, notes: [2, 2, 2] },
       { playerId: 3, notes: [-2] },

@@ -4,7 +4,7 @@ import type { MatchDraft } from '../models/MatchDraft'
 import { buildLocalMatchSummary } from '../utils/buildLocalMatchSummary'
 
 const baseDraft: MatchDraft = {
-  version: 2,
+  version: 3,
   userId: null,
   draftOwner: 'guest',
   savedAt: '2026-08-29T18:00:00.000Z',
@@ -35,13 +35,9 @@ const baseDraft: MatchDraft = {
       winner: 'A',
       points: 3,
       canceled: false,
-      balls: [
-        {
-          playerId: 1,
-          notes: [2, 1],
-          shotTypes: ['point', 'point'],
-          distances: [7.5, 8],
-        },
+      shots: [
+        { sequenceOrder: 1, playerId: 1, note: 2, shotType: 'point', distance: 7.5 },
+        { sequenceOrder: 2, playerId: 1, note: 1, shotType: 'point', distance: 8 },
       ],
     },
   ],

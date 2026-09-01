@@ -21,6 +21,7 @@ final class MatchShareService
         private GameEndRepository $ends,
         private MatchSummaryService $summary,
         private MatchContextService $context,
+        private MatchInsightsService $insights,
         private EntityManagerInterface $em,
         private string $frontendBaseUrl,
     ) {
@@ -65,6 +66,7 @@ final class MatchShareService
             summary: $summary,
             context: $context,
             competitionLabel: $this->resolveCompetitionLabel($game),
+            insights: $this->insights->getInsights((int) $game->getId()),
         );
     }
 

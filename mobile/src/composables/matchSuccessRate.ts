@@ -1,6 +1,7 @@
 import type { MatchSummaryShotBreakdown } from '../models/MatchSummary'
 import type { EndRecord } from '../models/MatchPlay'
 import { isCochonnetShot } from '../utils/matchBallFlags'
+import { shotsForPlayer } from '../utils/matchEndShots'
 
 export interface MastersScore {
   success: number
@@ -81,13 +82,9 @@ export function playerMastersFromEnds(ends: EndRecord[], playerId: number): Mast
   let total = 0
 
   for (const end of ends) {
-    const entry = end.balls.find((ball) => ball.playerId === playerId)
-    if (!entry) {
-      continue
-    }
-    for (const note of entry.notes) {
+    for (const shot of shotsForPlayer(end, playerId)) {
       total++
-      if (note >= 1) {
+      if (shot.note >= 1) {
         success++
       }
     }
@@ -105,16 +102,14 @@ export function playerShotMastersFromEnds(
   let total = 0
 
   for (const end of ends) {
-    const entry = end.balls.find((ball) => ball.playerId === playerId)
-    if (!entry) {
-      continue
-    }
-    for (let i = 0; i < entry.notes.length; i++) {
-      if (entry.shotTypes[i] !== shotType || isCochonnetShot(entry, i)) {
+    const playerShots = shotsForPlayer(end, playerId)
+    for (let i = 0; i < playerShots.length; i++) {
+      const shot = playerShots[i]!
+      if (shot.shotType !== shotType || isCochonnetShot(end, playerId, i)) {
         continue
       }
       total++
-      if (entry.notes[i] >= 1) {
+      if (shot.note >= 1) {
         success++
       }
     }
@@ -128,16 +123,13 @@ export function playerCochonnetMastersFromEnds(ends: EndRecord[], playerId: numb
   let total = 0
 
   for (const end of ends) {
-    const entry = end.balls.find((ball) => ball.playerId === playerId)
-    if (!entry) {
-      continue
-    }
-    for (let i = 0; i < entry.notes.length; i++) {
-      if (!isCochonnetShot(entry, i)) {
+    const playerShots = shotsForPlayer(end, playerId)
+    for (let i = 0; i < playerShots.length; i++) {
+      if (!isCochonnetShot(end, playerId, i)) {
         continue
       }
       total++
-      if (entry.notes[i] >= 1) {
+      if (playerShots[i]!.note >= 1) {
         success++
       }
     }

@@ -12,9 +12,19 @@ import {
   teamForActivePlayer,
   teamSlotsForEnd,
 } from '../utils/matchSubstitutions'
-import { normalizeBallEntry } from '../utils/matchBallFlags'
 import type { TeamSubstitution } from '../models/MatchPlay'
-import { matchScore, openingScoresForTarget, scoreFromEnds } from '../utils/matchScore'
+import { matchScore, openingScoresForTarget, scoreFromEnds, type MatchScore } from '../utils/matchScore'
+import {
+  addShot,
+  canEnterBallSlot,
+  ensureEndHasShotStructure,
+  hasAnyPlayedShot,
+  migrateLegacyBallsToShots,
+  playerShotCount,
+  totalShotsInEnd,
+  undoLastShot,
+  updateShot,
+} from '../utils/matchEndShots'
 import {
   cycleTripletteRole,
   inferStartingRoles,
@@ -22,10 +32,18 @@ import {
   snapshotEndRoles,
   syncCurrentRolesFromEnd,
   teamForPlayer,
-  totalBallsInEnd,
 } from '../utils/matchRoles'
 
 export type { MatchSetup } from '../models/MatchDraft'
+
+function normalizeEnd(end: EndRecord): EndRecord {
+  const legacy = end as EndRecord & { balls?: import('../models/MatchPlay').EndBallEntry[] }
+  if (!Array.isArray(end.shots)) {
+    end.shots = legacy.balls?.length ? migrateLegacyBallsToShots(legacy.balls) : []
+  }
+  ensureEndHasShotStructure(end)
+  return end
+}
 
 function allPlayerIds(setup: MatchSetup, substitutions: TeamSubstitution[]): number[] {
   return allMatchPlayerIds(setup.teamA, setup.teamB, substitutions)
@@ -50,8 +68,7 @@ function trackedPlayerIdsForEnd(
 
     const sub = substitutions.find((item) => item.team === team && item.outPlayerId === playerId)
     if (sub && endIndex >= sub.fromEndIndex) {
-      const originalEntry = end.balls.find((ball) => ball.playerId === playerId)
-      if ((originalEntry?.notes.length ?? 0) > 0) {
+      if (playerShotCount(end, playerId) > 0) {
         ids.add(playerId)
       }
     } else {
@@ -76,7 +93,7 @@ function resolveInitialCurrentRoles(setup: MatchSetup, initial?: MatchPlayState)
   )
 
   if (initial?.ends?.length) {
-    const end = initial.ends[initial.currentEndIndex ?? 0]
+    const end = normalizeEnd(initial.ends[initial.currentEndIndex ?? 0]!)
     return syncCurrentRolesFromEnd(end, startingRoles)
   }
 
@@ -90,11 +107,8 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   const currentEndIndex = ref(initial?.currentEndIndex ?? 0)
   const ends = reactive<EndRecord[]>(
     initial?.ends?.length
-      ? initial.ends.map((end) => ({
-          ...end,
-          balls: end.balls.map((b) => normalizeBallEntry({ ...b, distances: b.distances ?? [] })),
-        }))
-      : [{ index: 1, balls: [], winner: undefined, points: undefined, canceled: false }],
+      ? initial.ends.map((end) => normalizeEnd({ ...end, shots: [...(normalizeEnd(end).shots ?? [])] }))
+      : [{ index: 1, shots: [], winner: undefined, points: undefined, canceled: false }],
   )
 
   const startingRoles = inferStartingRoles(
@@ -187,50 +201,12 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   }
 
   function ensureEndStructure(end: EndRecord): void {
-    const trackedIds = trackedPlayerIdsForEnd(setup, substitutions, end.index, end)
-
-    if (end.balls.length === 0) {
-      end.balls = trackedIds.map((playerId) => ({
-        playerId,
-        notes: [] as BallNote[],
-        shotTypes: [] as ('point' | 'tir')[],
-        distances: [] as (number | null)[],
-        isCochonnet: [] as boolean[],
-      }))
-    } else {
-      for (const playerId of trackedIds) {
-        if (!end.balls.some((ball) => ball.playerId === playerId)) {
-          end.balls.push({
-            playerId,
-            notes: [] as BallNote[],
-            shotTypes: [] as ('point' | 'tir')[],
-            distances: [] as (number | null)[],
-            isCochonnet: [] as boolean[],
-          })
-        }
-      }
-    }
-    for (const entry of end.balls) {
-      if (!entry.isCochonnet) {
-        entry.isCochonnet = entry.notes.map(() => false)
-      }
-      if (entry.notes.length > ballsPerPlayer.value) {
-        entry.notes = entry.notes.slice(0, ballsPerPlayer.value)
-      }
-      if (entry.shotTypes.length > ballsPerPlayer.value) {
-        entry.shotTypes = entry.shotTypes.slice(0, ballsPerPlayer.value)
-      }
-      if (!entry.distances) {
-        entry.distances = []
-      }
-      if (entry.distances.length > ballsPerPlayer.value) {
-        entry.distances = entry.distances.slice(0, ballsPerPlayer.value)
-      }
-    }
+    ensureEndHasShotStructure(end)
+    trackedPlayerIdsForEnd(setup, substitutions, end.index, end)
     ensureEndRoles(end)
   }
 
-  ensureEndStructure(ends[currentEndIndex.value] ?? ends[0])
+  ensureEndStructure(ends[currentEndIndex.value] ?? ends[0]!)
 
   const distanceEstimate = ref<number | null>(initial?.distanceEstimate ?? null)
 
@@ -239,14 +215,8 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
       currentEndIndex: currentEndIndex.value,
       ends: ends.map((end) => ({
         ...end,
+        shots: end.shots.map((shot) => ({ ...shot })),
         roles: end.roles ? { ...end.roles } : undefined,
-        balls: end.balls.map((ball) => ({
-          ...ball,
-          notes: [...ball.notes],
-          shotTypes: [...ball.shotTypes],
-          distances: [...(ball.distances ?? [])],
-          isCochonnet: [...(ball.isCochonnet ?? ball.notes.map(() => false))],
-        })),
       })),
       distanceEstimate: distanceEstimate.value,
       currentRoles: { ...currentRoles },
@@ -308,7 +278,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     if (last && !isEndScored(last)) {
       return
     }
-    const e: EndRecord = { index: ends.length + 1, balls: [], winner: undefined, points: undefined, canceled: false }
+    const e: EndRecord = { index: ends.length + 1, shots: [], winner: undefined, points: undefined, canceled: false }
     for (const playerId of allPlayers.value) {
       currentRoles[playerId] = currentRoles[playerId] ?? startingRoles[playerId]
     }
@@ -334,20 +304,15 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     return setup.statisticsMode === 'standard' ? [-2, -1, 0, 1, 2] : [-1, 1]
   }
 
-  function hasAnyPlayedBall(end: EndRecord): boolean {
-    return end.balls.some((entry) => entry.notes.length > 0)
-  }
-
   function isEndScored(end: EndRecord): boolean {
     return end.canceled === true || (end.winner !== undefined && end.points !== undefined)
   }
 
   function canPlayBallSlot(end: EndRecord, playerId: number, noteIndex: number): boolean {
-    const entry = end.balls.find((b) => b.playerId === playerId)
-    if (!entry) {
+    if (!isTracked(playerId)) {
       return false
     }
-    return noteIndex <= entry.notes.length
+    return canEnterBallSlot(end, playerId, noteIndex, ballsPerPlayer.value)
   }
 
   function setDistanceEstimate(value: number | null): void {
@@ -363,8 +328,6 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   ): void {
     const end = ends[currentEndIndex.value]
     ensureEndStructure(end)
-    const entry = end.balls.find((b) => b.playerId === playerId)
-    if (!entry) return
     const max = ballsPerPlayer.value
     if (noteIndex >= max) return
 
@@ -372,40 +335,42 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     const cochonnetFlag = defaultShot === 'tir' && isCochonnet
 
     if (value === null) {
-      if (noteIndex < entry.notes.length) {
-        entry.notes.splice(noteIndex, 1)
-        entry.shotTypes.splice(noteIndex, 1)
-        entry.distances.splice(noteIndex, 1)
-        entry.isCochonnet?.splice(noteIndex, 1)
-      }
       return
     }
 
-    if (noteIndex < entry.notes.length) {
-      entry.notes[noteIndex] = value
-      entry.shotTypes[noteIndex] = defaultShot
-      if (!entry.isCochonnet) {
-        entry.isCochonnet = entry.notes.map(() => false)
-      }
-      entry.isCochonnet[noteIndex] = cochonnetFlag
+    const existingCount = playerShotCount(end, playerId)
+    if (noteIndex < existingCount) {
+      updateShot(end, playerId, noteIndex, {
+        note: value,
+        shotType: defaultShot,
+        isCochonnet: cochonnetFlag,
+      })
       return
     }
 
-    if (noteIndex === entry.notes.length) {
-      const ballsBefore = totalBallsInEnd(end)
-      entry.notes.push(value)
-      entry.shotTypes.push(defaultShot)
-      entry.distances.push(distanceEstimate.value)
-      if (!entry.isCochonnet) {
-        entry.isCochonnet = []
-      }
-      entry.isCochonnet.push(cochonnetFlag)
+    if (noteIndex === existingCount) {
+      const ballsBefore = totalShotsInEnd(end)
+      addShot(end, {
+        playerId,
+        note: value,
+        shotType: defaultShot,
+        distance: distanceEstimate.value,
+        isCochonnet: cochonnetFlag,
+      })
       maybeRotateOnFirstBall(playerId, end, ballsBefore)
     }
   }
 
   function setNote(playerId: number, noteIndex: number, value: BallNote | null): void {
     setNoteWithShot(playerId, noteIndex, value)
+  }
+
+  function undoPreviousShot(): boolean {
+    const end = ends[currentEndIndex.value]
+    if (!end || isEndScored(end)) {
+      return false
+    }
+    return undoLastShot(end) !== null
   }
 
   function allTrackedNotesFilled(end: EndRecord): boolean {
@@ -415,8 +380,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
         continue
       }
       const activeId = activePlayerForSlot(playerId, team, substitutions, end.index)
-      const entry = end.balls.find((ball) => ball.playerId === activeId)
-      if (!entry || entry.notes.length < ballsPerPlayer.value) {
+      if (playerShotCount(end, activeId) < ballsPerPlayer.value) {
         return false
       }
     }
@@ -425,7 +389,8 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
 
   const currentEnd = computed(() => ends[currentEndIndex.value])
   const currentEndComplete = computed(() => allTrackedNotesFilled(currentEnd.value))
-  const canValidateEnd = computed(() => hasAnyPlayedBall(currentEnd.value))
+  const canValidateEnd = computed(() => hasAnyPlayedShot(currentEnd.value))
+  const canUndoShot = computed(() => !isEndScored(currentEnd.value) && totalShotsInEnd(currentEnd.value) > 0)
   const canEditRoles = computed(() => setup.type === 'triplette')
 
   function setEndScore(winner: TeamSide, points: number): void {
@@ -448,8 +413,8 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
 
   function playersForEndRoles(end: EndRecord): number[] {
     const ids = new Set(allPlayers.value)
-    for (const ball of end.balls) {
-      ids.add(ball.playerId)
+    for (const shot of end.shots) {
+      ids.add(shot.playerId)
     }
     return Array.from(ids)
   }
@@ -493,8 +458,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
   }
 
   function hasPlayedBallsInEnd(playerId: number, end: EndRecord): boolean {
-    const entry = end.balls.find((ball) => ball.playerId === playerId)
-    return (entry?.notes.length ?? 0) > 0
+    return playerShotCount(end, playerId) > 0
   }
 
   function isTracked(playerId: number): boolean {
@@ -519,7 +483,7 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
 
     const end = ends[currentEndIndex.value]
     if (end) {
-      end.balls = []
+      end.shots = []
       end.winner = undefined
       end.points = undefined
       end.canceled = false
@@ -580,7 +544,9 @@ export function useMatchPlay(setup: MatchSetup, initial?: MatchPlayState, onPers
     currentEndComplete,
     canValidateEnd,
     canPlayBallSlot,
-    hasAnyPlayedBall,
+    hasAnyPlayedBall: hasAnyPlayedShot,
+    canUndoShot,
+    undoPreviousShot,
     colorFor,
     snapshot,
     cancelCurrentEnd,

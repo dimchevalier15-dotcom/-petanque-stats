@@ -30,7 +30,7 @@ const state: MatchPlayState = {
       winner: 'A',
       points: 3,
       canceled: false,
-      balls: [{ playerId: 6, notes: [1], shotTypes: ['tir'], distances: [null] }],
+      shots: [{ sequenceOrder: 1, playerId: 6, note: 1, shotType: 'tir', distance: null }],
       roles: { 5: 'pointeur', 6: 'tireur' },
     },
     {
@@ -38,10 +38,9 @@ const state: MatchPlayState = {
       winner: 'A',
       points: 0,
       canceled: true,
-      balls: [{ playerId: 9, notes: [-1], shotTypes: ['tir'], distances: [8] }],
+      shots: [{ sequenceOrder: 1, playerId: 9, note: -1, shotType: 'tir', distance: 8 }],
     },
-    // The end in progress is never sent.
-    { index: 3, balls: [], canceled: false },
+    { index: 3, shots: [], canceled: false },
   ],
 }
 

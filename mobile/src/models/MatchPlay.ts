@@ -13,19 +13,28 @@ export interface TeamSubstitution {
 // Allowed ball notes by mode: standard: -2,-1,0,1,2; simple: -1,1
 export type BallNote = -2 | -1 | 0 | 1 | 2
 
+export interface EndShot {
+  /** 1-based chronological order within the end (global across all players). */
+  sequenceOrder: number
+  playerId: number
+  note: BallNote
+  shotType: 'point' | 'tir'
+  distance: number | null
+  isCochonnet?: boolean
+}
+
+/** @deprecated Legacy per-player ball arrays. Use EndShot on EndRecord instead. */
 export interface EndBallEntry {
   playerId: number
   notes: BallNote[]
   shotTypes: ('point' | 'tir')[]
-  // Optional distance in meters for each ball, aligned with notes by index. null = not set.
   distances: (number | null)[]
-  // Cochonnet shots are tracked separately and excluded from tir statistics.
   isCochonnet?: boolean[]
 }
 
 export interface EndRecord {
   index: number // 1-based
-  balls: EndBallEntry[]
+  shots: EndShot[]
   winner?: TeamSide
   points?: number
   canceled?: boolean

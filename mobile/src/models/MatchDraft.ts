@@ -57,7 +57,7 @@ export interface MatchDraftProgress {
 export type MatchDraftOwner = 'guest' | 'user'
 
 export interface MatchDraft extends MatchSetup, MatchPlayState, MatchDraftProgress {
-  version: 2
+  version: 3
   userId: number | null
   savedAt: string
   /** Distinguishes guest-only drafts from logged-out user drafts (both may use userId null). */

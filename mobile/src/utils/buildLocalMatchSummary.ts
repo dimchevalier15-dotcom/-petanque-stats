@@ -8,6 +8,7 @@ import type {
 } from '../models/MatchSummary'
 import { successRateFromNoteCounts } from '../composables/matchSuccessRate'
 import { isCochonnetShot } from './matchBallFlags'
+import { shotsForPlayer } from './matchEndShots'
 import { matchScore } from './matchScore'
 
 interface NoteAggregate {
@@ -75,16 +76,15 @@ function teamForPlayer(playerId: number, draft: MatchDraft): 'A' | 'B' {
 function aggregatePlayerNotes(
   ends: EndRecord[],
   playerId: number,
-  filter?: (shotType: 'point' | 'tir', index: number, entry: EndRecord['balls'][number]) => boolean,
+  filter?: (end: EndRecord, slotIndex: number, shotType: 'point' | 'tir') => boolean,
 ): NoteAggregate {
   const aggregate = emptyAggregate()
   for (const end of ends) {
-    const entry = end.balls.find((ball) => ball.playerId === playerId)
-    if (!entry) continue
-    for (let i = 0; i < entry.notes.length; i++) {
-      const shotType = entry.shotTypes[i] ?? 'point'
-      if (filter && !filter(shotType, i, entry)) continue
-      addNote(aggregate, entry.notes[i])
+    const playerShots = shotsForPlayer(end, playerId)
+    for (let i = 0; i < playerShots.length; i++) {
+      const shot = playerShots[i]!
+      if (filter && !filter(end, i, shot.shotType)) continue
+      addNote(aggregate, shot.note)
     }
   }
   return aggregate
@@ -93,9 +93,9 @@ function aggregatePlayerNotes(
 function endTotalsForPlayer(ends: EndRecord[], playerId: number): MatchSummaryEndTotal[] {
   const totals: MatchSummaryEndTotal[] = []
   for (const end of ends) {
-    const entry = end.balls.find((ball) => ball.playerId === playerId)
-    if (!entry || entry.notes.length === 0) continue
-    const total = entry.notes.reduce((sum, note) => sum + note, 0)
+    const playerShots = shotsForPlayer(end, playerId)
+    if (playerShots.length === 0) continue
+    const total = playerShots.reduce((sum, shot) => sum + shot.note, 0)
     totals.push({ endIndex: end.index, total })
   }
   return totals
@@ -125,14 +125,14 @@ export function buildLocalMatchSummary(draft: MatchDraft): MatchSummary {
       : { firstName: `#${playerId}`, lastName: '', nickname: `#${playerId}` }
 
     const overall = aggregatePlayerNotes(ends, playerId)
-    const pointAgg = aggregatePlayerNotes(ends, playerId, (shotType, index, entry) => {
-      return shotType === 'point' && !isCochonnetShot(entry, index)
+    const pointAgg = aggregatePlayerNotes(ends, playerId, (_end, index, shotType) => {
+      return shotType === 'point' && !isCochonnetShot(_end, playerId, index)
     })
-    const tirAgg = aggregatePlayerNotes(ends, playerId, (shotType, index, entry) => {
-      return shotType === 'tir' && !isCochonnetShot(entry, index)
+    const tirAgg = aggregatePlayerNotes(ends, playerId, (_end, index, shotType) => {
+      return shotType === 'tir' && !isCochonnetShot(_end, playerId, index)
     })
-    const cochonnetAgg = aggregatePlayerNotes(ends, playerId, (_shotType, index, entry) => {
-      return isCochonnetShot(entry, index)
+    const cochonnetAgg = aggregatePlayerNotes(ends, playerId, (end, index) => {
+      return isCochonnetShot(end, playerId, index)
     })
 
     const average = overall.count > 0 ? Math.round((overall.sum / overall.count) * 100) / 100 : 0

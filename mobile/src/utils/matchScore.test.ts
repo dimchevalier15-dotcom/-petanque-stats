@@ -4,8 +4,8 @@ import type { EndRecord } from '../models/MatchPlay'
 import { matchScore, normalizeOpeningScore, openingScoresForTarget, scoreFromEnds } from './matchScore'
 
 const ends: EndRecord[] = [
-  { index: 1, balls: [], winner: 'A', points: 3, canceled: false },
-  { index: 2, balls: [], winner: 'B', points: 2, canceled: false },
+  { index: 1, shots: [], winner: 'A', points: 3, canceled: false },
+  { index: 2, shots: [], winner: 'B', points: 2, canceled: false },
 ]
 
 describe('matchScore', () => {
@@ -21,7 +21,7 @@ describe('matchScore', () => {
   it('ignores canceled ends', () => {
     const withCanceled: EndRecord[] = [
       ...ends,
-      { index: 3, balls: [], winner: 'A', points: 4, canceled: true },
+      { index: 3, shots: [], winner: 'A', points: 4, canceled: true },
     ]
     expect(matchScore(withCanceled, 2, 0)).toEqual({ scoreA: 5, scoreB: 2 })
   })

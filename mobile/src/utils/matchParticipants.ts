@@ -161,9 +161,9 @@ export function remapSubmission(
     })),
     ends: payload.ends.map((end) => ({
       ...end,
-      balls: end.balls.map((ball) => ({
-        ...ball,
-        playerId: remapParticipantId(ball.playerId, mapping),
+      shots: end.shots.map((shot) => ({
+        ...shot,
+        playerId: remapParticipantId(shot.playerId, mapping),
       })),
       roles: (end.roles ?? []).map((role) => ({
         ...role,
@@ -187,7 +187,7 @@ export function containsProvisionalParticipant(payload: CompleteMatchRequestDto)
       substitution.inPlayerId,
     ]),
     ...payload.ends.flatMap((end) => [
-      ...end.balls.map((ball) => ball.playerId),
+      ...end.shots.map((shot) => shot.playerId),
       ...(end.roles ?? []).map((role) => role.playerId),
     ]),
   ]

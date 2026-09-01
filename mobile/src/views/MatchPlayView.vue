@@ -334,6 +334,16 @@
       </details>
 
       <footer class="play-actions">
+        <Button
+          v-if="canUndoShot"
+          class="undo-shot-btn"
+          size="small"
+          :label="t('play.actions.undoShot')"
+          icon="pi pi-undo"
+          severity="secondary"
+          text
+          @click="undoPreviousShot"
+        />
         <div v-if="canValidateEnd && !scoreDialog" class="play-actions-primary">
           <Button class="validate-end-btn" size="small" :label="t('play.actions.validateEnd')" icon="pi pi-check" @click="reopenEndDialog" />
           <Button class="cancel-end-btn" size="small" :label="t('play.actions.cancelEnd')" icon="pi pi-times" severity="secondary" outlined @click="openCancelDialog" />
@@ -533,6 +543,12 @@ import NotationHelpDialog from '../components/match/NotationHelpDialog.vue'
 import type { TeamSide } from '../models/MatchPlay'
 import { DEFAULT_TARGET_SCORE, type MatchType, type PlayerRole, type ShotType, type StatisticsMode } from '../models/Match'
 import { totalBallsInEnd } from '../utils/matchRoles'
+import {
+  distanceAt as distanceAtShot,
+  isCochonnetAt,
+  noteAt as noteAtShot,
+  shotTypeAt,
+} from '../utils/matchEndShots'
 import { allMatchPlayerIds } from '../utils/matchSubstitutions'
 import {
   isProvisionalParticipant,
@@ -669,6 +685,8 @@ const {
   canValidateEnd,
   canPlayBallSlot,
   cancelCurrentEnd,
+  canUndoShot,
+  undoPreviousShot,
   showRoles,
   roleFor,
   shotDefaultFor,
@@ -744,16 +762,11 @@ const shotOptions = computed(() => [
 ])
 
 function shotAt(playerId: number, idx: number): ShotType | undefined {
-  const e = currentEnd.value
-  const entry = e.balls.find((b) => b.playerId === playerId)
-  const v = entry?.shotTypes[idx]
-  return v as ShotType | undefined
+  return shotTypeAt(currentEnd.value, playerId, idx)
 }
 
 function cochonnetAt(playerId: number, idx: number): boolean {
-  const e = currentEnd.value
-  const entry = e.balls.find((b) => b.playerId === playerId)
-  return entry?.isCochonnet?.[idx] === true
+  return isCochonnetAt(currentEnd.value, playerId, idx)
 }
 
 function openNote(event: Event, playerId: number, noteIndex: number) {
@@ -814,9 +827,7 @@ function severityFor(n?: number): 'danger' | 'warn' | 'secondary' | 'success' | 
 }
 
 function noteAt(playerId: number, idx: number): number | undefined {
-  const e = currentEnd.value
-  const entry = e.balls.find((b) => b.playerId === playerId)
-  return entry?.notes[idx]
+  return noteAtShot(currentEnd.value, playerId, idx)
 }
 
 function ballLabel(playerId: number, idx: number): string {
@@ -1710,6 +1721,10 @@ onMounted(async () => {
 .play-actions {
   display: grid;
   gap: 0.25rem;
+}
+
+.undo-shot-btn {
+  justify-self: start;
 }
 
 .teams {

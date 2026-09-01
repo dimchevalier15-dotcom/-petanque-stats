@@ -42,6 +42,7 @@ final class SharedMatchHttpTest extends WebDatabaseTestCase
         self::assertSame(1, $payload['summary']['scoreA']);
         self::assertNull($payload['summary']['myMatchPlayerId'] ?? null);
         self::assertSame($matchId, $payload['context']['matchId']);
+        self::assertArrayHasKey('insights', $payload);
     }
 
     public function testGetSharedMatchRecapReturns404WhenUnknown(): void

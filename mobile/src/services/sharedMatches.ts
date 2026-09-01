@@ -4,6 +4,7 @@ import type { MatchSummaryResponseDto } from '../dto/match/MatchSummaryResponse'
 import type { MatchContextResponseDto } from '../dto/match/MatchContextResponse'
 import type { MatchSummary } from '../models/MatchSummary'
 import type { MatchContext } from '../models/MatchContext'
+import type { MatchInsights } from '../models/MatchInsights'
 import { todayInputDate } from '../models/MatchContext'
 
 export interface SharedMatchRecapDto {
@@ -14,12 +15,14 @@ export interface SharedMatchRecapDto {
   }
   context: MatchContextResponseDto
   competitionLabel?: string | null
+  insights?: MatchInsights | null
 }
 
 export interface SharedMatchRecap {
   summary: MatchSummary
   context: MatchContext
   competitionLabel: string | null
+  insights: MatchInsights | null
 }
 
 const publicApi = axios.create({
@@ -48,6 +51,7 @@ export const sharedMatchesService = {
       summary: data.summary as unknown as MatchSummary,
       context: mapContext(data.context),
       competitionLabel: data.competitionLabel ?? null,
+      insights: data.insights ?? null,
     }
   },
 }

@@ -423,7 +423,7 @@ export function useNewMatchSetup(): UseNewMatchSetupReturn {
         setup,
         {
           currentEndIndex: 0,
-          ends: [{ index: 1, balls: [], canceled: false }],
+          ends: [{ index: 1, shots: [], canceled: false }],
           distanceEstimate: null,
           currentRoles: { ...setup.startingRoles },
           substitutions: [],

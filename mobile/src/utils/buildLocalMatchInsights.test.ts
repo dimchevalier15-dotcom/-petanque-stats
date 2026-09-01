@@ -1,0 +1,127 @@
+// @vitest-environment node
+import { describe, expect, it } from 'vitest'
+import { buildLocalMatchInsights } from './buildLocalMatchInsights'
+import type { EndRecord, EndShot } from '../models/MatchPlay'
+
+function shot(order: number, playerId: number, note: number, shotType: 'point' | 'tir' = 'point'): EndShot {
+  return { sequenceOrder: order, playerId, note, shotType, distance: null }
+}
+
+describe('buildLocalMatchInsights', () => {
+  it('is unavailable when not all players are tracked', () => {
+    const res = buildLocalMatchInsights({
+      type: 'tete_a_tete',
+      teamA: [1],
+      teamB: [2],
+      trackedPlayers: [1],
+      ends: [],
+    })
+
+    expect(res.status).toBe('unavailable')
+    expect(res.reason).toBe('not_all_tracked')
+  })
+
+  it('computes opening team from first shot', () => {
+    const end: EndRecord = {
+      index: 1,
+      winner: 'A',
+      points: 2,
+      canceled: false,
+      shots: [shot(1, 1, 1, 'point'), shot(2, 2, -1, 'tir')],
+    }
+
+    const res = buildLocalMatchInsights({
+      type: 'tete_a_tete',
+      teamA: [1],
+      teamB: [2],
+      trackedPlayers: [1, 2],
+      ends: [end],
+    })
+
+    expect(res.status).toBe('ok')
+    expect(res.teamA?.endsOpened).toBe(1)
+    expect(res.pointDominanceTeamA).toEqual({ endsWonWhenOpened: 1, endsOpened: 1 })
+    expect(res.markingTeamA?.point.attempts).toBe(0)
+    expect(res.markingTeamB?.tir.attempts).toBe(0)
+  })
+
+  it('counts marking balls when opponent is out and stops after success', () => {
+    const shots: EndShot[] = []
+    let order = 1
+
+    for (let i = 0; i < 3; i++) {
+      shots.push(shot(order++, 1, 0, 'point'))
+    }
+    for (let i = 0; i < 2; i++) {
+      shots.push(shot(order++, 2, 0, 'point'))
+    }
+    shots.push(shot(order++, 2, 1, 'point'))
+    for (let i = 0; i < 3; i++) {
+      shots.push(shot(order++, 3, 0, 'point'))
+    }
+    shots.push(shot(order++, 4, -1, 'tir'))
+    shots.push(shot(order++, 4, 1, 'tir'))
+    shots.push(shot(order++, 4, 2, 'tir'))
+
+    const end: EndRecord = {
+      index: 1,
+      winner: 'B',
+      points: 2,
+      canceled: false,
+      shots,
+    }
+
+    const res = buildLocalMatchInsights({
+      type: 'doublette',
+      teamA: [1, 2],
+      teamB: [3, 4],
+      trackedPlayers: [1, 2, 3, 4],
+      ends: [end],
+    })
+
+    expect(res.status).toBe('ok')
+    expect(res.markingTeamB?.tir).toEqual({ made: 1, attempts: 2, rate: 50 })
+    expect(res.rajoutTeamB?.tir).toEqual({ made: 1, attempts: 1, rate: 100 })
+    expect(res.markingTeamA?.point.attempts).toBe(0)
+    expect(res.markingTeamA?.tir.attempts).toBe(0)
+  })
+
+  it('counts rajout balls when opponent last ball is not positive', () => {
+    const shots: EndShot[] = []
+    let order = 1
+
+    for (let i = 0; i < 3; i++) {
+      shots.push(shot(order++, 1, 0, 'point'))
+    }
+    for (let i = 0; i < 3; i++) {
+      shots.push(shot(order++, 2, 0, 'point'))
+    }
+    for (let i = 0; i < 3; i++) {
+      shots.push(shot(order++, 3, 0, 'point'))
+    }
+    shots.push(shot(order++, 4, -1, 'tir'))
+    shots.push(shot(order++, 4, 1, 'tir'))
+    shots.push(shot(order++, 4, 2, 'tir'))
+
+    const end: EndRecord = {
+      index: 1,
+      winner: 'B',
+      points: 2,
+      canceled: false,
+      shots,
+    }
+
+    const res = buildLocalMatchInsights({
+      type: 'doublette',
+      teamA: [1, 2],
+      teamB: [3, 4],
+      trackedPlayers: [1, 2, 3, 4],
+      ends: [end],
+    })
+
+    expect(res.status).toBe('ok')
+    expect(res.markingTeamB?.tir.attempts).toBe(0)
+    expect(res.rajoutTeamB?.point).toEqual({ made: 0, attempts: 3, rate: 0 })
+    expect(res.rajoutTeamB?.tir).toEqual({ made: 2, attempts: 3, rate: 66.7 })
+  })
+})

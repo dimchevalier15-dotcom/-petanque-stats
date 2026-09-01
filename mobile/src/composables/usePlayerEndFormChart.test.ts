@@ -23,14 +23,13 @@ function completedEnd(
     index,
     winner: 'A',
     points: 1,
-    balls: [
-      {
-        playerId,
-        notes,
-        shotTypes,
-        distances: notes.map(() => null),
-      },
-    ],
+    shots: notes.map((note, noteIndex) => ({
+      sequenceOrder: noteIndex + 1,
+      playerId,
+      note,
+      shotType: shotTypes[noteIndex] ?? 'point',
+      distance: null,
+    })),
   }
 }
 
@@ -89,13 +88,9 @@ describe('buildPlayerEndFormSeries masters', () => {
         completedEnd(1, [1, 1], ['point', 'point']),
         {
           index: 2,
-          balls: [
-            {
-              playerId: 1,
-              notes: [2, 2],
-              shotTypes: ['point', 'point'],
-              distances: [null, null],
-            },
+          shots: [
+            { sequenceOrder: 1, playerId: 1, note: 2, shotType: 'point', distance: null },
+            { sequenceOrder: 2, playerId: 1, note: 2, shotType: 'point', distance: null },
           ],
         },
       ],

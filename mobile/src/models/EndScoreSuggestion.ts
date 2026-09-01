@@ -1,5 +1,6 @@
 import type { MatchType } from './Match'
 import type { EndRecord, TeamSide } from './MatchPlay'
+import { shotsForPlayer } from '../utils/matchEndShots'
 
 export interface EndScoreSuggestion {
   winner: TeamSide | null
@@ -14,9 +15,8 @@ export function maxPointsPerEnd(type: MatchType): number {
 export function sumTeamBallResults(end: EndRecord, teamPlayerIds: readonly number[]): number {
   let total = 0
   for (const playerId of teamPlayerIds) {
-    const entry = end.balls.find((ball) => ball.playerId === playerId)
-    if (entry) {
-      total += entry.notes.reduce((acc, note) => acc + note, 0)
+    for (const shot of shotsForPlayer(end, playerId)) {
+      total += shot.note
     }
   }
   return total

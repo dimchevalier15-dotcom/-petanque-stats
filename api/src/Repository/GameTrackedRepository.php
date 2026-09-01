@@ -31,4 +31,14 @@ final class GameTrackedRepository extends ServiceEntityRepository
             ->getQuery()->getSingleColumnResult();
         return array_map('intval', $rows);
     }
+
+    public function deleteByGame(Game $game): void
+    {
+        $this->createQueryBuilder('t')
+            ->delete()
+            ->where('t.game = :g')
+            ->setParameter('g', $game)
+            ->getQuery()
+            ->execute();
+    }
 }

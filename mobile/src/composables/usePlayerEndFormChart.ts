@@ -2,6 +2,7 @@ import { computed, type ComputedRef, type Ref } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 import type { BallNote, EndRecord } from '../models/MatchPlay'
 import { isCochonnetShot } from '../utils/matchBallFlags'
+import { hasAnyPlayedShot, shotsForPlayer } from '../utils/matchEndShots'
 import { formatMasters, type MastersScore } from './matchSuccessRate'
 
 export type { MastersScore }
@@ -21,7 +22,7 @@ export interface PlayerEndFormSeries {
 function getCompletedEnds(ends: EndRecord[], currentEndIndex: number): EndRecord[] {
   return ends.slice(0, currentEndIndex).filter((end) => {
     if (end.canceled) {
-      return end.balls.some((entry) => entry.notes.length > 0)
+      return hasAnyPlayedShot(end)
     }
 
     return end.winner !== undefined && end.points !== undefined
@@ -29,12 +30,12 @@ function getCompletedEnds(ends: EndRecord[], currentEndIndex: number): EndRecord
 }
 
 function sumAllNotes(end: EndRecord, playerId: number): number | null {
-  const entry = end.balls.find((b) => b.playerId === playerId)
-  if (!entry || entry.notes.length === 0) {
+  const playerShots = shotsForPlayer(end, playerId)
+  if (playerShots.length === 0) {
     return null
   }
 
-  return entry.notes.reduce((acc, note) => acc + note, 0)
+  return playerShots.reduce((acc, shot) => acc + shot.note, 0)
 }
 
 function forEachShotNote(
@@ -44,15 +45,13 @@ function forEachShotNote(
   fn: (note: BallNote) => void,
 ): void {
   for (const end of completedEnds) {
-    const entry = end.balls.find((b) => b.playerId === playerId)
-    if (!entry) {
-      continue
-    }
-    for (let i = 0; i < entry.notes.length; i++) {
-      if (entry.shotTypes[i] !== shotType || isCochonnetShot(entry, i)) {
+    const playerShots = shotsForPlayer(end, playerId)
+    for (let i = 0; i < playerShots.length; i++) {
+      const shot = playerShots[i]!
+      if (shot.shotType !== shotType || isCochonnetShot(end, playerId, i)) {
         continue
       }
-      fn(entry.notes[i])
+      fn(shot.note)
     }
   }
 }
@@ -63,15 +62,12 @@ function forEachCochonnetNote(
   fn: (note: BallNote) => void,
 ): void {
   for (const end of completedEnds) {
-    const entry = end.balls.find((b) => b.playerId === playerId)
-    if (!entry) {
-      continue
-    }
-    for (let i = 0; i < entry.notes.length; i++) {
-      if (!isCochonnetShot(entry, i)) {
+    const playerShots = shotsForPlayer(end, playerId)
+    for (let i = 0; i < playerShots.length; i++) {
+      if (!isCochonnetShot(end, playerId, i)) {
         continue
       }
-      fn(entry.notes[i])
+      fn(playerShots[i]!.note)
     }
   }
 }

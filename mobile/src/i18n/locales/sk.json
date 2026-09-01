@@ -73,6 +73,55 @@
       "avg": "Priemer"
     },
     "actions": { "backHome": "Späť na úvod" },
+    "tabs": {
+      "label": "Sekcie rekapitulácie",
+      "overview": "Štatistiky",
+      "tactics": "Taktická analýza"
+    },
+    "insights": {
+      "title": "Taktická analýza",
+      "subtitle": "Pokročilé čítanie zo skutočného poradia striel.",
+      "coverage": "{rate} % striel má vzdialenosť · {ends} analyzovaných mien",
+      "unavailable": {
+        "not_all_tracked": "Pre taktickú analýzu musia byť sledovaní všetci hráči zápasu.",
+        "invalid_sequence": "Chronologické poradie striel je na tomto zápase neúplné alebo nekonzistentné.",
+        "no_data": "Žiadna mena so zaznamenanými strielami."
+      },
+      "marking": {
+        "title": "Úspešnosť bôl na značkovanie",
+        "hint": "Keď súper ukončí poslednú boulu s +1 alebo +2, každá ďalšia strela sa počíta až do prvého úspechu (+1/+2). Markuje len jeden tím na mene.",
+        "point": "Bodenie",
+        "tir": "Streľba",
+        "rate": "{rate} % ({made}/{total})",
+        "noData": "—"
+      },
+      "rajout": {
+        "title": "Úspešnosť bôl na dorážku",
+        "hint": "Ak súper ukončí poslednú boulu s 0 alebo menej, všetky vaše ďalšie strely sú dorážky. Inak po úspešnej bole na značkovanie, ak vám ešte zostávajú boule, nasledujúce sú dorážky.",
+        "point": "Bodenie",
+        "tir": "Streľba",
+        "rate": "{rate} % ({made}/{total})",
+        "noData": "—"
+      },
+      "point": {
+        "title": "Vyhrané meny s bodom",
+        "hint": "Mene, kde tím hral prvú boulu a následne ju vyhral.",
+        "ends": "{won} / {opened} mien"
+      },
+      "closing": {
+        "title": "Boule v ruke a obrana",
+        "hint": "Zúročenie, keď súper nemá boule, alebo solídna obrana bez zvyšných bôl.",
+        "capitalized": "Boule v ruke: {count}/{total} zúročených mien (priem. {avg} bodov)",
+        "defended": "Bez bôl: {count}/{total} úspešných obrán (priem. {avg} inkasovaných bodov)",
+        "noCapitalization": "Žiadne ukončenie meny s boulami v ruke.",
+        "noDefense": "Žiadna obranná situácia bez bôl."
+      },
+      "distance": {
+        "title": "Dominancia podľa vzdialenosti",
+        "monopoly": "{team} dominuje na všetkých zaznamenaných vzdialenostiach.",
+        "none": "Nedostatok údajov o vzdialenosti na zmysluplné porovnanie."
+      }
+    },
     "share": {
       "title": "Zdieľať rekapituláciu",
       "hint": "Pošlite tento odkaz alebo QR kód, aby si každý mohol pozrieť štatistiky zápasu.",
@@ -827,7 +876,7 @@
       "tirAverage": "Priemer strela",
       "endLabel": "M{n}"
     },
-    "actions": { "saveEnd": "Uložiť mènu", "validateEnd": "Potvrdiť mènu", "cancelEnd": "Zrušiť mènu", "finish": "Ukončiť zápas" },
+    "actions": { "saveEnd": "Uložiť mènu", "validateEnd": "Potvrdiť mènu", "cancelEnd": "Zrušiť mènu", "finish": "Ukončiť zápas", "undoShot": "Vrátiť poslednú akciu" },
     "options": {
       "open": "Možnosti"
     },

@@ -367,7 +367,7 @@ final class MatchRecordingServiceTest extends KernelDatabaseTestCase
             ->andWhere('b.player = :p')
             ->setParameter('g', $game)
             ->setParameter('p', $this->em->getRepository(Player::class)->find($playerId))
-            ->orderBy('b.index', 'ASC')
+            ->orderBy('b.sequenceOrder', 'ASC')
             ->getQuery()
             ->getResult();
     }

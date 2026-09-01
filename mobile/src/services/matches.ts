@@ -3,7 +3,9 @@ import type { CreateMatchRequestDto } from '../dto/match/CreateMatchRequest'
 import type { CreateMatchResponseDto } from '../dto/match/CreateMatchResponse'
 import type { CompleteMatchRequestDto } from '../dto/match/CompleteMatchRequest'
 import type { MatchSummaryResponseDto } from '../dto/match/MatchSummaryResponse'
+import type { MatchInsightsResponseDto } from '../dto/match/MatchInsightsResponse'
 import type { MatchSummary } from '../models/MatchSummary'
+import type { MatchInsights } from '../models/MatchInsights'
 import type { MatchHistoryResponseDto, MatchHistoryItemDto } from '../dto/match/MatchHistoryResponse'
 import type { MatchHistoryItem, MatchHistoryPage } from '../models/MatchHistory'
 import type { MatchContextResponseDto } from '../dto/match/MatchContextResponse'
@@ -53,6 +55,10 @@ export const matchesService = {
     const { data } = await api.get<MatchSummaryResponseDto>(`/matches/${matchId}/summary`)
     // DTO -> Model mapping (same shape currently)
     return data as unknown as MatchSummary
+  },
+  async getInsights(matchId: number): Promise<MatchInsights> {
+    const { data } = await api.get<MatchInsightsResponseDto>(`/matches/${matchId}/insights`)
+    return data as unknown as MatchInsights
   },
   async getHistory(page = 1, size = 20): Promise<MatchHistoryPage> {
     const { data } = await api.get<MatchHistoryResponseDto>('/matches/history', { params: { page, size } })

@@ -19,6 +19,7 @@ use App\Enum\PlayerRole;
 use App\Repository\GameEndRepository;
 use App\Repository\GameParticipantRepository;
 use App\Repository\GameRepository;
+use App\Repository\GameTrackedRepository;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -28,6 +29,7 @@ final class MatchRecordingService
         private GameRepository $games,
         private GameEndRepository $ends,
         private GameParticipantRepository $participants,
+        private GameTrackedRepository $trackedPlayers,
         private PlayerRepository $players,
         private EntityManagerInterface $em,
         private GameParticipantValidationResolver $validationResolver,
@@ -54,12 +56,13 @@ final class MatchRecordingService
         $tracked = $this->players->filterPlaceholderIds(array_values(array_unique(array_map('intval', $tracked))));
         $trackedSet = array_fill_keys($tracked, true);
 
-        $this->em->wrapInTransaction(function () use ($req, $game, $matchPlayerSet, $trackedSet, $allowedPerPlayer, $maxPointsPerEnd): void {
+        $this->em->wrapInTransaction(function () use ($req, $game, $matchPlayerSet, $trackedSet, $tracked, $allowedPerPlayer, $maxPointsPerEnd): void {
             $game->setOpeningScoreA(max(0, $req->openingScoreA));
             $game->setOpeningScoreB(max(0, $req->openingScoreB));
 
             // Idempotency: replace any previous completion data instead of duplicating it.
             $this->ends->deleteByGame($game);
+            $this->syncTrackedPlayers($game, $tracked);
 
             $this->registerSubstitutions($game, $req, $matchPlayerSet, $trackedSet);
 
@@ -83,7 +86,7 @@ final class MatchRecordingService
                 $end = new GameEnd($game, $endDto->index, $winner, $points, $isCanceled);
                 $this->em->persist($end);
 
-                $this->persistEndBalls(
+                $this->persistEndShots(
                     end: $end,
                     endDto: $endDto,
                     matchPlayerSet: $matchPlayerSet,
@@ -99,6 +102,23 @@ final class MatchRecordingService
         $shareUuid = $this->share->ensureShareUuid($game);
 
         return new CompleteMatchResponse((int) $game->getId(), $shareUuid);
+    }
+
+    /**
+     * @param list<int> $trackedPlayerIds
+     */
+    private function syncTrackedPlayers(Game $game, array $trackedPlayerIds): void
+    {
+        $this->trackedPlayers->deleteByGame($game);
+
+        foreach ($trackedPlayerIds as $playerId) {
+            $player = $this->players->find((int) $playerId);
+            if ($player === null) {
+                continue;
+            }
+
+            $this->em->persist(new GameTracked($game, $player));
+        }
     }
 
     /**
@@ -180,7 +200,7 @@ final class MatchRecordingService
      * @param array<int, true> $trackedSet
      * @param array<int, string> $defaultMap
      */
-    private function persistEndBalls(
+    private function persistEndShots(
         GameEnd $end,
         CompleteMatchEndDto $endDto,
         array $matchPlayerSet,
@@ -188,6 +208,80 @@ final class MatchRecordingService
         int $allowedPerPlayer,
         array $defaultMap,
     ): void {
+        $shots = $this->normalizeEndShots($endDto, $matchPlayerSet, $trackedSet, $allowedPerPlayer, $defaultMap);
+
+        foreach ($shots as $shot) {
+            $player = $this->players->find($shot['playerId']);
+            if ($player === null) {
+                continue;
+            }
+
+            $this->em->persist(new GameBall(
+                $end,
+                $player,
+                $shot['sequenceOrder'],
+                $shot['note'],
+                $shot['shotType'],
+                $shot['distance'],
+                $shot['isCochonnet'],
+            ));
+        }
+    }
+
+    /**
+     * @param array<int, true> $matchPlayerSet
+     * @param array<int, true> $trackedSet
+     * @param array<int, string> $defaultMap
+     *
+     * @return list<array{sequenceOrder:int,playerId:int,note:int,shotType:string,distance:?float,isCochonnet:bool}>
+     */
+    private function normalizeEndShots(
+        CompleteMatchEndDto $endDto,
+        array $matchPlayerSet,
+        array $trackedSet,
+        int $allowedPerPlayer,
+        array $defaultMap,
+    ): array {
+        if ($endDto->shots !== []) {
+            $shots = [];
+            foreach ($endDto->shots as $shotDto) {
+                $pid = (int) $shotDto->playerId;
+                if (!isset($matchPlayerSet[$pid]) || !isset($trackedSet[$pid])) {
+                    continue;
+                }
+
+                $note = (int) $shotDto->note;
+                if ($note < -2 || $note > 2) {
+                    continue;
+                }
+
+                $shotType = in_array($shotDto->shotType, ['point', 'tir'], true)
+                    ? $shotDto->shotType
+                    : (string) ($defaultMap[$pid] ?? 'point');
+
+                $distance = null;
+                if ($shotDto->distance !== null && $shotDto->distance >= 0) {
+                    $distance = (float) $shotDto->distance;
+                }
+
+                $shots[] = [
+                    'sequenceOrder' => (int) $shotDto->sequenceOrder,
+                    'playerId' => $pid,
+                    'note' => $note,
+                    'shotType' => $shotType,
+                    'distance' => $distance,
+                    'isCochonnet' => $shotDto->isCochonnet === true,
+                ];
+            }
+
+            usort($shots, static fn (array $a, array $b): int => $a['sequenceOrder'] <=> $b['sequenceOrder']);
+
+            return $shots;
+        }
+
+        // Legacy per-player balls payload (invalid for tactical insights, still stored sequentially).
+        $sequenceOrder = 1;
+        $shots = [];
         foreach ($endDto->balls as $ballDto) {
             $pid = (int) $ballDto->playerId;
             if (!isset($matchPlayerSet[$pid]) || !isset($trackedSet[$pid])) {
@@ -195,7 +289,7 @@ final class MatchRecordingService
             }
 
             $notes = array_values($ballDto->notes);
-            $shots = array_values($ballDto->shotTypes ?? []);
+            $shotTypes = array_values($ballDto->shotTypes ?? []);
             $distances = array_values($ballDto->distances ?? []);
             $cochonnetFlags = array_values($ballDto->isCochonnet ?? []);
             $max = min($allowedPerPlayer, count($notes));
@@ -206,12 +300,10 @@ final class MatchRecordingService
                     continue;
                 }
 
-                $shot = isset($shots[$i]) && in_array($shots[$i], ['point', 'tir'], true)
-                    ? (string) $shots[$i]
+                $shot = isset($shotTypes[$i]) && in_array($shotTypes[$i], ['point', 'tir'], true)
+                    ? (string) $shotTypes[$i]
                     : ((string) ($defaultMap[$pid] ?? 'point'));
 
-                // Distance is purely informational and optional: an invalid value is simply
-                // dropped, it never blocks recording the ball itself.
                 $distance = null;
                 if (isset($distances[$i]) && $distances[$i] !== null && is_numeric($distances[$i])) {
                     $d = (float) $distances[$i];
@@ -220,16 +312,21 @@ final class MatchRecordingService
                     }
                 }
 
-                $player = $this->players->find($pid);
-                if ($player === null) {
-                    continue;
-                }
-
                 $isCochonnet = isset($cochonnetFlags[$i]) && $cochonnetFlags[$i] === true;
 
-                $this->em->persist(new GameBall($end, $player, $i, $note, $shot, $distance, $isCochonnet));
+                $shots[] = [
+                    'sequenceOrder' => $sequenceOrder,
+                    'playerId' => $pid,
+                    'note' => $note,
+                    'shotType' => $shot,
+                    'distance' => $distance,
+                    'isCochonnet' => $isCochonnet,
+                ];
+                ++$sequenceOrder;
             }
         }
+
+        return $shots;
     }
 
     /**

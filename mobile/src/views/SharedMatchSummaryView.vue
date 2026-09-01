@@ -32,6 +32,9 @@
         <span class="ends-meta">{{ t('summary.ends', { n: summary.ends }) }}</span>
       </div>
 
+      <MatchSummaryTabNav v-if="hasTacticsInsights" v-model="activeTab" />
+
+      <template v-if="activeTab === 'overview' || !hasTacticsInsights">
       <MatchSummaryEndGrid
         :players="summary.players"
         :end-indexes="summary.endIndexes ?? []"
@@ -89,6 +92,11 @@
       </section>
 
       <LiveInstallAppPromo />
+      </template>
+
+      <template v-else-if="activeTab === 'tactics' && insights">
+        <MatchAdvancedInsightsPanel :insights="insights" :context="context" />
+      </template>
     </section>
   </section>
 </template>
@@ -104,7 +112,10 @@ import LiveInstallAppPromo from '../components/live/LiveInstallAppPromo.vue'
 import MatchSummaryEndGrid from '../components/match/MatchSummaryEndGrid.vue'
 import MatchSummaryPlayerCard from '../components/match/MatchSummaryPlayerCard.vue'
 import MatchSummaryTeamBlock from '../components/match/MatchSummaryTeamBlock.vue'
+import MatchAdvancedInsightsPanel from '../components/match/MatchAdvancedInsightsPanel.vue'
+import MatchSummaryTabNav, { type MatchSummaryTab } from '../components/match/MatchSummaryTabNav.vue'
 import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
+import type { MatchInsights } from '../models/MatchInsights'
 import { formatPlayedAt, hasMatchContextData, type MatchContext } from '../models/MatchContext'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
@@ -121,7 +132,9 @@ const uuid = String(route.params.uuid)
 
 const loading = ref(true)
 const notFound = ref(false)
+const activeTab = ref<MatchSummaryTab>('overview')
 const summary = ref<MatchSummary | null>(null)
+const insights = ref<MatchInsights | null>(null)
 const context = ref<MatchContext | null>(null)
 const competitionLabel = ref<string | null>(null)
 const { teamALabel, teamBLabel, labelForTeam } = useMatchTeamLabels(context, t)
@@ -135,6 +148,7 @@ const isHeadToHead = computed(
 )
 const showTeamBlocks = computed(() => !isHeadToHead.value)
 const hasData = computed(() => summary.value !== null && hasTrackedData(summary.value))
+const hasTacticsInsights = computed(() => insights.value?.status === 'ok')
 const comparisonChart = computed(() =>
   summary.value ? buildPlayerComparisonChart(summary.value.players, t) : null,
 )
@@ -182,6 +196,7 @@ onMounted(async () => {
   try {
     const recap = await sharedMatchesService.getPublic(uuid)
     summary.value = recap.summary
+    insights.value = recap.insights
     context.value = recap.context
     competitionLabel.value = recap.competitionLabel
     notFound.value = false
@@ -189,6 +204,7 @@ onMounted(async () => {
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       notFound.value = true
       summary.value = null
+      insights.value = null
       context.value = null
     }
   } finally {

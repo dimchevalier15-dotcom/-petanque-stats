@@ -19,6 +19,9 @@
         <span class="ends-meta">{{ t('summary.ends', { n: summary.ends }) }}</span>
       </div>
 
+      <MatchSummaryTabNav v-if="hasTacticsInsights" v-model="activeTab" />
+
+      <template v-if="activeTab === 'overview' || !hasTacticsInsights">
       <MatchSummaryEndGrid
         :players="summary.players"
         :end-indexes="summary.endIndexes ?? []"
@@ -117,6 +120,11 @@
         />
         <Button class="w-full" :label="t('summary.actions.backHome')" @click="goHome" />
       </div>
+      </template>
+
+      <template v-else-if="activeTab === 'tactics' && insights">
+        <MatchAdvancedInsightsPanel :insights="insights" :context="context" />
+      </template>
     </section>
   </AppPage>
 </template>
@@ -133,7 +141,10 @@ import MatchSummaryEndGrid from '../components/match/MatchSummaryEndGrid.vue'
 import MatchSummaryPlayerCard from '../components/match/MatchSummaryPlayerCard.vue'
 import MatchSummaryTeamBlock from '../components/match/MatchSummaryTeamBlock.vue'
 import MatchSharePromo from '../components/match/MatchSharePromo.vue'
+import MatchAdvancedInsightsPanel from '../components/match/MatchAdvancedInsightsPanel.vue'
+import MatchSummaryTabNav, { type MatchSummaryTab } from '../components/match/MatchSummaryTabNav.vue'
 import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
+import type { MatchInsights } from '../models/MatchInsights'
 import { formatPlayedAt, hasMatchContextData, type MatchContext } from '../models/MatchContext'
 import { competitionLabel, type Competition } from '../models/Competition'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
@@ -153,7 +164,9 @@ const router = useRouter()
 const auth = useAuthStore()
 
 const matchId = Number(route.params.id)
+const activeTab = ref<MatchSummaryTab>('overview')
 const summary = ref<MatchSummary>({ matchId, scoreA: 0, scoreB: 0, winner: 'A', ends: 0, players: [] })
+const insights = ref<MatchInsights | null>(null)
 const context = ref<MatchContext | null>(null)
 const competitions = ref<Competition[]>([])
 const myMatchPlayerId = ref<number | null>(null)
@@ -172,6 +185,7 @@ const isHeadToHead = computed(
 const showTeamBlocks = computed(() => !isHeadToHead.value)
 
 const hasData = computed(() => hasTrackedData(summary.value))
+const hasTacticsInsights = computed(() => insights.value?.status === 'ok')
 
 const comparisonChart = computed(() => buildPlayerComparisonChart(summary.value.players, t))
 
@@ -228,12 +242,14 @@ async function load() {
     return
   }
   try {
-    const [summaryData, contextData, competitionList] = await Promise.all([
+    const [summaryData, contextData, competitionList, insightsData] = await Promise.all([
       matchesService.getSummary(matchId),
       matchesService.getContext(matchId),
       competitionsService.list(),
+      matchesService.getInsights(matchId),
     ])
     summary.value = summaryData
+    insights.value = insightsData
     context.value = contextData
     competitions.value = competitionList
     myMatchPlayerId.value = summaryData.myMatchPlayerId ?? null

@@ -19,6 +19,9 @@
         <span class="ends-meta">{{ t('summary.ends', { n: summary.ends }) }}</span>
       </div>
 
+      <MatchSummaryTabNav v-if="hasTacticsInsights" v-model="activeTab" />
+
+      <template v-if="activeTab === 'overview' || !hasTacticsInsights">
       <MatchSummaryEndGrid
         :players="summary.players"
         :end-indexes="summary.endIndexes ?? []"
@@ -98,6 +101,11 @@
           />
         </div>
       </section>
+      </template>
+
+      <template v-else-if="activeTab === 'tactics' && insights">
+        <MatchAdvancedInsightsPanel :insights="insights" :context="teamNames" />
+      </template>
     </section>
   </AppPage>
 </template>
@@ -113,7 +121,10 @@ import PageHeader from '../components/layout/PageHeader.vue'
 import MatchSummaryEndGrid from '../components/match/MatchSummaryEndGrid.vue'
 import MatchSummaryPlayerCard from '../components/match/MatchSummaryPlayerCard.vue'
 import MatchSummaryTeamBlock from '../components/match/MatchSummaryTeamBlock.vue'
+import MatchAdvancedInsightsPanel from '../components/match/MatchAdvancedInsightsPanel.vue'
+import MatchSummaryTabNav, { type MatchSummaryTab } from '../components/match/MatchSummaryTabNav.vue'
 import type { MatchSummary } from '../models/MatchSummary'
+import type { MatchInsights } from '../models/MatchInsights'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import {
   buildPlayerComparisonChart,
@@ -121,6 +132,7 @@ import {
 } from '../composables/useMatchSummaryCharts'
 import { clearMatchDraft, loadMatchDraft } from '../services/matchDraftStorage'
 import { buildLocalMatchSummary } from '../utils/buildLocalMatchSummary'
+import { buildLocalMatchInsights } from '../utils/buildLocalMatchInsights'
 import { hasSaveGuestMatchQuery, saveGuestMatchQuery } from '../utils/guestMatchQuery'
 
 const { t } = useI18n()
@@ -128,10 +140,12 @@ const route = useRoute()
 const router = useRouter()
 
 const draftId = Number(route.params.id)
+const activeTab = ref<MatchSummaryTab>('overview')
 const teamNames = ref({ teamAName: null as string | null, teamBName: null as string | null })
 const { teamALabel, teamBLabel } = useMatchTeamLabels(teamNames, t)
 
 const summary = ref<MatchSummary | null>(null)
+const insights = ref<MatchInsights | null>(null)
 
 const teamA = computed(() => summary.value?.players.filter((p) => p.team === 'A') ?? [])
 const teamB = computed(() => summary.value?.players.filter((p) => p.team === 'B') ?? [])
@@ -144,6 +158,7 @@ const isHeadToHead = computed(
 )
 const showTeamBlocks = computed(() => !isHeadToHead.value)
 const hasData = computed(() => summary.value !== null && hasTrackedData(summary.value))
+const hasTacticsInsights = computed(() => insights.value?.status === 'ok')
 const comparisonChart = computed(() =>
   summary.value ? buildPlayerComparisonChart(summary.value.players, t) : null,
 )
@@ -179,6 +194,14 @@ onMounted(() => {
   }
   teamNames.value = { teamAName: draft.teamAName, teamBName: draft.teamBName }
   summary.value = buildLocalMatchSummary(draft)
+  const localInsights = buildLocalMatchInsights({
+    type: draft.type,
+    teamA: draft.teamA,
+    teamB: draft.teamB,
+    trackedPlayers: draft.trackedPlayers,
+    ends: draft.ends,
+  })
+  insights.value = localInsights
 })
 </script>
 

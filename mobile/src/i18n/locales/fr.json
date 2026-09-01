@@ -73,6 +73,55 @@
       "avg": "Moyenne"
     },
     "actions": { "backHome": "Retour à l'accueil" },
+    "tabs": {
+      "label": "Sections du résumé",
+      "overview": "Statistiques",
+      "tactics": "Analyse tactique"
+    },
+    "insights": {
+      "title": "Analyse tactique",
+      "subtitle": "Lecture avancée à partir de l'ordre réel des boules.",
+      "coverage": "{rate} % des boules ont une distance · {ends} mènes analysées",
+      "unavailable": {
+        "not_all_tracked": "Tous les joueurs du match doivent être suivis pour afficher l'analyse tactique.",
+        "invalid_sequence": "L'ordre chronologique des boules est incomplet ou incohérent sur ce match.",
+        "no_data": "Aucune mène avec des boules enregistrées."
+      },
+      "marking": {
+        "title": "Réussite des boules de marque",
+        "hint": "Quand l'adversaire termine sa dernière boule avec un +1 ou +2, chaque boule restante compte jusqu'à la première réussie (+1/+2). Une seule équipe marque par mène.",
+        "point": "Au point",
+        "tir": "Au tir",
+        "rate": "{rate} % ({made}/{total})",
+        "noData": "—"
+      },
+      "rajout": {
+        "title": "Réussite des boules de rajout",
+        "hint": "Si l'adversaire termine sa dernière boule à 0 ou moins, toutes vos boules suivantes sont des rajouts. Sinon, après une boule de marque réussie s'il vous reste des boules, les suivantes sont des rajouts.",
+        "point": "Au point",
+        "tir": "Au tir",
+        "rate": "{rate} % ({made}/{total})",
+        "noData": "—"
+      },
+      "point": {
+        "title": "Mènes gagnées en tenant le but",
+        "hint": "Mènes où l'équipe a joué la 1re boule, puis remporté la mène.",
+        "ends": "{won} / {opened} mènes"
+      },
+      "closing": {
+        "title": "Boules en main et défense",
+        "hint": "Capitalisation quand l'adversaire est à sec, ou défense solide sans boules restantes.",
+        "capitalized": "Boules en main : {count}/{total} mènes marquées (moy. {avg} pts)",
+        "defended": "Sans boules : {count}/{total} défenses réussies (moy. {avg} pts concédés)",
+        "noCapitalization": "Aucune fin de mène avec boules en main.",
+        "noDefense": "Aucune situation de défense sans boules."
+      },
+      "distance": {
+        "title": "Dominance par distance",
+        "monopoly": "{team} domine à toutes les distances enregistrées.",
+        "none": "Pas assez de données distance pour une comparaison utile."
+      }
+    },
     "share": {
       "title": "Partager le récap",
       "hint": "Envoyez ce lien ou le QR code pour que tout le monde consulte les stats du match.",
@@ -827,7 +876,7 @@
       "tirAverage": "Moyenne tir",
       "endLabel": "M{n}"
     },
-    "actions": { "saveEnd": "Enregistrer la mène", "validateEnd": "Valider la mène", "cancelEnd": "Annuler la mène", "finish": "Terminer le match" },
+    "actions": { "saveEnd": "Enregistrer la mène", "validateEnd": "Valider la mène", "cancelEnd": "Annuler la mène", "finish": "Terminer le match", "undoShot": "Annuler l'action précédente" },
     "options": {
       "open": "Options"
     },

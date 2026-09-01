@@ -65,8 +65,8 @@ export function buildMatchSubmission(
 
   function playersForEndRoles(end: EndRecord): number[] {
     const ids = new Set(matchPlayers)
-    for (const ball of end.balls) {
-      ids.add(ball.playerId)
+    for (const shot of end.shots) {
+      ids.add(shot.playerId)
     }
     return Array.from(ids)
   }
@@ -88,13 +88,16 @@ export function buildMatchSubmission(
         winner: (end.winner as TeamSide) ?? 'A',
         points: end.canceled ? 0 : (end.points ?? 0),
         canceled: end.canceled === true,
-        balls: end.balls.map((ball) => ({
-          playerId: ball.playerId,
-          notes: ball.notes,
-          shotTypes: ball.shotTypes,
-          distances: ball.distances,
-          isCochonnet: ball.isCochonnet,
-        })),
+        shots: [...end.shots]
+          .sort((a, b) => a.sequenceOrder - b.sequenceOrder)
+          .map((shot) => ({
+            sequenceOrder: shot.sequenceOrder,
+            playerId: shot.playerId,
+            note: shot.note,
+            shotType: shot.shotType,
+            distance: shot.distance,
+            isCochonnet: shot.isCochonnet === true,
+          })),
         roles: playersForEndRoles(end).map((playerId) => ({
           playerId,
           role:

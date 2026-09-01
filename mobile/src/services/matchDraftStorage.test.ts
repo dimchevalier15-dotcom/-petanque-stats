@@ -57,16 +57,12 @@ const playState: MatchPlayState = {
       winner: 'A',
       points: 3,
       canceled: false,
-      balls: [
-        {
-          playerId: 1,
-          notes: [1, 0],
-          shotTypes: ['point', 'tir'],
-          distances: [7.5, null],
-        },
+      shots: [
+        { sequenceOrder: 1, playerId: 1, note: 1, shotType: 'point', distance: 7.5 },
+        { sequenceOrder: 2, playerId: 1, note: 0, shotType: 'tir', distance: null },
       ],
     },
-    { index: 2, balls: [], canceled: false },
+    { index: 2, shots: [], canceled: false },
   ],
   distanceEstimate: 8,
   substitutions: [],
@@ -84,7 +80,8 @@ describe('matchDraftStorage', () => {
     expect(loaded).not.toBeNull()
     expect(loaded?.id).toBe(42)
     expect(loaded?.currentEndIndex).toBe(1)
-    expect(loaded?.ends[0]?.balls[0]?.distances).toEqual([7.5, null])
+    expect(loaded?.ends[0]?.shots[0]?.distance).toBe(7.5)
+    expect(loaded?.ends[0]?.shots[1]?.distance).toBeNull()
     expect(loaded?.distanceEstimate).toBe(8)
     expect(hasMatchDraft(7)).toBe(true)
   })
@@ -171,7 +168,7 @@ describe('matchDraftStorage', () => {
     storage.set('match_draft', JSON.stringify(legacy))
 
     const loaded = loadMatchDraft(7)
-    expect(loaded?.version).toBe(2)
+    expect(loaded?.version).toBe(3)
     expect(loaded?.id).toBe(77)
     // The match already existed on the server, so creating it again must be skipped.
     expect(loaded?.serverId).toBe(77)

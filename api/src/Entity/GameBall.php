@@ -23,9 +23,9 @@ class GameBall
     #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false, onDelete: 'RESTRICT')]
     private Player $player;
 
-    // 0-based order of the ball within player's notes for that end
-    #[ORM\Column(name: 'ball_index', type: 'smallint')]
-    private int $index;
+    // 1-based chronological order of the shot within the end (global across all players)
+    #[ORM\Column(name: 'sequence_order', type: 'smallint')]
+    private int $sequenceOrder;
 
     // Note value: -2, -1, 0, 1, 2
     #[ORM\Column(type: 'smallint')]
@@ -45,7 +45,7 @@ class GameBall
     public function __construct(
         GameEnd $end,
         Player $player,
-        int $index,
+        int $sequenceOrder,
         int $note,
         string $shotType = 'point',
         ?float $distance = null,
@@ -53,7 +53,7 @@ class GameBall
     ) {
         $this->end = $end;
         $this->player = $player;
-        $this->index = $index;
+        $this->sequenceOrder = $sequenceOrder;
         $this->note = $note;
         $this->shotType = in_array($shotType, ['point','tir'], true) ? $shotType : 'point';
         $this->distance = $distance;
@@ -61,7 +61,8 @@ class GameBall
     }
 
     public function getId(): ?int { return $this->id; }
-    public function getIndex(): int { return $this->index; }
+    public function getPlayer(): Player { return $this->player; }
+    public function getSequenceOrder(): int { return $this->sequenceOrder; }
     public function getNote(): int { return $this->note; }
     public function getShotType(): string { return $this->shotType; }
     public function getDistance(): ?float { return $this->distance; }

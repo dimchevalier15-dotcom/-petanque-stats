@@ -16,6 +16,7 @@ use App\Service\MatchContextService;
 use App\Service\MatchHistoryService;
 use App\Service\MatchRecordingService;
 use App\Service\MatchService;
+use App\Service\MatchInsightsService;
 use App\Service\MatchSummaryService;
 use App\Service\MatchValidationException;
 use App\Service\MatchValidationOwnershipException;
@@ -41,6 +42,7 @@ final class MatchController extends AbstractController
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
         private MatchSummaryService $summary,
+        private MatchInsightsService $insights,
         private MatchHistoryService $history,
         private MatchContextService $context,
         private ImpersonationResolver $impersonation,
@@ -105,6 +107,19 @@ final class MatchController extends AbstractController
         $this->share->ensureShareUuid($game);
         $viewerPlayerId = $this->resolveViewerPlayerId($request);
         $res = $this->summary->getSummary((int) $game->getId(), $viewerPlayerId);
+        if ($res === null) {
+            return new JsonResponse(['message' => 'Not found'], 404);
+        }
+        $json = $this->serializer->serialize($res, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/matches/{id}/insights', name: 'api_matches_insights', methods: ['GET'])]
+    #[IsGranted(GameVoter::VIEW, subject: 'game')]
+    public function insights(#[MapEntity] Game $game): JsonResponse
+    {
+        $res = $this->insights->getInsights((int) $game->getId());
         if ($res === null) {
             return new JsonResponse(['message' => 'Not found'], 404);
         }

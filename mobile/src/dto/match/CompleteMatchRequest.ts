@@ -2,12 +2,13 @@ import type { MatchType, StatisticsMode } from '../../models/Match'
 import type { PlayerRole } from '../../models/Match'
 import type { BallNote, TeamSide, TeamSubstitution } from '../../models/MatchPlay'
 
-export interface EndBallDto {
+export interface EndShotDto {
+  sequenceOrder: number
   playerId: number
-  notes: BallNote[]
-  shotTypes: ('point' | 'tir')[]
-  distances?: (number | null)[]
-  isCochonnet?: boolean[]
+  note: BallNote
+  shotType: 'point' | 'tir'
+  distance?: number | null
+  isCochonnet?: boolean
 }
 
 export interface EndRoleDto {
@@ -17,7 +18,7 @@ export interface EndRoleDto {
 
 export interface EndDto {
   index: number
-  balls: EndBallDto[]
+  shots: EndShotDto[]
   winner: TeamSide
   points: number
   canceled?: boolean

@@ -22,6 +22,22 @@ final class GameBallRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<GameBall>
+     */
+    public function findByEndOrdered(\App\Entity\GameEnd $end): array
+    {
+        /** @var list<GameBall> $balls */
+        $balls = $this->createQueryBuilder('b')
+            ->where('b.end = :end')
+            ->setParameter('end', $end)
+            ->orderBy('b.sequenceOrder', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        return $balls;
+    }
+
+    /**
      * Returns aggregates per player for given game id.
      *
      * @return array<int, array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}> Map playerId => stats

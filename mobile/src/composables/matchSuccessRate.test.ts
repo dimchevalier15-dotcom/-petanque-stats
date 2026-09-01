@@ -60,11 +60,18 @@ describe('playerMastersFromEnds', () => {
     const ends: EndRecord[] = [
       {
         index: 1,
-        balls: [{ playerId: 1, notes: [1, -1, 2], shotTypes: ['point', 'point', 'point'], distances: [] }],
+        shots: [
+          { sequenceOrder: 1, playerId: 1, note: 1, shotType: 'point', distance: null },
+          { sequenceOrder: 2, playerId: 1, note: -1, shotType: 'point', distance: null },
+          { sequenceOrder: 3, playerId: 1, note: 2, shotType: 'point', distance: null },
+        ],
       },
       {
         index: 2,
-        balls: [{ playerId: 1, notes: [0, 1], shotTypes: ['point', 'tir'], distances: [] }],
+        shots: [
+          { sequenceOrder: 1, playerId: 1, note: 0, shotType: 'point', distance: null },
+          { sequenceOrder: 2, playerId: 1, note: 1, shotType: 'tir', distance: null },
+        ],
       },
     ]
 
@@ -74,7 +81,7 @@ describe('playerMastersFromEnds', () => {
 
   it('returns null when the player has no balls', () => {
     expect(playerMastersFromEnds([], 1)).toBeNull()
-    expect(playerMastersFromEnds([{ index: 1, balls: [] }], 1)).toBeNull()
+    expect(playerMastersFromEnds([{ index: 1, shots: [] }], 1)).toBeNull()
   })
 })
 
@@ -83,13 +90,11 @@ describe('playerShotMastersFromEnds', () => {
     const ends: EndRecord[] = [
       {
         index: 1,
-        balls: [
-          {
-            playerId: 1,
-            notes: [1, -1, 2, 0],
-            shotTypes: ['point', 'point', 'tir', 'tir'],
-            distances: [],
-          },
+        shots: [
+          { sequenceOrder: 1, playerId: 1, note: 1, shotType: 'point', distance: null },
+          { sequenceOrder: 2, playerId: 1, note: -1, shotType: 'point', distance: null },
+          { sequenceOrder: 3, playerId: 1, note: 2, shotType: 'tir', distance: null },
+          { sequenceOrder: 4, playerId: 1, note: 0, shotType: 'tir', distance: null },
         ],
       },
     ]
@@ -102,14 +107,10 @@ describe('playerShotMastersFromEnds', () => {
     const ends: EndRecord[] = [
       {
         index: 1,
-        balls: [
-          {
-            playerId: 1,
-            notes: [1, 2, -1],
-            shotTypes: ['tir', 'tir', 'tir'],
-            distances: [],
-            isCochonnet: [false, true, false],
-          },
+        shots: [
+          { sequenceOrder: 1, playerId: 1, note: 1, shotType: 'tir', distance: null },
+          { sequenceOrder: 2, playerId: 1, note: 2, shotType: 'tir', distance: null, isCochonnet: true },
+          { sequenceOrder: 3, playerId: 1, note: -1, shotType: 'tir', distance: null },
         ],
       },
     ]
@@ -121,14 +122,9 @@ describe('playerShotMastersFromEnds', () => {
     const ends: EndRecord[] = [
       {
         index: 1,
-        balls: [
-          {
-            playerId: 1,
-            notes: [2, 1],
-            shotTypes: ['tir', 'tir'],
-            distances: [],
-            isCochonnet: [true, true],
-          },
+        shots: [
+          { sequenceOrder: 1, playerId: 1, note: 2, shotType: 'tir', distance: null, isCochonnet: true },
+          { sequenceOrder: 2, playerId: 1, note: 1, shotType: 'tir', distance: null, isCochonnet: true },
         ],
       },
     ]

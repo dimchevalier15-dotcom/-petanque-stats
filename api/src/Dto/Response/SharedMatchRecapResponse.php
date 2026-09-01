@@ -10,6 +10,7 @@ final class SharedMatchRecapResponse
         public MatchSummaryResponse $summary,
         public MatchContextResponse $context,
         public ?string $competitionLabel = null,
+        public ?MatchInsightsResponse $insights = null,
     ) {
     }
 }

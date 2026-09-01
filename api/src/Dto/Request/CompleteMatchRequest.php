@@ -78,7 +78,13 @@ final class CompleteMatchEndDto
 
     public bool $canceled = false;
 
-    /** @var list<CompleteMatchEndBallDto> */
+    /** @var list<CompleteMatchEndShotDto> */
+    public array $shots = [];
+
+    /**
+     * @deprecated Use shots with global sequenceOrder instead.
+     * @var list<CompleteMatchEndBallDto>
+     */
     public array $balls = [];
 
     /**
@@ -95,6 +101,25 @@ final class CompleteMatchEndRoleDto
 
     #[Assert\Choice(callback: [\App\Enum\PlayerRole::class, 'values'])]
     public string $role;
+}
+
+final class CompleteMatchEndShotDto
+{
+    #[Assert\Positive]
+    public int $sequenceOrder;
+
+    #[Assert\Positive]
+    public int $playerId;
+
+    /** @var int */
+    public int $note;
+
+    #[Assert\Choice(choices: ['point', 'tir'])]
+    public string $shotType = 'point';
+
+    public ?float $distance = null;
+
+    public bool $isCochonnet = false;
 }
 
 final class CompleteMatchEndBallDto

@@ -73,6 +73,55 @@
       "avg": "Average"
     },
     "actions": { "backHome": "Back to home" },
+    "tabs": {
+      "label": "Summary sections",
+      "overview": "Statistics",
+      "tactics": "Tactical analysis"
+    },
+    "insights": {
+      "title": "Tactical analysis",
+      "subtitle": "Advanced reading from the real shot order.",
+      "coverage": "{rate}% of shots have a distance · {ends} ends analyzed",
+      "unavailable": {
+        "not_all_tracked": "Every player in the match must be tracked to show tactical analysis.",
+        "invalid_sequence": "The chronological shot order is incomplete or inconsistent on this match.",
+        "no_data": "No end with recorded shots."
+      },
+      "marking": {
+        "title": "Marking-ball success",
+        "hint": "When the opponent's last ball is +1 or +2, each remaining shot counts until the first success (+1/+2). Only one team marks per end.",
+        "point": "Pointing",
+        "tir": "Shooting",
+        "rate": "{rate}% ({made}/{total})",
+        "noData": "—"
+      },
+      "rajout": {
+        "title": "Extra-ball success",
+        "hint": "If the opponent's last ball is 0 or less, every following shot is an extra ball. Otherwise, after a successful marking shot with balls still left, the following shots are extra balls.",
+        "point": "Pointing",
+        "tir": "Shooting",
+        "rate": "{rate}% ({made}/{total})",
+        "noData": "—"
+      },
+      "point": {
+        "title": "Ends won while holding the jack",
+        "hint": "Ends where the team played the first ball and won that end.",
+        "ends": "{won} / {opened} ends"
+      },
+      "closing": {
+        "title": "Balls in hand & defense",
+        "hint": "Capitalizing when the opponent is out of balls, or solid defense with none left.",
+        "capitalized": "Balls in hand: {count}/{total} ends scored (avg {avg} pts)",
+        "defended": "No balls left: {count}/{total} successful defenses (avg {avg} pts conceded)",
+        "noCapitalization": "No end closing with balls in hand.",
+        "noDefense": "No defense situation without balls."
+      },
+      "distance": {
+        "title": "Distance dominance",
+        "monopoly": "{team} dominates at every recorded distance.",
+        "none": "Not enough distance data for a useful comparison."
+      }
+    },
     "share": {
       "title": "Share recap",
       "hint": "Send this link or QR code so everyone can view the full match stats.",
@@ -827,7 +876,7 @@
       "tirAverage": "Shot average",
       "endLabel": "E{n}"
     },
-    "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "cancelEnd": "Cancel end", "finish": "Finish match" },
+    "actions": { "saveEnd": "Save end", "validateEnd": "Validate end", "cancelEnd": "Cancel end", "finish": "Finish match", "undoShot": "Undo last action" },
     "options": {
       "open": "Options"
     },

@@ -8,15 +8,18 @@ import {
   type MatchSetup,
 } from '../models/MatchDraft'
 import { inferStartingRoles } from '../utils/matchRoles'
-import { normalizeBallEntry } from '../utils/matchBallFlags'
+import { ensureEndHasShotStructure, migrateLegacyBallsToShots } from '../utils/matchEndShots'
 
 const STORAGE_KEY = 'match_draft'
 
-function normalizeEnd(end: EndRecord): EndRecord {
-  return {
-    ...end,
-    balls: end.balls.map((ball) => normalizeBallEntry(ball)),
+type LegacyEndRecord = EndRecord & { balls?: import('../models/MatchPlay').EndBallEntry[] }
+
+function normalizeEnd(end: LegacyEndRecord): EndRecord {
+  if (!Array.isArray(end.shots)) {
+    end.shots = end.balls?.length ? migrateLegacyBallsToShots(end.balls) : []
   }
+  ensureEndHasShotStructure(end)
+  return end
 }
 
 function normalizeDraft(raw: MatchDraft): MatchDraft {
@@ -50,7 +53,7 @@ function normalizeDraft(raw: MatchDraft): MatchDraft {
  */
 function migrateFromV1(draft: MatchDraftV1): MatchDraft {
   return {
-    version: 2,
+    version: 3,
     userId: draft.userId,
     savedAt: draft.savedAt,
     id: draft.id,
@@ -98,8 +101,8 @@ function parseDraft(value: unknown): MatchDraft | null {
   if (value.version === 1) {
     return migrateFromV1(value)
   }
-  if (value.version === 2) {
-    return { ...value, resolvedPlayers: value.resolvedPlayers ?? {} }
+  if (value.version === 2 || value.version === 3) {
+    return normalizeDraft({ ...value, version: 3, resolvedPlayers: value.resolvedPlayers ?? {} })
   }
   return null
 }
@@ -175,7 +178,7 @@ export function saveMatchDraft(
     const progress = readProgress(setup.id)
     const isGuest = options?.guest === true
     const draft: MatchDraft = {
-      version: 2,
+      version: 3,
       userId: isGuest ? null : userId,
       draftOwner: isGuest ? 'guest' : 'user',
       savedAt: new Date().toISOString(),
