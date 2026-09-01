@@ -282,6 +282,8 @@
           </li>
         </ul>
       </section>
+
+      <LiveInstallAppPromo v-if="isFinished" />
     </template>
   </section>
 </template>
@@ -293,6 +295,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import Button from 'primevue/button'
 import LanguageSwitcher from '../components/layout/LanguageSwitcher.vue'
+import LiveInstallAppPromo from '../components/live/LiveInstallAppPromo.vue'
 import type { PlayerRole } from '../models/Match'
 import type { LiveMatchData } from '../models/LiveMatch'
 import type { EndRecord } from '../models/MatchPlay'

@@ -1318,7 +1318,14 @@
       "endsRecap": "Prehľad mien",
       "endResult": "{winner} +{points}",
       "teamA": "Tím A",
-      "teamB": "Tím B"
+      "teamB": "Tím B",
+      "installApp": {
+        "title": "Sledujte zápasy a štatistiky",
+        "subtitle": "Nainštalujte si aplikáciu na zapisovanie zápasov, prehľad štatistík a živé zdieľanie.",
+        "action": "Stiahnuť z Google Play",
+        "qrCaption": "Skenovať",
+        "qrAria": "QR kód na Google Play"
+      }
     }
   }
 }

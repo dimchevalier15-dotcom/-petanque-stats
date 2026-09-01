@@ -1338,7 +1338,14 @@
       "endsRecap": "Détail des mènes",
       "endResult": "{winner} +{points}",
       "teamA": "Équipe A",
-      "teamB": "Équipe B"
+      "teamB": "Équipe B",
+      "installApp": {
+        "title": "Suivez vos matchs et vos stats",
+        "subtitle": "Installez l'application pour noter vos parties, consulter vos statistiques et les partager en direct.",
+        "action": "Installer sur Google Play",
+        "qrCaption": "Scanner",
+        "qrAria": "QR code vers Google Play"
+      }
     }
   }
 }

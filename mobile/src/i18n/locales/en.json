@@ -1313,7 +1313,14 @@
       "endsRecap": "End-by-end summary",
       "endResult": "{winner} +{points}",
       "teamA": "Team A",
-      "teamB": "Team B"
+      "teamB": "Team B",
+      "installApp": {
+        "title": "Track your matches and stats",
+        "subtitle": "Install the app to score games, review your statistics, and share live recaps.",
+        "action": "Get it on Google Play",
+        "qrCaption": "Scan",
+        "qrAria": "QR code to Google Play"
+      }
     }
   }
 }
