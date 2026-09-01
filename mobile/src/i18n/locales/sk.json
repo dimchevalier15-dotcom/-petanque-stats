@@ -72,7 +72,19 @@
       "player": "Hráč",
       "avg": "Priemer"
     },
-    "actions": { "backHome": "Späť na úvod" }
+    "actions": { "backHome": "Späť na úvod" },
+    "share": {
+      "title": "Zdieľať rekapituláciu",
+      "hint": "Pošlite tento odkaz alebo QR kód, aby si každý mohol pozrieť štatistiky zápasu.",
+      "copy": "Kopírovať odkaz",
+      "copied": "Odkaz skopírovaný",
+      "native": "Zdieľať",
+      "qrCaption": "Skenovať",
+      "qrAria": "QR kód na rekapituláciu zápasu",
+      "publicTitle": "Rekapitulácia zápasu",
+      "loading": "Načítava sa…",
+      "notFound": "Táto rekapitulácia neexistuje alebo už nie je dostupná."
+    }
   },
   "context": {
     "titleAdd": "Pridať kontext",

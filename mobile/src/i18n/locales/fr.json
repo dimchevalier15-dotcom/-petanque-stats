@@ -72,7 +72,19 @@
       "player": "Joueur",
       "avg": "Moyenne"
     },
-    "actions": { "backHome": "Retour à l'accueil" }
+    "actions": { "backHome": "Retour à l'accueil" },
+    "share": {
+      "title": "Partager le récap",
+      "hint": "Envoyez ce lien ou le QR code pour que tout le monde consulte les stats du match.",
+      "copy": "Copier le lien",
+      "copied": "Lien copié",
+      "native": "Partager",
+      "qrCaption": "Scanner",
+      "qrAria": "QR code vers le récapitulatif du match",
+      "publicTitle": "Récapitulatif du match",
+      "loading": "Chargement…",
+      "notFound": "Ce récapitulatif n'existe pas ou n'est plus disponible."
+    }
   },
   "context": {
     "titleAdd": "Ajouter du contexte",

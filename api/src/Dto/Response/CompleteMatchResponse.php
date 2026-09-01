@@ -6,7 +6,9 @@ namespace App\Dto\Response;
 
 final class CompleteMatchResponse
 {
-    public function __construct(public int $id)
-    {
+    public function __construct(
+        public int $id,
+        public ?string $shareUuid = null,
+    ) {
     }
 }

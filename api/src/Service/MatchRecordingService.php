@@ -31,6 +31,7 @@ final class MatchRecordingService
         private PlayerRepository $players,
         private EntityManagerInterface $em,
         private GameParticipantValidationResolver $validationResolver,
+        private MatchShareService $share,
     ) {
     }
 
@@ -95,7 +96,9 @@ final class MatchRecordingService
             }
         });
 
-        return new CompleteMatchResponse((int) $game->getId());
+        $shareUuid = $this->share->ensureShareUuid($game);
+
+        return new CompleteMatchResponse((int) $game->getId(), $shareUuid);
     }
 
     /**

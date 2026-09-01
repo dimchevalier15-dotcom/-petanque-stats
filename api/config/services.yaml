@@ -33,5 +33,9 @@ services:
         arguments:
             $frontendBaseUrl: '%app.frontend_base_url%'
 
+    App\Service\MatchShareService:
+        arguments:
+            $frontendBaseUrl: '%app.frontend_base_url%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

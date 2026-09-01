@@ -72,7 +72,19 @@
       "player": "Player",
       "avg": "Average"
     },
-    "actions": { "backHome": "Back to home" }
+    "actions": { "backHome": "Back to home" },
+    "share": {
+      "title": "Share recap",
+      "hint": "Send this link or QR code so everyone can view the full match stats.",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "native": "Share",
+      "qrCaption": "Scan",
+      "qrAria": "QR code to match recap",
+      "publicTitle": "Match recap",
+      "loading": "Loading…",
+      "notFound": "This recap does not exist or is no longer available."
+    }
   },
   "context": {
     "titleAdd": "Add context",

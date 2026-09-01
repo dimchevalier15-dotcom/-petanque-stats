@@ -133,6 +133,7 @@ final class MatchSummaryService
             players: $rows,
             myMatchPlayerId: $this->resolveMyMatchPlayerId($game, $viewerPlayerId),
             myHasValidatedMatch: $this->resolveMyHasValidatedMatch($game, $viewerPlayerId),
+            shareUuid: $game->getShareUuid(),
         );
     }
 

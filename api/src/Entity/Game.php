@@ -69,6 +69,9 @@ class Game
     #[ORM\Column(name: 'opening_score_b', type: 'integer', options: ['default' => 0])]
     private int $openingScoreB = 0;
 
+    #[ORM\Column(name: 'share_uuid', type: 'string', length: 36, nullable: true, unique: true)]
+    private ?string $shareUuid = null;
+
     public function __construct(GameType $type, int $targetScore = 13, string $statisticsMode = 'standard')
     {
         $this->type = $type;
@@ -131,5 +134,15 @@ class Game
     public function setOpeningScoreB(int $openingScoreB): void
     {
         $this->openingScoreB = max(0, $openingScoreB);
+    }
+
+    public function getShareUuid(): ?string
+    {
+        return $this->shareUuid;
+    }
+
+    public function setShareUuid(string $shareUuid): void
+    {
+        $this->shareUuid = $shareUuid;
     }
 }

@@ -19,6 +19,7 @@ use App\Service\MatchService;
 use App\Service\MatchSummaryService;
 use App\Service\MatchValidationException;
 use App\Service\MatchValidationOwnershipException;
+use App\Service\MatchShareService;
 use App\Service\MatchValidationService;
 use App\Service\PlayerViewContextResolver;
 use App\Service\Auth\InvalidTokenException;
@@ -45,6 +46,7 @@ final class MatchController extends AbstractController
         private ImpersonationResolver $impersonation,
         private MatchValidationService $validation,
         private PlayerViewContextResolver $playerViewContext,
+        private MatchShareService $share,
     ) {}
 
     #[Route('/api/matches', name: 'api_matches_create', methods: ['POST'])]
@@ -100,6 +102,7 @@ final class MatchController extends AbstractController
     #[IsGranted(GameVoter::VIEW, subject: 'game')]
     public function summary(#[MapEntity] Game $game, Request $request): JsonResponse
     {
+        $this->share->ensureShareUuid($game);
         $viewerPlayerId = $this->resolveViewerPlayerId($request);
         $res = $this->summary->getSummary((int) $game->getId(), $viewerPlayerId);
         if ($res === null) {

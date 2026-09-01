@@ -1,8 +1,21 @@
 <template>
-  <AppPage>
-    <PageHeader :title="t('summary.title')" :back-to="{ name: 'home' }" />
+  <section class="shared-summary-view">
+    <header class="shared-summary-header">
+      <div class="shared-summary-header-main">
+        <h1>{{ t('summary.share.publicTitle') }}</h1>
+      </div>
+      <LanguageSwitcher class="shared-summary-lang-switcher" />
+    </header>
 
-    <section class="summary">
+    <div v-if="loading" class="shared-summary-state">
+      <p>{{ t('summary.share.loading') }}</p>
+    </div>
+
+    <div v-else-if="notFound" class="shared-summary-state">
+      <p>{{ t('summary.share.notFound') }}</p>
+    </div>
+
+    <section v-else-if="summary" class="summary">
       <div class="hero-banner app-card" :class="winnerClass">
         <span class="winner-badge">{{ winnerText }}</span>
         <div class="score-row">
@@ -38,7 +51,6 @@
             :label="teamALabel"
             :players="teamA"
           />
-
           <MatchSummaryPlayerCard
             v-for="player in teamA"
             :key="player.playerId"
@@ -53,7 +65,6 @@
             :label="teamBLabel"
             :players="teamB"
           />
-
           <MatchSummaryPlayerCard
             v-for="player in teamB"
             :key="player.playerId"
@@ -77,108 +88,55 @@
         </ul>
       </section>
 
-      <MatchSharePromo v-if="shareUuid" :share-uuid="shareUuid" />
-
-      <section v-if="canManageValidation" class="panel app-card validation-panel">
-        <h3>{{ t('validation.summaryTitle') }}</h3>
-        <p class="panel-hint">{{ t('validation.summaryHint') }}</p>
-        <div class="validation-actions">
-          <Button
-            v-if="myHasValidatedMatch !== true"
-            :label="t('validation.accept')"
-            icon="pi pi-check"
-            severity="success"
-            :loading="validationLoading && validationTarget === true"
-            :disabled="validationLoading"
-            class="w-full"
-            @click="updateMyValidation(true)"
-          />
-          <Button
-            v-if="myHasValidatedMatch !== false"
-            :label="t('validation.reject')"
-            icon="pi pi-times"
-            severity="danger"
-            outlined
-            :loading="validationLoading && validationTarget === false"
-            :disabled="validationLoading"
-            class="w-full"
-            @click="updateMyValidation(false)"
-          />
-        </div>
-      </section>
-
-      <div class="app-actions">
-        <Button
-          :label="contextActionLabel"
-          severity="secondary"
-          outlined
-          class="w-full"
-          @click="openContext"
-        />
-        <Button class="w-full" :label="t('summary.actions.backHome')" @click="goHome" />
-      </div>
+      <LiveInstallAppPromo />
     </section>
-  </AppPage>
+  </section>
 </template>
 
 <script setup lang="ts">
+import axios from 'axios'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
-import Button from 'primevue/button'
+import { useRoute } from 'vue-router'
 import Chart from 'primevue/chart'
-import AppPage from '../components/layout/AppPage.vue'
-import PageHeader from '../components/layout/PageHeader.vue'
+import LanguageSwitcher from '../components/layout/LanguageSwitcher.vue'
+import LiveInstallAppPromo from '../components/live/LiveInstallAppPromo.vue'
 import MatchSummaryEndGrid from '../components/match/MatchSummaryEndGrid.vue'
 import MatchSummaryPlayerCard from '../components/match/MatchSummaryPlayerCard.vue'
 import MatchSummaryTeamBlock from '../components/match/MatchSummaryTeamBlock.vue'
-import MatchSharePromo from '../components/match/MatchSharePromo.vue'
 import type { MatchSummary, MatchSummaryPlayer } from '../models/MatchSummary'
 import { formatPlayedAt, hasMatchContextData, type MatchContext } from '../models/MatchContext'
-import { competitionLabel, type Competition } from '../models/Competition'
 import { useMatchContextOptions } from '../composables/useMatchContextOptions'
 import { useMatchTeamLabels } from '../composables/useMatchTeamLabels'
 import {
   buildPlayerComparisonChart,
   hasTrackedData,
 } from '../composables/useMatchSummaryCharts'
-import { matchesService } from '../services/matches'
-import { competitionsService } from '../services/competitions'
-import { useAuthStore } from '../stores/auth'
+import { sharedMatchesService } from '../services/sharedMatches'
 
 const { t } = useI18n()
 const { natureOptions, competitionStageOptions, terrainTypeOptions } = useMatchContextOptions(t)
 const route = useRoute()
-const router = useRouter()
-const auth = useAuthStore()
+const uuid = String(route.params.uuid)
 
-const matchId = Number(route.params.id)
-const summary = ref<MatchSummary>({ matchId, scoreA: 0, scoreB: 0, winner: 'A', ends: 0, players: [] })
+const loading = ref(true)
+const notFound = ref(false)
+const summary = ref<MatchSummary | null>(null)
 const context = ref<MatchContext | null>(null)
-const competitions = ref<Competition[]>([])
-const myMatchPlayerId = ref<number | null>(null)
-const myHasValidatedMatch = ref<boolean | null>(null)
-const validationLoading = ref(false)
-const validationTarget = ref<boolean | null>(null)
+const competitionLabel = ref<string | null>(null)
 const { teamALabel, teamBLabel, labelForTeam } = useMatchTeamLabels(context, t)
 
-const teamA = computed<MatchSummaryPlayer[]>(() => summary.value.players.filter((p) => p.team === 'A'))
-const teamB = computed<MatchSummaryPlayer[]>(() => summary.value.players.filter((p) => p.team === 'B'))
+const teamA = computed<MatchSummaryPlayer[]>(() => summary.value?.players.filter((p) => p.team === 'A') ?? [])
+const teamB = computed<MatchSummaryPlayer[]>(() => summary.value?.players.filter((p) => p.team === 'B') ?? [])
 const isHeadToHead = computed(
   () =>
-    summary.value.type === 'tete_a_tete' ||
-    (summary.value.type === undefined && teamA.value.length <= 1 && teamB.value.length <= 1),
+    summary.value?.type === 'tete_a_tete' ||
+    (summary.value?.type === undefined && teamA.value.length <= 1 && teamB.value.length <= 1),
 )
 const showTeamBlocks = computed(() => !isHeadToHead.value)
-
-const hasData = computed(() => hasTrackedData(summary.value))
-
-const comparisonChart = computed(() => buildPlayerComparisonChart(summary.value.players, t))
-
-const contextActionLabel = computed(() =>
-  context.value && hasMatchContextData(context.value)
-    ? t('context.actions.edit')
-    : t('context.actions.add'),
+const hasData = computed(() => summary.value !== null && hasTrackedData(summary.value))
+const comparisonChart = computed(() =>
+  summary.value ? buildPlayerComparisonChart(summary.value.players, t) : null,
 )
 
 const contextSummary = computed<string[]>(() => {
@@ -196,10 +154,8 @@ const contextSummary = computed<string[]>(() => {
     const nature = natureOptions.value.find((o) => o.value === context.value?.nature)
     if (nature) lines.push(`${t('context.fields.nature')}: ${nature.label}`)
   }
-  if (context.value.competitionId) {
-    const competition = competitions.value.find((item) => item.id === context.value?.competitionId)
-    const label = competition ? competitionLabel(competition) : null
-    if (label) lines.push(`${t('context.fields.competitionName')}: ${label}`)
+  if (competitionLabel.value) {
+    lines.push(`${t('context.fields.competitionName')}: ${competitionLabel.value}`)
   } else if (context.value.competitionName) {
     lines.push(`${t('context.fields.competitionName')}: ${context.value.competitionName}`)
   }
@@ -217,63 +173,78 @@ const contextSummary = computed<string[]>(() => {
   return lines
 })
 
-const winnerText = computed(() => t('summary.winner', { team: labelForTeam(summary.value.winner) }))
-const winnerClass = computed(() => (summary.value.winner === 'A' ? 'hero-a' : 'hero-b'))
-const canManageValidation = computed(() => myMatchPlayerId.value !== null)
-const shareUuid = computed(() => summary.value.shareUuid ?? null)
+const winnerText = computed(() =>
+  summary.value ? t('summary.winner', { team: labelForTeam(summary.value.winner) }) : '',
+)
+const winnerClass = computed(() => (summary.value?.winner === 'A' ? 'hero-a' : 'hero-b'))
 
-async function load() {
-  if (!matchId) {
-    router.replace({ name: 'home' })
-    return
-  }
+onMounted(async () => {
   try {
-    const [summaryData, contextData, competitionList] = await Promise.all([
-      matchesService.getSummary(matchId),
-      matchesService.getContext(matchId),
-      competitionsService.list(),
-    ])
-    summary.value = summaryData
-    context.value = contextData
-    competitions.value = competitionList
-    myMatchPlayerId.value = summaryData.myMatchPlayerId ?? null
-    myHasValidatedMatch.value = summaryData.myHasValidatedMatch ?? null
-  } catch {
-    router.replace({ name: 'home' })
-  }
-}
-
-async function updateMyValidation(validated: boolean) {
-  if (myMatchPlayerId.value === null) {
-    return
-  }
-  validationLoading.value = true
-  validationTarget.value = validated
-  try {
-    await matchesService.updateValidation(myMatchPlayerId.value, validated)
-    myHasValidatedMatch.value = validated
-    if (auth.user) {
-      const count = await matchesService.getPendingValidationCount()
-      auth.user = { ...auth.user, pendingValidationCount: count }
+    const recap = await sharedMatchesService.getPublic(uuid)
+    summary.value = recap.summary
+    context.value = recap.context
+    competitionLabel.value = recap.competitionLabel
+    notFound.value = false
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      notFound.value = true
+      summary.value = null
+      context.value = null
     }
   } finally {
-    validationLoading.value = false
-    validationTarget.value = null
+    loading.value = false
   }
-}
-
-function openContext() {
-  router.push({ name: 'matchContext', params: { id: matchId } })
-}
-
-function goHome() {
-  router.push({ name: 'home' })
-}
-
-onMounted(load)
+})
 </script>
 
 <style scoped>
+.shared-summary-view {
+  max-width: var(--app-page-max);
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--app-space-sm) var(--app-space-sm) var(--app-space-lg);
+  display: grid;
+  gap: var(--app-space-sm);
+}
+
+.shared-summary-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--app-space-sm);
+}
+
+.shared-summary-header-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.shared-summary-header h1 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.shared-summary-lang-switcher {
+  flex-shrink: 0;
+  opacity: 0.82;
+  transform: scale(0.92);
+  transform-origin: top right;
+}
+
+.shared-summary-lang-switcher :deep(.lang-switcher) {
+  box-shadow: none;
+  border-color: var(--app-border);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.shared-summary-state {
+  text-align: center;
+  color: var(--app-text-muted);
+  padding: 2rem 0;
+}
+
 .summary {
   display: grid;
   gap: var(--app-space-md);
@@ -354,8 +325,7 @@ onMounted(load)
   gap: var(--app-space-sm);
 }
 
-.panel h3,
-.panel h4 {
+.panel h3 {
   margin: 0;
   font-size: 1rem;
 }
@@ -399,18 +369,5 @@ onMounted(load)
   display: grid;
   gap: 0.25rem;
   font-size: 0.875rem;
-}
-
-.validation-panel {
-  gap: var(--app-space-sm);
-}
-
-.validation-actions {
-  display: grid;
-  gap: var(--app-space-sm);
-}
-
-.w-full {
-  width: 100%;
 }
 </style>

@@ -21,6 +21,11 @@ final class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
+    public function findOneByShareUuid(string $shareUuid): ?Game
+    {
+        return $this->findOneBy(['shareUuid' => $shareUuid]);
+    }
+
     /**
      * Returns total count and paginated completed games for an account:
      * matches the linked player participated in, or matches created by the user.
