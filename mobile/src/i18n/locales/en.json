@@ -152,6 +152,7 @@
           "one": "{won} won",
           "other": "{won} won"
         },
+        "barRate": "({rate}%)",
         "empty": "You did not open any end while holding the jack"
       },
       "closing": {
@@ -1135,7 +1136,11 @@
       "loadErrorTitle": "Could not load tactical analysis",
       "loadErrorHint": "Please try again in a moment.",
       "noEligibleTitle": "No analyzable matches",
-      "noEligibleHint": "Matches need every player tracked and a complete chronological shot order."
+      "noEligibleHint": "Matches need every player tracked and a complete chronological shot order.",
+      "point": {
+        "hint": "Ends where you played the first ball. An end is well started when that first ball is scored +1 or +2.",
+        "empty": "You did not open any end while holding the jack"
+      }
     },
     "kpi": {
       "matches": "Matches",

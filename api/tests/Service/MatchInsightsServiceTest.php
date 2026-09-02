@@ -456,16 +456,23 @@ final class MatchInsightsServiceTest extends KernelDatabaseTestCase
         $end->shots = [];
 
         $sequenceOrder = 1;
-        for ($i = 0; $i < 3; $i++) {
-            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA1, 0, 'point');
+        $openingSequence = [
+            [$playerA1, 0, 'point'],
+            [$playerA1, 0, 'point'],
+            [$playerB1, 0, 'point'],
+            [$playerA1, 0, 'point'],
+            [$playerA2, 0, 'point'],
+            [$playerB1, 0, 'point'],
+            [$playerA2, 0, 'point'],
+            [$playerA2, 0, 'point'],
+            [$playerB1, 0, 'point'],
+            [$playerB2, 0, 'point'],
+            [$playerB2, 0, 'point'],
+            [$playerB2, 0, 'point'],
+        ];
+        foreach ($openingSequence as [$playerId, $note, $shotType]) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerId, $note, $shotType);
         }
-        for ($i = 0; $i < 3; $i++) {
-            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA2, 0, 'point');
-        }
-        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB1, 0, 'point');
-        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 0, 'point');
-        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB1, 0, 'point');
-        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 0, 'point');
 
         $this->completeDoubletteEnd($matchId, $playerA1, $playerA2, $playerB1, $playerB2, $end);
 

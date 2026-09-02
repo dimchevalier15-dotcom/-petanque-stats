@@ -20,7 +20,7 @@
         <server name="MAIL_FROM_NAME" value="Pétanque Analytics" />
         <server name="FRONTEND_BASE_URL" value="http://localhost:5173" />
         <server name="DEFAULT_URI" value="http://localhost:8080" />
-        <server name="APP_LATEST_VERSION" value="1.5.1" />
+        <server name="APP_LATEST_VERSION" value="1.6.0" />
         <server name="APP_MINIMUM_VERSION" value="1.5.0" />
         <server name="APP_ANDROID_STORE_URL" value="https://play.google.com/store/apps/details?id=com.petanquestats.app" />
     </php>

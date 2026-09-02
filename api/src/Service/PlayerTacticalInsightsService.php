@@ -7,12 +7,14 @@ namespace App\Service;
 use App\Dto\Response\MatchInsightsHeldEndErrorResponse;
 use App\Dto\Response\MatchInsightsMarkingRateResponse;
 use App\Dto\Response\MatchInsightsMarkingTeamResponse;
+use App\Dto\Response\MatchInsightsPointDominanceResponse;
 use App\Dto\Response\MatchInsightsRajoutTeamResponse;
 use App\Dto\Response\PlayerTacticalInsightsByDistanceResponse;
 use App\Dto\Response\PlayerTacticalInsightsCoverageResponse;
 use App\Dto\Response\PlayerTacticalInsightsResponse;
 use App\Entity\Game;
 use App\Entity\GameBall;
+use App\Entity\GameEnd;
 use App\Enum\DistanceBucket;
 use App\Enum\GameType;
 use App\Enum\MatchNature;
@@ -80,6 +82,7 @@ final class PlayerTacticalInsightsService
         $markingOverall = $this->emptyShotCounters();
         $rajoutOverall = $this->emptyShotCounters();
         $heldEndError = ['minusTwoCount' => 0, 'ballsPlayed' => 0];
+        $pointDominance = $this->emptyPointDominance();
         $markingByDistance = [];
         $rajoutByDistance = [];
         $matchesEligible = \count($games);
@@ -131,6 +134,7 @@ final class PlayerTacticalInsightsService
                 ++$gameEndsAnalyzed;
                 $this->analyzeEndForPlayer(
                     playerId: $playerId,
+                    end: $end,
                     shots: $shots,
                     teamMap: $teamMap,
                     teamCapacities: $teamCapacities,
@@ -142,6 +146,7 @@ final class PlayerTacticalInsightsService
                     tacticalAttempts: $tacticalAttempts,
                     tacticalAttemptsWithDistance: $tacticalAttemptsWithDistance,
                     heldEndError: $heldEndError,
+                    pointDominance: $pointDominance,
                 );
             }
 
@@ -171,6 +176,7 @@ final class PlayerTacticalInsightsService
             markingOverall: $this->toShotTeamResponse($markingOverall),
             rajoutOverall: $this->toRajoutTeamResponse($rajoutOverall),
             heldEndError: $this->toHeldEndErrorResponse($heldEndError),
+            pointDominance: $this->toPointDominanceResponse($pointDominance),
             markingByDistance: $this->buildByDistanceRows($markingByDistance, $distanceBucket),
             rajoutByDistance: $this->buildByDistanceRows($rajoutByDistance, $distanceBucket),
             coverage: new PlayerTacticalInsightsCoverageResponse(
@@ -221,9 +227,11 @@ final class PlayerTacticalInsightsService
      * @param array<string, array{point:array{made:int,attempts:int},tir:array{made:int,attempts:int}}>> $markingByDistance
      * @param array<string, array{point:array{made:int,attempts:int},tir:array{made:int,attempts:int}}>> $rajoutByDistance
      * @param array{minusTwoCount:int,ballsPlayed:int} $heldEndError
+     * @param array{endsOpened:int,endsWonWhenOpened:int,endsOpenedWell:int,endsOpenedWellAndWon:int} $pointDominance
      */
     private function analyzeEndForPlayer(
         int $playerId,
+        GameEnd $end,
         array $shots,
         array $teamMap,
         array $teamCapacities,
@@ -235,7 +243,26 @@ final class PlayerTacticalInsightsService
         int &$tacticalAttempts,
         int &$tacticalAttemptsWithDistance,
         array &$heldEndError,
+        array &$pointDominance,
     ): void {
+        $firstShot = $shots[0];
+        if ((int) $firstShot->getPlayer()->getId() === $playerId) {
+            ++$pointDominance['endsOpened'];
+            $playerTeam = $teamMap[$playerId];
+            $winner = $end->getWinner();
+
+            if ($firstShot->getNote() >= 1) {
+                ++$pointDominance['endsOpenedWell'];
+                if (($winner === 'A' || $winner === 'B') && $winner === $playerTeam) {
+                    ++$pointDominance['endsOpenedWellAndWon'];
+                }
+            }
+
+            if (($winner === 'A' || $winner === 'B') && $winner === $playerTeam) {
+                ++$pointDominance['endsWonWhenOpened'];
+            }
+        }
+
         $playedByTeam = ['A' => 0, 'B' => 0];
         $markingTeam = null;
         $markingActive = false;
@@ -454,6 +481,32 @@ final class PlayerTacticalInsightsService
             ballsPlayed: $ballsPlayed,
             rate: $ballsPlayed > 0 ? round($counters['minusTwoCount'] / $ballsPlayed * 100, 1) : null,
         );
+    }
+
+    /**
+     * @param array{endsOpened:int,endsWonWhenOpened:int,endsOpenedWell:int,endsOpenedWellAndWon:int} $stats
+     */
+    private function toPointDominanceResponse(array $stats): MatchInsightsPointDominanceResponse
+    {
+        return new MatchInsightsPointDominanceResponse(
+            endsWonWhenOpened: $stats['endsWonWhenOpened'],
+            endsOpened: $stats['endsOpened'],
+            endsOpenedWellAndWon: $stats['endsOpenedWellAndWon'],
+            endsOpenedWell: $stats['endsOpenedWell'],
+        );
+    }
+
+    /**
+     * @return array{endsOpened:int,endsWonWhenOpened:int,endsOpenedWell:int,endsOpenedWellAndWon:int}
+     */
+    private function emptyPointDominance(): array
+    {
+        return [
+            'endsOpened' => 0,
+            'endsWonWhenOpened' => 0,
+            'endsOpenedWell' => 0,
+            'endsOpenedWellAndWon' => 0,
+        ];
     }
 
     /**

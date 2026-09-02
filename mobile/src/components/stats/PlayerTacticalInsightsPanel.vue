@@ -104,6 +104,39 @@
       </div>
     </article>
 
+    <article class="tactical-block">
+      <h3>{{ t('summary.insights.point.title') }}</h3>
+      <p class="tactical-hint">{{ t('stats.tactical.point.hint') }}</p>
+      <p v-if="!hasPointDominance" class="tactical-metric-empty">
+        {{ t('stats.tactical.point.empty') }}
+      </p>
+      <template v-else>
+        <div class="dominance-bar-block">
+          <div class="dominance-bar-label">
+            <span>{{ pointDominanceWonLegend() }}</span>
+            <span class="dominance-bar-rate">{{ formatPointBarRate(pointDominanceWonFill()) }}</span>
+          </div>
+          <div class="marking-bar marking-bar--dominance" aria-hidden="true">
+            <div class="marking-bar-fill" :style="{ width: `${pointDominanceWonFill()}%` }" />
+          </div>
+        </div>
+        <div class="dominance-bar-block">
+          <div class="dominance-bar-label">
+            <span>{{ pointDominanceWellStartedLegend() }}</span>
+            <span class="dominance-bar-rate">{{
+              formatPointBarRate(pointDominanceWellStartedFill())
+            }}</span>
+          </div>
+          <div class="marking-bar marking-bar--dominance" aria-hidden="true">
+            <div
+              class="marking-bar-fill marking-bar-fill--dominance-points"
+              :style="{ width: `${pointDominanceWellStartedFill()}%` }"
+            />
+          </div>
+        </div>
+      </template>
+    </article>
+
     <p v-if="insights.coverage" class="tactical-footnote">
       {{
         t('stats.tactical.coverage', {
@@ -118,16 +151,18 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { MatchInsightsHeldEndError, MatchInsightsMarkingRate } from '../../models/MatchInsights'
 import type { PlayerTacticalInsights } from '../../models/PlayerTacticalInsights'
 import { distanceBucketLabel } from '../../composables/usePlayerStatsCharts'
+import { formatPluralMessage } from '../../utils/i18nPlural'
 
-defineProps<{
+const props = defineProps<{
   insights: PlayerTacticalInsights
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const shotTypes = ['point', 'tir'] as const
 
 function bucketLabel(bucket: string): string {
@@ -168,6 +203,49 @@ function heldEndErrorLabel(data?: MatchInsightsHeldEndError | null): string {
     errors: data.minusTwoCount,
     balls: data.ballsPlayed,
   })
+}
+
+const pointDominance = computed(() => props.insights.pointDominance)
+
+const hasPointDominance = computed(() => (pointDominance.value?.endsOpened ?? 0) > 0)
+
+function pointDominanceWonFill(): number {
+  const data = pointDominance.value
+  if (!data || data.endsOpened === 0) return 0
+  return Math.round((data.endsWonWhenOpened / data.endsOpened) * 1000) / 10
+}
+
+function pointDominanceWellStartedFill(): number {
+  const data = pointDominance.value
+  if (!data || data.endsOpenedWell === 0) return 0
+  return Math.round((data.endsOpenedWellAndWon / data.endsOpenedWell) * 1000) / 10
+}
+
+function pointDominanceWonLegend(): string {
+  const data = pointDominance.value
+  const opened = data?.endsOpened ?? 0
+  const won = data?.endsWonWhenOpened ?? 0
+  const wonPart = formatPluralMessage(t, locale.value, 'summary.insights.point.wonPart', won, { won })
+  return formatPluralMessage(t, locale.value, 'summary.insights.point.wonLegend', opened, {
+    opened,
+    wonPart,
+  })
+}
+
+function pointDominanceWellStartedLegend(): string {
+  const data = pointDominance.value
+  const total = data?.endsOpenedWell ?? 0
+  const won = data?.endsOpenedWellAndWon ?? 0
+  const wonPart = formatPluralMessage(t, locale.value, 'summary.insights.point.wonPart', won, { won })
+  return formatPluralMessage(t, locale.value, 'summary.insights.point.wellStartedLegend', total, {
+    total,
+    wonPart,
+  })
+}
+
+function formatPointBarRate(rate: number): string {
+  const value = Number.isInteger(rate) ? rate : rate.toFixed(1)
+  return t('summary.insights.point.barRate', { rate: value })
 }
 </script>
 
@@ -285,6 +363,45 @@ function heldEndErrorLabel(data?: MatchInsightsHeldEndError | null): string {
 .marking-bar-fill.marking-bar-fill--error {
   background: #dc2626;
   opacity: 1;
+}
+
+.dominance-bar-block {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.dominance-bar-label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: baseline;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.dominance-bar-rate {
+  color: var(--app-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.tactical-metric-empty {
+  margin: 0;
+  padding: var(--app-space-sm) 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.marking-bar--dominance {
+  height: 0.5rem;
+}
+
+.marking-bar-fill--dominance-points {
+  opacity: 0.72;
 }
 
 .tactical-footnote {

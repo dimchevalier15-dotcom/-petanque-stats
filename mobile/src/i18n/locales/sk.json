@@ -166,6 +166,7 @@
           "many": "z toho {won} vyhraných",
           "other": "z toho {won} vyhraných"
         },
+        "barRate": "({rate} %)",
         "empty": "Neotvorili ste žiadnu menu s bodom v ruke"
       },
       "closing": {
@@ -1149,7 +1150,11 @@
       "loadErrorTitle": "Taktickú analýzu sa nepodarilo načítať",
       "loadErrorHint": "Skúste to znova o chvíľu.",
       "noEligibleTitle": "Žiadne analyzovateľné zápasy",
-      "noEligibleHint": "Potrebujete zápasy, kde sú sledovaní všetci hráči a poradie striel je úplné."
+      "noEligibleHint": "Potrebujete zápasy, kde sú sledovaní všetci hráči a poradie striel je úplné.",
+      "point": {
+        "hint": "Mene, kde ste hrali prvú boulu. Mena je dobre naštartovaná, ak je prvá boula ohodnotená +1 alebo +2.",
+        "empty": "Neotvorili ste žiadnu menu s bodom v ruke"
+      }
     },
     "kpi": {
       "matches": "Zápasy",

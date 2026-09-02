@@ -214,6 +214,79 @@ final class PlayerTacticalInsightsServiceTest extends KernelDatabaseTestCase
         self::assertSame(33.3, $res->heldEndError->rate);
     }
 
+    public function testPlayerPointDominanceCountsOnlyOwnOpeningShots(): void
+    {
+        [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
+
+        $endOpenedByA = new \App\Dto\Request\CompleteMatchEndDto();
+        $endOpenedByA->index = 1;
+        $endOpenedByA->winner = 'A';
+        $endOpenedByA->points = 2;
+        $endOpenedByA->canceled = false;
+        $endOpenedByA->shots = [
+            $this->shotDto(1, $playerAId, 1, 'point'),
+            $this->shotDto(2, $playerBId, -1, 'tir'),
+        ];
+
+        $endOpenedByB = new \App\Dto\Request\CompleteMatchEndDto();
+        $endOpenedByB->index = 2;
+        $endOpenedByB->winner = 'B';
+        $endOpenedByB->points = 2;
+        $endOpenedByB->canceled = false;
+        $endOpenedByB->shots = [
+            $this->shotDto(1, $playerBId, 1, 'point'),
+            $this->shotDto(2, $playerAId, -1, 'tir'),
+        ];
+
+        $req = $this->baseCompleteRequest($playerAId, $playerBId);
+        $req->ends = [$endOpenedByA, $endOpenedByB];
+        $this->recording->complete($matchId, $req);
+
+        $resA = $this->insights->insightsForPlayerId($playerAId);
+        $resB = $this->insights->insightsForPlayerId($playerBId);
+
+        self::assertSame('ok', $resA->status);
+        self::assertNotNull($resA->pointDominance);
+        self::assertSame(1, $resA->pointDominance->endsOpened);
+        self::assertSame(1, $resA->pointDominance->endsWonWhenOpened);
+        self::assertSame(1, $resA->pointDominance->endsOpenedWell);
+        self::assertSame(1, $resA->pointDominance->endsOpenedWellAndWon);
+
+        self::assertSame('ok', $resB->status);
+        self::assertNotNull($resB->pointDominance);
+        self::assertSame(1, $resB->pointDominance->endsOpened);
+        self::assertSame(1, $resB->pointDominance->endsWonWhenOpened);
+        self::assertSame(1, $resB->pointDominance->endsOpenedWell);
+        self::assertSame(1, $resB->pointDominance->endsOpenedWellAndWon);
+    }
+
+    public function testPlayerPointDominanceIgnoresTeammateOpening(): void
+    {
+        [$matchId, $teamA, $teamB, $unused] = $this->createDoubletteMatch();
+        unset($unused);
+
+        $end = new \App\Dto\Request\CompleteMatchEndDto();
+        $end->index = 1;
+        $end->winner = 'A';
+        $end->points = 2;
+        $end->canceled = false;
+        $end->shots = [
+            $this->shotDto(1, $teamA[0], 1, 'point'),
+            $this->shotDto(2, $teamB[0], -1, 'tir'),
+            $this->shotDto(3, $teamB[1], 0, 'point'),
+        ];
+
+        $this->completeDoubletteEnd($matchId, $teamA, $teamB, $end);
+
+        $resOpener = $this->insights->insightsForPlayerId($teamA[0]);
+        $resTeammate = $this->insights->insightsForPlayerId($teamA[1]);
+
+        self::assertSame(1, $resOpener->pointDominance?->endsOpened);
+        self::assertSame(1, $resOpener->pointDominance?->endsWonWhenOpened);
+        self::assertSame(0, $resTeammate->pointDominance?->endsOpened);
+        self::assertSame(0, $resTeammate->pointDominance?->endsWonWhenOpened);
+    }
+
     /**
      * @return array{0:int,1:list<int>,2:list<int>,3:int} matchId, teamA, teamB, playerB2
      */

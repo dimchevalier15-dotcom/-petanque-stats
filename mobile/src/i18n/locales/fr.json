@@ -152,6 +152,7 @@
           "one": "dont {won} emportée",
           "other": "dont {won} emportées"
         },
+        "barRate": "({rate} %)",
         "empty": "Vous n'avez ouvert aucune mène en tenant le but"
       },
       "closing": {
@@ -1135,7 +1136,11 @@
       "loadErrorTitle": "Impossible de charger l'analyse tactique",
       "loadErrorHint": "Réessayez dans un instant.",
       "noEligibleTitle": "Aucun match analysable",
-      "noEligibleHint": "Il faut des matchs où tous les joueurs sont suivis et l'ordre chronologique des boules est complet."
+      "noEligibleHint": "Il faut des matchs où tous les joueurs sont suivis et l'ordre chronologique des boules est complet.",
+      "point": {
+        "hint": "Mènes où vous avez joué la 1re boule. Une mène est bien démarrée lorsque cette 1re boule est notée +1 ou +2.",
+        "empty": "Vous n'avez ouvert aucune mène en tenant le but"
+      }
     },
     "kpi": {
       "matches": "Matchs",

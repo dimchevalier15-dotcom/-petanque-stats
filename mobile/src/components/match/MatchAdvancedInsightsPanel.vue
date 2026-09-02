@@ -147,7 +147,10 @@
           </p>
           <template v-else>
             <div class="dominance-bar-block">
-              <div class="dominance-bar-label">{{ pointDominanceWonLegend(team) }}</div>
+              <div class="dominance-bar-label">
+                <span>{{ pointDominanceWonLegend(team) }}</span>
+                <span class="dominance-bar-rate">{{ formatPointBarRate(pointDominanceWonFill(team)) }}</span>
+              </div>
               <div class="marking-bar marking-bar--dominance" aria-hidden="true">
                 <div
                   class="marking-bar-fill"
@@ -156,7 +159,12 @@
               </div>
             </div>
             <div class="dominance-bar-block">
-              <div class="dominance-bar-label">{{ pointDominanceWellStartedLegend(team) }}</div>
+              <div class="dominance-bar-label">
+                <span>{{ pointDominanceWellStartedLegend(team) }}</span>
+                <span class="dominance-bar-rate">{{
+                  formatPointBarRate(pointDominanceWellStartedFill(team))
+                }}</span>
+              </div>
               <div class="marking-bar marking-bar--dominance" aria-hidden="true">
                 <div
                   class="marking-bar-fill marking-bar-fill--dominance-points"
@@ -360,6 +368,11 @@ function pointDominanceWellStartedLegend(team: TeamSide): string {
     total,
     wonPart,
   })
+}
+
+function formatPointBarRate(rate: number): string {
+  const value = Number.isInteger(rate) ? rate : rate.toFixed(1)
+  return t('summary.insights.point.barRate', { rate: value })
 }
 
 function endSequenceDominanceEndsFill(team: TeamSide): number {
@@ -599,9 +612,19 @@ function bucketLabel(bucket: string): string {
 }
 
 .dominance-bar-label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: baseline;
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.35;
+}
+
+.dominance-bar-rate {
+  color: var(--app-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .tactical-metric-empty {
