@@ -38,6 +38,39 @@ final class GameBallRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<int> $gameIds
+     *
+     * @return array<int, list<GameBall>>
+     */
+    public function findByGameIdsGroupedByEnd(array $gameIds): array
+    {
+        if ($gameIds === []) {
+            return [];
+        }
+
+        /** @var list<GameBall> $balls */
+        $balls = $this->createQueryBuilder('b')
+            ->addSelect('p')
+            ->join('b.player', 'p')
+            ->join('b.end', 'e')
+            ->join('e.game', 'g')
+            ->where('g.id IN (:gameIds)')
+            ->setParameter('gameIds', $gameIds)
+            ->orderBy('e.id', 'ASC')
+            ->addOrderBy('b.sequenceOrder', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $grouped = [];
+        foreach ($balls as $ball) {
+            $endId = (int) $ball->getEnd()->getId();
+            $grouped[$endId][] = $ball;
+        }
+
+        return $grouped;
+    }
+
+    /**
      * Returns aggregates per player for given game id.
      *
      * @return array<int, array{count:int,sum:int,p2:int,p1:int,p0:int,m1:int,m2:int}> Map playerId => stats

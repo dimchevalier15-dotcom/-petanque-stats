@@ -19,6 +19,7 @@ use App\Service\PlayerAlreadyHasClubException;
 use App\Service\PlayerNotFoundException;
 use App\Service\PlayerService;
 use App\Service\PlayerStatsService;
+use App\Service\PlayerTacticalInsightsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +34,7 @@ final class CoachController extends AbstractController
         private CoachAccessService $coachAccess,
         private CoachService $coachService,
         private PlayerStatsService $playerStatsService,
+        private PlayerTacticalInsightsService $playerTacticalInsightsService,
         private MatchHistoryService $matchHistoryService,
         private PlayerService $playerService,
         private SerializerInterface $serializer,
@@ -167,6 +169,51 @@ final class CoachController extends AbstractController
         $res = $this->playerStatsService->statsForPlayerId(
             $id,
             $displayName,
+            $nature,
+            $dateRange,
+            $type,
+            $distance,
+            $competitionId,
+        );
+        $json = $this->serializer->serialize($res, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/coach/players/{id}/stats/tactical-insights', name: 'api_coach_player_tactical_insights', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function playerTacticalInsights(int $id, Request $request): JsonResponse
+    {
+        $user = $this->requireCoachUser($request);
+        $this->coachAccess->assertCoachCanViewPlayer($user, $id);
+
+        try {
+            $dateRange = CoachDateRangeResolver::fromRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 400);
+        }
+
+        $nature = $this->parseNature($request);
+        if ($nature === false) {
+            return new JsonResponse(['message' => 'Invalid nature filter.'], 400);
+        }
+
+        $type = $this->parseType($request);
+        if ($type === false) {
+            return new JsonResponse(['message' => 'Invalid type filter.'], 400);
+        }
+
+        $distance = $this->parseDistance($request);
+        if ($distance === false) {
+            return new JsonResponse(['message' => 'Invalid distance filter.'], 400);
+        }
+
+        $competitionId = $this->parseCompetitionId($request);
+        if ($competitionId === false) {
+            return new JsonResponse(['message' => 'Invalid competition filter.'], 400);
+        }
+
+        $res = $this->playerTacticalInsightsService->insightsForPlayerId(
+            $id,
             $nature,
             $dateRange,
             $type,

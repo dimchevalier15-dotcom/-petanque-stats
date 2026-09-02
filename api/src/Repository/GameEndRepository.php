@@ -51,6 +51,38 @@ final class GameEndRepository extends ServiceEntityRepository
 
         return $out;
     }
+
+    /**
+     * @param list<int> $gameIds
+     *
+     * @return array<int, list<GameEnd>>
+     */
+    public function findByGameIdsGrouped(array $gameIds): array
+    {
+        if ($gameIds === []) {
+            return [];
+        }
+
+        /** @var list<GameEnd> $ends */
+        $ends = $this->createQueryBuilder('e')
+            ->addSelect('g')
+            ->join('e.game', 'g')
+            ->where('g.id IN (:gameIds)')
+            ->setParameter('gameIds', $gameIds)
+            ->orderBy('g.id', 'ASC')
+            ->addOrderBy('e.index', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $grouped = [];
+        foreach ($ends as $end) {
+            $gameId = (int) $end->getGame()->getId();
+            $grouped[$gameId][] = $end;
+        }
+
+        return $grouped;
+    }
+
     public function deleteByGame(Game $game): void
     {
         $this->createQueryBuilder('e')

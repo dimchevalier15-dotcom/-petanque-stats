@@ -16,6 +16,7 @@ use App\Http\StatsDateRangeResolver;
 use App\Security\ImpersonationResolver;
 use App\Service\PlayerService;
 use App\Service\PlayerStatsService;
+use App\Service\PlayerTacticalInsightsService;
 use App\Service\ClubNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,6 +30,7 @@ final class PlayerController extends AbstractController
     public function __construct(
         private PlayerService $playerService,
         private PlayerStatsService $playerStatsService,
+        private PlayerTacticalInsightsService $playerTacticalInsightsService,
         private ImpersonationResolver $impersonation,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
@@ -145,6 +147,75 @@ final class PlayerController extends AbstractController
             return new JsonResponse(['message' => 'Invalid credentials.'], 401);
         }
         $json = $this->serializer->serialize($res, 'json');
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/players/me/stats/tactical-insights', name: 'api_players_me_tactical_insights', methods: ['GET'])]
+    public function myTacticalInsights(Request $request): JsonResponse
+    {
+        $authHeader = (string) $request->headers->get('Authorization', '');
+        if (!str_starts_with($authHeader, 'Bearer ')) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+        $token = substr($authHeader, 7);
+        try {
+            $dateRange = StatsDateRangeResolver::fromRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 400);
+        }
+
+        $natureParam = $request->query->get('nature');
+        $nature = null;
+        if ($natureParam !== null && $natureParam !== '' && $natureParam !== 'all') {
+            $nature = MatchNature::tryFrom((string) $natureParam);
+            if ($nature === null) {
+                return new JsonResponse(['message' => 'Invalid nature filter.'], 400);
+            }
+        }
+
+        $typeParam = $request->query->get('type');
+        $type = null;
+        if ($typeParam !== null && $typeParam !== '' && $typeParam !== 'all') {
+            $type = GameType::tryFrom((string) $typeParam);
+            if ($type === null) {
+                return new JsonResponse(['message' => 'Invalid type filter.'], 400);
+            }
+        }
+
+        $distanceParam = $request->query->get('distance');
+        $distance = null;
+        if ($distanceParam !== null && $distanceParam !== '' && $distanceParam !== 'all') {
+            $distance = DistanceBucket::tryFrom((string) $distanceParam);
+            if ($distance === null) {
+                return new JsonResponse(['message' => 'Invalid distance filter.'], 400);
+            }
+        }
+
+        $competitionParam = $request->query->get('competitionId');
+        $competitionId = null;
+        if ($competitionParam !== null && $competitionParam !== '' && $competitionParam !== 'all') {
+            if (!is_numeric($competitionParam) || (int) $competitionParam <= 0) {
+                return new JsonResponse(['message' => 'Invalid competition filter.'], 400);
+            }
+            $competitionId = (int) $competitionParam;
+        }
+
+        try {
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->playerTacticalInsightsService->insightsForToken(
+                $token,
+                $nature,
+                $dateRange,
+                $type,
+                $distance,
+                $competitionId,
+                $impersonatePlayerId,
+            );
+        } catch (\App\Service\Auth\InvalidTokenException) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+        $json = $this->serializer->serialize($res, 'json');
+
         return new JsonResponse($json, 200, [], true);
     }
 

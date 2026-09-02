@@ -49,6 +49,31 @@ final class GameParticipantRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<int> $gameIds
+     * @return array<int, array<int, string>>
+     */
+    public function mapPlayerTeamByGameIds(array $gameIds): array
+    {
+        if ($gameIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('gp')
+            ->select('IDENTITY(gp.game) as gameId, IDENTITY(gp.player) as pid, gp.team as team')
+            ->where('gp.game IN (:gameIds)')
+            ->setParameter('gameIds', $gameIds)
+            ->getQuery()
+            ->getArrayResult();
+
+        $maps = [];
+        foreach ($rows as $row) {
+            $maps[(int) $row['gameId']][(int) $row['pid']] = (string) $row['team'];
+        }
+
+        return $maps;
+    }
+
+    /**
      * @return array<int, string> Map playerId => team ('A'|'B')
      */
     public function mapPlayerTeamByGame(Game $game): array

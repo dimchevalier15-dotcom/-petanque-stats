@@ -20,6 +20,35 @@ final class GameTrackedRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<int> $gameIds
+     * @return array<int, list<int>>
+     */
+    public function findPlayerIdsByGameIds(array $gameIds): array
+    {
+        if ($gameIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('t')
+            ->select('IDENTITY(t.game) as gameId, IDENTITY(t.player) as pid')
+            ->where('t.game IN (:gameIds)')
+            ->setParameter('gameIds', $gameIds)
+            ->getQuery()
+            ->getArrayResult();
+
+        $grouped = [];
+        foreach ($rows as $row) {
+            $grouped[(int) $row['gameId']][] = (int) $row['pid'];
+        }
+
+        foreach ($grouped as &$playerIds) {
+            sort($playerIds);
+        }
+
+        return $grouped;
+    }
+
+    /**
      * @return list<int>
      */
     public function findPlayerIdsByGame(Game $game): array

@@ -7,6 +7,33 @@ function shot(order: number, playerId: number, note: number, shotType: 'point' |
   return { sequenceOrder: order, playerId, note, shotType, distance: null }
 }
 
+function endWithRajoutPrefix(extraShots: EndShot[]): EndRecord {
+  const shots: EndShot[] = []
+  let order = 1
+
+  for (let i = 0; i < 3; i++) {
+    shots.push(shot(order++, 1, 0, 'point'))
+  }
+  for (let i = 0; i < 3; i++) {
+    shots.push(shot(order++, 2, 0, 'point'))
+  }
+  for (let i = 0; i < 3; i++) {
+    shots.push(shot(order++, 3, 0, 'point'))
+  }
+
+  for (const extra of extraShots) {
+    shots.push({ ...extra, sequenceOrder: order++ })
+  }
+
+  return {
+    index: 1,
+    winner: 'B',
+    points: 2,
+    canceled: false,
+    shots,
+  }
+}
+
 describe('buildLocalMatchInsights', () => {
   it('is unavailable when not all players are tracked', () => {
     const res = buildLocalMatchInsights({
@@ -123,5 +150,63 @@ describe('buildLocalMatchInsights', () => {
     expect(res.markingTeamB?.tir.attempts).toBe(0)
     expect(res.rajoutTeamB?.point).toEqual({ made: 0, attempts: 3, rate: 0 })
     expect(res.rajoutTeamB?.tir).toEqual({ made: 2, attempts: 3, rate: 66.7 })
+  })
+
+  it('stops rajout sequence after minus two', () => {
+    const end = endWithRajoutPrefix([
+      shot(0, 4, -1, 'tir'),
+      shot(0, 4, -2, 'tir'),
+      shot(0, 4, 2, 'tir'),
+    ])
+
+    const res = buildLocalMatchInsights({
+      type: 'doublette',
+      teamA: [1, 2],
+      teamB: [3, 4],
+      trackedPlayers: [1, 2, 3, 4],
+      ends: [end],
+    })
+
+    expect(res.status).toBe('ok')
+    expect(res.rajoutTeamB?.tir).toEqual({ made: 0, attempts: 2, rate: 0 })
+  })
+
+  it('treats zero and minus one as failed rajout and positive as success', () => {
+    const end = endWithRajoutPrefix([
+      shot(0, 4, 0, 'point'),
+      shot(0, 4, -1, 'tir'),
+      shot(0, 4, 2, 'tir'),
+    ])
+
+    const res = buildLocalMatchInsights({
+      type: 'doublette',
+      teamA: [1, 2],
+      teamB: [3, 4],
+      trackedPlayers: [1, 2, 3, 4],
+      ends: [end],
+    })
+
+    expect(res.status).toBe('ok')
+    expect(res.rajoutTeamB?.point).toEqual({ made: 0, attempts: 4, rate: 0 })
+    expect(res.rajoutTeamB?.tir).toEqual({ made: 1, attempts: 2, rate: 50 })
+  })
+
+  it('stops rajout sequence when minus two is on point', () => {
+    const end = endWithRajoutPrefix([
+      shot(0, 4, -2, 'point'),
+      shot(0, 4, 1, 'tir'),
+    ])
+
+    const res = buildLocalMatchInsights({
+      type: 'doublette',
+      teamA: [1, 2],
+      teamB: [3, 4],
+      trackedPlayers: [1, 2, 3, 4],
+      ends: [end],
+    })
+
+    expect(res.status).toBe('ok')
+    expect(res.rajoutTeamB?.point).toEqual({ made: 0, attempts: 4, rate: 0 })
+    expect(res.rajoutTeamB?.tir).toEqual({ made: 0, attempts: 0, rate: null })
   })
 })

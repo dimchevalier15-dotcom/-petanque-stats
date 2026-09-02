@@ -219,6 +219,207 @@ final class MatchInsightsServiceTest extends KernelDatabaseTestCase
         self::assertSame(66.7, $res->rajoutTeamB->tir->rate);
     }
 
+    public function testRajoutStopsAfterMinusTwo(): void
+    {
+        $suffix = bin2hex(random_bytes(4));
+        $owner = new \App\Entity\User('owner'.$suffix.'@test.local');
+        $owner->setPassword('hash');
+        $this->em->persist($owner);
+
+        $players = [];
+        for ($i = 0; $i < 4; $i++) {
+            $p = new \App\Entity\Player('P'.$i, 'Test'.$suffix, 'P'.$i);
+            $this->em->persist($p);
+            $players[] = $p;
+        }
+        $this->em->flush();
+
+        $teamA = [(int) $players[0]->getId(), (int) $players[1]->getId()];
+        $teamB = [(int) $players[2]->getId(), (int) $players[3]->getId()];
+        $playerA1 = $teamA[0];
+        $playerA2 = $teamA[1];
+        $playerB1 = $teamB[0];
+        $playerB2 = $teamB[1];
+
+        $createReq = new \App\Dto\Request\CreateMatchRequest();
+        $createReq->type = 'doublette';
+        $createReq->targetScore = 13;
+        $createReq->statisticsMode = 'standard';
+        $createReq->teamA = $teamA;
+        $createReq->teamB = $teamB;
+        $createReq->trackedPlayers = array_merge($teamA, $teamB);
+
+        $matchId = $this->matchService->create($createReq, $owner)->id;
+
+        $req = new CompleteMatchRequest();
+        $req->type = 'doublette';
+        $req->targetScore = 13;
+        $req->statisticsMode = 'standard';
+        $req->teamA = $teamA;
+        $req->teamB = $teamB;
+        $req->trackedPlayers = array_merge($teamA, $teamB);
+
+        $end = new CompleteMatchEndDto();
+        $end->index = 1;
+        $end->winner = 'B';
+        $end->points = 2;
+        $end->canceled = false;
+        $end->shots = [];
+
+        $sequenceOrder = 1;
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA1, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA2, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerB1, 0, 'point');
+        }
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, -1, 'tir');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, -2, 'tir');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 2, 'tir');
+
+        $req->ends = [$end];
+        $this->recording->complete($matchId, $req);
+
+        $res = $this->insights->getInsights($matchId);
+
+        self::assertNotNull($res);
+        self::assertSame('ok', $res->status);
+        self::assertNotNull($res->rajoutTeamB);
+        self::assertSame(2, $res->rajoutTeamB->tir->attempts);
+        self::assertSame(0, $res->rajoutTeamB->tir->made);
+        self::assertSame(0.0, $res->rajoutTeamB->tir->rate);
+    }
+
+    public function testRajoutTreatsZeroAndMinusOneAsFailedAndPositiveAsSuccess(): void
+    {
+        [$matchId, $playerA1, $playerA2, $playerB1, $playerB2] = $this->createDoubletteMatch();
+
+        $end = new CompleteMatchEndDto();
+        $end->index = 1;
+        $end->winner = 'B';
+        $end->points = 2;
+        $end->canceled = false;
+        $end->shots = [];
+
+        $sequenceOrder = 1;
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA1, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA2, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerB1, 0, 'point');
+        }
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 0, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, -1, 'tir');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 2, 'tir');
+
+        $this->completeDoubletteEnd($matchId, $playerA1, $playerA2, $playerB1, $playerB2, $end);
+
+        $res = $this->insights->getInsights($matchId);
+
+        self::assertSame('ok', $res->status);
+        self::assertNotNull($res->rajoutTeamB);
+        self::assertSame(4, $res->rajoutTeamB->point->attempts);
+        self::assertSame(0, $res->rajoutTeamB->point->made);
+        self::assertSame(2, $res->rajoutTeamB->tir->attempts);
+        self::assertSame(1, $res->rajoutTeamB->tir->made);
+        self::assertSame(50.0, $res->rajoutTeamB->tir->rate);
+    }
+
+    public function testRajoutMinusTwoOnPointStopsSequence(): void
+    {
+        [$matchId, $playerA1, $playerA2, $playerB1, $playerB2] = $this->createDoubletteMatch();
+
+        $end = new CompleteMatchEndDto();
+        $end->index = 1;
+        $end->winner = 'B';
+        $end->points = 2;
+        $end->canceled = false;
+        $end->shots = [];
+
+        $sequenceOrder = 1;
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA1, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA2, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerB1, 0, 'point');
+        }
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, -2, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 1, 'tir');
+
+        $this->completeDoubletteEnd($matchId, $playerA1, $playerA2, $playerB1, $playerB2, $end);
+
+        $res = $this->insights->getInsights($matchId);
+
+        self::assertSame('ok', $res->status);
+        self::assertNotNull($res->rajoutTeamB);
+        self::assertSame(4, $res->rajoutTeamB->point->attempts);
+        self::assertSame(0, $res->rajoutTeamB->point->made);
+        self::assertSame(0, $res->rajoutTeamB->tir->attempts);
+        self::assertSame(0, $res->rajoutTeamB->tir->made);
+    }
+
+    /**
+     * @return array{0:int,1:int,2:int,3:int,4:int} matchId, playerA1, playerA2, playerB1, playerB2
+     */
+    private function createDoubletteMatch(): array
+    {
+        $suffix = bin2hex(random_bytes(4));
+        $owner = new \App\Entity\User('owner'.$suffix.'@test.local');
+        $owner->setPassword('hash');
+        $this->em->persist($owner);
+
+        $players = [];
+        for ($i = 0; $i < 4; $i++) {
+            $p = new \App\Entity\Player('P'.$i, 'Test'.$suffix, 'P'.$i);
+            $this->em->persist($p);
+            $players[] = $p;
+        }
+        $this->em->flush();
+
+        $teamA = [(int) $players[0]->getId(), (int) $players[1]->getId()];
+        $teamB = [(int) $players[2]->getId(), (int) $players[3]->getId()];
+
+        $createReq = new \App\Dto\Request\CreateMatchRequest();
+        $createReq->type = 'doublette';
+        $createReq->targetScore = 13;
+        $createReq->statisticsMode = 'standard';
+        $createReq->teamA = $teamA;
+        $createReq->teamB = $teamB;
+        $createReq->trackedPlayers = array_merge($teamA, $teamB);
+
+        $matchId = $this->matchService->create($createReq, $owner)->id;
+
+        return [$matchId, $teamA[0], $teamA[1], $teamB[0], $teamB[1]];
+    }
+
+    private function completeDoubletteEnd(
+        int $matchId,
+        int $playerA1,
+        int $playerA2,
+        int $playerB1,
+        int $playerB2,
+        CompleteMatchEndDto $end,
+    ): void {
+        $req = new CompleteMatchRequest();
+        $req->type = 'doublette';
+        $req->targetScore = 13;
+        $req->statisticsMode = 'standard';
+        $req->teamA = [$playerA1, $playerA2];
+        $req->teamB = [$playerB1, $playerB2];
+        $req->trackedPlayers = [$playerA1, $playerA2, $playerB1, $playerB2];
+        $req->ends = [$end];
+        $this->recording->complete($matchId, $req);
+    }
+
     private function shotDto(int $sequenceOrder, int $playerId, int $note, string $shotType): CompleteMatchEndShotDto
     {
         $shot = new CompleteMatchEndShotDto();

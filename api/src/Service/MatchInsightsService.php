@@ -243,6 +243,9 @@ final class MatchInsightsService
                 if ($note >= 1) {
                     ++$rajoutStats[$team][$shotType]['made'];
                 }
+                if ($note === -2) {
+                    $rajoutActive = false;
+                }
             }
 
             if ($shotType === 'tir' && !$shot->isCochonnet() && $note >= 1) {

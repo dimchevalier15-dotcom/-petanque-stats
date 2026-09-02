@@ -4,6 +4,7 @@ import type { MatchNature } from '../models/MatchContext'
 import type { MatchType } from '../models/Match'
 import type { DistanceBucketKey } from '../models/PlayerStats'
 import type { PlayerStatsResponseDto } from '../dto/player/PlayerStatsResponse'
+import type { PlayerTacticalInsightsResponseDto } from '../dto/player/PlayerTacticalInsightsResponse'
 import type { MatchHistoryResponseDto } from '../dto/match/MatchHistoryResponse'
 import type { CoachPlayerListResponseDto } from '../dto/coach/CoachPlayerListResponse'
 import type { CoachPlayerList } from '../models/Coach'
@@ -11,6 +12,7 @@ import type { CreatePlayerResponseDto } from '../dto/player/CreatePlayerResponse
 import type { PlayerItemDto } from '../dto/player/PlayerItem'
 import type { Player } from '../models/Player'
 import type { PlayerStats } from '../models/PlayerStats'
+import type { PlayerTacticalInsights } from '../models/PlayerTacticalInsights'
 import type { MatchHistoryPage } from '../models/MatchHistory'
 import { mapPlayerStats } from './stats'
 
@@ -116,6 +118,29 @@ export const coachService = {
       },
     })
     return mapPlayerStats(data)
+  },
+
+  async getPlayerTacticalInsights(
+    playerId: number,
+    range: StatsDateRangeParams,
+    nature?: MatchNature | 'all',
+    type?: MatchType | 'all',
+    distance?: DistanceBucketKey | 'all',
+    competitionId?: number | 'all',
+  ): Promise<PlayerTacticalInsights> {
+    const { data } = await api.get<PlayerTacticalInsightsResponseDto>(
+      `/coach/players/${playerId}/stats/tactical-insights`,
+      {
+        params: {
+          ...range,
+          ...(nature && nature !== 'all' ? { nature } : {}),
+          ...(type && type !== 'all' ? { type } : {}),
+          ...(distance && distance !== 'all' ? { distance } : {}),
+          ...(competitionId && competitionId !== 'all' ? { competitionId } : {}),
+        },
+      },
+    )
+    return data
   },
 
   async getPlayerHistory(playerId: number, page = 1, pageSize = 20): Promise<MatchHistoryPage> {

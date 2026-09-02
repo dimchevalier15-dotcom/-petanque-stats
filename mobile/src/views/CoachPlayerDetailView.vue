@@ -18,6 +18,7 @@
 
     <PlayerStatsPanel
       :fetch-stats="fetchCoachPlayerStats"
+      :fetch-tactical-insights="fetchCoachPlayerTacticalInsights"
       :show-empty-actions="false"
       :initial-nature="initialNature"
       :initial-from="initialFrom"
@@ -58,6 +59,14 @@ const initialTo = typeof route.query.to === 'string' ? route.query.to : undefine
 
 const fetchCoachPlayerStats: PlayerStatsFetcher = (range, nature, type, distance, competitionId) =>
   coachService.getPlayerStats(playerId, range, nature, type, distance, competitionId)
+
+const fetchCoachPlayerTacticalInsights = (
+  range: Parameters<PlayerStatsFetcher>[0],
+  nature: Parameters<PlayerStatsFetcher>[1],
+  type: Parameters<PlayerStatsFetcher>[2],
+  distance: Parameters<PlayerStatsFetcher>[3],
+  competitionId: Parameters<PlayerStatsFetcher>[4],
+) => coachService.getPlayerTacticalInsights(playerId, range, nature, type, distance, competitionId)
 
 function onStatsLoaded(stats: PlayerStats): void {
   if (stats.displayName) {

@@ -177,6 +177,9 @@ function analyzeEnd(
       if (shot.note >= 1) {
         rajoutStats[team][shot.shotType].made++
       }
+      if (shot.note === -2) {
+        rajoutActive = false
+      }
     }
 
     if (shot.shotType === 'tir' && !shot.isCochonnet && shot.note >= 1) {

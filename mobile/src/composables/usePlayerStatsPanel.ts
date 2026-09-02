@@ -22,6 +22,7 @@ import {
   type PlayerStatsByDistance,
 } from '../models/PlayerStats'
 import type { MatchSummaryShotBreakdown } from '../models/MatchSummary'
+import type { PlayerTacticalInsights } from '../models/PlayerTacticalInsights'
 import { competitionsService } from '../services/competitions'
 
 export type PlayerStatsFetcher = (
@@ -32,8 +33,19 @@ export type PlayerStatsFetcher = (
   competitionId: number | 'all',
 ) => Promise<PlayerStats>
 
+export type PlayerTacticalInsightsFetcher = (
+  range: StatsDateRangeParams,
+  nature: MatchNature | 'all',
+  type: MatchType | 'all',
+  distance: DistanceBucketKey | 'all',
+  competitionId: number | 'all',
+) => Promise<PlayerTacticalInsights>
+
+export type PlayerStatsTab = 'overview' | 'tactics'
+
 export interface UsePlayerStatsPanelOptions {
   fetchStats: PlayerStatsFetcher
+  fetchTacticalInsights?: PlayerTacticalInsightsFetcher
   showEmptyActions?: boolean
   initialNature?: MatchNature | 'all'
   initialFrom?: string
@@ -50,6 +62,11 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
   const refreshing = ref(false)
   const loadError = ref(false)
   const stats = ref<PlayerStats | null>(null)
+  const activeStatsTab = ref<PlayerStatsTab>('overview')
+  const tacticalInsights = ref<PlayerTacticalInsights | null>(null)
+  const tacticalLoading = ref(false)
+  const tacticalLoadError = ref(false)
+  const tacticalCacheKey = ref<string | null>(null)
   const natureFilter = ref<MatchNature | 'all'>(options.initialNature ?? 'all')
   const competitionFilter = ref<number | null>(null)
   const competitions = ref<Competition[]>([])
@@ -197,18 +214,68 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
 
   const showAverageDetails = computed(() => !!(stats.value?.point || stats.value?.tir || stats.value?.cochonnet))
 
+  const showTacticalTab = computed(
+    () => !!options.fetchTacticalInsights && stats.value?.status === 'ok',
+  )
+
+  function filtersCacheKey(): string {
+    return JSON.stringify({
+      ...queryParams(),
+      nature: natureFilter.value,
+      format: formatFilter.value,
+      distance: distanceFilter.value,
+      competition: competitionFilter.value ?? 'all',
+    })
+  }
+
+  function invalidateTacticalInsights(): void {
+    tacticalCacheKey.value = null
+    tacticalInsights.value = null
+  }
+
+  async function loadTacticalInsights(force = false): Promise<void> {
+    if (!options.fetchTacticalInsights) {
+      return
+    }
+
+    const key = filtersCacheKey()
+    if (!force && tacticalInsights.value && tacticalCacheKey.value === key) {
+      return
+    }
+
+    tacticalLoading.value = true
+    tacticalLoadError.value = false
+    try {
+      tacticalInsights.value = await options.fetchTacticalInsights(
+        queryParams(),
+        natureFilter.value,
+        formatFilter.value,
+        distanceFilter.value,
+        competitionFilter.value ?? 'all',
+      )
+      tacticalCacheKey.value = key
+    } catch {
+      tacticalLoadError.value = true
+      tacticalInsights.value = null
+    } finally {
+      tacticalLoading.value = false
+    }
+  }
+
   function setNatureFilter(value: MatchNature | 'all'): void {
     natureFilter.value = value
     if (value !== 'competition') {
       competitionFilter.value = null
     }
     if (stats.value) {
+      invalidateTacticalInsights()
       void load({ refresh: true })
     }
   }
 
   function onCompetitionFilterChange(): void {
     if (stats.value) {
+      invalidateTacticalInsights()
       void load({ refresh: true })
     }
   }
@@ -216,6 +283,7 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
   function setFormatFilter(value: MatchType | 'all'): void {
     formatFilter.value = value
     if (stats.value) {
+      invalidateTacticalInsights()
       void load({ refresh: true })
     }
   }
@@ -223,6 +291,7 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
   function setDistanceFilter(value: DistanceBucketKey | 'all'): void {
     distanceFilter.value = value
     if (stats.value) {
+      invalidateTacticalInsights()
       void load({ refresh: true })
     }
   }
@@ -244,6 +313,9 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
         competitionFilter.value ?? 'all',
       )
       options.onStatsLoaded?.(stats.value)
+      if (activeStatsTab.value === 'tactics') {
+        void loadTacticalInsights(true)
+      }
     } catch {
       loadError.value = true
     } finally {
@@ -255,9 +327,22 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
   function onDateRangeChange(): void {
     normalizeRange()
     if (stats.value) {
+      invalidateTacticalInsights()
       void load({ refresh: true })
     }
   }
+
+  watch(activeStatsTab, (tab) => {
+    if (tab === 'tactics') {
+      void loadTacticalInsights()
+    }
+  })
+
+  watch(showTacticalTab, (show) => {
+    if (!show) {
+      activeStatsTab.value = 'overview'
+    }
+  })
 
   onMounted(async () => {
     try {
@@ -283,6 +368,11 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
     refreshing,
     loadError,
     stats,
+    activeStatsTab,
+    tacticalInsights,
+    tacticalLoading,
+    tacticalLoadError,
+    showTacticalTab,
     natureFilter,
     competitionFilter,
     formatFilter,
@@ -316,6 +406,7 @@ export function usePlayerStatsPanel(options: UsePlayerStatsPanelOptions) {
     setFormatFilter,
     setDistanceFilter,
     load,
+    loadTacticalInsights,
     onDateRangeChange,
     avgSeverity,
     breakdownBallCount,

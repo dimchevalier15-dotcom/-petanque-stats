@@ -1076,6 +1076,21 @@
       "competition": "Súťaž",
       "distance": "Vzdialenosť"
     },
+    "tabs": {
+      "label": "Zobrazenie štatistík",
+      "overview": "Štatistiky",
+      "tactics": "Taktická analýza"
+    },
+    "tactical": {
+      "title": "Taktická analýza",
+      "subtitle": "Vaše bole na značkovanie a dorážku z filtrovaných zápasov.",
+      "coverage": "{matches}/{eligible} analyzovaných zápasov · {ends} mien · {rate} % s vzdialenosťou",
+      "noDistanceData": "V tejto selekcii nie sú bole na značkovanie ani dorážku s vzdialenosťou.",
+      "loadErrorTitle": "Taktickú analýzu sa nepodarilo načítať",
+      "loadErrorHint": "Skúste to znova o chvíľu.",
+      "noEligibleTitle": "Žiadne analyzovateľné zápasy",
+      "noEligibleHint": "Potrebujete zápasy, kde sú sledovaní všetci hráči a poradie striel je úplné."
+    },
     "kpi": {
       "matches": "Zápasy",
       "victories": "Víťazstvá",

@@ -3,8 +3,10 @@ import type { MatchNature } from '../models/MatchContext'
 import type { MatchType } from '../models/Match'
 import type { DistanceBucketKey } from '../models/PlayerStats'
 import type { PlayerStatsResponseDto } from '../dto/player/PlayerStatsResponse'
+import type { PlayerTacticalInsightsResponseDto } from '../dto/player/PlayerTacticalInsightsResponse'
 import type { StatsDateRangeParams } from '../composables/useStatsDateRange'
 import type { PlayerStats } from '../models/PlayerStats'
+import type { PlayerTacticalInsights } from '../models/PlayerTacticalInsights'
 
 export function mapPlayerStats(dto: PlayerStatsResponseDto): PlayerStats {
   return {
@@ -55,5 +57,24 @@ export const statsService = {
       },
     })
     return mapPlayerStats(data)
+  },
+
+  async getMyTacticalInsights(
+    range: StatsDateRangeParams,
+    nature?: MatchNature | 'all',
+    type?: MatchType | 'all',
+    distance?: DistanceBucketKey | 'all',
+    competitionId?: number | 'all',
+  ): Promise<PlayerTacticalInsights> {
+    const { data } = await api.get<PlayerTacticalInsightsResponseDto>('/players/me/stats/tactical-insights', {
+      params: {
+        ...range,
+        ...(nature && nature !== 'all' ? { nature } : {}),
+        ...(type && type !== 'all' ? { type } : {}),
+        ...(distance && distance !== 'all' ? { distance } : {}),
+        ...(competitionId && competitionId !== 'all' ? { competitionId } : {}),
+      },
+    })
+    return data
   },
 }

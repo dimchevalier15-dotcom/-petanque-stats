@@ -1076,6 +1076,21 @@
       "competition": "Compétition",
       "distance": "Distance"
     },
+    "tabs": {
+      "label": "Vue des statistiques",
+      "overview": "Statistiques",
+      "tactics": "Analyse tactique"
+    },
+    "tactical": {
+      "title": "Analyse tactique",
+      "subtitle": "Vos boules de marque et de rajout, agrégées sur les matchs filtrés.",
+      "coverage": "{matches}/{eligible} matchs analysés · {ends} mènes · {rate} % avec distance",
+      "noDistanceData": "Aucune boule de marque ou de rajout avec distance sur cette sélection.",
+      "loadErrorTitle": "Impossible de charger l'analyse tactique",
+      "loadErrorHint": "Réessayez dans un instant.",
+      "noEligibleTitle": "Aucun match analysable",
+      "noEligibleHint": "Il faut des matchs où tous les joueurs sont suivis et l'ordre chronologique des boules est complet."
+    },
     "kpi": {
       "matches": "Matchs",
       "victories": "Victoires",

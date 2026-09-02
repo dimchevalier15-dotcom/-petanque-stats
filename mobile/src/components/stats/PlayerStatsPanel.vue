@@ -72,6 +72,11 @@
     />
   </StatsCollapsibleFilters>
 
+  <PlayerStatsTabNav
+    v-if="showTacticalTab && stats"
+    v-model="activeStatsTab"
+  />
+
   <div v-if="loading && !stats" class="loading">
     <ProgressSpinner stroke-width="4" />
   </div>
@@ -84,6 +89,33 @@
   </div>
 
   <template v-else-if="stats">
+    <template v-if="activeStatsTab === 'tactics'">
+      <div v-if="tacticalLoading" class="loading">
+        <ProgressSpinner stroke-width="4" />
+      </div>
+
+      <div v-else-if="tacticalLoadError" class="empty-state">
+        <i class="pi pi-exclamation-circle empty-icon" aria-hidden="true" />
+        <p class="empty-title">{{ t('stats.tactical.loadErrorTitle') }}</p>
+        <p class="empty-hint">{{ t('stats.tactical.loadErrorHint') }}</p>
+        <Button :label="t('stats.empty.retry')" @click="loadTacticalInsights(true)" />
+      </div>
+
+      <div
+        v-else-if="tacticalInsights?.status === 'no_eligible_matches'"
+        class="panel app-card notice"
+      >
+        <p class="notice-title">{{ t('stats.tactical.noEligibleTitle') }}</p>
+        <p class="panel-hint">{{ t('stats.tactical.noEligibleHint') }}</p>
+      </div>
+
+      <PlayerTacticalInsightsPanel
+        v-else-if="tacticalInsights?.status === 'ok'"
+        :insights="tacticalInsights"
+      />
+    </template>
+
+    <template v-else>
     <div v-if="refreshing" class="refreshing">
       <ProgressSpinner stroke-width="4" />
     </div>
@@ -321,6 +353,7 @@
         </section>
       </div>
     </template>
+    </template>
   </template>
 </template>
 
@@ -334,11 +367,18 @@ import Tag from 'primevue/tag'
 import ShotSuccessRate from './ShotSuccessRate.vue'
 import StatsCollapsibleFilters from './StatsCollapsibleFilters.vue'
 import StatsDateRangeFilter from './StatsDateRangeFilter.vue'
-import { usePlayerStatsPanel, type PlayerStatsFetcher } from '../../composables/usePlayerStatsPanel'
+import PlayerStatsTabNav from './PlayerStatsTabNav.vue'
+import PlayerTacticalInsightsPanel from './PlayerTacticalInsightsPanel.vue'
+import {
+  usePlayerStatsPanel,
+  type PlayerStatsFetcher,
+  type PlayerTacticalInsightsFetcher,
+} from '../../composables/usePlayerStatsPanel'
 
 const props = withDefaults(
   defineProps<{
     fetchStats: PlayerStatsFetcher
+    fetchTacticalInsights?: PlayerTacticalInsightsFetcher
     showEmptyActions?: boolean
     initialNature?: import('../../models/MatchContext').MatchNature | 'all'
     initialFrom?: string
@@ -359,6 +399,11 @@ const {
   refreshing,
   loadError,
   stats,
+  activeStatsTab,
+  tacticalInsights,
+  tacticalLoading,
+  tacticalLoadError,
+  showTacticalTab,
   natureFilter,
   competitionFilter,
   formatFilter,
@@ -392,6 +437,7 @@ const {
   setFormatFilter,
   setDistanceFilter,
   load,
+  loadTacticalInsights,
   onDateRangeChange,
   avgSeverity,
   breakdownBallCount,
@@ -402,6 +448,10 @@ const {
 } = usePlayerStatsPanel({
   fetchStats: (range, nature, type, distance, competitionId) =>
     props.fetchStats(range, nature, type, distance, competitionId),
+  fetchTacticalInsights: props.fetchTacticalInsights
+    ? (range, nature, type, distance, competitionId) =>
+        props.fetchTacticalInsights!(range, nature, type, distance, competitionId)
+    : undefined,
   showEmptyActions: props.showEmptyActions,
   initialNature: props.initialNature,
   initialFrom: props.initialFrom,

@@ -1076,6 +1076,21 @@
       "competition": "Competition",
       "distance": "Distance"
     },
+    "tabs": {
+      "label": "Stats view",
+      "overview": "Statistics",
+      "tactics": "Tactical analysis"
+    },
+    "tactical": {
+      "title": "Tactical analysis",
+      "subtitle": "Your marking and extra balls aggregated across filtered matches.",
+      "coverage": "{matches}/{eligible} matches analyzed · {ends} ends · {rate}% with distance",
+      "noDistanceData": "No marking or extra balls with distance in this selection.",
+      "loadErrorTitle": "Could not load tactical analysis",
+      "loadErrorHint": "Please try again in a moment.",
+      "noEligibleTitle": "No analyzable matches",
+      "noEligibleHint": "Matches need every player tracked and a complete chronological shot order."
+    },
     "kpi": {
       "matches": "Matches",
       "victories": "Wins",

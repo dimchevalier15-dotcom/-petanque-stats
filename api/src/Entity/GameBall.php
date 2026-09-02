@@ -61,6 +61,7 @@ class GameBall
     }
 
     public function getId(): ?int { return $this->id; }
+    public function getEnd(): GameEnd { return $this->end; }
     public function getPlayer(): Player { return $this->player; }
     public function getSequenceOrder(): int { return $this->sequenceOrder; }
     public function getNote(): int { return $this->note; }

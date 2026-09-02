@@ -2,6 +2,7 @@
   <AppPage :title="t('stats.title')" :subtitle="displayName ?? undefined">
     <PlayerStatsPanel
       :fetch-stats="fetchMyStats"
+      :fetch-tactical-insights="fetchMyTacticalInsights"
       :reload-key="impersonation.player?.id ?? null"
       @stats-loaded="onStatsLoaded"
     />
@@ -25,6 +26,14 @@ const displayName = ref<string | undefined>()
 
 const fetchMyStats: PlayerStatsFetcher = (range, nature, type, distance, competitionId) =>
   statsService.getMyStats(range, nature, type, distance, competitionId)
+
+const fetchMyTacticalInsights = (
+  range: Parameters<PlayerStatsFetcher>[0],
+  nature: Parameters<PlayerStatsFetcher>[1],
+  type: Parameters<PlayerStatsFetcher>[2],
+  distance: Parameters<PlayerStatsFetcher>[3],
+  competitionId: Parameters<PlayerStatsFetcher>[4],
+) => statsService.getMyTacticalInsights(range, nature, type, distance, competitionId)
 
 function onStatsLoaded(stats: PlayerStats): void {
   displayName.value = stats.displayName ?? undefined
