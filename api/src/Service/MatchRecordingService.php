@@ -189,7 +189,9 @@ final class MatchRecordingService
             $substitutionsByTeam[$team] = true;
 
             if (isset($trackedSet[$outId])) {
-                $this->em->persist(new GameTracked($game, $player));
+                if (!isset($trackedSet[$inId])) {
+                    $this->em->persist(new GameTracked($game, $player));
+                }
                 $trackedSet[$inId] = true;
             }
         }

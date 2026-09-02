@@ -329,6 +329,74 @@ final class MatchRecordingServiceTest extends KernelDatabaseTestCase
         self::assertSame(0, $end->getPoints());
     }
 
+    public function testSubstitutionWithTrackedSubstituteDoesNotDuplicateTrackedPlayers(): void
+    {
+        $suffix = bin2hex(random_bytes(4));
+        $owner = new User('owner'.$suffix.'@test.local');
+        $owner->setPassword('hash');
+        $this->em->persist($owner);
+
+        $players = [];
+        for ($i = 0; $i < 5; $i++) {
+            $p = new Player('P'.$i, 'Test'.$suffix, 'P'.$i);
+            $this->em->persist($p);
+            $players[] = $p;
+        }
+        $this->em->flush();
+
+        $teamA = [
+            (int) $players[0]->getId(),
+            (int) $players[1]->getId(),
+        ];
+        $teamB = [
+            (int) $players[2]->getId(),
+            (int) $players[3]->getId(),
+        ];
+        $outPlayerId = $teamA[0];
+        $inPlayerId = (int) $players[4]->getId();
+
+        $createReq = new CreateMatchRequest();
+        $createReq->type = 'doublette';
+        $createReq->targetScore = 13;
+        $createReq->statisticsMode = 'standard';
+        $createReq->teamA = $teamA;
+        $createReq->teamB = $teamB;
+        $createReq->trackedPlayers = array_merge($teamA, $teamB);
+
+        $matchId = $this->matchService->create($createReq, $owner)->id;
+
+        $req = new CompleteMatchRequest();
+        $req->type = 'doublette';
+        $req->targetScore = 13;
+        $req->statisticsMode = 'standard';
+        $req->teamA = $teamA;
+        $req->teamB = $teamB;
+        // Mobile sends the substitute in trackedPlayers when the outgoing player was tracked.
+        $req->trackedPlayers = array_merge($teamA, $teamB, [$inPlayerId]);
+
+        $sub = new \App\Dto\Request\CompleteMatchSubstitutionDto();
+        $sub->team = 'A';
+        $sub->outPlayerId = $outPlayerId;
+        $sub->inPlayerId = $inPlayerId;
+        $sub->fromEndIndex = 1;
+        $req->substitutions = [$sub];
+
+        $end = new CompleteMatchEndDto();
+        $end->index = 1;
+        $end->winner = 'A';
+        $end->points = 1;
+        $end->canceled = false;
+        $req->ends = [$end];
+
+        $this->recording->complete($matchId, $req);
+
+        $game = $this->em->getRepository(\App\Entity\Game::class)->find($matchId);
+        self::assertNotNull($game);
+
+        $trackedCount = $this->em->getRepository(\App\Entity\GameTracked::class)->count(['game' => $game]);
+        self::assertSame(5, $trackedCount);
+    }
+
     public function testEndPlayerRolesArePersisted(): void
     {
         [$matchId, $playerAId, $playerBId] = $this->createHeadToHead();
