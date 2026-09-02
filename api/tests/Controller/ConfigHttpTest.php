@@ -16,8 +16,8 @@ final class ConfigHttpTest extends WebDatabaseTestCase
 
         self::assertSame(200, $client->getResponse()->getStatusCode());
         $payload = json_decode($client->getResponse()->getContent() ?: '', true);
-        self::assertSame('1.4.3', $payload['latestVersion']);
-        self::assertSame('1.0.0', $payload['minimumVersion']);
+        self::assertSame('1.5.0', $payload['latestVersion']);
+        self::assertSame('1.5.0', $payload['minimumVersion']);
         self::assertSame(
             'https://play.google.com/store/apps/details?id=com.petanquestats.app',
             $payload['androidStoreUrl'],
