@@ -67,9 +67,39 @@ describe('buildLocalMatchInsights', () => {
 
     expect(res.status).toBe('ok')
     expect(res.teamA?.endsOpened).toBe(1)
-    expect(res.pointDominanceTeamA).toEqual({ endsWonWhenOpened: 1, endsOpened: 1 })
+    expect(res.pointDominanceTeamA).toEqual({
+      endsWonWhenOpened: 1,
+      endsOpened: 1,
+      endsOpenedWellAndWon: 1,
+      endsOpenedWell: 1,
+    })
     expect(res.markingTeamA?.point.attempts).toBe(0)
     expect(res.markingTeamB?.tir.attempts).toBe(0)
+  })
+
+  it('tracks well-started ends separately from won-when-opened', () => {
+    const end: EndRecord = {
+      index: 1,
+      winner: 'B',
+      points: 2,
+      canceled: false,
+      shots: [shot(1, 1, 1, 'point'), shot(2, 2, 2, 'point')],
+    }
+
+    const res = buildLocalMatchInsights({
+      type: 'tete_a_tete',
+      teamA: [1],
+      teamB: [2],
+      trackedPlayers: [1, 2],
+      ends: [end],
+    })
+
+    expect(res.pointDominanceTeamA).toEqual({
+      endsWonWhenOpened: 0,
+      endsOpened: 1,
+      endsOpenedWellAndWon: 0,
+      endsOpenedWell: 1,
+    })
   })
 
   it('counts marking balls when opponent is out and stops after success', () => {
@@ -228,5 +258,53 @@ describe('buildLocalMatchInsights', () => {
     expect(res.status).toBe('ok')
     expect(res.heldEndErrorTeamB).toEqual({ minusTwoCount: 1, ballsPlayed: 6, rate: 16.7 })
     expect(res.heldEndErrorTeamA).toEqual({ minusTwoCount: 0, ballsPlayed: 0, rate: null })
+  })
+
+  it('counts end sequence dominance when opponent plays three consecutive shots', () => {
+    const shots: EndShot[] = []
+    let order = 1
+
+    shots.push(shot(order++, 1, 0, 'point'))
+    shots.push(shot(order++, 2, 0, 'point'))
+    shots.push(shot(order++, 1, 0, 'point'))
+    shots.push(shot(order++, 2, 0, 'point'))
+    for (let i = 0; i < 3; i++) {
+      shots.push(shot(order++, 3, 0, 'point'))
+    }
+    for (let i = 0; i < 3; i++) {
+      shots.push(shot(order++, 4, 0, 'point'))
+    }
+    shots.push(shot(order++, 1, 0, 'point'))
+    shots.push(shot(order++, 2, 0, 'point'))
+
+    const end: EndRecord = {
+      index: 1,
+      winner: 'B',
+      points: 2,
+      canceled: false,
+      shots,
+    }
+
+    const res = buildLocalMatchInsights({
+      type: 'doublette',
+      teamA: [1, 2],
+      teamB: [3, 4],
+      trackedPlayers: [1, 2, 3, 4],
+      ends: [end],
+    })
+
+    expect(res.status).toBe('ok')
+    expect(res.endSequenceDominanceTeamB).toEqual({
+      endsDominated: 1,
+      endsWonWhileDominating: 1,
+      pointsOnDominatedEnds: 2,
+      totalPointsScored: 2,
+    })
+    expect(res.endSequenceDominanceTeamA).toEqual({
+      endsDominated: 0,
+      endsWonWhileDominating: 0,
+      pointsOnDominatedEnds: 0,
+      totalPointsScored: 0,
+    })
   })
 })

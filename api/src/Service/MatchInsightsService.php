@@ -8,6 +8,7 @@ use App\Dto\Response\MatchInsightsByDistanceResponse;
 use App\Dto\Response\MatchInsightsCoverageResponse;
 use App\Dto\Response\MatchInsightsDistanceOutlookResponse;
 use App\Dto\Response\MatchInsightsDistanceTeamResponse;
+use App\Dto\Response\MatchInsightsEndSequenceDominanceResponse;
 use App\Dto\Response\MatchInsightsHeldEndErrorResponse;
 use App\Dto\Response\MatchInsightsMarkingRateResponse;
 use App\Dto\Response\MatchInsightsMarkingTeamResponse;
@@ -30,6 +31,7 @@ final class MatchInsightsService
 {
     private const DOMINANCE_AVG_GAP = 0.5;
     private const DOMINANCE_MIN_BALLS = 3;
+    private const END_SEQUENCE_DOMINANCE_STREAK = 3;
     private const LIMITED_DAMAGE_MAX_POINTS = 2;
 
     public function __construct(
@@ -133,10 +135,26 @@ final class MatchInsightsService
             pointDominanceTeamA: new MatchInsightsPointDominanceResponse(
                 $teamStats['A']['endsWonWhenOpened'],
                 $teamStats['A']['endsOpened'],
+                $teamStats['A']['endsOpenedWellAndWon'],
+                $teamStats['A']['endsOpenedWell'],
             ),
             pointDominanceTeamB: new MatchInsightsPointDominanceResponse(
                 $teamStats['B']['endsWonWhenOpened'],
                 $teamStats['B']['endsOpened'],
+                $teamStats['B']['endsOpenedWellAndWon'],
+                $teamStats['B']['endsOpenedWell'],
+            ),
+            endSequenceDominanceTeamA: new MatchInsightsEndSequenceDominanceResponse(
+                $teamStats['A']['endsDominated'],
+                $teamStats['A']['endsWonWhileDominating'],
+                $teamStats['A']['pointsOnDominatedEnds'],
+                $teamStats['A']['totalPointsScored'],
+            ),
+            endSequenceDominanceTeamB: new MatchInsightsEndSequenceDominanceResponse(
+                $teamStats['B']['endsDominated'],
+                $teamStats['B']['endsWonWhileDominating'],
+                $teamStats['B']['pointsOnDominatedEnds'],
+                $teamStats['B']['totalPointsScored'],
             ),
             distanceOutlook: $this->buildDistanceOutlook($distanceAgg),
             coverage: new MatchInsightsCoverageResponse(
@@ -214,8 +232,16 @@ final class MatchInsightsService
         ++$teamStats[$firstTeam]['firstShotCount'];
 
         $winner = $end->getWinner();
+        if ($firstShot->getNote() >= 1) {
+            ++$teamStats[$firstTeam]['endsOpenedWell'];
+            if (($winner === 'A' || $winner === 'B') && $winner === $firstTeam) {
+                ++$teamStats[$firstTeam]['endsOpenedWellAndWon'];
+            }
+        }
+
         if ($winner === 'A' || $winner === 'B') {
             ++$teamStats[$winner]['endsWon'];
+            $teamStats[$winner]['totalPointsScored'] += $end->getPoints();
             if ($winner === $firstTeam) {
                 ++$teamStats[$firstTeam]['endsWonWhenOpened'];
             }
@@ -227,6 +253,9 @@ final class MatchInsightsService
         $markingActive = false;
         $rajoutActive = false;
         $rajoutTeam = null;
+        $consecutiveTeam = null;
+        $consecutiveCount = 0;
+        $endDominatingTeam = null;
 
         foreach ($shots as $shot) {
             $team = $teamMap[(int) $shot->getPlayer()->getId()];
@@ -269,6 +298,21 @@ final class MatchInsightsService
                 $pointHolder = $team;
             }
 
+            if ($team === $consecutiveTeam) {
+                ++$consecutiveCount;
+            } else {
+                $consecutiveTeam = $team;
+                $consecutiveCount = 1;
+            }
+
+            if (
+                $endDominatingTeam === null
+                && $consecutiveCount >= self::END_SEQUENCE_DOMINANCE_STREAK
+                && ($teamCapacities[$opponent] - $playedByTeam[$opponent]) > 0
+            ) {
+                $endDominatingTeam = $opponent;
+            }
+
             ++$playedByTeam[$team];
             ++$totalBalls;
 
@@ -307,6 +351,14 @@ final class MatchInsightsService
 
         $this->analyzeClosing('A', 'B', $remaining, $winner, $end->getPoints(), $teamStats);
         $this->analyzeClosing('B', 'A', $remaining, $winner, $end->getPoints(), $teamStats);
+
+        if ($endDominatingTeam === 'A' || $endDominatingTeam === 'B') {
+            ++$teamStats[$endDominatingTeam]['endsDominated'];
+            if ($winner === $endDominatingTeam) {
+                ++$teamStats[$endDominatingTeam]['endsWonWhileDominating'];
+                $teamStats[$endDominatingTeam]['pointsOnDominatedEnds'] += $end->getPoints();
+            }
+        }
     }
 
     /**
@@ -579,6 +631,8 @@ final class MatchInsightsService
             'endsWon' => 0,
             'endsOpened' => 0,
             'endsWonWhenOpened' => 0,
+            'endsOpenedWell' => 0,
+            'endsOpenedWellAndWon' => 0,
             'firstShotSum' => 0,
             'firstShotCount' => 0,
             'capitalizedCount' => 0,
@@ -588,6 +642,10 @@ final class MatchInsightsService
             'defenseSituations' => 0,
             'defensePointsSum' => 0,
             'reclaimsCount' => 0,
+            'endsDominated' => 0,
+            'endsWonWhileDominating' => 0,
+            'pointsOnDominatedEnds' => 0,
+            'totalPointsScored' => 0,
         ];
     }
 

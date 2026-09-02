@@ -93,7 +93,8 @@
         "point": "Au point",
         "tir": "Au tir",
         "rate": "{rate} % ({made}/{total})",
-        "noData": "—"
+        "noData": "—",
+        "empty": "Vous n'avez joué aucune boule de marque"
       },
       "rajout": {
         "title": "Réussite des boules de rajout",
@@ -101,7 +102,8 @@
         "point": "Au point",
         "tir": "Au tir",
         "rate": "{rate} % ({made}/{total})",
-        "noData": "—"
+        "noData": "—",
+        "empty": "Vous n'avez joué aucune boule de rajout"
       },
       "heldEndError": {
         "title": "Erreur en ayant la mène en main",
@@ -110,10 +112,47 @@
         "rate": "{rate} % ({errors}/{balls})",
         "noData": "—"
       },
+      "endSequenceDominance": {
+        "title": "Domination de mène",
+        "hint": "Comptabilisé pour une équipe lorsque l'adversaire enchaîne 3 boules d'affilée alors qu'elle lui reste encore des boules à jouer.",
+        "endsLegend": {
+          "one": "{count} mène dominée ({wonPart})",
+          "other": "{count} mènes dominées ({wonPart})"
+        },
+        "endsWonPart": {
+          "zero": "aucune gagnée",
+          "one": "dont {won} gagnée",
+          "other": "dont {won} gagnées"
+        },
+        "pointsLegend": {
+          "one": "{total} pt marqué ({dominatedPart})",
+          "other": "{total} pts marqués ({dominatedPart})"
+        },
+        "pointsDominatedPart": {
+          "zero": "aucun en domination",
+          "one": "dont {dominated} en domination",
+          "other": "dont {dominated} en domination"
+        },
+        "empty": "Vous n'avez dominé aucune mène"
+      },
       "point": {
         "title": "Mènes gagnées en tenant le but",
-        "hint": "Mènes où l'équipe a joué la 1re boule, puis remporté la mène.",
-        "ends": "{won} / {opened} mènes"
+        "hint": "Mènes où l'équipe a joué la 1re boule. Une mène est bien démarrée lorsque cette 1re boule est notée +1 ou +2.",
+        "wonLegend": {
+          "one": "{opened} mène ouverte ({wonPart})",
+          "other": "{opened} mènes ouvertes ({wonPart})"
+        },
+        "wellStartedLegend": {
+          "zero": "Aucune mène bien démarrée ({wonPart})",
+          "one": "{total} mène bien démarrée ({wonPart})",
+          "other": "{total} mènes bien démarrées ({wonPart})"
+        },
+        "wonPart": {
+          "zero": "aucune emportée",
+          "one": "dont {won} emportée",
+          "other": "dont {won} emportées"
+        },
+        "empty": "Vous n'avez ouvert aucune mène en tenant le but"
       },
       "closing": {
         "title": "Boules en main et défense",

@@ -405,6 +405,77 @@ final class MatchInsightsServiceTest extends KernelDatabaseTestCase
         self::assertSame(0, $res->heldEndErrorTeamA->ballsPlayed);
     }
 
+    public function testEndSequenceDominanceWhenOpponentPlaysThreeConsecutiveShots(): void
+    {
+        [$matchId, $playerA1, $playerA2, $playerB1, $playerB2] = $this->createDoubletteMatch();
+
+        $end = new CompleteMatchEndDto();
+        $end->index = 1;
+        $end->winner = 'B';
+        $end->points = 2;
+        $end->canceled = false;
+        $end->shots = [];
+
+        $sequenceOrder = 1;
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerA1, 0, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerA2, 0, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerA1, 0, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerA2, 0, 'point');
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerB1, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 0, 'point');
+        }
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerA1, 0, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerA2, 0, 'point');
+
+        $this->completeDoubletteEnd($matchId, $playerA1, $playerA2, $playerB1, $playerB2, $end);
+
+        $res = $this->insights->getInsights($matchId);
+
+        self::assertSame('ok', $res->status);
+        self::assertNotNull($res->endSequenceDominanceTeamB);
+        self::assertSame(1, $res->endSequenceDominanceTeamB->endsDominated);
+        self::assertSame(1, $res->endSequenceDominanceTeamB->endsWonWhileDominating);
+        self::assertSame(2, $res->endSequenceDominanceTeamB->pointsOnDominatedEnds);
+        self::assertSame(2, $res->endSequenceDominanceTeamB->totalPointsScored);
+        self::assertNotNull($res->endSequenceDominanceTeamA);
+        self::assertSame(0, $res->endSequenceDominanceTeamA->endsDominated);
+    }
+
+    public function testEndSequenceDominanceNotCountedWhenOpponentHasNoBallsLeft(): void
+    {
+        [$matchId, $playerA1, $playerA2, $playerB1, $playerB2] = $this->createDoubletteMatch();
+
+        $end = new CompleteMatchEndDto();
+        $end->index = 1;
+        $end->winner = 'B';
+        $end->points = 2;
+        $end->canceled = false;
+        $end->shots = [];
+
+        $sequenceOrder = 1;
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA1, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA2, 0, 'point');
+        }
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB1, 0, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 0, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB1, 0, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 0, 'point');
+
+        $this->completeDoubletteEnd($matchId, $playerA1, $playerA2, $playerB1, $playerB2, $end);
+
+        $res = $this->insights->getInsights($matchId);
+
+        self::assertSame('ok', $res->status);
+        self::assertSame(0, $res->endSequenceDominanceTeamA?->endsDominated ?? 0);
+        self::assertSame(0, $res->endSequenceDominanceTeamB?->endsDominated ?? 0);
+    }
+
     /**
      * @return array{0:int,1:int,2:int,3:int,4:int} matchId, playerA1, playerA2, playerB1, playerB2
      */

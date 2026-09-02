@@ -4,6 +4,7 @@ import type {
   MatchInsights,
   MatchInsightsByDistance,
   MatchInsightsDistanceOutlook,
+  MatchInsightsEndSequenceDominance,
   MatchInsightsHeldEndError,
   MatchInsightsMarkingRate,
   MatchInsightsMarkingTeam,
@@ -18,6 +19,7 @@ import { teamForPlayer } from './matchRoles'
 const DOMINANCE_AVG_GAP = 0.5
 const DOMINANCE_MIN_BALLS = 3
 const LIMITED_DAMAGE_MAX_POINTS = 2
+const END_SEQUENCE_DOMINANCE_STREAK = 3
 
 const DISTANCE_BUCKETS = ['under_6', '6_7', '7_8', '8_9', '9_10', '10_plus'] as const
 
@@ -34,6 +36,8 @@ interface TeamStats {
   endsWon: number
   endsOpened: number
   endsWonWhenOpened: number
+  endsOpenedWell: number
+  endsOpenedWellAndWon: number
   firstShotSum: number
   firstShotCount: number
   capitalizedCount: number
@@ -43,6 +47,10 @@ interface TeamStats {
   defenseSituations: number
   defensePointsSum: number
   reclaimsCount: number
+  endsDominated: number
+  endsWonWhileDominating: number
+  pointsOnDominatedEnds: number
+  totalPointsScored: number
 }
 
 interface MarkingCounters {
@@ -67,6 +75,8 @@ function emptyTeamStats(): TeamStats {
     endsWon: 0,
     endsOpened: 0,
     endsWonWhenOpened: 0,
+    endsOpenedWell: 0,
+    endsOpenedWellAndWon: 0,
     firstShotSum: 0,
     firstShotCount: 0,
     capitalizedCount: 0,
@@ -76,6 +86,10 @@ function emptyTeamStats(): TeamStats {
     defenseSituations: 0,
     defensePointsSum: 0,
     reclaimsCount: 0,
+    endsDominated: 0,
+    endsWonWhileDominating: 0,
+    pointsOnDominatedEnds: 0,
+    totalPointsScored: 0,
   }
 }
 
@@ -139,15 +153,24 @@ function analyzeEnd(
   counters: { totalBalls: number; ballsWithDistance: number },
 ): void {
   const firstTeam = teamOfPlayer(shots[0]!.playerId)
+  const firstShotNote = shots[0]!.note
   if (firstTeam) {
     teamStats[firstTeam].endsOpened++
-    teamStats[firstTeam].firstShotSum += shots[0]!.note
+    teamStats[firstTeam].firstShotSum += firstShotNote
     teamStats[firstTeam].firstShotCount++
   }
 
   const winner = end.winner ?? 'A'
+  if (firstTeam && firstShotNote >= 1) {
+    teamStats[firstTeam].endsOpenedWell++
+    if ((winner === 'A' || winner === 'B') && winner === firstTeam) {
+      teamStats[firstTeam].endsOpenedWellAndWon++
+    }
+  }
+
   if (winner === 'A' || winner === 'B') {
     teamStats[winner].endsWon++
+    teamStats[winner].totalPointsScored += end.points ?? 0
     if (firstTeam && winner === firstTeam) {
       teamStats[firstTeam].endsWonWhenOpened++
     }
@@ -159,6 +182,9 @@ function analyzeEnd(
   let markingActive = false
   let rajoutActive = false
   let rajoutTeam: TeamSide | null = null
+  let consecutiveTeam: TeamSide | null = null
+  let consecutiveCount = 0
+  let endDominatingTeam: TeamSide | null = null
 
   for (const shot of shots) {
     const team = teamOfPlayer(shot.playerId)
@@ -215,6 +241,21 @@ function analyzeEnd(
       pointHolder = team
     }
 
+    if (team === consecutiveTeam) {
+      consecutiveCount++
+    } else {
+      consecutiveTeam = team
+      consecutiveCount = 1
+    }
+
+    if (
+      endDominatingTeam === null &&
+      consecutiveCount >= END_SEQUENCE_DOMINANCE_STREAK &&
+      teamCapacities[opponent] - playedByTeam[opponent] > 0
+    ) {
+      endDominatingTeam = opponent
+    }
+
     playedByTeam[team]++
     counters.totalBalls++
 
@@ -261,6 +302,14 @@ function analyzeEnd(
 
   analyzeClosing('A', 'B', remaining, winner, end.points ?? 0, teamStats)
   analyzeClosing('B', 'A', remaining, winner, end.points ?? 0, teamStats)
+
+  if (endDominatingTeam) {
+    teamStats[endDominatingTeam].endsDominated++
+    if (winner === endDominatingTeam) {
+      teamStats[endDominatingTeam].endsWonWhileDominating++
+      teamStats[endDominatingTeam].pointsOnDominatedEnds += end.points ?? 0
+    }
+  }
 }
 
 function toMarkingRate(counters: MarkingCounters): MatchInsightsMarkingRate {
@@ -335,6 +384,15 @@ function buildDistanceOutlook(distanceAgg: Record<string, Record<TeamSide, Dista
   }
 
   return { singleDominantTeam: null, competitiveBuckets: dominantRows }
+}
+
+function toEndSequenceDominance(stats: TeamStats): MatchInsightsEndSequenceDominance {
+  return {
+    endsDominated: stats.endsDominated,
+    endsWonWhileDominating: stats.endsWonWhileDominating,
+    pointsOnDominatedEnds: stats.pointsOnDominatedEnds,
+    totalPointsScored: stats.totalPointsScored,
+  }
 }
 
 function toHeldEndErrorResponse(counters: HeldEndErrorCounters): MatchInsightsHeldEndError {
@@ -442,11 +500,17 @@ export function buildLocalMatchInsights(params: {
     pointDominanceTeamA: {
       endsWonWhenOpened: teamStats.A.endsWonWhenOpened,
       endsOpened: teamStats.A.endsOpened,
+      endsOpenedWellAndWon: teamStats.A.endsOpenedWellAndWon,
+      endsOpenedWell: teamStats.A.endsOpenedWell,
     },
     pointDominanceTeamB: {
       endsWonWhenOpened: teamStats.B.endsWonWhenOpened,
       endsOpened: teamStats.B.endsOpened,
+      endsOpenedWellAndWon: teamStats.B.endsOpenedWellAndWon,
+      endsOpenedWell: teamStats.B.endsOpenedWell,
     },
+    endSequenceDominanceTeamA: toEndSequenceDominance(teamStats.A),
+    endSequenceDominanceTeamB: toEndSequenceDominance(teamStats.B),
     distanceOutlook: buildDistanceOutlook(distanceAgg),
     coverage: {
       distanceSampleRate: counters.totalBalls > 0 ? Math.round((counters.ballsWithDistance / counters.totalBalls) * 100) / 100 : 0,

@@ -93,7 +93,8 @@
         "point": "Pointing",
         "tir": "Shooting",
         "rate": "{rate}% ({made}/{total})",
-        "noData": "—"
+        "noData": "—",
+        "empty": "You did not play any marking balls"
       },
       "rajout": {
         "title": "Extra-ball success",
@@ -101,7 +102,8 @@
         "point": "Pointing",
         "tir": "Shooting",
         "rate": "{rate}% ({made}/{total})",
-        "noData": "—"
+        "noData": "—",
+        "empty": "You did not play any extra balls"
       },
       "heldEndError": {
         "title": "Errors while holding the end",
@@ -110,10 +112,47 @@
         "rate": "{rate}% ({errors}/{balls})",
         "noData": "—"
       },
+      "endSequenceDominance": {
+        "title": "End dominance",
+        "hint": "Counted for a team when the opponent plays 3 consecutive shots first while that team still has balls left.",
+        "endsLegend": {
+          "one": "{count} end dominated ({wonPart})",
+          "other": "{count} ends dominated ({wonPart})"
+        },
+        "endsWonPart": {
+          "zero": "none won",
+          "one": "{won} won",
+          "other": "{won} won"
+        },
+        "pointsLegend": {
+          "one": "{total} pt scored ({dominatedPart})",
+          "other": "{total} pts scored ({dominatedPart})"
+        },
+        "pointsDominatedPart": {
+          "zero": "none while dominating",
+          "one": "{dominated} while dominating",
+          "other": "{dominated} while dominating"
+        },
+        "empty": "You did not dominate any end"
+      },
       "point": {
         "title": "Ends won while holding the jack",
-        "hint": "Ends where the team played the first ball and won that end.",
-        "ends": "{won} / {opened} ends"
+        "hint": "Ends where the team played the first ball. A end is well started when that first ball is scored +1 or +2.",
+        "wonLegend": {
+          "one": "{opened} end opened ({wonPart})",
+          "other": "{opened} ends opened ({wonPart})"
+        },
+        "wellStartedLegend": {
+          "zero": "No well-started end ({wonPart})",
+          "one": "{total} well-started end ({wonPart})",
+          "other": "{total} well-started ends ({wonPart})"
+        },
+        "wonPart": {
+          "zero": "none won",
+          "one": "{won} won",
+          "other": "{won} won"
+        },
+        "empty": "You did not open any end while holding the jack"
       },
       "closing": {
         "title": "Balls in hand & defense",

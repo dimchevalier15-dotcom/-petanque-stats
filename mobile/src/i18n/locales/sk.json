@@ -93,7 +93,8 @@
         "point": "Bodenie",
         "tir": "Streľba",
         "rate": "{rate} % ({made}/{total})",
-        "noData": "—"
+        "noData": "—",
+        "empty": "Nezahrali ste žiadnu boulu na značkovanie"
       },
       "rajout": {
         "title": "Úspešnosť bôl na dorážku",
@@ -101,7 +102,8 @@
         "point": "Bodenie",
         "tir": "Streľba",
         "rate": "{rate} % ({made}/{total})",
-        "noData": "—"
+        "noData": "—",
+        "empty": "Nezahrali ste žiadnu boulu na dorážku"
       },
       "heldEndError": {
         "title": "Chyba pri držaní meny",
@@ -110,10 +112,61 @@
         "rate": "{rate} % ({errors}/{balls})",
         "noData": "—"
       },
+      "endSequenceDominance": {
+        "title": "Dominancia v mene",
+        "hint": "Počítané pre tím, keď súper ako prvý zahrá 3 boule za sebou a tomuto tímu ešte zostávajú boule.",
+        "endsLegend": {
+          "one": "{count} dominovaná mena ({wonPart})",
+          "few": "{count} dominované meny ({wonPart})",
+          "many": "{count} dominovaných mien ({wonPart})",
+          "other": "{count} dominovaných mien ({wonPart})"
+        },
+        "endsWonPart": {
+          "zero": "žiadna vyhraná",
+          "one": "z toho {won} vyhraná",
+          "few": "z toho {won} vyhrané",
+          "many": "z toho {won} vyhraných",
+          "other": "z toho {won} vyhraných"
+        },
+        "pointsLegend": {
+          "one": "{total} získaný bod ({dominatedPart})",
+          "few": "{total} získané body ({dominatedPart})",
+          "many": "{total} získaných bodov ({dominatedPart})",
+          "other": "{total} získaných bodov ({dominatedPart})"
+        },
+        "pointsDominatedPart": {
+          "zero": "žiadny pri dominancii",
+          "one": "z toho {dominated} pri dominancii",
+          "few": "z toho {dominated} pri dominancii",
+          "many": "z toho {dominated} pri dominancii",
+          "other": "z toho {dominated} pri dominancii"
+        },
+        "empty": "Nedominovali ste žiadnu menu"
+      },
       "point": {
         "title": "Vyhrané meny s bodom",
-        "hint": "Mene, kde tím hral prvú boulu a následne ju vyhral.",
-        "ends": "{won} / {opened} mien"
+        "hint": "Mene, kde tím hral prvú boulu. Mena je dobre naštartovaná, ak je prvá boula ohodnotená +1 alebo +2.",
+        "wonLegend": {
+          "one": "{opened} otvorená mena ({wonPart})",
+          "few": "{opened} otvorené meny ({wonPart})",
+          "many": "{opened} otvorených mien ({wonPart})",
+          "other": "{opened} otvorených mien ({wonPart})"
+        },
+        "wellStartedLegend": {
+          "zero": "Žiadna dobre naštartovaná mena ({wonPart})",
+          "one": "{total} dobre naštartovaná mena ({wonPart})",
+          "few": "{total} dobre naštartované meny ({wonPart})",
+          "many": "{total} dobre naštartovaných mien ({wonPart})",
+          "other": "{total} dobre naštartovaných mien ({wonPart})"
+        },
+        "wonPart": {
+          "zero": "žiadna vyhraná",
+          "one": "z toho {won} vyhraná",
+          "few": "z toho {won} vyhrané",
+          "many": "z toho {won} vyhraných",
+          "other": "z toho {won} vyhraných"
+        },
+        "empty": "Neotvorili ste žiadnu menu s bodom v ruke"
       },
       "closing": {
         "title": "Boule v ruke a obrana",

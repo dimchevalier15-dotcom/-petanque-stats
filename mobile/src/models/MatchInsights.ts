@@ -30,6 +30,15 @@ export type MatchInsightsRajoutTeam = MatchInsightsMarkingTeam
 export interface MatchInsightsPointDominance {
   endsWonWhenOpened: number
   endsOpened: number
+  endsOpenedWellAndWon: number
+  endsOpenedWell: number
+}
+
+export interface MatchInsightsEndSequenceDominance {
+  endsDominated: number
+  endsWonWhileDominating: number
+  pointsOnDominatedEnds: number
+  totalPointsScored: number
 }
 
 export interface MatchInsightsDistanceTeam {
@@ -74,6 +83,8 @@ export interface MatchInsights {
   heldEndErrorTeamB?: MatchInsightsHeldEndError
   pointDominanceTeamA?: MatchInsightsPointDominance
   pointDominanceTeamB?: MatchInsightsPointDominance
+  endSequenceDominanceTeamA?: MatchInsightsEndSequenceDominance
+  endSequenceDominanceTeamB?: MatchInsightsEndSequenceDominance
   distanceOutlook?: MatchInsightsDistanceOutlook
   coverage?: MatchInsightsCoverage
 }

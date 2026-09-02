@@ -9,6 +9,8 @@ final class MatchInsightsPointDominanceResponse
     public function __construct(
         public int $endsWonWhenOpened,
         public int $endsOpened,
+        public int $endsOpenedWellAndWon,
+        public int $endsOpenedWell,
     ) {
     }
 }

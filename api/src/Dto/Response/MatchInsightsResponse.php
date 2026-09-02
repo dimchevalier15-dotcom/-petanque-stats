@@ -19,6 +19,8 @@ final class MatchInsightsResponse
         public ?MatchInsightsHeldEndErrorResponse $heldEndErrorTeamB = null,
         public ?MatchInsightsPointDominanceResponse $pointDominanceTeamA = null,
         public ?MatchInsightsPointDominanceResponse $pointDominanceTeamB = null,
+        public ?MatchInsightsEndSequenceDominanceResponse $endSequenceDominanceTeamA = null,
+        public ?MatchInsightsEndSequenceDominanceResponse $endSequenceDominanceTeamB = null,
         public ?MatchInsightsDistanceOutlookResponse $distanceOutlook = null,
         public ?MatchInsightsCoverageResponse $coverage = null,
     ) {

@@ -12,7 +12,10 @@
       <div class="marking-grid">
         <div v-for="team in teams" :key="team" class="marking-team" :class="`marking-team--${team.toLowerCase()}`">
           <span class="marking-team-label">{{ labelForTeam(team) }}</span>
-          <div class="marking-rows">
+          <p v-if="!hasMarkingStats(team)" class="tactical-metric-empty">
+            {{ t('summary.insights.marking.empty') }}
+          </p>
+          <div v-else class="marking-rows">
             <div v-for="shot in shotTypes" :key="`${team}-${shot}`" class="marking-row">
               <div class="marking-row-head">
                 <span>{{ t(`summary.insights.marking.${shot}`) }}</span>
@@ -37,7 +40,10 @@
       <div class="marking-grid">
         <div v-for="team in teams" :key="`rajout-${team}`" class="marking-team" :class="`marking-team--${team.toLowerCase()}`">
           <span class="marking-team-label">{{ labelForTeam(team) }}</span>
-          <div class="marking-rows">
+          <p v-if="!hasRajoutStats(team)" class="tactical-metric-empty">
+            {{ t('summary.insights.rajout.empty') }}
+          </p>
+          <div v-else class="marking-rows">
             <div v-for="shot in shotTypes" :key="`${team}-rajout-${shot}`" class="marking-row">
               <div class="marking-row-head">
                 <span>{{ t(`summary.insights.rajout.${shot}`) }}</span>
@@ -85,6 +91,45 @@
       </div>
     </article>
 
+    <!-- End sequence dominance -->
+    <article class="tactical-block">
+      <h3>{{ t('summary.insights.endSequenceDominance.title') }}</h3>
+      <p class="tactical-hint">{{ t('summary.insights.endSequenceDominance.hint') }}</p>
+      <div class="compare-grid">
+        <div
+          v-for="team in teams"
+          :key="`end-seq-${team}`"
+          class="compare-card compare-card--stacked"
+          :class="`compare-card--${team.toLowerCase()}`"
+        >
+          <span class="compare-label">{{ labelForTeam(team) }}</span>
+          <p v-if="!hasEndSequenceDominance(team)" class="tactical-metric-empty">
+            {{ t('summary.insights.endSequenceDominance.empty') }}
+          </p>
+          <template v-else>
+            <div class="dominance-bar-block">
+              <div class="dominance-bar-label">{{ endSequenceDominanceEndsLegend(team) }}</div>
+              <div class="marking-bar marking-bar--dominance" aria-hidden="true">
+                <div
+                  class="marking-bar-fill"
+                  :style="{ width: `${endSequenceDominanceEndsFill(team)}%` }"
+                />
+              </div>
+            </div>
+            <div class="dominance-bar-block">
+              <div class="dominance-bar-label">{{ endSequenceDominancePointsLegend(team) }}</div>
+              <div class="marking-bar marking-bar--dominance" aria-hidden="true">
+                <div
+                  class="marking-bar-fill marking-bar-fill--dominance-points"
+                  :style="{ width: `${endSequenceDominancePointsFill(team)}%` }"
+                />
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </article>
+
     <!-- Ends won when team opened (played first) -->
     <article class="tactical-block">
       <h3>{{ t('summary.insights.point.title') }}</h3>
@@ -93,11 +138,33 @@
         <div
           v-for="team in teams"
           :key="`point-${team}`"
-          class="compare-card"
+          class="compare-card compare-card--stacked"
           :class="`compare-card--${team.toLowerCase()}`"
         >
           <span class="compare-label">{{ labelForTeam(team) }}</span>
-          <strong class="compare-value">{{ pointDominanceText(team) }}</strong>
+          <p v-if="!hasPointDominance(team)" class="tactical-metric-empty">
+            {{ t('summary.insights.point.empty') }}
+          </p>
+          <template v-else>
+            <div class="dominance-bar-block">
+              <div class="dominance-bar-label">{{ pointDominanceWonLegend(team) }}</div>
+              <div class="marking-bar marking-bar--dominance" aria-hidden="true">
+                <div
+                  class="marking-bar-fill"
+                  :style="{ width: `${pointDominanceWonFill(team)}%` }"
+                />
+              </div>
+            </div>
+            <div class="dominance-bar-block">
+              <div class="dominance-bar-label">{{ pointDominanceWellStartedLegend(team) }}</div>
+              <div class="marking-bar marking-bar--dominance" aria-hidden="true">
+                <div
+                  class="marking-bar-fill marking-bar-fill--dominance-points"
+                  :style="{ width: `${pointDominanceWellStartedFill(team)}%` }"
+                />
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </article>
@@ -139,13 +206,14 @@ import type { MatchContext } from '../../models/MatchContext'
 import type { MatchInsights } from '../../models/MatchInsights'
 import type { TeamSide } from '../../models/MatchPlay'
 import { useMatchTeamLabels } from '../../composables/useMatchTeamLabels'
+import { formatPluralMessage } from '../../utils/i18nPlural'
 
 const props = defineProps<{
   insights: MatchInsights
   context?: MatchContext | null
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { labelForTeam } = useMatchTeamLabels(computed(() => props.context ?? null), t)
 
 const teams: TeamSide[] = ['A', 'B']
@@ -153,6 +221,18 @@ const shotTypes = ['point', 'tir'] as const
 
 function markingTeam(team: TeamSide) {
   return team === 'A' ? props.insights.markingTeamA : props.insights.markingTeamB
+}
+
+function hasMarkingStats(team: TeamSide): boolean {
+  const data = markingTeam(team)
+  if (!data) return false
+  return data.point.attempts + data.tir.attempts > 0
+}
+
+function hasRajoutStats(team: TeamSide): boolean {
+  const data = rajoutTeam(team)
+  if (!data) return false
+  return data.point.attempts + data.tir.attempts > 0
 }
 
 const competitiveBuckets = computed(
@@ -175,6 +255,18 @@ function heldEndErrorTeam(team: TeamSide) {
 
 function pointDominance(team: TeamSide) {
   return team === 'A' ? props.insights.pointDominanceTeamA : props.insights.pointDominanceTeamB
+}
+
+function hasPointDominance(team: TeamSide): boolean {
+  return (pointDominance(team)?.endsOpened ?? 0) > 0
+}
+
+function endSequenceDominance(team: TeamSide) {
+  return team === 'A' ? props.insights.endSequenceDominanceTeamA : props.insights.endSequenceDominanceTeamB
+}
+
+function hasEndSequenceDominance(team: TeamSide): boolean {
+  return (endSequenceDominance(team)?.endsDominated ?? 0) > 0
 }
 
 function markingRate(team: TeamSide, shot: 'point' | 'tir'): number {
@@ -236,14 +328,83 @@ function heldEndErrorLabel(team: TeamSide): string {
   })
 }
 
-function pointDominanceText(team: TeamSide): string {
+function pointDominanceWonFill(team: TeamSide): number {
   const data = pointDominance(team)
-  if (!data || data.endsOpened === 0) {
-    return '—'
-  }
-  return t('summary.insights.point.ends', {
-    won: data.endsWonWhenOpened,
-    opened: data.endsOpened,
+  if (!data || data.endsOpened === 0) return 0
+  return Math.round((data.endsWonWhenOpened / data.endsOpened) * 1000) / 10
+}
+
+function pointDominanceWellStartedFill(team: TeamSide): number {
+  const data = pointDominance(team)
+  if (!data || data.endsOpenedWell === 0) return 0
+  return Math.round((data.endsOpenedWellAndWon / data.endsOpenedWell) * 1000) / 10
+}
+
+function pointDominanceWonLegend(team: TeamSide): string {
+  const data = pointDominance(team)
+  const opened = data?.endsOpened ?? 0
+  const won = data?.endsWonWhenOpened ?? 0
+  const wonPart = formatPluralMessage(t, locale.value, 'summary.insights.point.wonPart', won, { won })
+  return formatPluralMessage(t, locale.value, 'summary.insights.point.wonLegend', opened, {
+    opened,
+    wonPart,
+  })
+}
+
+function pointDominanceWellStartedLegend(team: TeamSide): string {
+  const data = pointDominance(team)
+  const total = data?.endsOpenedWell ?? 0
+  const won = data?.endsOpenedWellAndWon ?? 0
+  const wonPart = formatPluralMessage(t, locale.value, 'summary.insights.point.wonPart', won, { won })
+  return formatPluralMessage(t, locale.value, 'summary.insights.point.wellStartedLegend', total, {
+    total,
+    wonPart,
+  })
+}
+
+function endSequenceDominanceEndsFill(team: TeamSide): number {
+  const data = endSequenceDominance(team)
+  if (!data || data.endsDominated === 0) return 0
+  return Math.round((data.endsWonWhileDominating / data.endsDominated) * 1000) / 10
+}
+
+function endSequenceDominancePointsFill(team: TeamSide): number {
+  const data = endSequenceDominance(team)
+  if (!data || data.totalPointsScored === 0) return 0
+  return Math.round((data.pointsOnDominatedEnds / data.totalPointsScored) * 1000) / 10
+}
+
+function endSequenceDominanceEndsLegend(team: TeamSide): string {
+  const data = endSequenceDominance(team)
+  const count = data?.endsDominated ?? 0
+  const won = data?.endsWonWhileDominating ?? 0
+  const wonPart = formatPluralMessage(
+    t,
+    locale.value,
+    'summary.insights.endSequenceDominance.endsWonPart',
+    won,
+    { won },
+  )
+  return formatPluralMessage(t, locale.value, 'summary.insights.endSequenceDominance.endsLegend', count, {
+    count,
+    wonPart,
+  })
+}
+
+function endSequenceDominancePointsLegend(team: TeamSide): string {
+  const data = endSequenceDominance(team)
+  const total = data?.totalPointsScored ?? 0
+  const dominated = data?.pointsOnDominatedEnds ?? 0
+  const dominatedPart = formatPluralMessage(
+    t,
+    locale.value,
+    'summary.insights.endSequenceDominance.pointsDominatedPart',
+    dominated,
+    { dominated },
+  )
+  return formatPluralMessage(t, locale.value, 'summary.insights.endSequenceDominance.pointsLegend', total, {
+    total,
+    dominatedPart,
   })
 }
 
@@ -430,6 +591,52 @@ function bucketLabel(bucket: string): string {
 .compare-value {
   font-size: 1rem;
   font-weight: 700;
+}
+
+.dominance-bar-block {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.dominance-bar-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.tactical-metric-empty {
+  margin: 0;
+  padding: var(--app-space-sm) 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.marking-bar--dominance {
+  height: 0.5rem;
+}
+
+.compare-card--a .marking-bar--dominance .marking-bar-fill:not(.marking-bar-fill--dominance-points) {
+  background: #16a34a;
+}
+
+.compare-card--b .marking-bar--dominance .marking-bar-fill:not(.marking-bar-fill--dominance-points) {
+  background: #2563eb;
+}
+
+.compare-card--a .marking-bar-fill--dominance-points {
+  background: #15803d;
+}
+
+.compare-card--b .marking-bar-fill--dominance-points {
+  background: #1d4ed8;
+}
+
+.compare-card--stacked {
+  align-items: stretch;
+  text-align: left;
 }
 
 .distance-single {
