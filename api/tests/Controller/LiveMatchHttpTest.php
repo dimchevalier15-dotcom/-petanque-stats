@@ -98,6 +98,55 @@ final class LiveMatchHttpTest extends WebDatabaseTestCase
         self::assertSame(409, $client->getResponse()->getStatusCode());
     }
 
+    public function testSyncTimerEndpointStoresTimerState(): void
+    {
+        $client = $this->createDatabaseClient();
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $hasher = static::getContainer()->get(UserPasswordHasherInterface::class);
+        $jwtEncoder = static::getContainer()->get(JWTEncoderInterface::class);
+
+        $suffix = bin2hex(random_bytes(4));
+        $user = new User('live-timer-'.$suffix.'@test.local');
+        $user->setPassword($hasher->hashPassword($user, 'password123'));
+        $em->persist($user);
+        $em->flush();
+
+        $token = $jwtEncoder->encode([
+            'username' => $user->getEmail(),
+            'sub' => (string) $user->getId(),
+        ]);
+
+        $this->requestWithBearer($client, 'POST', '/api/live-matches', $token, ['data' => ['scoreA' => 0]]);
+        $created = json_decode($client->getResponse()->getContent() ?: '', true);
+        $uuid = $created['uuid'];
+
+        $client->request('GET', '/api/live-matches/'.$uuid);
+        $before = json_decode($client->getResponse()->getContent() ?: '', true);
+        self::assertSame(0, $before['timerAccumulatedMs']);
+        self::assertFalse($before['timerRunning']);
+
+        $runningSince = '2026-09-02T10:00:00+00:00';
+        $this->requestWithBearer($client, 'PUT', '/api/live-matches/'.$uuid.'/timer', $token, [
+            'accumulatedMs' => 12_000,
+            'runningSince' => $runningSince,
+        ]);
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        $running = json_decode($client->getResponse()->getContent() ?: '', true);
+        self::assertSame(12_000, $running['timerAccumulatedMs']);
+        self::assertTrue($running['timerRunning']);
+        self::assertSame($runningSince, $running['timerRunningSince']);
+
+        $this->requestWithBearer($client, 'PUT', '/api/live-matches/'.$uuid.'/timer', $token, [
+            'accumulatedMs' => 45_000,
+            'runningSince' => null,
+        ]);
+        self::assertSame(200, $client->getResponse()->getStatusCode());
+        $paused = json_decode($client->getResponse()->getContent() ?: '', true);
+        self::assertSame(45_000, $paused['timerAccumulatedMs']);
+        self::assertFalse($paused['timerRunning']);
+        self::assertNull($paused['timerRunningSince']);
+    }
+
     /**
      * @param array<string, mixed> $payload
      */

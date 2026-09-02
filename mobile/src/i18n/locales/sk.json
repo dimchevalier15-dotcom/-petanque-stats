@@ -1388,7 +1388,18 @@
       "hint": "Pošlite tento odkaz, aby diváci mohli sledovať zápas v reálnom čase.",
       "copy": "Kopírovať odkaz",
       "copied": "Odkaz skopírovaný",
-      "native": "Zdieľať"
+      "native": "Zdieľať",
+      "overlayTitle": "Overlay pre stream",
+      "overlayHint": "Na použitie v OBS → Zdroj prehliadača",
+      "overlayCopy": "Kopírovať URL overlay",
+      "overlayCopied": "URL skopírovaná"
+    },
+    "overlay": {
+      "statsPromo": "Podrobné štatistiky zápasu na petanque-analytics",
+      "end": "Miena {n}",
+      "balls": "Gule",
+      "finished": "Ukončené",
+      "winner": "Víťazstvo {team}"
     },
     "view": {
       "title": "Zápas naživo",

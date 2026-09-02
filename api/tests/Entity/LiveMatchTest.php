@@ -45,4 +45,34 @@ final class LiveMatchTest extends TestCase
         $this->expectException(\DomainException::class);
         $liveMatch->replaceData(['scoreA' => 14]);
     }
+
+    public function testSyncTimerStoresAccumulatedAndRunningSince(): void
+    {
+        $liveMatch = new LiveMatch('550e8400-e29b-41d4-a716-446655440000', ['scoreA' => 0]);
+        $runningSince = new \DateTimeImmutable('2026-09-02T10:00:00+00:00');
+
+        self::assertSame(0, $liveMatch->getTimerAccumulatedMs());
+        self::assertNull($liveMatch->getTimerStartedAt());
+
+        $liveMatch->syncTimer(12_000, $runningSince);
+
+        self::assertSame(12_000, $liveMatch->getTimerAccumulatedMs());
+        self::assertTrue($liveMatch->isTimerRunning());
+        self::assertSame($runningSince, $liveMatch->getTimerStartedAt());
+
+        $liveMatch->syncTimer(45_000, null);
+
+        self::assertSame(45_000, $liveMatch->getTimerAccumulatedMs());
+        self::assertFalse($liveMatch->isTimerRunning());
+        self::assertNull($liveMatch->getTimerStartedAt());
+    }
+
+    public function testSyncTimerFailsWhenFinished(): void
+    {
+        $liveMatch = new LiveMatch('550e8400-e29b-41d4-a716-446655440000', ['scoreA' => 13]);
+        $liveMatch->finish();
+
+        $this->expectException(\DomainException::class);
+        $liveMatch->syncTimer(1000, new \DateTimeImmutable());
+    }
 }

@@ -1383,7 +1383,18 @@
       "hint": "Send this link so spectators can follow the match in real time.",
       "copy": "Copy link",
       "copied": "Link copied",
-      "native": "Share"
+      "native": "Share",
+      "overlayTitle": "Streaming overlay",
+      "overlayHint": "Use in OBS → Browser Source",
+      "overlayCopy": "Copy overlay URL",
+      "overlayCopied": "URL copied"
+    },
+    "overlay": {
+      "statsPromo": "Detailed match statistics on petanque-analytics",
+      "end": "End {n}",
+      "balls": "Balls",
+      "finished": "Finished",
+      "winner": "{team} wins"
     },
     "view": {
       "title": "Live match",

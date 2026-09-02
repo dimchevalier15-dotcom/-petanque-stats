@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\Request\SyncLiveMatchTimerRequest;
 use App\Dto\Request\UpsertLiveMatchRequest;
 use App\Dto\Response\CreateLiveMatchResponse;
 use App\Dto\Response\LiveMatchResponse;
@@ -82,6 +83,30 @@ final class LiveMatchService
         return $this->toResponse($liveMatch);
     }
 
+    public function syncTimer(string $uuid, SyncLiveMatchTimerRequest $req): LiveMatchResponse
+    {
+        $liveMatch = $this->findOrFail($uuid);
+
+        $runningSince = null;
+        if ($req->runningSince !== null && $req->runningSince !== '') {
+            try {
+                $runningSince = new \DateTimeImmutable($req->runningSince);
+            } catch (\Exception) {
+                throw new \InvalidArgumentException('Invalid runningSince datetime.');
+            }
+        }
+
+        try {
+            $liveMatch->syncTimer($req->accumulatedMs, $runningSince);
+        } catch (\DomainException) {
+            throw new LiveMatchFinishedException();
+        }
+
+        $this->em->flush();
+
+        return $this->toResponse($liveMatch);
+    }
+
     public function delete(string $uuid): void
     {
         $liveMatch = $this->findOrFail($uuid);
@@ -108,6 +133,9 @@ final class LiveMatchService
             createdAt: $liveMatch->getCreatedAt()->format(\DateTimeInterface::ATOM),
             updatedAt: $liveMatch->getUpdatedAt()->format(\DateTimeInterface::ATOM),
             finishedAt: $liveMatch->getFinishedAt()?->format(\DateTimeInterface::ATOM),
+            timerAccumulatedMs: $liveMatch->getTimerAccumulatedMs(),
+            timerRunning: $liveMatch->isTimerRunning(),
+            timerRunningSince: $liveMatch->getTimerStartedAt()?->format(\DateTimeInterface::ATOM),
         );
     }
 

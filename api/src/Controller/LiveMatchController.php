@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\Request\SyncLiveMatchTimerRequest;
 use App\Dto\Request\UpsertLiveMatchRequest;
 use App\Service\LiveMatchFinishedException;
 use App\Service\LiveMatchNotActiveException;
@@ -92,6 +93,32 @@ final class LiveMatchController extends AbstractController
             return new JsonResponse(['error' => 'Live match not found.'], 404);
         } catch (LiveMatchNotActiveException) {
             return new JsonResponse(['error' => 'Live match is not active.'], 409);
+        }
+
+        $json = $this->serializer->serialize($output, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/live-matches/{uuid}/timer', name: 'api_live_matches_timer_sync', methods: ['PUT'])]
+    #[IsGranted('ROLE_USER')]
+    public function syncTimer(string $uuid, Request $request): JsonResponse
+    {
+        /** @var SyncLiveMatchTimerRequest $input */
+        $input = $this->serializer->deserialize($request->getContent(), SyncLiveMatchTimerRequest::class, 'json');
+        $violations = $this->validator->validate($input);
+        if (\count($violations) > 0) {
+            return $this->validationErrorResponse($violations);
+        }
+
+        try {
+            $output = $this->liveMatchService->syncTimer($uuid, $input);
+        } catch (LiveMatchNotFoundException) {
+            return new JsonResponse(['error' => 'Live match not found.'], 404);
+        } catch (LiveMatchFinishedException) {
+            return new JsonResponse(['error' => 'Live match is finished.'], 409);
+        } catch (\InvalidArgumentException) {
+            return new JsonResponse(['error' => 'Invalid timer payload.'], 400);
         }
 
         $json = $this->serializer->serialize($output, 'json');

@@ -1,4 +1,4 @@
-import { computed, getCurrentInstance, onUnmounted, ref } from 'vue'
+import { computed, getCurrentInstance, onMounted, onUnmounted, ref, type Ref } from 'vue'
 
 export function formatMatchTimer(ms: number): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000))
@@ -12,6 +12,24 @@ export function formatMatchTimer(ms: number): string {
   return `${minutes}:${pad(seconds)}`
 }
 
+export function computeMatchTimerElapsedMs(
+  accumulatedMs: number,
+  running: boolean,
+  runningSinceMs: number | null,
+  nowMs: number,
+): number {
+  if (running && runningSinceMs !== null) {
+    return accumulatedMs + Math.max(0, nowMs - runningSinceMs)
+  }
+  return accumulatedMs
+}
+
+export interface MatchTimerSnapshot {
+  accumulatedMs: number
+  running: boolean
+  runningSince: number | null
+}
+
 export function useMatchTimer() {
   const running = ref(false)
   const hasStarted = ref(false)
@@ -20,12 +38,9 @@ export function useMatchTimer() {
   const now = ref(0)
   let tick: ReturnType<typeof setInterval> | null = null
 
-  const elapsedMs = computed(() => {
-    if (running.value && startedAt.value !== null) {
-      return accumulatedMs.value + (now.value - startedAt.value)
-    }
-    return accumulatedMs.value
-  })
+  const elapsedMs = computed(() =>
+    computeMatchTimerElapsedMs(accumulatedMs.value, running.value, startedAt.value, now.value),
+  )
 
   const display = computed(() => formatMatchTimer(elapsedMs.value))
 
@@ -75,6 +90,14 @@ export function useMatchTimer() {
     }
   }
 
+  function getSnapshot(): MatchTimerSnapshot {
+    return {
+      accumulatedMs: accumulatedMs.value,
+      running: running.value,
+      runningSince: running.value ? startedAt.value : null,
+    }
+  }
+
   if (getCurrentInstance()) {
     onUnmounted(clearTick)
   }
@@ -88,5 +111,67 @@ export function useMatchTimer() {
     pause,
     toggle,
     startIfIdle,
+    getSnapshot,
+  }
+}
+
+export function useMatchTimerFromSnapshot(
+  accumulatedMs: Ref<number>,
+  running: Ref<boolean>,
+  runningSinceIso: Ref<string | null>,
+  endAtIso?: Ref<string | null>,
+) {
+  const now = ref(Date.now())
+  let tick: ReturnType<typeof setInterval> | null = null
+
+  onMounted(() => {
+    tick = setInterval(() => {
+      now.value = Date.now()
+    }, 250)
+  })
+
+  onUnmounted(() => {
+    if (tick) {
+      clearInterval(tick)
+      tick = null
+    }
+  })
+
+  const runningSinceMs = computed(() => {
+    if (!runningSinceIso.value) {
+      return null
+    }
+    const parsed = Date.parse(runningSinceIso.value)
+    return Number.isNaN(parsed) ? null : parsed
+  })
+
+  const elapsedMs = computed(() => {
+    let endMs = now.value
+    if (endAtIso?.value) {
+      const parsed = Date.parse(endAtIso.value)
+      if (!Number.isNaN(parsed)) {
+        endMs = parsed
+      }
+    }
+
+    return computeMatchTimerElapsedMs(
+      accumulatedMs.value,
+      running.value,
+      runningSinceMs.value,
+      endMs,
+    )
+  })
+
+  const display = computed(() => formatMatchTimer(elapsedMs.value))
+
+  const visible = computed(
+    () => running.value || runningSinceIso.value !== null || accumulatedMs.value > 0,
+  )
+
+  return {
+    display,
+    visible,
+    elapsedMs,
+    running,
   }
 }

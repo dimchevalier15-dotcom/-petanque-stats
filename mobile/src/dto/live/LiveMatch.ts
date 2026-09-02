@@ -16,4 +16,12 @@ export interface LiveMatchResponseDto {
   createdAt: string
   updatedAt: string
   finishedAt: string | null
+  timerAccumulatedMs: number
+  timerRunning: boolean
+  timerRunningSince: string | null
+}
+
+export interface SyncLiveMatchTimerRequestDto {
+  accumulatedMs: number
+  runningSince: string | null
 }

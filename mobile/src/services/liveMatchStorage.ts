@@ -43,3 +43,7 @@ import { getPublicAppBaseUrl } from '../utils/getPublicAppBaseUrl'
 export function buildLiveMatchUrl(uuid: string): string {
   return `${getPublicAppBaseUrl()}/live/${uuid}`
 }
+
+export function buildLiveMatchOverlayUrl(uuid: string): string {
+  return `${getPublicAppBaseUrl()}/live/${uuid}/overlay`
+}

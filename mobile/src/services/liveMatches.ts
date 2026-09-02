@@ -4,6 +4,7 @@ import { getApiBaseUrl } from '../utils/apiBaseUrl'
 import type {
   CreateLiveMatchResponseDto,
   LiveMatchResponseDto,
+  SyncLiveMatchTimerRequestDto,
   UpsertLiveMatchRequestDto,
 } from '../dto/live/LiveMatch'
 
@@ -34,6 +35,11 @@ export const liveMatchesService = {
 
   async finish(uuid: string): Promise<LiveMatchResponseDto> {
     const { data } = await api.post<LiveMatchResponseDto>(`/live-matches/${uuid}/finish`)
+    return data
+  },
+
+  async syncTimer(uuid: string, payload: SyncLiveMatchTimerRequestDto): Promise<LiveMatchResponseDto> {
+    const { data } = await api.put<LiveMatchResponseDto>(`/live-matches/${uuid}/timer`, payload)
     return data
   },
 

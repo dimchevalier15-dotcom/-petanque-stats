@@ -28,7 +28,7 @@
               :class="{ 'match-timer--running': timerRunning }"
               :aria-label="timerRunning ? t('play.timer.pause') : t('play.timer.start')"
               :title="timerRunning ? t('play.timer.pause') : t('play.timer.start')"
-              @click="toggleTimer"
+              @click="onToggleTimer"
             >
               {{ timerDisplay }}
             </button>
@@ -518,6 +518,21 @@
             @click="copyLiveLink"
           />
         </div>
+
+        <hr class="live-share-divider" />
+
+        <p class="live-share-overlay-title">{{ t('live.share.overlayTitle') }}</p>
+        <p class="live-share-overlay-hint">{{ t('live.share.overlayHint') }}</p>
+        <InputText v-if="liveOverlayUrl" :model-value="liveOverlayUrl" readonly class="live-share-url" />
+        <div class="actions">
+          <Button
+            :label="liveOverlayLinkCopied ? t('live.share.overlayCopied') : t('live.share.overlayCopy')"
+            icon="pi pi-copy"
+            severity="secondary"
+            outlined
+            @click="copyLiveOverlayLink"
+          />
+        </div>
       </div>
     </Dialog>
 
@@ -573,6 +588,8 @@ import type { MatchDraft, MatchParticipant, MatchPlayState, MatchSetup } from '.
 import type { LiveMatchData } from '../models/LiveMatch'
 import { loadMatchDraft, saveMatchDraft } from '../services/matchDraftStorage'
 import { useLiveMatchSync } from '../composables/useLiveMatchSync'
+import { buildLiveMatchOverlayUrl } from '../services/liveMatchStorage'
+import { liveMatchesService } from '../services/liveMatches'
 import { openingScoresForTarget } from '../utils/matchScore'
 
 const { t } = useI18n()
@@ -708,8 +725,10 @@ const {
 const {
   display: timerDisplay,
   running: timerRunning,
+  hasStarted: timerHasStarted,
   toggle: toggleTimer,
   startIfIdle: startTimerIfIdle,
+  getSnapshot: getTimerSnapshot,
 } = useMatchTimer()
 
 watch(
@@ -717,9 +736,14 @@ watch(
   (count, previous) => {
     if ((previous ?? 0) === 0 && count > 0) {
       startTimerIfIdle()
+      void syncLiveOnPersist?.()
     }
   },
 )
+
+function onToggleTimer(): void {
+  toggleTimer()
+}
 
 const distanceEstimateInput = computed<number | null>({
   get: () => distanceEstimate.value,
@@ -1195,6 +1219,7 @@ function buildLiveMatchData(state: MatchPlayState): LiveMatchData {
 
 const {
   isActive: liveIsActive,
+  uuid: liveUuid,
   liveUrl,
   startLive,
   sync: syncLiveMatch,
@@ -1210,14 +1235,60 @@ const {
   }
   return buildLiveMatchData(state)
 })
-syncLiveOnPersist = syncLiveMatch
+syncLiveOnPersist = async () => {
+  await syncLiveMatch()
+  await syncLiveTimer()
+}
+
+async function syncLiveTimer(): Promise<void> {
+  if (!liveUuid.value || !timerHasStarted.value) {
+    return
+  }
+
+  const snapshot = getTimerSnapshot()
+  try {
+    await liveMatchesService.syncTimer(liveUuid.value, {
+      accumulatedMs: snapshot.accumulatedMs,
+      runningSince:
+        snapshot.running && snapshot.runningSince !== null
+          ? new Date(snapshot.runningSince).toISOString()
+          : null,
+    })
+  } catch {
+    // Best effort — overlay timer is non-blocking.
+  }
+}
+
+watch(timerRunning, () => {
+  if (liveIsActive.value) {
+    void syncLiveTimer()
+  }
+})
+
+watch(timerHasStarted, (started) => {
+  if (started && liveIsActive.value) {
+    void syncLiveTimer()
+  }
+})
+
+watch(liveIsActive, (active) => {
+  if (active) {
+    void syncLiveMatch()
+    if (timerHasStarted.value) {
+      void syncLiveTimer()
+    }
+  }
+}, { immediate: true })
 
 const liveShareDialog = ref(false)
 const liveLinkCopied = ref(false)
+const liveOverlayLinkCopied = ref(false)
+const liveOverlayUrl = computed(() => (liveUuid.value ? buildLiveMatchOverlayUrl(liveUuid.value) : null))
 const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
 
 async function openLiveShareDialog(): Promise<void> {
   liveLinkCopied.value = false
+  liveOverlayLinkCopied.value = false
   if (!liveIsActive.value) {
     await startLive()
   }
@@ -1267,8 +1338,20 @@ async function copyLiveLink(): Promise<void> {
   try {
     await navigator.clipboard.writeText(liveUrl.value)
     liveLinkCopied.value = true
+    liveOverlayLinkCopied.value = false
   } catch {
     liveLinkCopied.value = false
+  }
+}
+
+async function copyLiveOverlayLink(): Promise<void> {
+  if (!liveOverlayUrl.value) return
+  try {
+    await navigator.clipboard.writeText(liveOverlayUrl.value)
+    liveOverlayLinkCopied.value = true
+    liveLinkCopied.value = false
+  } catch {
+    liveOverlayLinkCopied.value = false
   }
 }
 
@@ -2143,6 +2226,25 @@ onMounted(async () => {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+
+.live-share-divider {
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--app-border);
+}
+
+.live-share-overlay-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.live-share-overlay-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--app-text-muted);
 }
 
 .form-chart-content {

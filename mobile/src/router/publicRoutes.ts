@@ -8,6 +8,7 @@ export const PUBLIC_ROUTE_NAMES = [
   'legal',
   'deleteAccount',
   'liveMatch',
+  'liveMatchOverlay',
   'sharedMatchSummary',
   'newMatch',
   'matchScore',

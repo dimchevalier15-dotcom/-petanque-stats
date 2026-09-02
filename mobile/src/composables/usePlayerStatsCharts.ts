@@ -17,7 +17,7 @@ const NOTE_COLORS = {
 } as const
 
 function breakdownToCounts(b: MatchSummaryShotBreakdown): number[] {
-  return [b.m2, b.m1, b.p0, b.p1, b.p2]
+  return [b.p2, b.p1, b.p0, b.m1, b.m2]
 }
 
 export function breakdownBallCount(b: MatchSummaryShotBreakdown): number {
@@ -37,11 +37,11 @@ export function buildNoteDistributionChart(
   }
 
   const noteLabels = [
-    t('stats.notes.m2'),
-    t('stats.notes.m1'),
-    t('stats.notes.p0'),
-    t('stats.notes.p1'),
     t('stats.notes.p2'),
+    t('stats.notes.p1'),
+    t('stats.notes.p0'),
+    t('stats.notes.m1'),
+    t('stats.notes.m2'),
   ]
 
   return {
@@ -50,7 +50,7 @@ export function buildNoteDistributionChart(
       datasets: [
         {
           data: breakdownToCounts(breakdown),
-          backgroundColor: [NOTE_COLORS.m2, NOTE_COLORS.m1, NOTE_COLORS.p0, NOTE_COLORS.p1, NOTE_COLORS.p2],
+          backgroundColor: [NOTE_COLORS.p2, NOTE_COLORS.p1, NOTE_COLORS.p0, NOTE_COLORS.m1, NOTE_COLORS.m2],
           borderRadius: 6,
           barThickness: 14,
         },

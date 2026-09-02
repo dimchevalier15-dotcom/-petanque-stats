@@ -41,6 +41,12 @@ class LiveMatch
     #[ORM\Column(name: 'finished_at', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $finishedAt = null;
 
+    #[ORM\Column(name: 'timer_started_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $timerStartedAt = null;
+
+    #[ORM\Column(name: 'timer_accumulated_ms', type: 'integer')]
+    private int $timerAccumulatedMs = 0;
+
     /**
      * @param array<string, mixed> $data
      */
@@ -92,6 +98,21 @@ class LiveMatch
         return $this->finishedAt;
     }
 
+    public function getTimerStartedAt(): ?\DateTimeImmutable
+    {
+        return $this->timerStartedAt;
+    }
+
+    public function getTimerAccumulatedMs(): int
+    {
+        return $this->timerAccumulatedMs;
+    }
+
+    public function isTimerRunning(): bool
+    {
+        return $this->timerStartedAt !== null;
+    }
+
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
@@ -107,6 +128,17 @@ class LiveMatch
         }
 
         $this->data = $data;
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function syncTimer(int $accumulatedMs, ?\DateTimeImmutable $runningSince): void
+    {
+        if (!$this->isActive()) {
+            throw new \DomainException('Cannot sync timer on a finished live match.');
+        }
+
+        $this->timerAccumulatedMs = max(0, $accumulatedMs);
+        $this->timerStartedAt = $runningSince;
         $this->updatedAt = new \DateTimeImmutable();
     }
 

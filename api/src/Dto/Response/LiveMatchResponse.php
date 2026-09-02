@@ -16,6 +16,9 @@ final class LiveMatchResponse
         public string $createdAt,
         public string $updatedAt,
         public ?string $finishedAt = null,
+        public int $timerAccumulatedMs = 0,
+        public bool $timerRunning = false,
+        public ?string $timerRunningSince = null,
     ) {
     }
 }
