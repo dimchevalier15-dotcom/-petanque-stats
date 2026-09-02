@@ -25,6 +25,7 @@ final class MatchSummaryResponse
         public ?int $myMatchPlayerId = null,
         public ?bool $myHasValidatedMatch = null,
         public ?string $shareUuid = null,
+        public ?string $shareUrl = null,
     ) {
     }
 }

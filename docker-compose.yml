@@ -34,7 +34,7 @@ services:
       FRONTEND_BASE_URL: http://localhost:5173
       MAIL_FROM: noreply@petanque-analytics.com
       MAIL_FROM_NAME: "Pétanque Analytics"
-      APP_LATEST_VERSION: "1.5.0"
+      APP_LATEST_VERSION: "1.5.1"
       APP_MINIMUM_VERSION: "1.5.0"
       APP_ANDROID_STORE_URL: "https://play.google.com/store/apps/details?id=com.petanquestats.app"
     ports:

@@ -80,7 +80,11 @@
         </ul>
       </section>
 
-      <MatchSharePromo v-if="shareUuid" :share-uuid="shareUuid" />
+      <MatchSharePromo
+        v-if="shareUuid"
+        :share-uuid="shareUuid"
+        :share-url="summary.shareUrl"
+      />
 
       <section v-if="canManageValidation" class="panel app-card validation-panel">
         <h3>{{ t('validation.summaryTitle') }}</h3>

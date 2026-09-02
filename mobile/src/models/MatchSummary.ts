@@ -44,4 +44,5 @@ export interface MatchSummary {
   myMatchPlayerId?: number | null
   myHasValidatedMatch?: boolean | null
   shareUuid?: string | null
+  shareUrl?: string | null
 }

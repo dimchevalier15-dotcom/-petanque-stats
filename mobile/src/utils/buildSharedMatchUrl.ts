@@ -1,3 +1,5 @@
+import { getPublicAppBaseUrl } from './getPublicAppBaseUrl'
+
 export function buildSharedMatchUrl(uuid: string): string {
-  return `${window.location.origin}/recap/${uuid}`
+  return `${getPublicAppBaseUrl()}/recap/${uuid}`
 }

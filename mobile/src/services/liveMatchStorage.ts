@@ -38,6 +38,8 @@ export function clearLiveMatchUuid(): void {
   localStorage.removeItem(STORAGE_KEY)
 }
 
+import { getPublicAppBaseUrl } from '../utils/getPublicAppBaseUrl'
+
 export function buildLiveMatchUrl(uuid: string): string {
-  return `${window.location.origin}/live/${uuid}`
+  return `${getPublicAppBaseUrl()}/live/${uuid}`
 }

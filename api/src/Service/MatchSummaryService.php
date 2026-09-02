@@ -25,6 +25,7 @@ final class MatchSummaryService
         private GameBallRepository $balls,
         private PlayerRepository $players,
         private ShotBreakdownFactory $shotBreakdowns,
+        private string $frontendBaseUrl,
     ) {
     }
 
@@ -134,7 +135,17 @@ final class MatchSummaryService
             myMatchPlayerId: $this->resolveMyMatchPlayerId($game, $viewerPlayerId),
             myHasValidatedMatch: $this->resolveMyHasValidatedMatch($game, $viewerPlayerId),
             shareUuid: $game->getShareUuid(),
+            shareUrl: $this->buildShareUrl($game->getShareUuid()),
         );
+    }
+
+    private function buildShareUrl(?string $shareUuid): ?string
+    {
+        if ($shareUuid === null || $shareUuid === '') {
+            return null;
+        }
+
+        return rtrim($this->frontendBaseUrl, '/').'/recap/'.$shareUuid;
     }
 
     private function resolveMyMatchPlayerId(Game $game, ?int $viewerPlayerId): ?int

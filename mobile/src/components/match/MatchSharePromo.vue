@@ -57,11 +57,14 @@ import { buildSharedMatchUrl } from '../../utils/buildSharedMatchUrl'
 
 const props = defineProps<{
   shareUuid: string
+  shareUrl?: string | null
 }>()
 
 const { t } = useI18n()
 
-const shareUrl = computed(() => buildSharedMatchUrl(props.shareUuid))
+const shareUrl = computed(
+  () => props.shareUrl?.trim() || buildSharedMatchUrl(props.shareUuid),
+)
 const qrDataUrl = ref<string | null>(null)
 const linkCopied = ref(false)
 const canNativeShare = computed(
