@@ -367,6 +367,44 @@ final class MatchInsightsServiceTest extends KernelDatabaseTestCase
         self::assertSame(0, $res->rajoutTeamB->tir->made);
     }
 
+    public function testHeldEndErrorWhenOpponentHasNoBallsLeft(): void
+    {
+        [$matchId, $playerA1, $playerA2, $playerB1, $playerB2] = $this->createDoubletteMatch();
+
+        $end = new CompleteMatchEndDto();
+        $end->index = 1;
+        $end->winner = 'B';
+        $end->points = 2;
+        $end->canceled = false;
+        $end->shots = [];
+
+        $sequenceOrder = 1;
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA1, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerA2, 0, 'point');
+        }
+        for ($i = 0; $i < 3; $i++) {
+            $end->shots[] = $this->shotDto($sequenceOrder++, $playerB1, 0, 'point');
+        }
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, -2, 'point');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 1, 'tir');
+        $end->shots[] = $this->shotDto($sequenceOrder++, $playerB2, 0, 'point');
+
+        $this->completeDoubletteEnd($matchId, $playerA1, $playerA2, $playerB1, $playerB2, $end);
+
+        $res = $this->insights->getInsights($matchId);
+
+        self::assertSame('ok', $res->status);
+        self::assertNotNull($res->heldEndErrorTeamB);
+        self::assertSame(6, $res->heldEndErrorTeamB->ballsPlayed);
+        self::assertSame(1, $res->heldEndErrorTeamB->minusTwoCount);
+        self::assertSame(16.7, $res->heldEndErrorTeamB->rate);
+        self::assertNotNull($res->heldEndErrorTeamA);
+        self::assertSame(0, $res->heldEndErrorTeamA->ballsPlayed);
+    }
+
     /**
      * @return array{0:int,1:int,2:int,3:int,4:int} matchId, playerA1, playerA2, playerB1, playerB2
      */

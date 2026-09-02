@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Dto\Response\MatchInsightsHeldEndErrorResponse;
 use App\Dto\Response\MatchInsightsMarkingRateResponse;
 use App\Dto\Response\MatchInsightsMarkingTeamResponse;
 use App\Dto\Response\MatchInsightsRajoutTeamResponse;
@@ -78,6 +79,7 @@ final class PlayerTacticalInsightsService
 
         $markingOverall = $this->emptyShotCounters();
         $rajoutOverall = $this->emptyShotCounters();
+        $heldEndError = ['minusTwoCount' => 0, 'ballsPlayed' => 0];
         $markingByDistance = [];
         $rajoutByDistance = [];
         $matchesEligible = \count($games);
@@ -139,6 +141,7 @@ final class PlayerTacticalInsightsService
                     rajoutByDistance: $rajoutByDistance,
                     tacticalAttempts: $tacticalAttempts,
                     tacticalAttemptsWithDistance: $tacticalAttemptsWithDistance,
+                    heldEndError: $heldEndError,
                 );
             }
 
@@ -167,6 +170,7 @@ final class PlayerTacticalInsightsService
             status: 'ok',
             markingOverall: $this->toShotTeamResponse($markingOverall),
             rajoutOverall: $this->toRajoutTeamResponse($rajoutOverall),
+            heldEndError: $this->toHeldEndErrorResponse($heldEndError),
             markingByDistance: $this->buildByDistanceRows($markingByDistance, $distanceBucket),
             rajoutByDistance: $this->buildByDistanceRows($rajoutByDistance, $distanceBucket),
             coverage: new PlayerTacticalInsightsCoverageResponse(
@@ -216,6 +220,7 @@ final class PlayerTacticalInsightsService
      * @param array{point:array{made:int,attempts:int},tir:array{made:int,attempts:int}} $rajoutOverall
      * @param array<string, array{point:array{made:int,attempts:int},tir:array{made:int,attempts:int}}>> $markingByDistance
      * @param array<string, array{point:array{made:int,attempts:int},tir:array{made:int,attempts:int}}>> $rajoutByDistance
+     * @param array{minusTwoCount:int,ballsPlayed:int} $heldEndError
      */
     private function analyzeEndForPlayer(
         int $playerId,
@@ -229,6 +234,7 @@ final class PlayerTacticalInsightsService
         array &$rajoutByDistance,
         int &$tacticalAttempts,
         int &$tacticalAttemptsWithDistance,
+        array &$heldEndError,
     ): void {
         $playedByTeam = ['A' => 0, 'B' => 0];
         $markingTeam = null;
@@ -273,6 +279,19 @@ final class PlayerTacticalInsightsService
                 }
                 if ($note === -2) {
                     $rajoutActive = false;
+                }
+            }
+
+            $opponentRemaining = $teamCapacities[$opponent] - $playedByTeam[$opponent];
+            if (
+                $opponentRemaining <= 0
+                && !$shot->isCochonnet()
+                && \in_array($shotType, ['point', 'tir'], true)
+                && (int) $shot->getPlayer()->getId() === $playerId
+            ) {
+                ++$heldEndError['ballsPlayed'];
+                if ($note === -2) {
+                    ++$heldEndError['minusTwoCount'];
                 }
             }
 
@@ -420,6 +439,20 @@ final class PlayerTacticalInsightsService
         return new MatchInsightsRajoutTeamResponse(
             point: $this->toRateResponse($stats['point']),
             tir: $this->toRateResponse($stats['tir']),
+        );
+    }
+
+    /**
+     * @param array{minusTwoCount:int,ballsPlayed:int} $counters
+     */
+    private function toHeldEndErrorResponse(array $counters): MatchInsightsHeldEndErrorResponse
+    {
+        $ballsPlayed = $counters['ballsPlayed'];
+
+        return new MatchInsightsHeldEndErrorResponse(
+            minusTwoCount: $counters['minusTwoCount'],
+            ballsPlayed: $ballsPlayed,
+            rate: $ballsPlayed > 0 ? round($counters['minusTwoCount'] / $ballsPlayed * 100, 1) : null,
         );
     }
 

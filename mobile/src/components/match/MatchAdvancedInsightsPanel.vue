@@ -55,6 +55,36 @@
       </div>
     </article>
 
+    <!-- Held end errors (-2 when opponent is out) -->
+    <article class="tactical-block">
+      <h3>{{ t('summary.insights.heldEndError.title') }}</h3>
+      <p class="tactical-hint">{{ t('summary.insights.heldEndError.hint') }}</p>
+      <div class="marking-grid">
+        <div
+          v-for="team in teams"
+          :key="`held-end-${team}`"
+          class="marking-team"
+          :class="`marking-team--${team.toLowerCase()}`"
+        >
+          <span class="marking-team-label">{{ labelForTeam(team) }}</span>
+          <div class="marking-rows">
+            <div class="marking-row">
+              <div class="marking-row-head">
+                <span>{{ t('summary.insights.heldEndError.label') }}</span>
+                <strong>{{ heldEndErrorLabel(team) }}</strong>
+              </div>
+              <div class="marking-bar marking-bar--error" aria-hidden="true">
+                <div
+                  class="marking-bar-fill marking-bar-fill--error"
+                  :style="{ width: `${heldEndErrorRate(team)}%` }"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
     <!-- Ends won when team opened (played first) -->
     <article class="tactical-block">
       <h3>{{ t('summary.insights.point.title') }}</h3>
@@ -139,6 +169,10 @@ function rajoutTeam(team: TeamSide) {
   return team === 'A' ? props.insights.rajoutTeamA : props.insights.rajoutTeamB
 }
 
+function heldEndErrorTeam(team: TeamSide) {
+  return team === 'A' ? props.insights.heldEndErrorTeamA : props.insights.heldEndErrorTeamB
+}
+
 function pointDominance(team: TeamSide) {
   return team === 'A' ? props.insights.pointDominanceTeamA : props.insights.pointDominanceTeamB
 }
@@ -180,6 +214,25 @@ function rajoutLabel(team: TeamSide, shot: 'point' | 'tir'): string {
     rate: data.rate,
     made: data.made,
     total: data.attempts,
+  })
+}
+
+function heldEndErrorRate(team: TeamSide): number {
+  return heldEndErrorTeam(team)?.rate ?? 0
+}
+
+function heldEndErrorLabel(team: TeamSide): string {
+  const data = heldEndErrorTeam(team)
+  if (!data || data.ballsPlayed === 0) {
+    return t('summary.insights.heldEndError.noData')
+  }
+  if (data.rate === null) {
+    return `${data.minusTwoCount}/${data.ballsPlayed}`
+  }
+  return t('summary.insights.heldEndError.rate', {
+    rate: data.rate,
+    errors: data.minusTwoCount,
+    balls: data.ballsPlayed,
   })
 }
 
@@ -325,6 +378,17 @@ function bucketLabel(bucket: string): string {
 
 .marking-bar-fill--rajout {
   opacity: 0.75;
+}
+
+.marking-bar--error {
+  height: 0.5rem;
+}
+
+.marking-team--a .marking-bar-fill.marking-bar-fill--error,
+.marking-team--b .marking-bar-fill.marking-bar-fill--error,
+.marking-bar-fill.marking-bar-fill--error {
+  background: #dc2626;
+  opacity: 1;
 }
 
 .compare-grid {

@@ -50,6 +50,12 @@ export interface MatchInsightsDistanceOutlook {
   competitiveBuckets: MatchInsightsByDistance[]
 }
 
+export interface MatchInsightsHeldEndError {
+  minusTwoCount: number
+  ballsPlayed: number
+  rate: number | null
+}
+
 export interface MatchInsightsCoverage {
   distanceSampleRate: number
   endsAnalyzed: number
@@ -64,6 +70,8 @@ export interface MatchInsights {
   markingTeamB?: MatchInsightsMarkingTeam
   rajoutTeamA?: MatchInsightsRajoutTeam
   rajoutTeamB?: MatchInsightsRajoutTeam
+  heldEndErrorTeamA?: MatchInsightsHeldEndError
+  heldEndErrorTeamB?: MatchInsightsHeldEndError
   pointDominanceTeamA?: MatchInsightsPointDominance
   pointDominanceTeamB?: MatchInsightsPointDominance
   distanceOutlook?: MatchInsightsDistanceOutlook

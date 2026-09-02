@@ -85,6 +85,25 @@
       <p v-else class="tactical-hint">{{ t('stats.tactical.noDistanceData') }}</p>
     </article>
 
+    <article class="tactical-block">
+      <h3>{{ t('summary.insights.heldEndError.title') }}</h3>
+      <p class="tactical-hint">{{ t('summary.insights.heldEndError.hint') }}</p>
+      <div class="marking-overall">
+        <div class="marking-row">
+          <div class="marking-row-head">
+            <span>{{ t('summary.insights.heldEndError.label') }}</span>
+            <strong>{{ heldEndErrorLabel(insights.heldEndError) }}</strong>
+          </div>
+          <div class="marking-bar marking-bar--error" aria-hidden="true">
+            <div
+              class="marking-bar-fill marking-bar-fill--error"
+              :style="{ width: `${heldEndErrorRate(insights.heldEndError)}%` }"
+            />
+          </div>
+        </div>
+      </div>
+    </article>
+
     <p v-if="insights.coverage" class="tactical-footnote">
       {{
         t('stats.tactical.coverage', {
@@ -100,7 +119,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import type { MatchInsightsMarkingRate } from '../../models/MatchInsights'
+import type { MatchInsightsHeldEndError, MatchInsightsMarkingRate } from '../../models/MatchInsights'
 import type { PlayerTacticalInsights } from '../../models/PlayerTacticalInsights'
 import { distanceBucketLabel } from '../../composables/usePlayerStatsCharts'
 
@@ -130,6 +149,24 @@ function rateLabel(data?: MatchInsightsMarkingRate | null): string {
     rate: data.rate,
     made: data.made,
     total: data.attempts,
+  })
+}
+
+function heldEndErrorRate(data?: MatchInsightsHeldEndError | null): number {
+  return data?.rate ?? 0
+}
+
+function heldEndErrorLabel(data?: MatchInsightsHeldEndError | null): string {
+  if (!data || data.ballsPlayed === 0) {
+    return t('summary.insights.heldEndError.noData')
+  }
+  if (data.rate === null) {
+    return `${data.minusTwoCount}/${data.ballsPlayed}`
+  }
+  return t('summary.insights.heldEndError.rate', {
+    rate: data.rate,
+    errors: data.minusTwoCount,
+    balls: data.ballsPlayed,
   })
 }
 </script>
@@ -239,6 +276,15 @@ function rateLabel(data?: MatchInsightsMarkingRate | null): string {
 
 .marking-bar-fill--rajout {
   opacity: 0.75;
+}
+
+.marking-bar--error {
+  height: 0.5rem;
+}
+
+.marking-bar-fill.marking-bar-fill--error {
+  background: #dc2626;
+  opacity: 1;
 }
 
 .tactical-footnote {

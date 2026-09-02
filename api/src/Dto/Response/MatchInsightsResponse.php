@@ -15,6 +15,8 @@ final class MatchInsightsResponse
         public ?MatchInsightsMarkingTeamResponse $markingTeamB = null,
         public ?MatchInsightsRajoutTeamResponse $rajoutTeamA = null,
         public ?MatchInsightsRajoutTeamResponse $rajoutTeamB = null,
+        public ?MatchInsightsHeldEndErrorResponse $heldEndErrorTeamA = null,
+        public ?MatchInsightsHeldEndErrorResponse $heldEndErrorTeamB = null,
         public ?MatchInsightsPointDominanceResponse $pointDominanceTeamA = null,
         public ?MatchInsightsPointDominanceResponse $pointDominanceTeamB = null,
         public ?MatchInsightsDistanceOutlookResponse $distanceOutlook = null,

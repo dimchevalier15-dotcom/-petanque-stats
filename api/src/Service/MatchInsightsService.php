@@ -8,6 +8,7 @@ use App\Dto\Response\MatchInsightsByDistanceResponse;
 use App\Dto\Response\MatchInsightsCoverageResponse;
 use App\Dto\Response\MatchInsightsDistanceOutlookResponse;
 use App\Dto\Response\MatchInsightsDistanceTeamResponse;
+use App\Dto\Response\MatchInsightsHeldEndErrorResponse;
 use App\Dto\Response\MatchInsightsMarkingRateResponse;
 use App\Dto\Response\MatchInsightsMarkingTeamResponse;
 use App\Dto\Response\MatchInsightsPointDominanceResponse;
@@ -73,6 +74,7 @@ final class MatchInsightsService
         ];
         $markingStats = $this->emptyMarkingStats();
         $rajoutStats = $this->emptyMarkingStats();
+        $heldEndErrorStats = $this->emptyHeldEndErrorStats();
         $distanceAgg = [];
         $totalBalls = 0;
         $ballsWithDistance = 0;
@@ -104,6 +106,7 @@ final class MatchInsightsService
                 teamStats: $teamStats,
                 markingStats: $markingStats,
                 rajoutStats: $rajoutStats,
+                heldEndErrorStats: $heldEndErrorStats,
                 distanceAgg: $distanceAgg,
                 totalBalls: $totalBalls,
                 ballsWithDistance: $ballsWithDistance,
@@ -125,6 +128,8 @@ final class MatchInsightsService
             markingTeamB: $this->toMarkingTeamResponse($markingStats['B']),
             rajoutTeamA: $this->toRajoutTeamResponse($rajoutStats['A']),
             rajoutTeamB: $this->toRajoutTeamResponse($rajoutStats['B']),
+            heldEndErrorTeamA: $this->toHeldEndErrorResponse($heldEndErrorStats['A']),
+            heldEndErrorTeamB: $this->toHeldEndErrorResponse($heldEndErrorStats['B']),
             pointDominanceTeamA: new MatchInsightsPointDominanceResponse(
                 $teamStats['A']['endsWonWhenOpened'],
                 $teamStats['A']['endsOpened'],
@@ -186,7 +191,7 @@ final class MatchInsightsService
      * @param array{A:int,B:int} $teamCapacities
      * @param array{A:array<string,mixed>,B:array<string,mixed>} $teamStats
      * @param array{A:array{point:array{made:int,attempts:int},tir:array{made:int,attempts:int}},B:array{point:array{made:int,attempts:int},tir:array{made:int,attempts:int}}} $markingStats
-     * @param array{A:array{point:array{made:int,attempts:int},tir:array{made:int,attempts:int}},B:array{point:array{made:int,attempts:int},tir:array{made:int,attempts:int}}} $rajoutStats
+     * @param array{A:array{minusTwoCount:int,ballsPlayed:int},B:array{minusTwoCount:int,ballsPlayed:int}} $heldEndErrorStats
      * @param array<string, array{A: array{sum:int,count:int,p2:int,p1:int,p0:int,m1:int,m2:int}, B: array{sum:int,count:int,p2:int,p1:int,p0:int,m1:int,m2:int}>> $distanceAgg
      */
     private function analyzeEnd(
@@ -197,6 +202,7 @@ final class MatchInsightsService
         array &$teamStats,
         array &$markingStats,
         array &$rajoutStats,
+        array &$heldEndErrorStats,
         array &$distanceAgg,
         int &$totalBalls,
         int &$ballsWithDistance,
@@ -245,6 +251,14 @@ final class MatchInsightsService
                 }
                 if ($note === -2) {
                     $rajoutActive = false;
+                }
+            }
+
+            $opponentRemaining = $teamCapacities[$opponent] - $playedByTeam[$opponent];
+            if ($opponentRemaining <= 0 && !$shot->isCochonnet() && in_array($shotType, ['point', 'tir'], true)) {
+                ++$heldEndErrorStats[$team]['ballsPlayed'];
+                if ($note === -2) {
+                    ++$heldEndErrorStats[$team]['minusTwoCount'];
                 }
             }
 
@@ -490,6 +504,30 @@ final class MatchInsightsService
             attempts: $attempts,
             rate: $attempts > 0 ? round($counters['made'] / $attempts * 100, 1) : null,
         );
+    }
+
+    /**
+     * @param array{minusTwoCount:int,ballsPlayed:int} $counters
+     */
+    private function toHeldEndErrorResponse(array $counters): MatchInsightsHeldEndErrorResponse
+    {
+        $ballsPlayed = $counters['ballsPlayed'];
+
+        return new MatchInsightsHeldEndErrorResponse(
+            minusTwoCount: $counters['minusTwoCount'],
+            ballsPlayed: $ballsPlayed,
+            rate: $ballsPlayed > 0 ? round($counters['minusTwoCount'] / $ballsPlayed * 100, 1) : null,
+        );
+    }
+
+    /**
+     * @return array{A:array{minusTwoCount:int,ballsPlayed:int},B:array{minusTwoCount:int,ballsPlayed:int}}
+     */
+    private function emptyHeldEndErrorStats(): array
+    {
+        $empty = ['minusTwoCount' => 0, 'ballsPlayed' => 0];
+
+        return ['A' => $empty, 'B' => $empty];
     }
 
     /**

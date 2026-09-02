@@ -103,6 +103,13 @@
         "rate": "{rate} % ({made}/{total})",
         "noData": "—"
       },
+      "heldEndError": {
+        "title": "Erreur en ayant la mène en main",
+        "hint": "Part des −2 joués alors que l'adversaire n'a plus de boules, sur toutes les boules jouées dans ce contexte.",
+        "label": "Taux de −2",
+        "rate": "{rate} % ({errors}/{balls})",
+        "noData": "—"
+      },
       "point": {
         "title": "Mènes gagnées en tenant le but",
         "hint": "Mènes où l'équipe a joué la 1re boule, puis remporté la mène.",

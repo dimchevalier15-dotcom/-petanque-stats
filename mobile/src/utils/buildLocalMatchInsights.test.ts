@@ -209,4 +209,24 @@ describe('buildLocalMatchInsights', () => {
     expect(res.rajoutTeamB?.point).toEqual({ made: 0, attempts: 4, rate: 0 })
     expect(res.rajoutTeamB?.tir).toEqual({ made: 0, attempts: 0, rate: null })
   })
+
+  it('counts held end minus two errors when opponent has no balls left', () => {
+    const end = endWithRajoutPrefix([
+      shot(0, 4, -2, 'point'),
+      shot(0, 4, 1, 'tir'),
+      shot(0, 4, 0, 'point'),
+    ])
+
+    const res = buildLocalMatchInsights({
+      type: 'doublette',
+      teamA: [1, 2],
+      teamB: [3, 4],
+      trackedPlayers: [1, 2, 3, 4],
+      ends: [end],
+    })
+
+    expect(res.status).toBe('ok')
+    expect(res.heldEndErrorTeamB).toEqual({ minusTwoCount: 1, ballsPlayed: 6, rate: 16.7 })
+    expect(res.heldEndErrorTeamA).toEqual({ minusTwoCount: 0, ballsPlayed: 0, rate: null })
+  })
 })

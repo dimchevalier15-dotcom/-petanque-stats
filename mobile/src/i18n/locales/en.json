@@ -103,6 +103,13 @@
         "rate": "{rate}% ({made}/{total})",
         "noData": "—"
       },
+      "heldEndError": {
+        "title": "Errors while holding the end",
+        "hint": "Share of −2 shots played while the opponent has no balls left, out of all shots played in that situation.",
+        "label": "−2 rate",
+        "rate": "{rate}% ({errors}/{balls})",
+        "noData": "—"
+      },
       "point": {
         "title": "Ends won while holding the jack",
         "hint": "Ends where the team played the first ball and won that end.",

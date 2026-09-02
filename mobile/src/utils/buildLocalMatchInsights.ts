@@ -4,6 +4,7 @@ import type {
   MatchInsights,
   MatchInsightsByDistance,
   MatchInsightsDistanceOutlook,
+  MatchInsightsHeldEndError,
   MatchInsightsMarkingRate,
   MatchInsightsMarkingTeam,
   MatchInsightsRajoutTeam,
@@ -49,6 +50,11 @@ interface MarkingCounters {
   attempts: number
 }
 
+interface HeldEndErrorCounters {
+  minusTwoCount: number
+  ballsPlayed: number
+}
+
 interface DistanceAgg {
   sum: number
   count: number
@@ -81,6 +87,13 @@ function emptyMarkingStats(): Record<TeamSide, Record<'point' | 'tir', MarkingCo
   return {
     A: { point: emptyMarkingCounters(), tir: emptyMarkingCounters() },
     B: { point: emptyMarkingCounters(), tir: emptyMarkingCounters() },
+  }
+}
+
+function emptyHeldEndErrorStats(): Record<TeamSide, HeldEndErrorCounters> {
+  return {
+    A: { minusTwoCount: 0, ballsPlayed: 0 },
+    B: { minusTwoCount: 0, ballsPlayed: 0 },
   }
 }
 
@@ -121,6 +134,7 @@ function analyzeEnd(
   teamStats: Record<TeamSide, TeamStats>,
   markingStats: Record<TeamSide, Record<'point' | 'tir', MarkingCounters>>,
   rajoutStats: Record<TeamSide, Record<'point' | 'tir', MarkingCounters>>,
+  heldEndErrorStats: Record<TeamSide, HeldEndErrorCounters>,
   distanceAgg: Record<string, Record<TeamSide, DistanceAgg>>,
   counters: { totalBalls: number; ballsWithDistance: number },
 ): void {
@@ -179,6 +193,18 @@ function analyzeEnd(
       }
       if (shot.note === -2) {
         rajoutActive = false
+      }
+    }
+
+    const opponentRemainingBefore = teamCapacities[opponent] - playedByTeam[opponent]
+    if (
+      opponentRemainingBefore <= 0 &&
+      !shot.isCochonnet &&
+      (shot.shotType === 'point' || shot.shotType === 'tir')
+    ) {
+      heldEndErrorStats[team].ballsPlayed++
+      if (shot.note === -2) {
+        heldEndErrorStats[team].minusTwoCount++
       }
     }
 
@@ -311,6 +337,17 @@ function buildDistanceOutlook(distanceAgg: Record<string, Record<TeamSide, Dista
   return { singleDominantTeam: null, competitiveBuckets: dominantRows }
 }
 
+function toHeldEndErrorResponse(counters: HeldEndErrorCounters): MatchInsightsHeldEndError {
+  return {
+    minusTwoCount: counters.minusTwoCount,
+    ballsPlayed: counters.ballsPlayed,
+    rate:
+      counters.ballsPlayed > 0
+        ? Math.round((counters.minusTwoCount / counters.ballsPlayed) * 1000) / 10
+        : null,
+  }
+}
+
 function toTeamResponse(team: TeamSide, stats: TeamStats): MatchInsightsTeam {
   return {
     team,
@@ -359,6 +396,7 @@ export function buildLocalMatchInsights(params: {
   const teamStats: Record<TeamSide, TeamStats> = { A: emptyTeamStats(), B: emptyTeamStats() }
   const markingStats = emptyMarkingStats()
   const rajoutStats = emptyMarkingStats()
+  const heldEndErrorStats = emptyHeldEndErrorStats()
   const distanceAgg: Record<string, Record<TeamSide, DistanceAgg>> = {}
   const counters = { totalBalls: 0, ballsWithDistance: 0 }
   let endsAnalyzed = 0
@@ -381,6 +419,7 @@ export function buildLocalMatchInsights(params: {
       teamStats,
       markingStats,
       rajoutStats,
+      heldEndErrorStats,
       distanceAgg,
       counters,
     )
@@ -398,6 +437,8 @@ export function buildLocalMatchInsights(params: {
     markingTeamB: toMarkingTeam(markingStats.B),
     rajoutTeamA: toRajoutTeam(rajoutStats.A),
     rajoutTeamB: toRajoutTeam(rajoutStats.B),
+    heldEndErrorTeamA: toHeldEndErrorResponse(heldEndErrorStats.A),
+    heldEndErrorTeamB: toHeldEndErrorResponse(heldEndErrorStats.B),
     pointDominanceTeamA: {
       endsWonWhenOpened: teamStats.A.endsWonWhenOpened,
       endsOpened: teamStats.A.endsOpened,

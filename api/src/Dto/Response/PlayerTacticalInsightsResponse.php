@@ -15,6 +15,7 @@ final class PlayerTacticalInsightsResponse
         public ?string $reason = null,
         public ?MatchInsightsMarkingTeamResponse $markingOverall = null,
         public ?MatchInsightsRajoutTeamResponse $rajoutOverall = null,
+        public ?MatchInsightsHeldEndErrorResponse $heldEndError = null,
         public array $markingByDistance = [],
         public array $rajoutByDistance = [],
         public ?PlayerTacticalInsightsCoverageResponse $coverage = null,

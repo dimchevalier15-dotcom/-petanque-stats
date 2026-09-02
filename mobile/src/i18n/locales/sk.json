@@ -103,6 +103,13 @@
         "rate": "{rate} % ({made}/{total})",
         "noData": "—"
       },
+      "heldEndError": {
+        "title": "Chyba pri držaní meny",
+        "hint": "Podiel −2 zahraných, keď súper nemá žiadne boule, z celkového počtu bôl v tejto situácii.",
+        "label": "Podiel −2",
+        "rate": "{rate} % ({errors}/{balls})",
+        "noData": "—"
+      },
       "point": {
         "title": "Vyhrané meny s bodom",
         "hint": "Mene, kde tím hral prvú boulu a následne ju vyhral.",
