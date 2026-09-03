@@ -985,9 +985,14 @@
   "history": {
     "title": "História zápasov",
     "empty": "Zatiaľ žiadne zápasy.",
+    "emptyFiltered": "Žiadne zápasy nezodpovedajú týmto filtrom.",
     "loadMore": "Načítať viac",
     "victory": "Víťazstvo",
-    "defeat": "Prehra"
+    "defeat": "Prehra",
+    "refused": "Nezúčastnil sa",
+    "filters": {
+      "showRefused": "Zobraziť odmietnuté zápasy"
+    }
   },
   "shooting": {
     "home": {

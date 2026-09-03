@@ -971,9 +971,14 @@
   "history": {
     "title": "Historique des matchs",
     "empty": "Aucun match pour le moment.",
+    "emptyFiltered": "Aucun match ne correspond à ces filtres.",
     "loadMore": "Charger plus",
     "victory": "Victoire",
-    "defeat": "Défaite"
+    "defeat": "Défaite",
+    "refused": "Non participé",
+    "filters": {
+      "showRefused": "Afficher les matchs refusés"
+    }
   },
   "shooting": {
     "home": {

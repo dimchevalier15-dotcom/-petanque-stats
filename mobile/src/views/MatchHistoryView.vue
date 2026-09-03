@@ -1,18 +1,45 @@
 <template>
   <AppPage :title="t('history.title')">
+    <MatchHistoryFiltersPanel
+      v-model:include-refused="includeRefused"
+      v-model:nature-filter="natureFilter"
+      v-model:competition-filter="competitionFilter"
+      v-model:format-filter="formatFilter"
+      v-model:date-from="dateFrom"
+      v-model:date-to="dateTo"
+      v-model:date-filter-enabled="dateFilterEnabled"
+      :active-filter-count="activeFilterCount"
+      :max-date="maxDate"
+      :nature-filter-options="natureFilterOptions"
+      :competition-filter-options="competitionFilterOptions"
+      :format-filter-options="formatFilterOptions"
+      @change="reload"
+    />
+
     <EmptyState
       v-if="items.length === 0 && !loading"
-      :title="t('history.empty')"
+      :title="emptyTitle"
       icon="pi pi-inbox"
     />
 
     <ul v-else class="list">
       <li v-for="m in items" :key="m.id">
-        <button type="button" class="match-card app-card" @click="open(m.id)">
+        <button
+          type="button"
+          class="match-card app-card"
+          :class="{ 'match-card--refused': m.refused }"
+          @click="open(m.id)"
+        >
           <div class="head">
             <span class="date">{{ formatDate(m.date) }}</span>
             <Tag
-              v-if="m.victory !== null"
+              v-if="m.refused"
+              :value="t('history.refused')"
+              severity="secondary"
+              class="refused-tag"
+            />
+            <Tag
+              v-else-if="m.victory !== null"
               :value="m.victory ? t('history.victory') : t('history.defeat')"
               :severity="m.victory ? 'success' : 'danger'"
             />
@@ -37,14 +64,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
+import MatchHistoryFiltersPanel from '../components/history/MatchHistoryFiltersPanel.vue'
 import { useMatchHistoryContext } from '../composables/useMatchHistoryContext'
+import { useMatchHistoryFilters } from '../composables/useMatchHistoryFilters'
 import { matchesService } from '../services/matches'
 import { useImpersonationStore } from '../stores/impersonation'
 import type { MatchHistoryItem, MatchHistoryPage } from '../models/MatchHistory'
@@ -54,6 +83,22 @@ const router = useRouter()
 const impersonation = useImpersonationStore()
 const { contextLabels, hasContext } = useMatchHistoryContext(t)
 
+const {
+  natureFilter,
+  competitionFilter,
+  formatFilter,
+  includeRefused,
+  dateFrom,
+  dateTo,
+  maxDate,
+  dateFilterEnabled,
+  natureFilterOptions,
+  competitionFilterOptions,
+  formatFilterOptions,
+  activeFilterCount,
+  filterParams,
+} = useMatchHistoryFilters()
+
 const items = ref<MatchHistoryItem[]>([])
 const page = ref(1)
 const pageSize = ref(20)
@@ -61,6 +106,10 @@ const total = ref(0)
 const loading = ref(false)
 
 const canLoadMore = computed(() => items.value.length < total.value)
+
+const emptyTitle = computed(() =>
+  activeFilterCount.value > 0 ? t('history.emptyFiltered') : t('history.empty'),
+)
 
 function typeLabel(type: 'tete_a_tete' | 'doublette' | 'triplette'): string {
   switch (type) {
@@ -86,7 +135,7 @@ function formatDate(iso: string): string {
 async function load() {
   loading.value = true
   try {
-    const res: MatchHistoryPage = await matchesService.getHistory(page.value, pageSize.value)
+    const res: MatchHistoryPage = await matchesService.getHistory(page.value, pageSize.value, filterParams())
     total.value = res.total
     const known = new Set(items.value.map((i) => i.id))
     const next = res.items.filter((i) => !known.has(i.id))
@@ -96,25 +145,31 @@ async function load() {
   }
 }
 
+function reload() {
+  items.value = []
+  page.value = 1
+  void load()
+}
+
 function loadMore() {
   if (!canLoadMore.value || loading.value) return
   page.value += 1
-  load()
+  void load()
 }
 
 function open(id: number) {
   router.push({ name: 'matchSummary', params: { id } })
 }
 
-onMounted(load)
+onMounted(() => {
+  void load()
+})
 
 watch(
   () => impersonation.player?.id ?? null,
   (next, prev) => {
     if (next !== prev) {
-      items.value = []
-      page.value = 1
-      load()
+      reload()
     }
   },
 )
@@ -142,6 +197,10 @@ watch(
   transition: transform 0.12s ease;
 }
 
+.match-card--refused {
+  opacity: 0.72;
+}
+
 .match-card:active {
   transform: scale(0.99);
 }
@@ -152,6 +211,11 @@ watch(
   justify-content: space-between;
   align-items: center;
   gap: var(--app-space-sm);
+}
+
+.refused-tag :deep(.p-tag) {
+  font-size: 0.6875rem;
+  font-weight: 600;
 }
 
 .date {

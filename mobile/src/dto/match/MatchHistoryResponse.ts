@@ -11,6 +11,7 @@ export interface MatchHistoryItemDto {
   nature: MatchNature | null
   competitionLabel: string | null
   competitionStage: CompetitionStage | null
+  refused?: boolean
 }
 
 export interface MatchHistoryResponseDto {

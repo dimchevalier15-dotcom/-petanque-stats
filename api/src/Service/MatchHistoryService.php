@@ -12,6 +12,7 @@ use App\Repository\GameRepository;
 use App\Repository\GameParticipantRepository;
 use App\Repository\PlayerRepository;
 use App\Service\Auth\InvalidTokenException;
+use App\ValueObject\MatchHistoryFilters;
 
 final class MatchHistoryService
 {
@@ -32,6 +33,7 @@ final class MatchHistoryService
         int $page = 1,
         int $pageSize = 20,
         ?int $impersonatePlayerId = null,
+        MatchHistoryFilters $filters = new MatchHistoryFilters(),
     ): MatchHistoryResponse {
         $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
 
@@ -40,11 +42,16 @@ final class MatchHistoryService
             $context->playerId,
             $page,
             $pageSize,
+            $filters,
         );
     }
 
-    public function historyForPlayerId(int $playerId, int $page = 1, int $pageSize = 20): MatchHistoryResponse
-    {
+    public function historyForPlayerId(
+        int $playerId,
+        int $page = 1,
+        int $pageSize = 20,
+        MatchHistoryFilters $filters = new MatchHistoryFilters(),
+    ): MatchHistoryResponse {
         $player = $this->players->find($playerId);
         if ($player === null) {
             return new MatchHistoryResponse(page: $page, pageSize: $pageSize, total: 0, items: []);
@@ -55,6 +62,7 @@ final class MatchHistoryService
             $playerId,
             $page,
             $pageSize,
+            $filters,
         );
     }
 
@@ -63,27 +71,39 @@ final class MatchHistoryService
         ?int $playerId,
         int $page,
         int $pageSize,
+        MatchHistoryFilters $filters,
     ): MatchHistoryResponse {
         [$total, $games] = $this->games->findHistoryForAccount(
             $historyUserId,
             $playerId,
             $page,
             $pageSize,
+            $filters,
         );
+
+        $gameIds = array_values(array_filter(array_map(
+            static fn ($g) => $g instanceof Game ? (int) $g->getId() : null,
+            $games,
+        )));
+        $validationMap = $playerId !== null
+            ? $this->participants->mapValidationStatusByGameIds($playerId, $gameIds)
+            : [];
 
         $items = [];
         foreach ($games as $g) {
             if (!$g instanceof Game) {
                 continue;
             }
+            $gameId = (int) $g->getId();
+            $refused = ($validationMap[$gameId] ?? null) === false;
             $sum = $this->ends->sumPointsByTeam($g);
             $scoreA = $g->getOpeningScoreA() + ($sum['A'] ?? 0);
             $scoreB = $g->getOpeningScoreB() + ($sum['B'] ?? 0);
             $winner = $scoreA >= $scoreB ? 'A' : 'B';
-            $victory = $this->resolveVictory($g, $playerId, $winner);
+            $victory = $refused ? null : $this->resolveVictory($g, $playerId, $winner);
 
             $items[] = new MatchHistoryItemResponse(
-                id: (int) $g->getId(),
+                id: $gameId,
                 date: $g->getPlayedAt()->format(DATE_ATOM),
                 type: $g->getType()->value,
                 scoreA: $scoreA,
@@ -93,6 +113,7 @@ final class MatchHistoryService
                 nature: $g->getNature()?->value,
                 competitionLabel: $this->resolveCompetitionLabel($g),
                 competitionStage: $g->getCompetitionStage(),
+                refused: $refused,
             );
         }
 

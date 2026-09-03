@@ -13,6 +13,7 @@ use App\Service\MatchRecordingService;
 use App\Service\MatchService;
 use App\Service\MatchValidationService;
 use App\Tests\Support\KernelDatabaseTestCase;
+use App\ValueObject\MatchHistoryFilters;
 use App\Tests\Support\MatchTestHelpers;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
@@ -90,6 +91,52 @@ final class MatchValidationServiceTest extends KernelDatabaseTestCase
         $history = $this->history->historyForToken($addedToken);
         self::assertSame(0, $history->total);
         self::assertSame(0, $this->validation->countPendingForToken($addedToken)->count);
+
+        $historyWithRefused = $this->history->historyForToken(
+            $addedToken,
+            1,
+            20,
+            null,
+            new MatchHistoryFilters(includeRefused: true),
+        );
+        self::assertSame(1, $historyWithRefused->total);
+        self::assertTrue($historyWithRefused->items[0]->refused);
+        self::assertNull($historyWithRefused->items[0]->victory);
+    }
+
+    public function testRefusedFilterShowsOnlyRefusedMatches(): void
+    {
+        [$creatorToken, $creatorPlayer, $opponentId] = $this->createLinkedPlayerWithValidationRequired();
+        $addedUser = $this->createUserWithValidationRequired('refused-only');
+        $addedPlayer = $this->createLinkedPlayerForUser($addedUser, 'Jean', 'Martin');
+
+        $refusedMatchId = $this->createMatchForPlayers((int) $creatorPlayer->getId(), (int) $addedPlayer->getId(), $creatorPlayer->getUser());
+        $this->completeHeadToHead($refusedMatchId, (int) $creatorPlayer->getId(), (int) $addedPlayer->getId(), 5);
+
+        $validatedMatchId = $this->createMatchForPlayers((int) $creatorPlayer->getId(), (int) $addedPlayer->getId(), $creatorPlayer->getUser());
+        $this->completeHeadToHead($validatedMatchId, (int) $creatorPlayer->getId(), (int) $addedPlayer->getId(), 3);
+
+        $addedToken = $this->jwtEncoder->encode(['username' => $addedUser->getEmail(), 'sub' => (string) $addedUser->getId()]);
+        $pending = $this->validation->pendingForToken($addedToken);
+
+        $this->validation->updateValidation($addedToken, $pending->items[0]->matchPlayerId, false);
+        $this->validation->updateValidation($addedToken, $pending->items[1]->matchPlayerId, true);
+
+        $normalHistory = $this->history->historyForToken($addedToken);
+        self::assertSame(1, $normalHistory->total);
+        self::assertSame($validatedMatchId, $normalHistory->items[0]->id);
+        self::assertFalse($normalHistory->items[0]->refused);
+
+        $refusedHistory = $this->history->historyForToken(
+            $addedToken,
+            1,
+            20,
+            null,
+            new MatchHistoryFilters(includeRefused: true),
+        );
+        self::assertSame(1, $refusedHistory->total);
+        self::assertSame($refusedMatchId, $refusedHistory->items[0]->id);
+        self::assertTrue($refusedHistory->items[0]->refused);
     }
 
     public function testValidatedMatchAppearsInHistory(): void

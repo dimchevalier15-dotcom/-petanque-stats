@@ -21,6 +21,7 @@ use App\Service\MatchSummaryService;
 use App\Service\MatchValidationException;
 use App\Service\MatchValidationOwnershipException;
 use App\Service\MatchShareService;
+use App\Http\MatchHistoryFiltersResolver;
 use App\Service\MatchValidationService;
 use App\Service\PlayerViewContextResolver;
 use App\Service\Auth\InvalidTokenException;
@@ -175,9 +176,14 @@ final class MatchController extends AbstractController
         $page = $request->query->get('page') !== null ? max(1, (int) $request->query->get('page')) : 1;
         $size = $request->query->get('size') !== null ? max(1, (int) $request->query->get('size')) : 20;
 
+        $filters = MatchHistoryFiltersResolver::fromRequest($request);
+        if (is_array($filters)) {
+            return new JsonResponse(['message' => $filters['message']], 400);
+        }
+
         try {
             $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
-            $res = $this->history->historyForToken($token, $page, $size, $impersonatePlayerId);
+            $res = $this->history->historyForToken($token, $page, $size, $impersonatePlayerId, $filters);
         } catch (InvalidTokenException) {
             return new JsonResponse(['message' => 'Invalid credentials.'], 401);
         }

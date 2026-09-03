@@ -159,7 +159,7 @@
     </div>
 
     <template v-else>
-      <div :class="{ dimmed: refreshing }">
+      <div :class="{ dimmed: refreshing }" class="panels-grouper">
         <div class="kpi-grid">
           <div class="kpi-card app-card">
             <span class="kpi-label">{{ t('stats.kpi.matches') }}</span>
@@ -482,6 +482,12 @@ const {
   gap: var(--app-space-xs);
 }
 
+.panels-grouper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 @media (min-width: 420px) {
   .nature-filter,
   .format-filter {
@@ -585,6 +591,7 @@ const {
   display: grid;
   gap: 0.125rem;
   text-align: center;
+  border-radius: 8px;
 }
 
 .kpi-card.win {

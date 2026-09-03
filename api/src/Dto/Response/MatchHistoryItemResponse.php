@@ -17,6 +17,7 @@ final class MatchHistoryItemResponse
         public ?string $nature = null,
         public ?string $competitionLabel = null,
         public ?string $competitionStage = null,
+        public bool $refused = false,
     ) {
     }
 }

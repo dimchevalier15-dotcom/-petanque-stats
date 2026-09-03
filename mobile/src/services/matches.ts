@@ -8,6 +8,7 @@ import type { MatchSummary } from '../models/MatchSummary'
 import type { MatchInsights } from '../models/MatchInsights'
 import type { MatchHistoryResponseDto, MatchHistoryItemDto } from '../dto/match/MatchHistoryResponse'
 import type { MatchHistoryItem, MatchHistoryPage } from '../models/MatchHistory'
+import type { MatchHistoryFilterParams } from '../composables/useMatchHistoryFilters'
 import type { MatchContextResponseDto } from '../dto/match/MatchContextResponse'
 import type { UpdateMatchContextRequestDto } from '../dto/match/UpdateMatchContextRequest'
 import { todayInputDate, type MatchContext } from '../models/MatchContext'
@@ -39,6 +40,7 @@ function mapHistoryItem(dto: MatchHistoryItemDto): MatchHistoryItem {
     nature: dto.nature,
     competitionLabel: dto.competitionLabel,
     competitionStage: dto.competitionStage,
+    refused: dto.refused ?? false,
   }
 }
 
@@ -60,8 +62,28 @@ export const matchesService = {
     const { data } = await api.get<MatchInsightsResponseDto>(`/matches/${matchId}/insights`)
     return data as unknown as MatchInsights
   },
-  async getHistory(page = 1, size = 20): Promise<MatchHistoryPage> {
-    const { data } = await api.get<MatchHistoryResponseDto>('/matches/history', { params: { page, size } })
+  async getHistory(
+    page = 1,
+    size = 20,
+    filters: MatchHistoryFilterParams = {
+      nature: 'all',
+      type: 'all',
+      competitionId: 'all',
+      includeRefused: false,
+      range: {},
+    },
+  ): Promise<MatchHistoryPage> {
+    const { data } = await api.get<MatchHistoryResponseDto>('/matches/history', {
+      params: {
+        page,
+        size,
+        ...filters.range,
+        ...(filters.nature !== 'all' ? { nature: filters.nature } : {}),
+        ...(filters.type !== 'all' ? { type: filters.type } : {}),
+        ...(filters.competitionId !== 'all' ? { competitionId: filters.competitionId } : {}),
+        ...(filters.includeRefused ? { includeRefused: true } : {}),
+      },
+    })
     const items = data.items.map(mapHistoryItem)
     return { page: data.page, pageSize: data.pageSize, total: data.total, items }
   },

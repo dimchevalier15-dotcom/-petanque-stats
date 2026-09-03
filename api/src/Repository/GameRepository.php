@@ -8,6 +8,7 @@ use App\Entity\Game;
 use App\Enum\GameType;
 use App\Enum\MatchNature;
 use App\ValueObject\DateRange;
+use App\ValueObject\MatchHistoryFilters;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -32,18 +33,23 @@ final class GameRepository extends ServiceEntityRepository
      *
      * @return array{0:int,1:list<Game>}
      */
-    public function findHistoryForAccount(?int $userId, ?int $playerId, int $page, int $pageSize): array
-    {
+    public function findHistoryForAccount(
+        ?int $userId,
+        ?int $playerId,
+        int $page,
+        int $pageSize,
+        MatchHistoryFilters $filters = new MatchHistoryFilters(),
+    ): array {
         $page = max(1, $page);
         $pageSize = max(1, $pageSize);
         $offset = ($page - 1) * $pageSize;
 
-        $totalQb = $this->createHistoryForAccountQueryBuilder($userId, $playerId)
+        $totalQb = $this->createHistoryForAccountQueryBuilder($userId, $playerId, $filters)
             ->select('COUNT(DISTINCT g.id)');
         $total = (int) $totalQb->getQuery()->getSingleScalarResult();
 
         /** @var list<Game> $items */
-        $items = $this->createHistoryForAccountQueryBuilder($userId, $playerId)
+        $items = $this->createHistoryForAccountQueryBuilder($userId, $playerId, $filters)
             ->leftJoin('g.competition', 'c')->addSelect('c')
             ->groupBy('g.id')
             ->orderBy('g.playedAt', 'DESC')
@@ -55,48 +61,69 @@ final class GameRepository extends ServiceEntityRepository
         return [$total, $items];
     }
 
-    private function createHistoryForAccountQueryBuilder(?int $userId, ?int $playerId): \Doctrine\ORM\QueryBuilder
-    {
+    private function createHistoryForAccountQueryBuilder(
+        ?int $userId,
+        ?int $playerId,
+        MatchHistoryFilters $filters,
+    ): \Doctrine\ORM\QueryBuilder {
         $qb = $this->createQueryBuilder('g')
             ->join('App\\Entity\\GameEnd', 'e', 'WITH', 'e.game = g');
 
         $conditions = [];
 
-        if ($userId !== null) {
-            $qb->leftJoin('g.createdBy', 'creator');
-            $qb->setParameter('userId', $userId);
-        }
+        if ($filters->includeRefused) {
+            if ($playerId === null) {
+                $qb->where('1 = 0');
 
-        if ($playerId !== null) {
+                return $qb;
+            }
+
             $qb->leftJoin(
                 'App\\Entity\\GameParticipant',
                 'gp',
                 'WITH',
-                'gp.game = g AND gp.player = :playerId AND gp.hasValidatedMatch = true',
+                'gp.game = g AND gp.player = :playerId AND gp.hasValidatedMatch = false',
             )->setParameter('playerId', $playerId);
-            $conditions[] = 'gp.player IS NOT NULL';
-        }
-
-        if ($userId !== null && $playerId !== null) {
-            $qb->leftJoin(
-                'App\\Entity\\GameParticipant',
-                'anyGp',
-                'WITH',
-                'anyGp.game = g AND anyGp.player = :playerId',
-            );
-            $conditions[] = $qb->expr()->andX(
-                'creator.id = :userId',
-                'anyGp.player IS NULL',
-            );
-        } elseif ($userId !== null) {
-            $conditions[] = 'creator.id = :userId';
-        }
-
-        if ($conditions === []) {
-            $qb->where('1 = 0');
+            $qb->where('gp.player IS NOT NULL');
         } else {
-            $qb->where($qb->expr()->orX(...$conditions));
+            if ($userId !== null) {
+                $qb->leftJoin('g.createdBy', 'creator');
+                $qb->setParameter('userId', $userId);
+            }
+
+            if ($playerId !== null) {
+                $qb->leftJoin(
+                    'App\\Entity\\GameParticipant',
+                    'gp',
+                    'WITH',
+                    'gp.game = g AND gp.player = :playerId AND gp.hasValidatedMatch = true',
+                )->setParameter('playerId', $playerId);
+                $conditions[] = 'gp.player IS NOT NULL';
+            }
+
+            if ($userId !== null && $playerId !== null) {
+                $qb->leftJoin(
+                    'App\\Entity\\GameParticipant',
+                    'anyGp',
+                    'WITH',
+                    'anyGp.game = g AND anyGp.player = :playerId',
+                );
+                $conditions[] = $qb->expr()->andX(
+                    'creator.id = :userId',
+                    'anyGp.player IS NULL',
+                );
+            } elseif ($userId !== null) {
+                $conditions[] = 'creator.id = :userId';
+            }
+
+            if ($conditions === []) {
+                $qb->where('1 = 0');
+            } else {
+                $qb->where($qb->expr()->orX(...$conditions));
+            }
         }
+
+        $this->applyFilters($qb, $filters->nature, $filters->range, $filters->type, $filters->competitionId);
 
         return $qb;
     }

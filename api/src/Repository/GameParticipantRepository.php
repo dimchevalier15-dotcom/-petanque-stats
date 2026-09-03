@@ -74,6 +74,34 @@ final class GameParticipantRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<int> $gameIds
+     *
+     * @return array<int, ?bool> Map gameId => hasValidatedMatch
+     */
+    public function mapValidationStatusByGameIds(int $playerId, array $gameIds): array
+    {
+        if ($gameIds === []) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('gp')
+            ->select('IDENTITY(gp.game) as gameId, gp.hasValidatedMatch as validated')
+            ->where('gp.game IN (:gameIds)')
+            ->andWhere('gp.player = :playerId')
+            ->setParameter('gameIds', $gameIds)
+            ->setParameter('playerId', $playerId)
+            ->getQuery()
+            ->getArrayResult();
+
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['gameId']] = $row['validated'];
+        }
+
+        return $map;
+    }
+
+    /**
      * @return array<int, string> Map playerId => team ('A'|'B')
      */
     public function mapPlayerTeamByGame(Game $game): array

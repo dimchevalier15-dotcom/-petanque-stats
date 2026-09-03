@@ -1,6 +1,11 @@
 <template>
-  <section class="date-range-filter app-card" :aria-label="t('dateRange.label')">
-    <div class="date-range-head">
+  <component
+    :is="embedded ? 'div' : 'section'"
+    class="date-range-filter"
+    :class="{ 'app-card': !embedded, 'date-range-filter--embedded': embedded }"
+    :aria-label="t('dateRange.label')"
+  >
+    <div v-if="!embedded" class="date-range-head">
       <div class="date-range-head-main">
         <i class="pi pi-calendar" aria-hidden="true" />
         <span class="date-range-title">{{ t('dateRange.label') }}</span>
@@ -15,6 +20,20 @@
         {{ t('dateRange.showAll') }}
       </button>
     </div>
+
+    <div v-else class="filter-group-head">
+      <span class="filter-group-label">{{ t('dateRange.label') }}</span>
+      <button
+        v-if="showAllButton"
+        type="button"
+        class="show-all-btn"
+        :class="{ active: !dateFilterEnabled }"
+        @click="onShowAll"
+      >
+        {{ t('dateRange.showAll') }}
+      </button>
+    </div>
+
     <div class="date-range-fields" :class="{ 'date-range-fields--inactive': !dateFilterEnabled }">
       <label class="date-field">
         <span class="date-field-label">{{ t('dateRange.from') }}</span>
@@ -41,7 +60,7 @@
         />
       </label>
     </div>
-  </section>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -57,9 +76,11 @@ withDefaults(
   defineProps<{
     maxDate: string
     showAllButton?: boolean
+    embedded?: boolean
   }>(),
   {
     showAllButton: false,
+    embedded: false,
   },
 )
 
@@ -83,6 +104,26 @@ function onShowAll(): void {
   padding: var(--app-space-md);
   display: grid;
   gap: var(--app-space-sm);
+}
+
+.date-range-filter--embedded {
+  display: grid;
+  gap: var(--app-space-xs);
+}
+
+.filter-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.filter-group-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .date-range-head {

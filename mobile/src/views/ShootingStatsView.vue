@@ -60,7 +60,7 @@
       </div>
 
       <template v-else>
-        <div :class="{ dimmed: refreshing }">
+        <div :class="{ dimmed: refreshing }"  class="panels-grouper">
         <div class="kpi-grid">
           <div class="kpi-card app-card">
             <span class="kpi-label">{{ t('shooting.stats.kpi.sessions') }}</span>
@@ -319,6 +319,12 @@ watch(
 </script>
 
 <style scoped>
+.panels-grouper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .nature-filter {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -397,6 +403,7 @@ watch(
   display: grid;
   gap: 0.125rem;
   text-align: center;
+  border-radius: 8px;
 }
 
 .kpi-card.best {

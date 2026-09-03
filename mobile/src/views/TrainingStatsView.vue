@@ -287,6 +287,7 @@ watch(
   padding: var(--app-space-md);
   display: grid;
   gap: 0.25rem;
+  border-radius: 8px;
 }
 
 .kpi-label {

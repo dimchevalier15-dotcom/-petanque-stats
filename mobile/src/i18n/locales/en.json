@@ -971,9 +971,14 @@
   "history": {
     "title": "Match history",
     "empty": "No matches yet.",
+    "emptyFiltered": "No matches match these filters.",
     "loadMore": "Load more",
     "victory": "Victory",
-    "defeat": "Defeat"
+    "defeat": "Defeat",
+    "refused": "Did not participate",
+    "filters": {
+      "showRefused": "Show declined matches"
+    }
   },
   "shooting": {
     "home": {
