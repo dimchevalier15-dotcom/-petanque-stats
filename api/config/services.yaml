@@ -7,7 +7,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    env(APP_LATEST_VERSION): '1.6.0'
+    env(APP_LATEST_VERSION): '1.6.1'
     env(APP_MINIMUM_VERSION): '1.5.0'
     env(APP_ANDROID_STORE_URL): 'https://play.google.com/store/apps/details?id=com.petanquestats.app'
     app.mail_from: '%env(MAIL_FROM)%'
