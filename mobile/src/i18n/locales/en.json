@@ -1457,6 +1457,30 @@
       "endResult": "{winner} +{points}",
       "teamA": "Team A",
       "teamB": "Team B",
+      "feed": {
+        "title": "End play-by-play",
+        "point": {
+          "plus2": "{name} played a magic point",
+          "plus1": "{name} played a good point",
+          "zero": "{name} played an average point",
+          "minus1": "{name} missed completely",
+          "minus2": "{name} played a penalizing point"
+        },
+        "tir": {
+          "plus2": "{name} hit a carreau",
+          "plus1": "{name} hit the target",
+          "zero": "{name} narrowly missed the shot",
+          "minus1": "{name} missed completely",
+          "minus2": "{name} played a penalizing shot"
+        },
+        "cochonnet": {
+          "plus2": "{name} hit a carreau on the jack",
+          "plus1": "{name} hit the jack",
+          "zero": "{name} narrowly missed the jack shot",
+          "minus1": "{name} missed the jack shot",
+          "minus2": "{name} played a poor jack shot"
+        }
+      },
       "installApp": {
         "title": "Track your matches and stats",
         "subtitle": "Install the app to score games, review your statistics, and share live recaps.",

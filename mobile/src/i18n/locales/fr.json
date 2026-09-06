@@ -1482,6 +1482,30 @@
       "endResult": "{winner} +{points}",
       "teamA": "Équipe A",
       "teamB": "Équipe B",
+      "feed": {
+        "title": "Déroulé de la mène",
+        "point": {
+          "plus2": "{name} a fait un point magique",
+          "plus1": "{name} a bien pointé",
+          "zero": "{name} a fait un point moyen",
+          "minus1": "{name} a fait un trou",
+          "minus2": "{name} a fait un point pénalisant"
+        },
+        "tir": {
+          "plus2": "{name} a fait un carreau",
+          "plus1": "{name} a frappé",
+          "zero": "{name} a raté son tir de peu",
+          "minus1": "{name} a fait un trou",
+          "minus2": "{name} a fait un tir pénalisant"
+        },
+        "cochonnet": {
+          "plus2": "{name} a fait un carreau au cochonnet",
+          "plus1": "{name} a frappé le cochonnet",
+          "zero": "{name} a raté le cochonnet de peu",
+          "minus1": "{name} a raté le tir de cochonnet",
+          "minus2": "{name} a fait un mauvais tir de cochonnet"
+        }
+      },
       "installApp": {
         "title": "Suivez vos matchs et vos stats",
         "subtitle": "Installez l'application pour noter vos parties, consulter vos statistiques et les partager en direct.",

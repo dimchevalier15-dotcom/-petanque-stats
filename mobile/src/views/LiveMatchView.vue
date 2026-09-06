@@ -266,6 +266,20 @@
           </template>
         </section>
       </div>
+
+      <section v-if="currentEndFeed.length > 0" class="shot-feed">
+        <h2 class="shot-feed-title">{{ t('live.view.feed.title') }}</h2>
+        <ul class="shot-feed-list">
+          <li
+            v-for="item in currentEndFeed"
+            :key="`feed-${currentEnd.index}-${item.sequenceOrder}`"
+            class="shot-feed-item"
+            :class="`shot-feed-item--${item.team.toLowerCase()}`"
+          >
+            {{ t(item.messageKey, { name: item.playerName }) }}
+          </li>
+        </ul>
+      </section>
       </template>
 
       <section v-if="isFinished && scoredEnds.length > 0" class="ends-recap">
@@ -302,6 +316,7 @@ import type { EndRecord } from '../models/MatchPlay'
 import { liveMatchesService } from '../services/liveMatches'
 import { formatMasters, playerCochonnetMastersFromEnds, playerMastersFromEnds, playerShotMastersFromEnds } from '../composables/matchSuccessRate'
 import { distanceAt as distanceAtShot, noteAt as noteAtShot } from '../utils/matchEndShots'
+import { buildLiveShotFeed } from '../utils/liveShotFeed'
 import { teamSlotsForEnd } from '../utils/matchSubstitutions'
 
 const POLL_INTERVAL_MS = 5000
@@ -353,6 +368,17 @@ const teamASlots = computed(() => {
 const teamBSlots = computed(() => {
   if (!matchData.value) return []
   return teamSlotsForEnd(matchData.value.teamB, 'B', substitutions.value, currentEnd.value.index)
+})
+
+const currentEndFeed = computed(() => {
+  if (!matchData.value) return []
+  return buildLiveShotFeed(
+    currentEnd.value,
+    matchData.value.teamA,
+    matchData.value.teamB,
+    matchData.value.shortPlayerNames,
+    matchData.value.playerNames,
+  )
 })
 
 const recapTeamAPlayers = computed(() => recapPlayersForTeam('A'))
@@ -1165,6 +1191,44 @@ onUnmounted(() => {
 }
 
 .recap-stat--tir .recap-stat-value {
+  color: var(--play-team-b);
+}
+
+.shot-feed {
+  padding: var(--app-space-sm) var(--app-space-md);
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+}
+
+.shot-feed-title {
+  margin: 0 0 var(--app-space-sm);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+}
+
+.shot-feed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.375rem;
+}
+
+.shot-feed-item {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.shot-feed-item--a {
+  color: var(--play-team-a);
+}
+
+.shot-feed-item--b {
   color: var(--play-team-b);
 }
 </style>

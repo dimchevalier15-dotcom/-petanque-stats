@@ -1476,6 +1476,30 @@
       "endResult": "{winner} +{points}",
       "teamA": "Tím A",
       "teamB": "Tím B",
+      "feed": {
+        "title": "Priebeh miene",
+        "point": {
+          "plus2": "{name} zahral magický bod",
+          "plus1": "{name} dobre zahral bod",
+          "zero": "{name} zahral priemerný bod",
+          "minus1": "{name} úplne minul",
+          "minus2": "{name} zahral penalizujúci bod"
+        },
+        "tir": {
+          "plus2": "{name} trafil carreau",
+          "plus1": "{name} trafil",
+          "zero": "{name} tesne minul strelu",
+          "minus1": "{name} úplne minul",
+          "minus2": "{name} zahral penalizujúcu strelu"
+        },
+        "cochonnet": {
+          "plus2": "{name} trafil carreau na cochonnet",
+          "plus1": "{name} trafil cochonnet",
+          "zero": "{name} tesne minul strelu na cochonnet",
+          "minus1": "{name} minul strelu na cochonnet",
+          "minus2": "{name} zahral zlú strelu na cochonnet"
+        }
+      },
       "installApp": {
         "title": "Sledujte zápasy a štatistiky",
         "subtitle": "Nainštalujte si aplikáciu na zapisovanie zápasov, prehľad štatistík a živé zdieľanie.",
