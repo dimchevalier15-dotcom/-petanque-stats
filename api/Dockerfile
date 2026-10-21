@@ -1,4 +1,5 @@
-FROM php:8.4-cli
+# CVE-2026-109618 / CVE-2026-109619 (php2shell): require PHP >= 8.4.27
+FROM php:8.4.27-cli
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -22,7 +23,8 @@ COPY . .
 RUN composer install \
     --no-interaction \
     --prefer-dist \
-    --no-progress
+    --no-progress \
+    --no-scripts
 
 EXPOSE 8000
 
