@@ -119,6 +119,52 @@ final class ShootingSessionRepository extends ServiceEntityRepository
         return $value !== null ? (int) $value : null;
     }
 
+    /**
+     * @param list<int> $playerIds
+     *
+     * @return array<int, array{sessionsCount:int,averageSessionScore:float|null,bestSessionScore:int|null}>
+     */
+    public function summarizeCompletedForPlayers(array $playerIds, ?DateRange $range = null): array
+    {
+        if ($playerIds === []) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('s')
+            ->select('IDENTITY(s.player) AS playerId')
+            ->addSelect('COUNT(s.id) AS sessionsCount')
+            ->addSelect('AVG(s.totalScore) AS averageSessionScore')
+            ->addSelect('MAX(s.totalScore) AS bestSessionScore')
+            ->where('s.player IN (:playerIds)')
+            ->andWhere('s.finishedAt IS NOT NULL')
+            ->setParameter('playerIds', $playerIds)
+            ->groupBy('s.player');
+
+        if ($range !== null) {
+            $qb->andWhere('s.playedAt >= :rangeFrom')
+                ->andWhere('s.playedAt <= :rangeTo')
+                ->setParameter('rangeFrom', $range->from)
+                ->setParameter('rangeTo', $range->to);
+        }
+
+        /** @var list<array{playerId:string,sessionsCount:string,averageSessionScore:string|null,bestSessionScore:string|null}> $rows */
+        $rows = $qb->getQuery()->getArrayResult();
+
+        $out = [];
+        foreach ($rows as $row) {
+            $playerId = (int) $row['playerId'];
+            $out[$playerId] = [
+                'sessionsCount' => (int) $row['sessionsCount'],
+                'averageSessionScore' => $row['averageSessionScore'] !== null
+                    ? round((float) $row['averageSessionScore'], 1)
+                    : null,
+                'bestSessionScore' => $row['bestSessionScore'] !== null ? (int) $row['bestSessionScore'] : null,
+            ];
+        }
+
+        return $out;
+    }
+
     public function averageTotalScoreForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): ?float
     {
         $qb = $this->createQueryBuilder('s')

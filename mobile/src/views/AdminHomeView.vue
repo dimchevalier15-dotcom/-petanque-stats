@@ -19,6 +19,10 @@
         <i class="pi pi-users" aria-hidden="true" />
         <span>{{ t('admin.home.coach') }}</span>
       </button>
+      <button type="button" class="quick-item app-card" @click="goSelectionGlobalesAdmin">
+        <i class="pi pi-flag" aria-hidden="true" />
+        <span>{{ t('admin.home.selectionGlobale') }}</span>
+      </button>
     </div>
   </AppPage>
 </template>
@@ -46,6 +50,10 @@ function goClubs(): void {
 
 function goCoachAdmin(): void {
   router.push({ name: 'adminCoach' })
+}
+
+function goSelectionGlobalesAdmin(): void {
+  router.push({ name: 'adminSelectionGlobales' })
 }
 </script>
 

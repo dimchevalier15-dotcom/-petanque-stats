@@ -13,6 +13,7 @@ final class CoachPlayerListItemResponse
         public string $nickname,
         public CoachPlayerShotSummaryResponse $point,
         public CoachPlayerShotSummaryResponse $tir,
+        public CoachPlayerShootingSummaryResponse $shooting,
     ) {
     }
 }

@@ -10,8 +10,10 @@ final class CoachPlayerListResponse
      * @param list<CoachPlayerListItemResponse> $items
      */
     public function __construct(
-        public int $clubId,
-        public string $clubName,
+        public ?int $clubId,
+        public ?string $clubName,
+        public ?int $selectionGlobaleId,
+        public ?string $selectionGlobaleName,
         public ?string $from,
         public ?string $to,
         public array $items,

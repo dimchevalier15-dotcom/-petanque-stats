@@ -14,6 +14,7 @@ final class MeResponseFactory
     public function __construct(
         private PlayerRepository $players,
         private GameParticipantRepository $participants,
+        private SelectionGlobaleService $selectionGlobaleService,
     ) {
     }
 
@@ -34,6 +35,7 @@ final class MeResponseFactory
             isAdmin: $user->isMaster(),
             coachForClubId: $coachClub?->getId() !== null ? (int) $coachClub->getId() : null,
             coachForClubName: $coachClub?->getName(),
+            coachSelectionGlobales: $this->selectionGlobaleService->listForCoach($user),
             requiresMatchValidation: $user->requiresMatchValidation(),
             pendingValidationCount: $player?->getId() !== null
                 ? $this->participants->countPendingValidationForPlayer((int) $player->getId())

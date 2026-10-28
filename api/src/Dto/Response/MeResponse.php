@@ -20,6 +20,8 @@ final class MeResponse
         public bool $isAdmin = false,
         public ?int $coachForClubId = null,
         public ?string $coachForClubName = null,
+        /** @var list<SelectionGlobaleItemResponse> */
+        public array $coachSelectionGlobales = [],
         public bool $requiresMatchValidation = false,
         public int $pendingValidationCount = 0,
     ) {

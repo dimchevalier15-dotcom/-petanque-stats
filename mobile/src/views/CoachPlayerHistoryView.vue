@@ -3,7 +3,7 @@
     <PageHeader
       :title="playerTitle"
       :subtitle="t('coach.player.historySubtitle')"
-      :back-to="{ name: 'coachPlayer', params: { id: playerId }, query: { name: playerTitle } }"
+      :back-to="playerDetailBackTo"
     />
 
     <EmptyState
@@ -46,6 +46,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
+import { useCoachSpaceFromRoute } from '../composables/useCoachSpace'
 import Button from 'primevue/button'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
@@ -59,8 +60,25 @@ const { t, d } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const { contextLabels, hasContext } = useMatchHistoryContext(t)
+const { selectionGlobaleId, playerDetailRouteName } = useCoachSpaceFromRoute()
 
 const playerId = Number(route.params.id)
+
+const coachSpaceQuery = computed(() =>
+  selectionGlobaleId.value ? { selectionGlobaleId: selectionGlobaleId.value } : undefined,
+)
+
+const playerDetailBackTo = computed(() => {
+  const params: Record<string, string | number> = { id: playerId }
+  if (selectionGlobaleId.value) {
+    params.selectionId = selectionGlobaleId.value
+  }
+  return {
+    name: playerDetailRouteName.value,
+    params,
+    query: { name: playerTitle.value },
+  }
+})
 const playerTitle = ref(String(route.query.name ?? t('coach.player.title')))
 
 const items = ref<MatchHistoryItem[]>([])
@@ -95,7 +113,12 @@ function formatDate(iso: string): string {
 async function load(): Promise<void> {
   loading.value = true
   try {
-    const res = await coachService.getPlayerHistory(playerId, page.value, pageSize.value)
+    const res = await coachService.getPlayerHistory(
+      playerId,
+      page.value,
+      pageSize.value,
+      coachSpaceQuery.value,
+    )
     total.value = res.total
     const known = new Set(items.value.map((item) => item.id))
     const next = res.items.filter((item) => !known.has(item.id))

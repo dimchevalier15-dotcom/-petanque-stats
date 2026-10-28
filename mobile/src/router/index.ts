@@ -19,7 +19,7 @@ import LegalNoticeView from '../views/LegalNoticeView.vue'
 import DeleteAccountView from '../views/DeleteAccountView.vue'
 import { GUEST_ONLY_ROUTE_NAMES, LEGAL_PATHS, PUBLIC_ROUTE_NAMES } from './publicRoutes'
 import { userHasMasterAccess } from '../models/UserRole'
-import { userIsCoach } from '../composables/useIsCoach'
+import { userIsClubCoach, userIsSelectionGlobaleCoach } from '../composables/useIsCoach'
 import { useAuthStore } from '../stores/auth'
 import { useGuestStore } from '../stores/guest'
 
@@ -66,22 +66,52 @@ const routes: RouteRecordRaw[] = [
     meta: { layout: 'focus', requiresAdmin: true },
   },
   {
+    path: '/admin/selections-globales',
+    name: 'adminSelectionGlobales',
+    component: () => import('../views/AdminSelectionGlobalesView.vue'),
+    meta: { layout: 'focus', requiresAdmin: true },
+  },
+  {
     path: '/coach',
     name: 'coachPlayers',
     component: () => import('../views/CoachPlayersView.vue'),
-    meta: { layout: 'focus', requiresCoach: true },
+    meta: { layout: 'focus', requiresClubCoach: true, coachSpace: 'club' },
   },
   {
     path: '/coach/players/:id',
     name: 'coachPlayer',
     component: () => import('../views/CoachPlayerDetailView.vue'),
-    meta: { layout: 'focus', requiresCoach: true },
+    meta: { layout: 'focus', requiresClubCoach: true, coachSpace: 'club' },
   },
   {
     path: '/coach/players/:id/history',
     name: 'coachPlayerHistory',
     component: () => import('../views/CoachPlayerHistoryView.vue'),
-    meta: { layout: 'focus', requiresCoach: true },
+    meta: { layout: 'focus', requiresClubCoach: true, coachSpace: 'club' },
+  },
+  {
+    path: '/selection-globale',
+    name: 'selectionGlobaleHub',
+    component: () => import('../views/SelectionGlobaleHubView.vue'),
+    meta: { layout: 'focus', requiresSelectionGlobaleCoach: true },
+  },
+  {
+    path: '/selection-globale/:selectionId/players',
+    name: 'selectionGlobalePlayers',
+    component: () => import('../views/CoachPlayersView.vue'),
+    meta: { layout: 'focus', requiresSelectionGlobaleCoach: true, coachSpace: 'selection' },
+  },
+  {
+    path: '/selection-globale/:selectionId/players/:id',
+    name: 'selectionGlobalePlayer',
+    component: () => import('../views/CoachPlayerDetailView.vue'),
+    meta: { layout: 'focus', requiresSelectionGlobaleCoach: true, coachSpace: 'selection' },
+  },
+  {
+    path: '/selection-globale/:selectionId/players/:id/history',
+    name: 'selectionGlobalePlayerHistory',
+    component: () => import('../views/CoachPlayerHistoryView.vue'),
+    meta: { layout: 'focus', requiresSelectionGlobaleCoach: true, coachSpace: 'selection' },
   },
   { path: '/match/new', name: 'newMatch', component: NewMatchView, meta: { layout: 'main' } },
   { path: '/players/new', name: 'addPlayer', component: AddPlayerView, meta: { layout: 'focus' } },
@@ -156,12 +186,21 @@ router.beforeEach(async (to) => {
       return { name: 'home' }
     }
   }
-  if (to.meta.requiresCoach) {
+  if (to.meta.requiresClubCoach) {
     const auth = useAuthStore()
     if (!auth.user && token) {
       await auth.initFromStorage()
     }
-    if (!userIsCoach(auth.user)) {
+    if (!userIsClubCoach(auth.user)) {
+      return { name: 'home' }
+    }
+  }
+  if (to.meta.requiresSelectionGlobaleCoach) {
+    const auth = useAuthStore()
+    if (!auth.user && token) {
+      await auth.initFromStorage()
+    }
+    if (!userIsSelectionGlobaleCoach(auth.user)) {
       return { name: 'home' }
     }
   }

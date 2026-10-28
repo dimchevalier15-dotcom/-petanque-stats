@@ -26,6 +26,7 @@
     "history": "History",
     "newMatch": "New match",
     "coach": "Coach",
+    "selectionGlobale": "Selection",
     "stats": "Stats",
     "back": "Back"
   },
@@ -649,7 +650,8 @@
       "impersonate": "Impersonate",
       "competitions": "Competitions",
       "clubs": "Clubs",
-      "coach": "Coaches"
+      "coach": "Coaches",
+      "selectionGlobale": "Global selections"
     },
     "impersonate": {
       "title": "Impersonate mode",
@@ -740,6 +742,53 @@
         "emailRequired": "Email is required.",
         "saveFailed": "Could not update coach rights."
       }
+    },
+    "selectionGlobale": {
+      "title": "Global selections",
+      "addTitle": "New selection",
+      "editTitle": "Edit selection",
+      "manageTitle": "Manage {name}",
+      "coachesTitle": "Coaches",
+      "playersTitle": "Players",
+      "noCoaches": "No coaches assigned.",
+      "noPlayers": "No players in this selection.",
+      "coachEmail": "Coach email",
+      "addPlayer": "Add a player",
+      "playerSearch": "Search players (3 chars min.)",
+      "loading": "Loading…",
+      "empty": "No global selections yet.",
+      "fields": {
+        "name": "Selection name"
+      },
+      "validations": {
+        "required": "This field is required."
+      },
+      "actions": {
+        "add": "Create",
+        "save": "Save",
+        "cancelEdit": "Cancel",
+        "manage": "Manage",
+        "delete": "Delete",
+        "addCoach": "Add coach"
+      },
+      "errors": {
+        "saveFailed": "Unable to save selection."
+      }
+    }
+  },
+  "selectionGlobale": {
+    "title": "Global selection",
+    "empty": "No selection assigned to you.",
+    "addPlayer": {
+      "title": "Add player to selection",
+      "hint": "The player will be added to {selection}.",
+      "searchTitle": "Existing player",
+      "searchEmpty": "No matching players.",
+      "attach": "Add to selection",
+      "attachSuccess": "Player added to the selection.",
+      "attachError": "Could not add this player to the selection.",
+      "createSubmit": "Create and add to selection",
+      "success": "Player created and added to the selection."
     }
   },
   "coach": {
@@ -749,7 +798,12 @@
       "sort": "Sort",
       "sortName": "Name",
       "sortPoint": "Point success",
-      "sortTir": "Tir success"
+      "sortTir": "Tir success",
+      "sortShootingAvg": "Shooting avg.",
+      "sortShootingBest": "Shooting best",
+      "shootingAverage": "Avg.",
+      "shootingBest": "Best",
+      "shootingSessions": "{n} session(s)"
     },
     "addPlayer": {
       "action": "Add player",
@@ -775,7 +829,11 @@
       "noStats": "No data for the selected period.",
       "historyLink": "Match history",
       "historySubtitle": "Match history",
+      "trainingComingSoon": "Training statistics are coming soon.",
       "tabs": {
+        "shooting": "Precision shooting",
+        "training": "Training",
+        "matches": "Matches",
         "stats": "Statistics",
         "history": "Matches"
       }

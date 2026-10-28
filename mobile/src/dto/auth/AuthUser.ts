@@ -10,6 +10,7 @@ export interface AuthUserDto {
   isAdmin?: boolean
   coachForClubId?: number | null
   coachForClubName?: string | null
+  coachSelectionGlobales?: { id: number; name: string }[]
   requiresMatchValidation?: boolean
   pendingValidationCount?: number
 }

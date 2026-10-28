@@ -1,9 +1,9 @@
 <template>
   <AppPage>
     <PageHeader
-      :title="t('coach.title')"
-      :subtitle="clubName ?? undefined"
-      :back-to="{ name: 'home' }"
+      :title="pageTitle"
+      :subtitle="contextSubtitle ?? undefined"
+      :back-to="listBackTo"
     >
       <template #actions>
         <Button
@@ -17,22 +17,6 @@
     </PageHeader>
 
     <StatsCollapsibleFilters :active-count="activeFilterCount">
-      <div class="filter-group">
-        <span class="filter-group-label">{{ t('stats.filters.nature') }}</span>
-        <div class="nature-filter">
-          <button
-            v-for="opt in natureFilterOptions"
-            :key="opt.value"
-            type="button"
-            class="filter-btn"
-            :class="{ active: natureFilter === opt.value }"
-            @click="setNatureFilter(opt.value)"
-          >
-            {{ opt.label }}
-          </button>
-        </div>
-      </div>
-
       <div class="filter-group">
         <span class="filter-group-label">{{ t('coach.list.sort') }}</span>
         <div class="sort-filter">
@@ -78,32 +62,27 @@
           </div>
           <div class="player-card-stats">
             <div class="stat-line">
-              <span class="stat-label">{{ t('play.shots.point') }}</span>
+              <span class="stat-label">{{ t('coach.list.shootingAverage') }}</span>
               <span class="stat-values">
                 <Tag
-                  v-if="player.point.average !== null"
-                  :value="formatAvg(player.point.average)"
-                  :severity="avgSeverity(player.point.average)"
+                  v-if="player.shooting.averageSessionScore !== null"
+                  :value="`${player.shooting.averageSessionScore}/100`"
+                  :severity="sessionScoreSeverity(player.shooting.averageSessionScore)"
                 />
                 <span v-else class="stat-empty">—</span>
-                <span v-if="formatMastersLine(player.point)" class="stat-masters">
-                  {{ formatMastersLine(player.point) }}
-                </span>
               </span>
             </div>
             <div class="stat-line">
-              <span class="stat-label">{{ t('play.shots.tir') }}</span>
+              <span class="stat-label">{{ t('coach.list.shootingBest') }}</span>
               <span class="stat-values">
-                <Tag
-                  v-if="player.tir.average !== null"
-                  :value="formatAvg(player.tir.average)"
-                  :severity="avgSeverity(player.tir.average)"
-                />
-                <span v-else class="stat-empty">—</span>
-                <span v-if="formatMastersLine(player.tir)" class="stat-masters">
-                  {{ formatMastersLine(player.tir) }}
+                <span v-if="player.shooting.bestSessionScore !== null" class="stat-best">
+                  {{ player.shooting.bestSessionScore }}/100
                 </span>
+                <span v-else class="stat-empty">—</span>
               </span>
+            </div>
+            <div v-if="player.shooting.sessionsCount > 0" class="stat-sessions">
+              {{ t('coach.list.shootingSessions', { n: player.shooting.sessionsCount }) }}
             </div>
           </div>
         </button>
@@ -113,27 +92,27 @@
     <Dialog
       v-model:visible="addDialog"
       :modal="true"
-      :header="t('coach.addPlayer.title')"
+      :header="addDialogTitle"
       :dismissable-mask="true"
       class="coach-add-dialog"
     >
       <form class="add-player-form" @submit.prevent="submitAddPlayer">
-        <p v-if="clubName" class="add-player-hint">
-          {{ t('coach.addPlayer.hint', { club: clubName }) }}
+        <p v-if="contextSubtitle" class="add-player-hint">
+          {{ addPlayerHint }}
         </p>
 
         <section class="add-section">
-          <h4 class="add-section-title">{{ t('coach.addPlayer.searchTitle') }}</h4>
+          <h4 class="add-section-title">{{ addSearchTitle }}</h4>
           <PlayerSearchSelect
             v-model="selectedPlayer"
             :label="t('coach.addPlayer.searchLabel')"
             :placeholder="t('coach.addPlayer.searchPlaceholder')"
-            :empty-hint="t('coach.addPlayer.searchEmpty')"
+            :empty-hint="addSearchEmpty"
             :search-players="searchPlayersWithoutClub"
           />
           <Button
             type="button"
-            :label="t('coach.addPlayer.attach')"
+            :label="addAttachLabel"
             icon="pi pi-user-plus"
             class="w-full"
             :loading="attachSubmitting"
@@ -178,7 +157,7 @@
           />
           <Button
             type="submit"
-            :label="t('coach.addPlayer.createSubmit')"
+            :label="addCreateSubmitLabel"
             icon="pi pi-check"
             :loading="addSubmitting"
             :disabled="!canSubmitAdd"
@@ -194,6 +173,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import { useCoachSpaceFromRoute } from '../composables/useCoachSpace'
 import { useToast } from 'primevue/usetoast'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
@@ -207,10 +187,9 @@ import PageHeader from '../components/layout/PageHeader.vue'
 import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
 import StatsCollapsibleFilters from '../components/stats/StatsCollapsibleFilters.vue'
 import StatsDateRangeFilter from '../components/stats/StatsDateRangeFilter.vue'
-import { avgSeverity, formatAvg } from '../composables/usePlayerStatsCharts'
+import { sessionScoreSeverity } from '../composables/useShootingStatsCharts'
 import { useStatsDateRange, toInputDate } from '../composables/useStatsDateRange'
-import type { CoachPlayerListItem, CoachPlayerShotSummary } from '../models/Coach'
-import type { MatchNature } from '../models/MatchContext'
+import type { CoachPlayerListItem } from '../models/Coach'
 import type { Player } from '../models/Player'
 import { coachService } from '../services/coach'
 import { useAuthStore } from '../stores/auth'
@@ -219,13 +198,62 @@ const { t } = useI18n()
 const router = useRouter()
 const toast = useToast()
 const auth = useAuthStore()
+const {
+  kind: coachSpaceKind,
+  selectionGlobaleId,
+  playerDetailRouteName,
+} = useCoachSpaceFromRoute()
 
-type CoachSortBy = 'name' | 'point' | 'tir'
+type CoachSortBy = 'name' | 'shootingAvg' | 'shootingBest'
 
 const loading = ref(true)
 const players = ref<CoachPlayerListItem[]>([])
-const clubName = ref<string | null>(auth.user?.coachForClubName ?? null)
-const natureFilter = ref<MatchNature | 'all'>('all')
+const contextSubtitle = ref<string | null>(
+  coachSpaceKind.value === 'club' ? (auth.user?.coachForClubName ?? null) : null,
+)
+
+const pageTitle = computed(() =>
+  coachSpaceKind.value === 'selection' ? t('selectionGlobale.title') : t('coach.title'),
+)
+
+const listBackTo = computed(() =>
+  coachSpaceKind.value === 'selection'
+    ? { name: 'selectionGlobaleHub' }
+    : { name: 'home' },
+)
+
+const coachSpaceQuery = computed(() =>
+  selectionGlobaleId.value ? { selectionGlobaleId: selectionGlobaleId.value } : undefined,
+)
+
+const isSelectionSpace = computed(() => coachSpaceKind.value === 'selection')
+
+const addDialogTitle = computed(() =>
+  isSelectionSpace.value ? t('selectionGlobale.addPlayer.title') : t('coach.addPlayer.title'),
+)
+
+const addPlayerHint = computed(() => {
+  if (isSelectionSpace.value) {
+    return t('selectionGlobale.addPlayer.hint', { selection: contextSubtitle.value ?? '' })
+  }
+  return t('coach.addPlayer.hint', { club: contextSubtitle.value ?? '' })
+})
+
+const addSearchTitle = computed(() =>
+  isSelectionSpace.value ? t('selectionGlobale.addPlayer.searchTitle') : t('coach.addPlayer.searchTitle'),
+)
+
+const addSearchEmpty = computed(() =>
+  isSelectionSpace.value ? t('selectionGlobale.addPlayer.searchEmpty') : t('coach.addPlayer.searchEmpty'),
+)
+
+const addAttachLabel = computed(() =>
+  isSelectionSpace.value ? t('selectionGlobale.addPlayer.attach') : t('coach.addPlayer.attach'),
+)
+
+const addCreateSubmitLabel = computed(() =>
+  isSelectionSpace.value ? t('selectionGlobale.addPlayer.createSubmit') : t('coach.addPlayer.createSubmit'),
+)
 const sortBy = ref<CoachSortBy>('name')
 
 const addDialog = ref(false)
@@ -249,34 +277,19 @@ const defaultDateFrom = (() => {
   return toInputDate(from)
 })()
 
-const natureFilterOptions = computed(() => [
-  { value: 'all' as const, label: t('stats.filters.all') },
-  { value: 'friendly' as const, label: t('context.nature.friendly') },
-  { value: 'training' as const, label: t('context.nature.training') },
-  { value: 'competition' as const, label: t('context.nature.competition') },
-])
-
 const sortOptions = computed(() => [
   { value: 'name' as const, label: t('coach.list.sortName') },
-  { value: 'point' as const, label: t('coach.list.sortPoint') },
-  { value: 'tir' as const, label: t('coach.list.sortTir') },
+  { value: 'shootingAvg' as const, label: t('coach.list.sortShootingAvg') },
+  { value: 'shootingBest' as const, label: t('coach.list.sortShootingBest') },
 ])
 
 const activeFilterCount = computed(() => {
   let count = 0
-  if (natureFilter.value !== 'all') count++
   if (sortBy.value !== 'name') count++
   if (!dateFilterEnabled.value) count++
   else if (dateFrom.value !== defaultDateFrom || dateTo.value !== maxDate) count++
   return count
 })
-
-function shotSuccessRate(summary: CoachPlayerShotSummary): number | null {
-  if (summary.successCount === null || summary.totalCount === null || summary.totalCount === 0) {
-    return null
-  }
-  return summary.successCount / summary.totalCount
-}
 
 const sortedPlayers = computed(() => {
   const list = [...players.value]
@@ -288,19 +301,29 @@ const sortedPlayers = computed(() => {
     })
   }
 
-  const field = sortBy.value
+  if (sortBy.value === 'shootingAvg') {
+    return list.sort((a, b) => {
+      const avgA = a.shooting.averageSessionScore
+      const avgB = b.shooting.averageSessionScore
+      if (avgA === null && avgB === null) {
+        return a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' })
+      }
+      if (avgA === null) return 1
+      if (avgB === null) return -1
+      if (avgB !== avgA) return avgB - avgA
+      return a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' })
+    })
+  }
+
   return list.sort((a, b) => {
-    const rateA = shotSuccessRate(a[field])
-    const rateB = shotSuccessRate(b[field])
-    if (rateA === null && rateB === null) {
+    const bestA = a.shooting.bestSessionScore
+    const bestB = b.shooting.bestSessionScore
+    if (bestA === null && bestB === null) {
       return a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' })
     }
-    if (rateA === null) return 1
-    if (rateB === null) return -1
-    if (rateB !== rateA) return rateB - rateA
-    const avgA = a[field].average ?? Number.NEGATIVE_INFINITY
-    const avgB = b[field].average ?? Number.NEGATIVE_INFINITY
-    if (avgB !== avgA) return avgB - avgA
+    if (bestA === null) return 1
+    if (bestB === null) return -1
+    if (bestB !== bestA) return bestB - bestA
     return a.lastName.localeCompare(b.lastName, undefined, { sensitivity: 'base' })
   })
 })
@@ -308,17 +331,13 @@ const sortedPlayers = computed(() => {
 async function load(): Promise<void> {
   loading.value = true
   try {
-    const res = await coachService.listPlayers(queryParams(), natureFilter.value)
+    const res = await coachService.listPlayers(queryParams(), 'all', coachSpaceQuery.value)
     players.value = res.items
-    clubName.value = res.clubName
+    contextSubtitle.value =
+      res.selectionGlobaleName ?? res.clubName ?? contextSubtitle.value
   } finally {
     loading.value = false
   }
-}
-
-function setNatureFilter(value: MatchNature | 'all'): void {
-  natureFilter.value = value
-  void load()
 }
 
 function onFiltersChange(): void {
@@ -332,23 +351,17 @@ function playerDetailQuery(): Record<string, string> {
     query.from = dateFrom.value
     query.to = dateTo.value
   }
-  if (natureFilter.value !== 'all') {
-    query.nature = natureFilter.value
-  }
   return query
 }
 
-function formatMastersLine(summary: CoachPlayerShotSummary): string | null {
-  if (summary.successCount === null || summary.totalCount === null || summary.totalCount === 0) {
-    return null
-  }
-  return `(${summary.successCount}/${summary.totalCount})`
-}
-
 function openPlayer(playerId: number): void {
+  const params: Record<string, string | number> = { id: playerId }
+  if (selectionGlobaleId.value) {
+    params.selectionId = selectionGlobaleId.value
+  }
   router.push({
-    name: 'coachPlayer',
-    params: { id: playerId },
+    name: playerDetailRouteName.value,
+    params,
     query: playerDetailQuery(),
   })
 }
@@ -365,7 +378,7 @@ function resetAddForm(): void {
 }
 
 function searchPlayersWithoutClub(query: string): Promise<Player[]> {
-  return coachService.searchAvailablePlayers(query)
+  return coachService.searchAvailablePlayers(query, coachSpaceQuery.value)
 }
 
 async function submitAttachPlayer(): Promise<void> {
@@ -376,12 +389,20 @@ async function submitAttachPlayer(): Promise<void> {
   attachSubmitting.value = true
   attachFormError.value = ''
   try {
-    await coachService.attachPlayer(selectedPlayer.value.id)
+    await coachService.attachPlayer(selectedPlayer.value.id, coachSpaceQuery.value)
     addDialog.value = false
-    toast.add({ severity: 'success', summary: t('coach.addPlayer.attachSuccess'), life: 2000 })
+    toast.add({
+      severity: 'success',
+      summary: isSelectionSpace.value
+        ? t('selectionGlobale.addPlayer.attachSuccess')
+        : t('coach.addPlayer.attachSuccess'),
+      life: 2000,
+    })
     await load()
   } catch {
-    attachFormError.value = t('coach.addPlayer.attachError')
+    attachFormError.value = isSelectionSpace.value
+      ? t('selectionGlobale.addPlayer.attachError')
+      : t('coach.addPlayer.attachError')
   } finally {
     attachSubmitting.value = false
   }
@@ -402,13 +423,20 @@ async function submitAddPlayer(): Promise<void> {
   addSubmitting.value = true
   addFormError.value = ''
   try {
-    await coachService.createPlayer({
-      firstName: addForm.firstName.trim(),
-      lastName: addForm.lastName.trim(),
-      nickname: addForm.nickname.trim() || undefined,
-    })
+    await coachService.createPlayer(
+      {
+        firstName: addForm.firstName.trim(),
+        lastName: addForm.lastName.trim(),
+        nickname: addForm.nickname.trim() || undefined,
+      },
+      coachSpaceQuery.value,
+    )
     addDialog.value = false
-    toast.add({ severity: 'success', summary: t('coach.addPlayer.success'), life: 2000 })
+    toast.add({
+      severity: 'success',
+      summary: isSelectionSpace.value ? t('selectionGlobale.addPlayer.success') : t('coach.addPlayer.success'),
+      life: 2000,
+    })
     await load()
   } catch {
     addFormError.value = t('coach.addPlayer.error')
@@ -568,10 +596,17 @@ onMounted(() => {
   gap: 0.375rem;
 }
 
-.stat-masters {
-  font-size: 0.8125rem;
-  color: var(--app-text-muted);
+.stat-best {
+  font-size: 0.875rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+.stat-sessions {
+  font-size: 0.6875rem;
+  color: var(--app-text-muted);
+  text-align: right;
+  margin-top: 0.125rem;
 }
 
 .stat-empty {

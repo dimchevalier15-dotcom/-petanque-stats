@@ -26,6 +26,7 @@
     "history": "Historique",
     "newMatch": "Nouveau match",
     "coach": "Coach",
+    "selectionGlobale": "Sélection",
     "stats": "Stats",
     "back": "Retour"
   },
@@ -649,7 +650,8 @@
       "impersonate": "Impersonate",
       "competitions": "Compétitions",
       "clubs": "Clubs",
-      "coach": "Coaches"
+      "coach": "Coaches",
+      "selectionGlobale": "Sélections globales"
     },
     "impersonate": {
       "title": "Mode impersonate",
@@ -740,6 +742,53 @@
         "emailRequired": "L'email est obligatoire.",
         "saveFailed": "Impossible de mettre à jour les droits coach."
       }
+    },
+    "selectionGlobale": {
+      "title": "Sélections globales",
+      "addTitle": "Nouvelle sélection",
+      "editTitle": "Modifier la sélection",
+      "manageTitle": "Gérer {name}",
+      "coachesTitle": "Coaches",
+      "playersTitle": "Joueurs",
+      "noCoaches": "Aucun coach assigné.",
+      "noPlayers": "Aucun joueur dans la sélection.",
+      "coachEmail": "Email du coach",
+      "addPlayer": "Ajouter un joueur",
+      "playerSearch": "Rechercher un joueur (3 car. min.)",
+      "loading": "Chargement…",
+      "empty": "Aucune sélection globale.",
+      "fields": {
+        "name": "Nom de la sélection"
+      },
+      "validations": {
+        "required": "Ce champ est obligatoire."
+      },
+      "actions": {
+        "add": "Créer",
+        "save": "Enregistrer",
+        "cancelEdit": "Annuler",
+        "manage": "Gérer",
+        "delete": "Supprimer",
+        "addCoach": "Ajouter le coach"
+      },
+      "errors": {
+        "saveFailed": "Impossible d'enregistrer la sélection."
+      }
+    }
+  },
+  "selectionGlobale": {
+    "title": "Sélection globale",
+    "empty": "Aucune sélection ne vous est assignée.",
+    "addPlayer": {
+      "title": "Ajouter un joueur à la sélection",
+      "hint": "Le joueur sera ajouté à {selection}.",
+      "searchTitle": "Joueur existant",
+      "searchEmpty": "Aucun joueur ne correspond.",
+      "attach": "Ajouter à la sélection",
+      "attachSuccess": "Joueur ajouté à la sélection.",
+      "attachError": "Impossible d'ajouter ce joueur à la sélection.",
+      "createSubmit": "Créer et ajouter à la sélection",
+      "success": "Joueur créé et ajouté à la sélection."
     }
   },
   "coach": {
@@ -749,7 +798,12 @@
       "sort": "Tri",
       "sortName": "Nom",
       "sortPoint": "Réussite point",
-      "sortTir": "Réussite tir"
+      "sortTir": "Réussite tir",
+      "sortShootingAvg": "Moy. tir précision",
+      "sortShootingBest": "Meilleur tir précision",
+      "shootingAverage": "Moy.",
+      "shootingBest": "Record",
+      "shootingSessions": "{n} séance(s)"
     },
     "addPlayer": {
       "action": "Ajouter un joueur",
@@ -775,7 +829,11 @@
       "noStats": "Aucune donnée sur la période sélectionnée.",
       "historyLink": "Historique des matchs",
       "historySubtitle": "Historique des matchs",
+      "trainingComingSoon": "Les statistiques d'entraînement arrivent bientôt.",
       "tabs": {
+        "shooting": "Tir de précision",
+        "training": "Entraînement",
+        "matches": "Matchs",
         "stats": "Statistiques",
         "history": "Matchs"
       }

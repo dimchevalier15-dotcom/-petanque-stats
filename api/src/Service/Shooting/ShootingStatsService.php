@@ -38,6 +38,15 @@ final class ShootingStatsService
         if ($playerId === null) {
             return $this->emptyResponse();
         }
+
+        return $this->statsForPlayerId($playerId, $contextNature, $dateRange);
+    }
+
+    public function statsForPlayerId(
+        int $playerId,
+        ?ShootingContextNature $contextNature = null,
+        ?DateRange $dateRange = null,
+    ): ShootingStatsResponse {
         $sessionsCount = $this->sessions->countCompletedForPlayer($playerId, $contextNature, $dateRange);
 
         if ($sessionsCount === 0) {

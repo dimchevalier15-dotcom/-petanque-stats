@@ -17,11 +17,12 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { useIsCoach } from '../../composables/useIsCoach'
+import { useIsCoach, useIsSelectionGlobaleCoach } from '../../composables/useIsCoach'
 
 const { t } = useI18n()
 const route = useRoute()
 const isCoach = useIsCoach()
+const isSelectionGlobaleCoach = useIsSelectionGlobaleCoach()
 
 const navItems = computed(() => {
   const items = [
@@ -32,6 +33,9 @@ const navItems = computed(() => {
 
   if (isCoach.value) {
     items.push({ name: 'coachPlayers', icon: 'pi pi-users', labelKey: 'nav.coach' })
+  }
+  if (isSelectionGlobaleCoach.value) {
+    items.push({ name: 'selectionGlobaleHub', icon: 'pi pi-flag', labelKey: 'nav.selectionGlobale' })
   }
 
   return items
@@ -44,6 +48,9 @@ const navStyle = computed(() => ({
 function isActive(name: string): boolean {
   if (name === 'coachPlayers') {
     return typeof route.name === 'string' && route.name.startsWith('coach')
+  }
+  if (name === 'selectionGlobaleHub') {
+    return typeof route.name === 'string' && String(route.name).startsWith('selectionGlobale')
   }
 
   return route.name === name

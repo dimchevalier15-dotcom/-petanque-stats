@@ -9,6 +9,7 @@ use App\Dto\Request\CreatePlayerRequest;
 use App\Enum\DistanceBucket;
 use App\Enum\GameType;
 use App\Enum\MatchNature;
+use App\Enum\ShootingContextNature;
 use App\Http\CoachDateRangeResolver;
 use App\Service\Auth\CurrentUserService;
 use App\Service\Auth\InvalidTokenException;
@@ -16,10 +17,14 @@ use App\Service\CoachAccessService;
 use App\Service\CoachService;
 use App\Service\MatchHistoryService;
 use App\Service\PlayerAlreadyHasClubException;
+use App\Service\PlayerAlreadyInSelectionGlobaleException;
 use App\Service\PlayerNotFoundException;
+use App\Service\SelectionGlobaleNotFoundException;
+use App\Service\SelectionGlobaleService;
 use App\Service\PlayerService;
 use App\Service\PlayerStatsService;
 use App\Service\PlayerTacticalInsightsService;
+use App\Service\Shooting\ShootingStatsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,19 +38,31 @@ final class CoachController extends AbstractController
         private CurrentUserService $currentUser,
         private CoachAccessService $coachAccess,
         private CoachService $coachService,
+        private SelectionGlobaleService $selectionGlobaleService,
         private PlayerStatsService $playerStatsService,
         private PlayerTacticalInsightsService $playerTacticalInsightsService,
         private MatchHistoryService $matchHistoryService,
+        private ShootingStatsService $shootingStatsService,
         private PlayerService $playerService,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {
     }
 
+    #[Route('/api/coach/selections-globales', name: 'api_coach_selections_globales', methods: ['GET'])]
+    public function listSelectionGlobales(Request $request): JsonResponse
+    {
+        $user = $this->requireAuthenticatedUser($request);
+        $items = $this->selectionGlobaleService->listForCoach($user);
+        $json = $this->serializer->serialize($items, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
     #[Route('/api/coach/players', name: 'api_coach_players', methods: ['GET'])]
     public function listPlayers(Request $request): JsonResponse
     {
-        $user = $this->requireCoachUser($request);
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
         try {
             $dateRange = CoachDateRangeResolver::fromRequest($request);
         } catch (\InvalidArgumentException $e) {
@@ -57,7 +74,15 @@ final class CoachController extends AbstractController
             return new JsonResponse(['message' => 'Invalid nature filter.'], 400);
         }
 
-        $res = $this->coachService->listPlayersForCoach($user, $dateRange, $nature);
+        if ($selectionGlobaleId !== null) {
+            try {
+                $res = $this->coachService->listPlayersForSelectionGlobaleCoach($user, $selectionGlobaleId, $dateRange, $nature);
+            } catch (SelectionGlobaleNotFoundException) {
+                return new JsonResponse(['message' => 'Selection globale not found.'], 404);
+            }
+        } else {
+            $res = $this->coachService->listPlayersForCoach($user, $dateRange, $nature);
+        }
         $json = $this->serializer->serialize($res, 'json');
 
         return new JsonResponse($json, 200, [], true);
@@ -66,8 +91,7 @@ final class CoachController extends AbstractController
     #[Route('/api/coach/players', name: 'api_coach_players_create', methods: ['POST'])]
     public function createPlayer(Request $request): JsonResponse
     {
-        $user = $this->requireCoachUser($request);
-        $clubId = $this->coachAccess->requireCoachClubId($user);
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
 
         /** @var CreateCoachPlayerRequest $input */
         $input = $this->serializer->deserialize($request->getContent(), CreateCoachPlayerRequest::class, 'json');
@@ -80,6 +104,25 @@ final class CoachController extends AbstractController
 
             return new JsonResponse(['errors' => $errors], 400);
         }
+
+        if ($selectionGlobaleId !== null) {
+            try {
+                $item = $this->coachService->createPlayerForSelectionGlobale(
+                    $user,
+                    $selectionGlobaleId,
+                    trim($input->firstName),
+                    trim($input->lastName),
+                    $input->nickname !== null && trim($input->nickname) !== '' ? trim($input->nickname) : null,
+                );
+            } catch (SelectionGlobaleNotFoundException) {
+                return new JsonResponse(['message' => 'Selection globale not found.'], 404);
+            }
+            $json = $this->serializer->serialize($item, 'json');
+
+            return new JsonResponse($json, 201, [], true);
+        }
+
+        $clubId = $this->coachAccess->requireCoachClubId($user);
 
         $createRequest = new CreatePlayerRequest();
         $createRequest->firstName = trim($input->firstName);
@@ -103,9 +146,13 @@ final class CoachController extends AbstractController
     #[Route('/api/coach/players/available', name: 'api_coach_players_available', methods: ['GET'])]
     public function searchAvailablePlayers(Request $request): JsonResponse
     {
-        $this->requireCoachUser($request);
+        [, $selectionGlobaleId] = $this->requireCoachContext($request);
         $q = trim((string) $request->query->get('q', ''));
-        $items = $this->coachService->searchPlayersWithoutClub($q);
+        if ($selectionGlobaleId !== null) {
+            $items = $this->coachService->searchPlayersForSelectionAttach($q, $selectionGlobaleId);
+        } else {
+            $items = $this->coachService->searchPlayersWithoutClub($q);
+        }
         $json = $this->serializer->serialize($items, 'json');
 
         return new JsonResponse($json, 200, [], true);
@@ -114,14 +161,22 @@ final class CoachController extends AbstractController
     #[Route('/api/coach/players/{id}/attach', name: 'api_coach_player_attach', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function attachPlayer(int $id, Request $request): JsonResponse
     {
-        $user = $this->requireCoachUser($request);
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
 
         try {
-            $item = $this->coachService->attachPlayerToCoachClub($user, $id);
+            if ($selectionGlobaleId !== null) {
+                $item = $this->coachService->attachPlayerToSelectionGlobale($user, $selectionGlobaleId, $id);
+            } else {
+                $item = $this->coachService->attachPlayerToCoachClub($user, $id);
+            }
         } catch (PlayerNotFoundException) {
             return new JsonResponse(['message' => 'Player not found.'], 404);
         } catch (PlayerAlreadyHasClubException) {
             return new JsonResponse(['message' => 'Player already belongs to a club.'], 409);
+        } catch (PlayerAlreadyInSelectionGlobaleException) {
+            return new JsonResponse(['message' => 'Player already in selection.'], 409);
+        } catch (SelectionGlobaleNotFoundException) {
+            return new JsonResponse(['message' => 'Selection globale not found.'], 404);
         }
 
         $json = $this->serializer->serialize($item, 'json');
@@ -129,11 +184,34 @@ final class CoachController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
+    #[Route('/api/coach/players/{id}/shooting/stats', name: 'api_coach_player_shooting_stats', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function playerShootingStats(int $id, Request $request): JsonResponse
+    {
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
+        $this->coachAccess->assertCoachCanViewPlayer($user, $id, $selectionGlobaleId);
+
+        try {
+            $dateRange = CoachDateRangeResolver::fromRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 400);
+        }
+
+        $shootingNature = $this->parseShootingNature($request);
+        if ($shootingNature === false) {
+            return new JsonResponse(['message' => 'Invalid nature filter.'], 400);
+        }
+
+        $res = $this->shootingStatsService->statsForPlayerId($id, $shootingNature, $dateRange);
+        $json = $this->serializer->serialize($res, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
     #[Route('/api/coach/players/{id}/stats', name: 'api_coach_player_stats', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function playerStats(int $id, Request $request): JsonResponse
     {
-        $user = $this->requireCoachUser($request);
-        $player = $this->coachAccess->assertCoachCanViewPlayer($user, $id);
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
+        $player = $this->coachAccess->assertCoachCanViewPlayer($user, $id, $selectionGlobaleId);
 
         try {
             $dateRange = CoachDateRangeResolver::fromRequest($request);
@@ -183,8 +261,8 @@ final class CoachController extends AbstractController
     #[Route('/api/coach/players/{id}/stats/tactical-insights', name: 'api_coach_player_tactical_insights', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function playerTacticalInsights(int $id, Request $request): JsonResponse
     {
-        $user = $this->requireCoachUser($request);
-        $this->coachAccess->assertCoachCanViewPlayer($user, $id);
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
+        $this->coachAccess->assertCoachCanViewPlayer($user, $id, $selectionGlobaleId);
 
         try {
             $dateRange = CoachDateRangeResolver::fromRequest($request);
@@ -228,8 +306,8 @@ final class CoachController extends AbstractController
     #[Route('/api/coach/players/{id}/matches/history', name: 'api_coach_player_history', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function playerHistory(int $id, Request $request): JsonResponse
     {
-        $user = $this->requireCoachUser($request);
-        $this->coachAccess->assertCoachCanViewPlayer($user, $id);
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
+        $this->coachAccess->assertCoachCanViewPlayer($user, $id, $selectionGlobaleId);
 
         $page = max(1, (int) $request->query->get('page', 1));
         $pageSize = min(50, max(1, (int) $request->query->get('pageSize', 20)));
@@ -240,7 +318,7 @@ final class CoachController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
-    private function requireCoachUser(Request $request): \App\Entity\User
+    private function requireAuthenticatedUser(Request $request): \App\Entity\User
     {
         $authHeader = (string) $request->headers->get('Authorization', '');
         if (!str_starts_with($authHeader, 'Bearer ')) {
@@ -249,16 +327,48 @@ final class CoachController extends AbstractController
 
         $token = substr($authHeader, 7);
         try {
-            $user = $this->currentUser->getUserFromToken($token);
+            return $this->currentUser->getUserFromToken($token);
         } catch (InvalidTokenException) {
             throw $this->createAccessDeniedException();
+        }
+    }
+
+    /**
+     * @return array{0:\App\Entity\User,1:int|null}
+     */
+    private function requireCoachContext(Request $request): array
+    {
+        $user = $this->requireAuthenticatedUser($request);
+        $selectionGlobaleId = $this->parseSelectionGlobaleId($request);
+        if ($selectionGlobaleId === false) {
+            throw new \Symfony\Component\HttpKernel\Exception\BadRequestHttpException('Invalid selectionGlobaleId filter.');
+        }
+
+        if ($selectionGlobaleId !== null) {
+            $this->coachAccess->assertUserCoachesSelection($user, $selectionGlobaleId);
+
+            return [$user, $selectionGlobaleId];
         }
 
         if (!$user->isCoach()) {
             throw $this->createAccessDeniedException();
         }
 
-        return $user;
+        return [$user, null];
+    }
+
+    private function parseSelectionGlobaleId(Request $request): int|null|false
+    {
+        $param = $request->query->get('selectionGlobaleId');
+        if ($param === null || $param === '') {
+            return null;
+        }
+
+        if (!is_numeric($param) || (int) $param <= 0) {
+            return false;
+        }
+
+        return (int) $param;
     }
 
     private function parseNature(Request $request): MatchNature|null|false
@@ -269,6 +379,16 @@ final class CoachController extends AbstractController
         }
 
         return MatchNature::tryFrom((string) $natureParam) ?? false;
+    }
+
+    private function parseShootingNature(Request $request): ShootingContextNature|null|false
+    {
+        $natureParam = $request->query->get('nature');
+        if ($natureParam === null || $natureParam === '' || $natureParam === 'all') {
+            return null;
+        }
+
+        return ShootingContextNature::tryFrom((string) $natureParam) ?? false;
     }
 
     private function parseType(Request $request): GameType|null|false

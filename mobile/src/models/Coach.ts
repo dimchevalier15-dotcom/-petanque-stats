@@ -4,6 +4,12 @@ export interface CoachPlayerShotSummary {
   totalCount: number | null
 }
 
+export interface CoachPlayerShootingSummary {
+  sessionsCount: number
+  averageSessionScore: number | null
+  bestSessionScore: number | null
+}
+
 export interface CoachPlayerListItem {
   id: number
   firstName: string
@@ -11,11 +17,14 @@ export interface CoachPlayerListItem {
   nickname: string
   point: CoachPlayerShotSummary
   tir: CoachPlayerShotSummary
+  shooting: CoachPlayerShootingSummary
 }
 
 export interface CoachPlayerList {
-  clubId: number
-  clubName: string
+  clubId: number | null
+  clubName: string | null
+  selectionGlobaleId: number | null
+  selectionGlobaleName: string | null
   from: string | null
   to: string | null
   items: CoachPlayerListItem[]

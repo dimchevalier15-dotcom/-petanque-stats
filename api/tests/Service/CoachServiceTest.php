@@ -7,6 +7,9 @@ namespace App\Tests\Service;
 use App\Entity\Club;
 use App\Entity\Country;
 use App\Entity\Player;
+use App\Entity\SelectionGlobale;
+use App\Entity\SelectionGlobaleCoach;
+use App\Entity\SelectionGlobalePlayer;
 use App\Entity\User;
 use App\Service\CoachService;
 use App\Service\PlayerAlreadyHasClubException;
@@ -77,6 +80,37 @@ final class CoachServiceTest extends KernelDatabaseTestCase
 
         $this->expectException(PlayerAlreadyHasClubException::class);
         $this->service->attachPlayerToCoachClub($coach, (int) $player->getId());
+    }
+
+    public function testListPlayersForSelectionGlobaleCoachReturnsRoster(): void
+    {
+        [$selection, $coach, $player] = $this->createSelectionCoachWithPlayer();
+
+        $res = $this->service->listPlayersForSelectionGlobaleCoach($coach, (int) $selection->getId(), null);
+
+        self::assertNull($res->clubId);
+        self::assertSame('France A', $res->selectionGlobaleName);
+        self::assertCount(1, $res->items);
+        self::assertSame((int) $player->getId(), $res->items[0]->id);
+    }
+
+    /**
+     * @return array{0:SelectionGlobale,1:User,2:Player}
+     */
+    private function createSelectionCoachWithPlayer(): array
+    {
+        $suffix = bin2hex(random_bytes(4));
+        $selection = new SelectionGlobale('France A');
+        $coach = new User('sel-coach-'.$suffix.'@test.fr');
+        $player = $this->createPlayer('Luc', 'Bernard', '');
+
+        $this->em->persist($selection);
+        $this->em->persist($coach);
+        $this->em->persist(new SelectionGlobaleCoach($selection, $coach));
+        $this->em->persist(new SelectionGlobalePlayer($selection, $player));
+        $this->em->flush();
+
+        return [$selection, $coach, $player];
     }
 
     /**
