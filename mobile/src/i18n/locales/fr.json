@@ -1179,6 +1179,91 @@
       }
     }
   },
+  "pointing": {
+    "home": {
+      "title": "Point de précision",
+      "subtitle": "Enchaînez les 5 ateliers officiels",
+      "newSession": "Nouvelle séance"
+    },
+    "resume": {
+      "title": "Séance en cours",
+      "message": "Vous avez une séance de point de précision non terminée. Voulez-vous la reprendre ?",
+      "continue": "Reprendre",
+      "abandon": "Abandonner"
+    },
+    "progress": "Atelier {current} / {total}",
+    "workshopHint": "Enregistrez le résultat de chaque boule pour valider l'atelier.",
+    "distanceMeters": "{n} m",
+    "score": {
+      "total": "Score total",
+      "workshop": "Score de l'atelier"
+    },
+    "workshops": {
+      "jackAlone": "Cochonnet seul",
+      "ballInFrontOfJack": "Boule devant le cochonnet",
+      "twoBallsInFrontOfJack": "Deux boules devant le cochonnet",
+      "pushBall": "Pousser la boule",
+      "pushJack": "Pousser le cochonnet"
+    },
+    "results": {
+      "w1": {
+        "missed": "Raté",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w2": {
+        "missed": "Raté",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w3": {
+        "missed": "Raté",
+        "p3": "< 40 cm",
+        "p9": "Prend le point",
+        "p15": "Sans gêner"
+      },
+      "w4": {
+        "missed": "Raté cible",
+        "p3": "Touche cible",
+        "p9": "Cible rond",
+        "p15": "Cible + boule"
+      },
+      "w5": {
+        "missed": "Raté",
+        "p3": "Coch. touché",
+        "p9": "Coch. rond",
+        "p15": "Coch. + boule"
+      }
+    },
+    "nav": {
+      "prevWorkshop": "Atelier précédent",
+      "nextWorkshop": "Atelier suivant"
+    },
+    "actions": {
+      "nextWorkshop": "Atelier suivant",
+      "finishSession": "Terminer la séance",
+      "abandon": "Abandonner la séance"
+    },
+    "abandon": {
+      "title": "Abandonner la séance ?",
+      "message": "Les résultats déjà saisis seront perdus. Cette action est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Abandonner"
+    },
+    "summary": {
+      "title": "Résumé de la séance",
+      "sessionFinished": "Séance terminée",
+      "performanceMap": {
+        "title": "Carte de performance",
+        "hint": "Chaque cellule correspond à un tir de cette séance."
+      },
+      "actions": {
+        "backHome": "Retour au point de précision"
+      }
+    }
+  },
   "stats": {
     "title": "Mes statistiques",
     "actions": { "back": "Retour" },
@@ -1425,7 +1510,7 @@
       },
       "pointPrecision": {
         "title": "Point de précision",
-        "description": "Exercice dédié au point — bientôt disponible."
+        "description": "Cinq ateliers PLAS, score sur 300 points."
       },
       "tirSautee": {
         "title": "Tir à la sautée",

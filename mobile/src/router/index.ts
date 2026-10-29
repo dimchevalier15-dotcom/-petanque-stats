@@ -159,8 +159,20 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/training/point-precision',
     name: 'trainingPointPrecision',
-    component: () => import('../views/TrainingExercisePlaceholderView.vue'),
-    meta: { layout: 'main', trainingExercise: 'pointPrecision' },
+    component: () => import('../views/PointingHomeView.vue'),
+    meta: { layout: 'main' },
+  },
+  {
+    path: '/training/point-precision/:id',
+    name: 'pointingSession',
+    component: () => import('../views/PointingSessionView.vue'),
+    meta: { layout: 'main' },
+  },
+  {
+    path: '/training/point-precision/:id/summary',
+    name: 'pointingSessionSummary',
+    component: () => import('../views/PointingSessionSummaryView.vue'),
+    meta: { layout: 'focus' },
   },
   {
     path: '/training/tir-sautee',

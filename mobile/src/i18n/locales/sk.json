@@ -1131,6 +1131,91 @@
       }
     }
   },
+  "pointing": {
+    "home": {
+      "title": "Presný point",
+      "subtitle": "5 oficiálnych staníc za sebou",
+      "newSession": "Nové kolo"
+    },
+    "resume": {
+      "title": "Prebiehajúce kolo",
+      "message": "Máte nedokončené kolo presného pointu. Chcete pokračovať?",
+      "continue": "Pokračovať",
+      "abandon": "Zrušiť"
+    },
+    "progress": "Stanica {current} / {total}",
+    "workshopHint": "Zaznamenajte výsledok každej gule na dokončenie stanice.",
+    "distanceMeters": "{n} m",
+    "score": {
+      "total": "Celkové skóre",
+      "workshop": "Skóre stanice"
+    },
+    "workshops": {
+      "jackAlone": "Cieľik sám",
+      "ballInFrontOfJack": "Guľa pred cieľikom",
+      "twoBallsInFrontOfJack": "Dve gule pred cieľikom",
+      "pushBall": "Tlačenie gule",
+      "pushJack": "Tlačenie cieľika"
+    },
+    "results": {
+      "w1": {
+        "missed": "Minuté",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w2": {
+        "missed": "Minuté",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w3": {
+        "missed": "Minuté",
+        "p3": "< 40 cm",
+        "p9": "Berie bod",
+        "p15": "Bez prekážky"
+      },
+      "w4": {
+        "missed": "Minuté",
+        "p3": "Dotkne cieľ",
+        "p9": "Cieľ v kruhu",
+        "p15": "Cieľ + guľa"
+      },
+      "w5": {
+        "missed": "Minuté",
+        "p3": "Cieľik dotk.",
+        "p9": "Cieľik v kruhu",
+        "p15": "Cieľik + guľa"
+      }
+    },
+    "nav": {
+      "prevWorkshop": "Predchádzajúca stanica",
+      "nextWorkshop": "Ďalšia stanica"
+    },
+    "actions": {
+      "nextWorkshop": "Ďalšia stanica",
+      "finishSession": "Ukončiť kolo",
+      "abandon": "Zrušiť kolo"
+    },
+    "abandon": {
+      "title": "Zrušiť kolo?",
+      "message": "Zadané výsledky sa stratia. Túto akciu nemožno vrátiť.",
+      "cancel": "Späť",
+      "confirm": "Zrušiť"
+    },
+    "summary": {
+      "title": "Súhrn kola",
+      "sessionFinished": "Kolo ukončené",
+      "performanceMap": {
+        "title": "Mapa výkonu",
+        "hint": "Každá bunka zodpovedá jednému hodu v tomto kole."
+      },
+      "actions": {
+        "backHome": "Späť na presný point"
+      }
+    }
+  },
   "stats": {
     "title": "Moje štatistiky",
     "actions": { "back": "Späť" },
@@ -1357,7 +1442,7 @@
       },
       "pointPrecision": {
         "title": "Presný bod",
-        "description": "Cvičenie na bod — čoskoro."
+        "description": "5 staníc PLAS, skóre do 300 bodov."
       },
       "tirSautee": {
         "title": "Streľba v skoku",

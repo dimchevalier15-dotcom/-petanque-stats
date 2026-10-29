@@ -1179,6 +1179,91 @@
       }
     }
   },
+  "pointing": {
+    "home": {
+      "title": "Precision pointing",
+      "subtitle": "Complete the 5 official workshops",
+      "newSession": "New session"
+    },
+    "resume": {
+      "title": "Session in progress",
+      "message": "You have an unfinished precision pointing session. Resume it?",
+      "continue": "Resume",
+      "abandon": "Discard"
+    },
+    "progress": "Workshop {current} / {total}",
+    "workshopHint": "Record each shot result to complete the workshop.",
+    "distanceMeters": "{n} m",
+    "score": {
+      "total": "Total score",
+      "workshop": "Workshop score"
+    },
+    "workshops": {
+      "jackAlone": "Jack alone",
+      "ballInFrontOfJack": "Ball in front of jack",
+      "twoBallsInFrontOfJack": "Two balls in front of jack",
+      "pushBall": "Push the ball",
+      "pushJack": "Push the jack"
+    },
+    "results": {
+      "w1": {
+        "missed": "Miss",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w2": {
+        "missed": "Miss",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w3": {
+        "missed": "Miss",
+        "p3": "< 40 cm",
+        "p9": "Takes point",
+        "p15": "No hindrance"
+      },
+      "w4": {
+        "missed": "Miss target",
+        "p3": "Touch target",
+        "p9": "Target in ring",
+        "p15": "Target + ball"
+      },
+      "w5": {
+        "missed": "Miss",
+        "p3": "Jack touched",
+        "p9": "Jack in ring",
+        "p15": "Jack + ball"
+      }
+    },
+    "nav": {
+      "prevWorkshop": "Previous workshop",
+      "nextWorkshop": "Next workshop"
+    },
+    "actions": {
+      "nextWorkshop": "Next workshop",
+      "finishSession": "Finish session",
+      "abandon": "Abandon session"
+    },
+    "abandon": {
+      "title": "Abandon session?",
+      "message": "Entered results will be lost. This cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Abandon"
+    },
+    "summary": {
+      "title": "Session summary",
+      "sessionFinished": "Session complete",
+      "performanceMap": {
+        "title": "Performance map",
+        "hint": "Each cell is one shot from this session."
+      },
+      "actions": {
+        "backHome": "Back to precision pointing"
+      }
+    }
+  },
   "stats": {
     "title": "My statistics",
     "actions": { "back": "Back" },
@@ -1400,7 +1485,7 @@
       },
       "pointPrecision": {
         "title": "Precision pointing",
-        "description": "Dedicated pointing drill — coming soon."
+        "description": "Five PLAS workshops, scored out of 300."
       },
       "tirSautee": {
         "title": "Jump shot",
