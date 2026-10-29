@@ -323,7 +323,6 @@ defineExpose({ reload: load })
   display: flex;
   flex-direction: column;
   gap: var(--app-space-sm);
-  padding-top: var(--app-space-sm);
 }
 
 .nature-filter {
