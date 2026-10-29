@@ -831,9 +831,13 @@
       "historySubtitle": "Historique des matchs",
       "trainingComingSoon": "Les statistiques d'entraînement arrivent bientôt.",
       "tabs": {
+        "label": "Sections du joueur",
         "shooting": "Tir de précision",
+        "shootingShort": "Tir préc.",
         "training": "Entraînement",
+        "trainingShort": "Entraîn.",
         "matches": "Matchs",
+        "matchesShort": "Matchs",
         "stats": "Statistiques",
         "history": "Matchs"
       }

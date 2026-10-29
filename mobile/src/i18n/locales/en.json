@@ -831,9 +831,13 @@
       "historySubtitle": "Match history",
       "trainingComingSoon": "Training statistics are coming soon.",
       "tabs": {
+        "label": "Player sections",
         "shooting": "Precision shooting",
+        "shootingShort": "Shooting",
         "training": "Training",
+        "trainingShort": "Training",
         "matches": "Matches",
+        "matchesShort": "Matches",
         "stats": "Statistics",
         "history": "Matches"
       }

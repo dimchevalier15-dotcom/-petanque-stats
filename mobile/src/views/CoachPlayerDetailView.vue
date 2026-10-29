@@ -1,39 +1,56 @@
 <template>
-  <AppPage>
+  <AppPage class="coach-player-page">
     <PageHeader
       :title="playerTitle"
-      :subtitle="t('coach.player.subtitle')"
+      :show-back="true"
       :back-to="playersListBackTo"
+      class="coach-player-header"
     />
 
-    <TabView v-model:active-index="activeTab" class="coach-player-tabs">
-      <TabPanel :header="t('coach.player.tabs.shooting')">
-        <ShootingStatsPanel :fetch-stats="fetchCoachPlayerShootingStats" />
-      </TabPanel>
-      <TabPanel :header="t('coach.player.tabs.training')">
-        <EmptyState
-          :title="t('coach.player.trainingComingSoon')"
-          icon="pi pi-wrench"
-        />
-      </TabPanel>
-      <TabPanel :header="t('coach.player.tabs.matches')">
-        <div class="history-link-row">
-          <RouterLink :to="historyLinkTo" class="history-link">
-            <i class="pi pi-history" aria-hidden="true" />
-            {{ t('coach.player.historyLink') }}
-          </RouterLink>
-        </div>
-        <PlayerStatsPanel
-          :fetch-stats="fetchCoachPlayerStats"
-          :fetch-tactical-insights="fetchCoachPlayerTacticalInsights"
-          :show-empty-actions="false"
-          :initial-nature="initialNature"
-          :initial-from="initialFrom"
-          :initial-to="initialTo"
-          @stats-loaded="onStatsLoaded"
-        />
-      </TabPanel>
-    </TabView>
+    <nav class="coach-segments" role="tablist" :aria-label="t('coach.player.tabs.label')">
+      <div class="coach-segments-track">
+        <button
+          v-for="tab in tabs"
+          :key="tab.id"
+          type="button"
+          role="tab"
+          class="coach-segment"
+          :class="{ 'coach-segment--active': activeTab === tab.id }"
+          :aria-selected="activeTab === tab.id"
+          @click="activeTab = tab.id"
+        >
+          <i :class="tab.icon" aria-hidden="true" />
+          <span>{{ tab.label }}</span>
+        </button>
+      </div>
+    </nav>
+
+    <div v-show="activeTab === 'shooting'" class="coach-tab-panel">
+      <ShootingStatsPanel :fetch-stats="fetchCoachPlayerShootingStats" class="coach-stats-panel" />
+    </div>
+
+    <div v-show="activeTab === 'training'" class="coach-tab-panel">
+      <EmptyState :title="t('coach.player.trainingComingSoon')" icon="pi pi-wrench" />
+    </div>
+
+    <div v-show="activeTab === 'matches'" class="coach-tab-panel">
+      <div class="history-link-row">
+        <RouterLink :to="historyLinkTo" class="history-link">
+          <i class="pi pi-history" aria-hidden="true" />
+          {{ t('coach.player.historyLink') }}
+        </RouterLink>
+      </div>
+      <PlayerStatsPanel
+        :fetch-stats="fetchCoachPlayerStats"
+        :fetch-tactical-insights="fetchCoachPlayerTacticalInsights"
+        :show-empty-actions="false"
+        :initial-nature="initialNature"
+        :initial-from="initialFrom"
+        :initial-to="initialTo"
+        class="coach-stats-panel"
+        @stats-loaded="onStatsLoaded"
+      />
+    </div>
   </AppPage>
 </template>
 
@@ -41,8 +58,6 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import TabPanel from 'primevue/tabpanel'
-import TabView from 'primevue/tabview'
 import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
@@ -56,6 +71,8 @@ import type { PlayerStats } from '../models/PlayerStats'
 import type { ShootingContextNature, ShootingStats } from '../models/Shooting'
 import { coachService } from '../services/coach'
 
+type CoachPlayerTab = 'shooting' | 'training' | 'matches'
+
 const { t } = useI18n()
 const route = useRoute()
 const {
@@ -65,7 +82,13 @@ const {
 } = useCoachSpaceFromRoute()
 
 const playerId = Number(route.params.id)
-const activeTab = ref(0)
+const activeTab = ref<CoachPlayerTab>('shooting')
+
+const tabs = computed(() => [
+  { id: 'shooting' as const, icon: 'pi pi-bullseye', label: t('coach.player.tabs.shootingShort') },
+  { id: 'training' as const, icon: 'pi pi-wrench', label: t('coach.player.tabs.trainingShort') },
+  { id: 'matches' as const, icon: 'pi pi-chart-line', label: t('coach.player.tabs.matchesShort') },
+])
 
 const coachSpaceQuery = computed(() =>
   selectionGlobaleId.value ? { selectionGlobaleId: selectionGlobaleId.value } : undefined,
@@ -146,27 +169,127 @@ function onStatsLoaded(stats: PlayerStats): void {
 </script>
 
 <style scoped>
-.coach-player-tabs :deep(.p-tabview-panels) {
-  padding: var(--app-space-sm) 0 0;
+.coach-player-page {
+  min-width: 0;
+  overflow-x: clip;
+  gap: var(--app-space-sm);
+}
+
+.coach-player-header :deep(.page-header) {
+  padding: var(--app-space-xs) var(--app-space-md);
+  min-height: 2.75rem;
+}
+
+.coach-player-header :deep(.title) {
+  font-size: 0.875rem;
+}
+
+.coach-segments {
+  margin: 0;
+  min-width: 0;
+}
+
+.coach-segments-track {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.1875rem;
+  padding: 0.25rem;
+  background: var(--app-surface-muted);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+}
+
+.coach-segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.375rem 0.125rem;
+  border: none;
+  border-radius: calc(var(--app-radius-lg) - 0.25rem);
+  background: transparent;
+  color: var(--app-text-muted);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1.15;
+  text-align: center;
+  cursor: pointer;
+}
+
+.coach-segment span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.coach-segment .pi {
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.coach-segment--active {
+  background: var(--app-surface);
+  color: var(--app-primary);
+  box-shadow: var(--app-shadow-sm);
+}
+
+.coach-tab-panel {
+  min-width: 0;
+}
+
+.coach-stats-panel :deep(.hero-score .p-tag) {
+  font-size: 1.25rem !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
+.coach-stats-panel :deep(.kpi-value) {
+  font-size: 1.125rem;
+}
+
+.coach-stats-panel :deep(.kpi-label) {
+  font-size: 0.625rem;
+}
+
+.coach-stats-panel :deep(.heatmap) {
+  grid-template-columns: minmax(3.25rem, 1fr) repeat(4, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.coach-stats-panel :deep(.heatmap-col-label),
+.coach-stats-panel :deep(.heatmap-row-label) {
+  font-size: 0.5625rem;
+}
+
+.coach-stats-panel :deep(.cell-score) {
+  font-size: 0.75rem;
 }
 
 .history-link-row {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: var(--app-space-sm);
+  margin-bottom: var(--app-space-xs);
 }
 
 .history-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  font-size: 0.875rem;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--app-primary);
   text-decoration: none;
 }
 
-.history-link:hover {
-  text-decoration: underline;
+@media (min-width: 420px) {
+  .coach-segment {
+    flex-direction: row;
+    gap: 0.3125rem;
+    font-size: 0.6875rem;
+    padding: 0.5rem 0.25rem;
+  }
 }
 </style>
