@@ -7,6 +7,8 @@ namespace App\Service\JumpShot;
 use App\Dto\Request\JumpShotThrowInputDto;
 use App\Dto\Request\SubmitJumpShotSeriesRequest;
 use App\Dto\Response\JumpShotSeriesSummaryResponse;
+use App\Dto\Response\JumpShotSessionHistoryItemResponse;
+use App\Dto\Response\JumpShotSessionHistoryResponse;
 use App\Dto\Response\JumpShotSessionStartedResponse;
 use App\Dto\Response\JumpShotSessionSummaryResponse;
 use App\Dto\Response\JumpShotThrowSummaryResponse;
@@ -178,6 +180,34 @@ final class JumpShotSessionService
             session: $this->toSummaryResponse($session),
             restoredThrows: $restoredThrows,
         );
+    }
+
+    public function history(
+        string $token,
+        int $page = 1,
+        int $pageSize = 20,
+        ?int $impersonatePlayerId = null,
+    ): JumpShotSessionHistoryResponse {
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+        if ($context->playerId === null) {
+            return new JumpShotSessionHistoryResponse(page: $page, pageSize: $pageSize, total: 0, items: []);
+        }
+
+        [$total, $sessions] = $this->sessions->findHistoryForPlayer($context->playerId, $page, $pageSize);
+
+        $items = array_map(function (JumpShotSession $session): JumpShotSessionHistoryItemResponse {
+            $seriesCount = $this->series->countForSession($session);
+
+            return new JumpShotSessionHistoryItemResponse(
+                id: (int) $session->getId(),
+                createdAt: $session->getCreatedAt()->format(DATE_ATOM),
+                finishedAt: (string) $session->getFinishedAt()?->format(DATE_ATOM),
+                seriesCount: $seriesCount,
+                totalThrows: $seriesCount * 3,
+            );
+        }, $sessions);
+
+        return new JumpShotSessionHistoryResponse(page: $page, pageSize: $pageSize, total: $total, items: $items);
     }
 
     /**

@@ -193,10 +193,22 @@ const routes: RouteRecordRaw[] = [
     meta: { layout: 'main' },
   },
   {
+    path: '/training/tir-sautee/stats',
+    name: 'jumpShotStats',
+    component: () => import('../views/JumpShotStatsView.vue'),
+    meta: { layout: 'main' },
+  },
+  {
     path: '/training/tir-sautee/rules',
     name: 'jumpShotRules',
     component: () => import('../views/JumpShotRulesView.vue'),
     meta: { layout: 'main' },
+  },
+  {
+    path: '/training/tir-sautee/:id/summary',
+    name: 'jumpShotSessionSummary',
+    component: () => import('../views/JumpShotSessionSummaryView.vue'),
+    meta: { layout: 'focus' },
   },
   {
     path: '/training/tir-sautee/:id/victory',

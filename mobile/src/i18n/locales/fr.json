@@ -838,6 +838,7 @@
         "shooting": "Tir de précision",
         "shootingShort": "Tir préc.",
         "pointingShort": "Point préc.",
+        "jumpShotShort": "Sautée",
         "training": "Entraînement",
         "trainingShort": "Entraîn.",
         "matches": "Matchs",
@@ -1188,7 +1189,12 @@
       "title": "La boule à la sautée",
       "subtitle": "Progressez de 6 à 9 mètres",
       "rules": "Lire les règles",
-      "start": "Commencer l'exercice"
+      "stats": "Statistiques",
+      "start": "Commencer l'exercice",
+      "historyTitle": "Exercices terminés",
+      "empty": "Aucun exercice terminé pour le moment.",
+      "seriesTag": "{n} séries",
+      "throwsMeta": "{n} tirs enregistrés"
     },
     "rules": {
       "title": "Règles",
@@ -1282,6 +1288,60 @@
       "message": "La progression en cours sera perdue.",
       "cancel": "Annuler",
       "confirm": "Abandonner"
+    },
+    "summary": {
+      "title": "Détail de l'exercice",
+      "subtitleWon": "Exercice remporté",
+      "won": "Victoire",
+      "seriesCount": "{n} séries jouées",
+      "seriesTitle": "Série {n} · {distance} m",
+      "specialBadge": "Carreau salvateur",
+      "backHome": "Retour à l'accueil"
+    },
+    "stats": {
+      "title": "Statistiques",
+      "subtitle": "La boule à la sautée",
+      "distanceMeters": "{n} m",
+      "kpi": {
+        "sessions": "Exercices",
+        "fewestSeries": "Record séries",
+        "avgSeries": "Moy. séries"
+      },
+      "hero": {
+        "successRate": "Taux de réussite",
+        "throwsTracked": "{n} tirs analysés"
+      },
+      "insights": {
+        "strength": "Meilleure distance",
+        "toWork": "À travailler"
+      },
+      "sections": {
+        "evolution": "Évolution",
+        "distances": "Par distance",
+        "results": "Types de tir"
+      },
+      "evolution": {
+        "hint": "Nombre de séries par exercice terminé."
+      },
+      "distances": {
+        "hint": "Taux de réussite (hors manqué) par distance de série."
+      },
+      "results": {
+        "hint": "Répartition de tous les tirs enregistrés."
+      },
+      "special": {
+        "title": "Carreau salvateur",
+        "hint": "{n} série(s) avec la règle spéciale appliquée."
+      },
+      "empty": {
+        "loadErrorTitle": "Impossible de charger les statistiques",
+        "retry": "Réessayer",
+        "noSessionsTitle": "Aucun exercice terminé",
+        "noSessionsHint": "Remportez un exercice pour voir vos statistiques.",
+        "startSession": "Commencer un exercice",
+        "noDataInPeriodTitle": "Aucune donnée sur cette période",
+        "noDataInPeriodHint": "Élargissez la plage de dates ou désactivez le filtre."
+      }
     }
   },
   "pointing": {

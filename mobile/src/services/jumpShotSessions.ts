@@ -7,16 +7,23 @@ import type {
   RevertJumpShotLastSeriesResponseDto,
 } from '../dto/jumpShot/JumpShotSessionResponse'
 import type {
+  JumpShotSessionHistoryResponseDto,
+  JumpShotStatsResponseDto,
+} from '../dto/jumpShot/JumpShotStatsResponse'
+import type {
   JumpShotDistance,
+  JumpShotSessionHistoryPage,
   JumpShotSessionStarted,
   JumpShotSessionSummary,
   JumpShotSeriesConsequence,
   JumpShotSeriesSummary,
+  JumpShotStats,
   JumpShotThrowResult,
   JumpShotThrowSummary,
   RevertJumpShotLastSeriesResult,
   SubmitJumpShotSeriesResult,
 } from '../models/JumpShot'
+import type { StatsDateRangeParams } from '../composables/useStatsDateRange'
 
 function mapThrow(dto: { position: number; result: string }): JumpShotThrowSummary {
   return {
@@ -94,6 +101,34 @@ export const jumpShotSessionsService = {
     return {
       session: mapSummary(data.session),
       restoredThrows: data.restoredThrows.map(mapThrow),
+    }
+  },
+
+  async getHistory(page = 1, size = 20): Promise<JumpShotSessionHistoryPage> {
+    const { data } = await api.get<JumpShotSessionHistoryResponseDto>('/jump-shot-sessions/history', {
+      params: { page, size },
+    })
+    return {
+      ...data,
+      items: data.items.map((item) => ({ ...item })),
+    }
+  },
+
+  async getStats(range: StatsDateRangeParams): Promise<JumpShotStats> {
+    const { data } = await api.get<JumpShotStatsResponseDto>('/jump-shot-sessions/stats', { params: range })
+    return {
+      status: data.status,
+      summary: { ...data.summary },
+      evolution: data.evolution.map((p) => ({ ...p })),
+      byDistance: data.byDistance.map((d) => ({
+        distance: d.distance as JumpShotDistance,
+        throwCount: d.throwCount,
+        successRate: d.successRate,
+      })),
+      byResult: data.byResult.map((r) => ({
+        result: r.result as JumpShotThrowResult,
+        count: r.count,
+      })),
     }
   },
 }

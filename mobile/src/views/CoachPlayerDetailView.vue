@@ -33,6 +33,10 @@
       <PointingStatsPanel :fetch-stats="fetchCoachPlayerPointingStats" class="coach-stats-panel" />
     </div>
 
+    <div v-show="activeTab === 'jumpShot'" class="coach-tab-panel">
+      <JumpShotStatsPanel :fetch-stats="fetchCoachPlayerJumpShotStats" class="coach-stats-panel" />
+    </div>
+
     <div v-show="activeTab === 'matches'" class="coach-tab-panel">
       <div class="history-link-row">
         <RouterLink :to="historyLinkTo" class="history-link">
@@ -60,6 +64,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
+import JumpShotStatsPanel from '../components/jumpShot/JumpShotStatsPanel.vue'
 import PointingStatsPanel from '../components/pointing/PointingStatsPanel.vue'
 import ShootingStatsPanel from '../components/shooting/ShootingStatsPanel.vue'
 import PlayerStatsPanel from '../components/stats/PlayerStatsPanel.vue'
@@ -67,12 +72,13 @@ import { useCoachSpaceFromRoute } from '../composables/useCoachSpace'
 import type { PlayerStatsFetcher } from '../composables/usePlayerStatsPanel'
 import type { StatsDateRangeParams } from '../composables/useStatsDateRange'
 import type { MatchNature } from '../models/MatchContext'
+import type { JumpShotStats } from '../models/JumpShot'
 import type { PointingContextNature, PointingStats } from '../models/Pointing'
 import type { PlayerStats } from '../models/PlayerStats'
 import type { ShootingContextNature, ShootingStats } from '../models/Shooting'
 import { coachService } from '../services/coach'
 
-type CoachPlayerTab = 'shooting' | 'training' | 'matches'
+type CoachPlayerTab = 'shooting' | 'training' | 'jumpShot' | 'matches'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -88,6 +94,7 @@ const activeTab = ref<CoachPlayerTab>('shooting')
 const tabs = computed(() => [
   { id: 'shooting' as const, icon: 'pi pi-bullseye', label: t('coach.player.tabs.shootingShort') },
   { id: 'training' as const, icon: 'pi pi-circle', label: t('coach.player.tabs.pointingShort') },
+  { id: 'jumpShot' as const, icon: 'pi pi-arrow-up', label: t('coach.player.tabs.jumpShotShort') },
   { id: 'matches' as const, icon: 'pi pi-chart-line', label: t('coach.player.tabs.matchesShort') },
 ])
 
@@ -139,6 +146,10 @@ function fetchCoachPlayerPointingStats(
   nature: PointingContextNature | 'all',
 ): Promise<PointingStats> {
   return coachService.getPlayerPointingStats(playerId, range, nature, coachSpaceQuery.value)
+}
+
+function fetchCoachPlayerJumpShotStats(range: StatsDateRangeParams): Promise<JumpShotStats> {
+  return coachService.getPlayerJumpShotStats(playerId, range, coachSpaceQuery.value)
 }
 
 const fetchCoachPlayerStats: PlayerStatsFetcher = (range, nature, type, distance, competitionId) =>
@@ -199,7 +210,7 @@ function onStatsLoaded(stats: PlayerStats): void {
 
 .coach-segments-track {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.1875rem;
   padding: 0.25rem;
   background: var(--app-surface-muted);

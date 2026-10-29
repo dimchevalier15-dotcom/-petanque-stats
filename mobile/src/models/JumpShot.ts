@@ -52,6 +52,58 @@ export interface RevertJumpShotLastSeriesResult {
   restoredThrows: JumpShotThrowSummary[]
 }
 
+export interface JumpShotSessionHistoryItem {
+  id: number
+  createdAt: string
+  finishedAt: string
+  seriesCount: number
+  totalThrows: number
+}
+
+export interface JumpShotSessionHistoryPage {
+  page: number
+  pageSize: number
+  total: number
+  items: JumpShotSessionHistoryItem[]
+}
+
+export type JumpShotStatsStatus = 'ok' | 'no_sessions' | 'no_data_in_period'
+
+export interface JumpShotStatsSummary {
+  sessionsCount: number
+  totalSeries: number
+  totalThrows: number
+  averageSeriesPerSession: number | null
+  fewestSeriesToWin: number | null
+  overallSuccessRate: number | null
+  specialSeriesCount: number
+}
+
+export interface JumpShotStatsEvolutionPoint {
+  sessionId: number
+  date: string
+  seriesCount: number
+}
+
+export interface JumpShotStatsDistance {
+  distance: JumpShotDistance
+  throwCount: number
+  successRate: number
+}
+
+export interface JumpShotStatsResultBreakdown {
+  result: JumpShotThrowResult
+  count: number
+}
+
+export interface JumpShotStats {
+  status: JumpShotStatsStatus
+  summary: JumpShotStatsSummary
+  evolution: JumpShotStatsEvolutionPoint[]
+  byDistance: JumpShotStatsDistance[]
+  byResult: JumpShotStatsResultBreakdown[]
+}
+
 export function jumpShotResultIsSuccess(result: JumpShotThrowResult): boolean {
   return result !== 'missed'
 }

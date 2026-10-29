@@ -800,6 +800,7 @@
         "shooting": "Presná streľba",
         "shootingShort": "Streľba",
         "pointingShort": "Point",
+        "jumpShotShort": "Skok",
         "training": "Tréning",
         "trainingShort": "Tréning",
         "matches": "Zápasy",
@@ -1150,7 +1151,12 @@
       "title": "Streľba v skoku",
       "subtitle": "Postup od 6 do 9 metrov",
       "rules": "Prečítať pravidlá",
-      "start": "Začať cvičenie"
+      "stats": "Štatistiky",
+      "start": "Začať cvičenie",
+      "historyTitle": "Dokončené cvičenia",
+      "empty": "Zatiaľ žiadne dokončené cvičenie.",
+      "seriesTag": "{n} sérií",
+      "throwsMeta": "{n} zaznamenaných striel"
     },
     "rules": {
       "title": "Pravidlá",
@@ -1244,6 +1250,60 @@
       "message": "Aktuálny postup sa stratí.",
       "cancel": "Zrušiť",
       "confirm": "Ukončiť"
+    },
+    "summary": {
+      "title": "Detail cvičenia",
+      "subtitleWon": "Cvičenie splnené",
+      "won": "Víťazstvo",
+      "seriesCount": "{n} odohraných sérií",
+      "seriesTitle": "Séria {n} · {distance} m",
+      "specialBadge": "Záchranný carreau",
+      "backHome": "Späť na úvod"
+    },
+    "stats": {
+      "title": "Štatistiky",
+      "subtitle": "Streľba v skoku",
+      "distanceMeters": "{n} m",
+      "kpi": {
+        "sessions": "Cvičenia",
+        "fewestSeries": "Rekord sérií",
+        "avgSeries": "Priem. série"
+      },
+      "hero": {
+        "successRate": "Úspešnosť",
+        "throwsTracked": "{n} analyzovaných striel"
+      },
+      "insights": {
+        "strength": "Najlepšia vzdialenosť",
+        "toWork": "Na zlepšenie"
+      },
+      "sections": {
+        "evolution": "Vývoj",
+        "distances": "Podľa vzdialenosti",
+        "results": "Typy striel"
+      },
+      "evolution": {
+        "hint": "Počet sérií na dokončené cvičenie."
+      },
+      "distances": {
+        "hint": "Úspešnosť (okrem minutých) podľa vzdialenosti série."
+      },
+      "results": {
+        "hint": "Rozdelenie všetkých zaznamenaných striel."
+      },
+      "special": {
+        "title": "Záchranný carreau",
+        "hint": "{n} sérií so špeciálnym pravidlom."
+      },
+      "empty": {
+        "loadErrorTitle": "Nepodarilo sa načítať štatistiky",
+        "retry": "Skúsiť znova",
+        "noSessionsTitle": "Žiadne dokončené cvičenie",
+        "noSessionsHint": "Vyhrajte cvičenie, aby ste videli štatistiky.",
+        "startSession": "Začať cvičenie",
+        "noDataInPeriodTitle": "Žiadne údaje v tomto období",
+        "noDataInPeriodHint": "Rozšírte rozsah dátumov alebo vypnite filter."
+      }
     }
   },
   "pointing": {

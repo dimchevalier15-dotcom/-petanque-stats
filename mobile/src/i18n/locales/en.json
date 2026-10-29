@@ -838,6 +838,7 @@
         "shooting": "Precision shooting",
         "shootingShort": "Shooting",
         "pointingShort": "Pointing",
+        "jumpShotShort": "Jump shot",
         "training": "Training",
         "trainingShort": "Training",
         "matches": "Matches",
@@ -1188,7 +1189,12 @@
       "title": "Jump shot",
       "subtitle": "Progress from 6 to 9 meters",
       "rules": "Read the rules",
-      "start": "Start exercise"
+      "stats": "Statistics",
+      "start": "Start exercise",
+      "historyTitle": "Completed exercises",
+      "empty": "No completed exercise yet.",
+      "seriesTag": "{n} series",
+      "throwsMeta": "{n} throws recorded"
     },
     "rules": {
       "title": "Rules",
@@ -1282,6 +1288,60 @@
       "message": "Current progress will be lost.",
       "cancel": "Cancel",
       "confirm": "Abandon"
+    },
+    "summary": {
+      "title": "Exercise detail",
+      "subtitleWon": "Exercise won",
+      "won": "Victory",
+      "seriesCount": "{n} series played",
+      "seriesTitle": "Series {n} · {distance} m",
+      "specialBadge": "Saving carreau",
+      "backHome": "Back to home"
+    },
+    "stats": {
+      "title": "Statistics",
+      "subtitle": "Jump shot",
+      "distanceMeters": "{n} m",
+      "kpi": {
+        "sessions": "Exercises",
+        "fewestSeries": "Best (series)",
+        "avgSeries": "Avg. series"
+      },
+      "hero": {
+        "successRate": "Success rate",
+        "throwsTracked": "{n} throws analyzed"
+      },
+      "insights": {
+        "strength": "Strongest distance",
+        "toWork": "To improve"
+      },
+      "sections": {
+        "evolution": "Trend",
+        "distances": "By distance",
+        "results": "Throw types"
+      },
+      "evolution": {
+        "hint": "Number of series per completed exercise."
+      },
+      "distances": {
+        "hint": "Success rate (non-missed) per series distance."
+      },
+      "results": {
+        "hint": "Breakdown of all recorded throws."
+      },
+      "special": {
+        "title": "Saving carreau",
+        "hint": "{n} series with the special rule applied."
+      },
+      "empty": {
+        "loadErrorTitle": "Could not load statistics",
+        "retry": "Retry",
+        "noSessionsTitle": "No completed exercise",
+        "noSessionsHint": "Win an exercise to see your statistics.",
+        "startSession": "Start an exercise",
+        "noDataInPeriodTitle": "No data in this period",
+        "noDataInPeriodHint": "Widen the date range or disable the filter."
+      }
     }
   },
   "pointing": {

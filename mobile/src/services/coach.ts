@@ -7,9 +7,11 @@ import type { PlayerStatsResponseDto } from '../dto/player/PlayerStatsResponse'
 import type { PlayerTacticalInsightsResponseDto } from '../dto/player/PlayerTacticalInsightsResponse'
 import type { MatchHistoryResponseDto } from '../dto/match/MatchHistoryResponse'
 import type { CoachPlayerListResponseDto } from '../dto/coach/CoachPlayerListResponse'
+import type { JumpShotStatsResponseDto } from '../dto/jumpShot/JumpShotStatsResponse'
 import type { ShootingStatsResponseDto } from '../dto/shooting/ShootingStatsResponse'
 import type { PointingStatsResponseDto } from '../dto/pointing/PointingStatsResponse'
 import type { CoachPlayerList } from '../models/Coach'
+import type { JumpShotDistance, JumpShotStats, JumpShotThrowResult } from '../models/JumpShot'
 import type { PointingContextNature, PointingStats } from '../models/Pointing'
 import type { CreatePlayerResponseDto } from '../dto/player/CreatePlayerResponse'
 import type { PlayerItemDto } from '../dto/player/PlayerItem'
@@ -47,6 +49,23 @@ function mapShootingStats(dto: ShootingStatsResponseDto): ShootingStats {
       count: r.count,
     })),
     heatmap: dto.heatmap.map((c) => ({ ...c })),
+  }
+}
+
+function mapJumpShotStats(dto: JumpShotStatsResponseDto): JumpShotStats {
+  return {
+    status: dto.status,
+    summary: { ...dto.summary },
+    evolution: dto.evolution.map((p) => ({ ...p })),
+    byDistance: dto.byDistance.map((d) => ({
+      distance: d.distance as JumpShotDistance,
+      throwCount: d.throwCount,
+      successRate: d.successRate,
+    })),
+    byResult: dto.byResult.map((r) => ({
+      result: r.result as JumpShotThrowResult,
+      count: r.count,
+    })),
   }
 }
 
@@ -232,6 +251,20 @@ export const coachService = {
       },
     })
     return mapPointingStats(data)
+  },
+
+  async getPlayerJumpShotStats(
+    playerId: number,
+    range: StatsDateRangeParams,
+    space?: CoachSpaceQuery,
+  ): Promise<JumpShotStats> {
+    const { data } = await api.get<JumpShotStatsResponseDto>(`/coach/players/${playerId}/jump-shot/stats`, {
+      params: {
+        ...range,
+        ...coachSpaceParams(space),
+      },
+    })
+    return mapJumpShotStats(data)
   },
 
   async getPlayerHistory(

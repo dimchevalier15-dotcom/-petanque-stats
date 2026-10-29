@@ -24,6 +24,7 @@ use App\Service\SelectionGlobaleService;
 use App\Service\PlayerService;
 use App\Service\PlayerStatsService;
 use App\Service\PlayerTacticalInsightsService;
+use App\Service\JumpShot\JumpShotStatsService;
 use App\Service\Pointing\PointingStatsService;
 use App\Service\Shooting\ShootingStatsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,6 +46,7 @@ final class CoachController extends AbstractController
         private MatchHistoryService $matchHistoryService,
         private ShootingStatsService $shootingStatsService,
         private PointingStatsService $pointingStatsService,
+        private JumpShotStatsService $jumpShotStatsService,
         private PlayerService $playerService,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
@@ -227,6 +229,24 @@ final class CoachController extends AbstractController
         }
 
         $res = $this->pointingStatsService->statsForPlayerId($id, $pointingNature, $dateRange);
+        $json = $this->serializer->serialize($res, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/coach/players/{id}/jump-shot/stats', name: 'api_coach_player_jump_shot_stats', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function playerJumpShotStats(int $id, Request $request): JsonResponse
+    {
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
+        $this->coachAccess->assertCoachCanViewPlayer($user, $id, $selectionGlobaleId);
+
+        try {
+            $dateRange = CoachDateRangeResolver::fromRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 400);
+        }
+
+        $res = $this->jumpShotStatsService->statsForPlayerId($id, $dateRange);
         $json = $this->serializer->serialize($res, 'json');
 
         return new JsonResponse($json, 200, [], true);

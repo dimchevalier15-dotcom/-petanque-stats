@@ -215,7 +215,7 @@ async function submitSeries(): Promise<void> {
     }
     const res = await jumpShotSessionsService.submitSeries(sessionId.value, payload)
     if (res.sessionWon) {
-      await router.push({ name: 'jumpShotVictory', params: { id: sessionId.value } })
+      await router.push({ name: 'jumpShotSessionSummary', params: { id: sessionId.value } })
       return
     }
     seriesCount.value = res.session.seriesCount

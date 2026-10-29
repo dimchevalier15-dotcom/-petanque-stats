@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\JumpShot;
 
 use App\Dto\Request\SubmitJumpShotSeriesRequest;
+use App\Http\StatsDateRangeResolver;
 use App\Security\ImpersonationResolver;
 use App\Service\Auth\InvalidTokenException;
 use App\Service\JumpShot\InvalidJumpShotSeriesException;
@@ -13,6 +14,7 @@ use App\Service\JumpShot\JumpShotSessionAccessDeniedException;
 use App\Service\JumpShot\JumpShotSessionAlreadyFinishedException;
 use App\Service\JumpShot\JumpShotSessionNotFoundException;
 use App\Service\JumpShot\JumpShotSessionService;
+use App\Service\JumpShot\JumpShotStatsService;
 use App\Service\JumpShot\NoLinkedPlayerException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,6 +27,7 @@ final class JumpShotSessionController extends AbstractController
 {
     public function __construct(
         private JumpShotSessionService $service,
+        private JumpShotStatsService $statsService,
         private ImpersonationResolver $impersonation,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
@@ -49,6 +52,36 @@ final class JumpShotSessionController extends AbstractController
             if ($res === null) {
                 return new JsonResponse('null', 200, [], true);
             }
+
+            return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
+        });
+    }
+
+    #[Route('/api/jump-shot-sessions/stats', name: 'api_jump_shot_sessions_stats', methods: ['GET'])]
+    public function stats(Request $request): JsonResponse
+    {
+        return $this->withToken($request, function (string $token) use ($request) {
+            try {
+                $dateRange = StatsDateRangeResolver::fromRequest($request);
+            } catch (\InvalidArgumentException $e) {
+                return new JsonResponse(['message' => $e->getMessage()], 400);
+            }
+
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->statsService->stats($token, $dateRange, $impersonatePlayerId);
+
+            return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
+        });
+    }
+
+    #[Route('/api/jump-shot-sessions/history', name: 'api_jump_shot_sessions_history', methods: ['GET'])]
+    public function history(Request $request): JsonResponse
+    {
+        return $this->withToken($request, function (string $token) use ($request) {
+            $page = $request->query->get('page') !== null ? max(1, (int) $request->query->get('page')) : 1;
+            $size = $request->query->get('size') !== null ? max(1, (int) $request->query->get('size')) : 20;
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->service->history($token, $page, $size, $impersonatePlayerId);
 
             return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
         });

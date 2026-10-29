@@ -6,7 +6,11 @@ namespace App\Repository;
 
 use App\Entity\JumpShotSeries;
 use App\Entity\JumpShotSession;
+use App\Entity\JumpShotThrow;
+use App\Enum\JumpShotThrowResult;
+use App\ValueObject\DateRange;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -54,5 +58,67 @@ class JumpShotSeriesRepository extends ServiceEntityRepository
             ->getResult();
 
         return $rows;
+    }
+
+    public function countForPlayerCompletedSessions(int $playerId, ?DateRange $range = null): int
+    {
+        $qb = $this->createQueryBuilder('ser')
+            ->select('COUNT(ser.id)')
+            ->join('ser.session', 's')
+            ->andWhere('s.player = :playerId')
+            ->andWhere('s.finishedAt IS NOT NULL')
+            ->andWhere('s.won = true')
+            ->setParameter('playerId', $playerId);
+
+        $this->applySessionFinishedAtRange($qb, 's', $range);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function countSpecialForPlayerCompletedSessions(int $playerId, ?DateRange $range = null): int
+    {
+        $qb = $this->createQueryBuilder('ser')
+            ->select('COUNT(ser.id)')
+            ->join('ser.session', 's')
+            ->andWhere('s.player = :playerId')
+            ->andWhere('s.finishedAt IS NOT NULL')
+            ->andWhere('s.won = true')
+            ->andWhere('ser.isSpecialSeries = true')
+            ->setParameter('playerId', $playerId);
+
+        $this->applySessionFinishedAtRange($qb, 's', $range);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function fewestSeriesAmongCompletedSessions(int $playerId, ?DateRange $range = null): ?int
+    {
+        $sessions = $this->getEntityManager()
+            ->getRepository(JumpShotSession::class)
+            ->findCompletedForPlayer($playerId, $range);
+
+        if ($sessions === []) {
+            return null;
+        }
+
+        $min = null;
+        foreach ($sessions as $session) {
+            $count = $this->countForSession($session);
+            $min = $min === null ? $count : min($min, $count);
+        }
+
+        return $min;
+    }
+
+    private function applySessionFinishedAtRange(QueryBuilder $qb, string $sessionAlias, ?DateRange $range): void
+    {
+        if ($range === null) {
+            return;
+        }
+
+        $qb->andWhere($sessionAlias.'.finishedAt >= :rangeFrom')
+            ->andWhere($sessionAlias.'.finishedAt <= :rangeTo')
+            ->setParameter('rangeFrom', $range->from)
+            ->setParameter('rangeTo', $range->to);
     }
 }
