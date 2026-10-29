@@ -2,6 +2,7 @@ import api from './http'
 import type {
   JumpShotSessionStartedResponseDto,
   JumpShotSessionSummaryResponseDto,
+  StartJumpShotSessionRequestDto,
   SubmitJumpShotSeriesRequestDto,
   SubmitJumpShotSeriesResponseDto,
   RevertJumpShotLastSeriesResponseDto,
@@ -12,6 +13,7 @@ import type {
 } from '../dto/jumpShot/JumpShotStatsResponse'
 import type {
   JumpShotDistance,
+  JumpShotProgressionMode,
   JumpShotSessionHistoryPage,
   JumpShotSessionStarted,
   JumpShotSessionSummary,
@@ -44,12 +46,17 @@ function mapSeries(dto: JumpShotSessionSummaryResponseDto['series'][number]): Ju
   }
 }
 
+function mapProgressionMode(value: string): JumpShotProgressionMode {
+  return value === 'simplified' ? 'simplified' : 'standard'
+}
+
 function mapStarted(dto: JumpShotSessionStartedResponseDto): JumpShotSessionStarted {
   return {
     id: dto.id,
     createdAt: dto.createdAt,
     currentDistance: dto.currentDistance as JumpShotDistance,
     seriesCount: dto.seriesCount,
+    progressionMode: mapProgressionMode(dto.progressionMode),
   }
 }
 
@@ -61,13 +68,15 @@ function mapSummary(dto: JumpShotSessionSummaryResponseDto): JumpShotSessionSumm
     won: dto.won,
     currentDistance: dto.currentDistance as JumpShotDistance,
     seriesCount: dto.seriesCount,
+    progressionMode: mapProgressionMode(dto.progressionMode),
     series: dto.series.map(mapSeries),
   }
 }
 
 export const jumpShotSessionsService = {
-  async start(): Promise<JumpShotSessionStarted> {
-    const { data } = await api.post<JumpShotSessionStartedResponseDto>('/jump-shot-sessions')
+  async start(progressionMode: JumpShotProgressionMode = 'standard'): Promise<JumpShotSessionStarted> {
+    const payload: StartJumpShotSessionRequestDto = { progressionMode }
+    const { data } = await api.post<JumpShotSessionStartedResponseDto>('/jump-shot-sessions', payload)
     return mapStarted(data)
   },
 

@@ -1,10 +1,11 @@
-import type { JumpShotSeriesConsequence, JumpShotThrowResult } from '../../models/JumpShot'
+import type { JumpShotProgressionMode } from '../../models/JumpShot'
 
 export interface JumpShotSessionStartedResponseDto {
   id: number
   createdAt: string
   currentDistance: number
   seriesCount: number
+  progressionMode: string
 }
 
 export interface JumpShotThrowSummaryResponseDto {
@@ -29,6 +30,7 @@ export interface JumpShotSessionSummaryResponseDto {
   won: boolean
   currentDistance: number
   seriesCount: number
+  progressionMode: string
   series: JumpShotSeriesSummaryResponseDto[]
 }
 
@@ -52,6 +54,10 @@ export interface JumpShotThrowInputDto {
 
 export interface SubmitJumpShotSeriesRequestDto {
   throws: JumpShotThrowInputDto[]
+}
+
+export interface StartJumpShotSessionRequestDto {
+  progressionMode?: JumpShotProgressionMode
 }
 
 export type { JumpShotSeriesConsequence, JumpShotThrowResult }

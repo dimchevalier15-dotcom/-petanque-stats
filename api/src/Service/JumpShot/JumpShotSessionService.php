@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\JumpShot;
 
 use App\Dto\Request\JumpShotThrowInputDto;
+use App\Dto\Request\StartJumpShotSessionRequest;
 use App\Dto\Request\SubmitJumpShotSeriesRequest;
 use App\Dto\Response\JumpShotSeriesSummaryResponse;
 use App\Dto\Response\JumpShotSessionHistoryItemResponse;
@@ -18,6 +19,7 @@ use App\Entity\JumpShotSeries;
 use App\Entity\JumpShotSession;
 use App\Entity\JumpShotThrow;
 use App\Entity\Player;
+use App\Enum\JumpShotProgressionMode;
 use App\Enum\JumpShotThrowResult;
 use App\Repository\JumpShotSeriesRepository;
 use App\Repository\JumpShotSessionRepository;
@@ -44,11 +46,12 @@ final class JumpShotSessionService
     /**
      * @throws NoLinkedPlayerException
      */
-    public function start(string $token): JumpShotSessionStartedResponse
+    public function start(string $token, ?StartJumpShotSessionRequest $req = null): JumpShotSessionStartedResponse
     {
         $player = $this->resolveOwnPlayer($token);
+        $mode = $this->resolveProgressionMode($req);
 
-        $session = new JumpShotSession($player);
+        $session = new JumpShotSession($player, $mode);
         $this->em->persist($session);
         $this->em->flush();
 
@@ -97,6 +100,7 @@ final class JumpShotSessionService
             $seriesDistance,
             $session->getCurrentDistance(),
             $resultsByPosition,
+            $session->getProgressionMode(),
         );
 
         $seriesNumber = $this->series->countForSession($session) + 1;
@@ -289,6 +293,16 @@ final class JumpShotSessionService
         return $resultsByPosition;
     }
 
+    private function resolveProgressionMode(?StartJumpShotSessionRequest $req): JumpShotProgressionMode
+    {
+        $value = $req?->progressionMode;
+        if ($value === null || $value === '') {
+            return JumpShotProgressionMode::STANDARD;
+        }
+
+        return JumpShotProgressionMode::from($value);
+    }
+
     /**
      * @throws NoLinkedPlayerException
      */
@@ -353,6 +367,7 @@ final class JumpShotSessionService
             createdAt: $session->getCreatedAt()->format(DATE_ATOM),
             currentDistance: $session->getCurrentDistance()->value,
             seriesCount: $this->series->countForSession($session),
+            progressionMode: $session->getProgressionMode()->value,
         );
     }
 
@@ -371,6 +386,7 @@ final class JumpShotSessionService
             won: $session->isWon(),
             currentDistance: $session->getCurrentDistance()->value,
             seriesCount: count($seriesResponses),
+            progressionMode: $session->getProgressionMode()->value,
             series: $seriesResponses,
         );
     }

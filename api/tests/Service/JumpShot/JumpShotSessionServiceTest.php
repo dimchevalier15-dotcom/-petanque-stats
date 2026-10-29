@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Service\JumpShot;
 
 use App\Dto\Request\JumpShotThrowInputDto;
+use App\Dto\Request\StartJumpShotSessionRequest;
 use App\Dto\Request\SubmitJumpShotSeriesRequest;
 use App\Entity\Player;
 use App\Entity\User;
@@ -39,6 +40,35 @@ final class JumpShotSessionServiceTest extends KernelDatabaseTestCase
 
         self::assertSame(6, $started->currentDistance);
         self::assertSame(0, $started->seriesCount);
+        self::assertSame('standard', $started->progressionMode);
+    }
+
+    public function testStartSimplifiedSession(): void
+    {
+        [$token] = $this->createUserWithLinkedPlayer();
+
+        $req = new StartJumpShotSessionRequest();
+        $req->progressionMode = 'simplified';
+        $started = $this->service->start($token, $req);
+
+        self::assertSame('simplified', $started->progressionMode);
+    }
+
+    public function testSimplifiedProgressionTwoOfThreeMovesUp(): void
+    {
+        [$token] = $this->createUserWithLinkedPlayer();
+        $req = new StartJumpShotSessionRequest();
+        $req->progressionMode = 'simplified';
+        $started = $this->service->start($token, $req);
+
+        $res = $this->service->submitSeries($token, $started->id, $this->seriesRequest([
+            1 => 'hit',
+            2 => 'carreau',
+            3 => 'missed',
+        ]));
+
+        self::assertSame('up', $res->series->consequence);
+        self::assertSame(7, $res->nextDistance);
     }
 
     public function testSubmitSeriesPersistsThrowsAndProgression(): void

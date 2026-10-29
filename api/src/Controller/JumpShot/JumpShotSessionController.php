@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\JumpShot;
 
+use App\Dto\Request\StartJumpShotSessionRequest;
 use App\Dto\Request\SubmitJumpShotSeriesRequest;
 use App\Http\StatsDateRangeResolver;
 use App\Security\ImpersonationResolver;
@@ -37,8 +38,19 @@ final class JumpShotSessionController extends AbstractController
     #[Route('/api/jump-shot-sessions', name: 'api_jump_shot_sessions_start', methods: ['POST'])]
     public function start(Request $request): JsonResponse
     {
-        return $this->withToken($request, function (string $token) {
-            $res = $this->service->start($token);
+        return $this->withToken($request, function (string $token) use ($request) {
+            $content = trim((string) $request->getContent());
+            $input = null;
+            if ($content !== '') {
+                /** @var StartJumpShotSessionRequest $input */
+                $input = $this->serializer->deserialize($content, StartJumpShotSessionRequest::class, 'json');
+                $violations = $this->validator->validate($input);
+                if (\count($violations) > 0) {
+                    return $this->validationError($violations);
+                }
+            }
+
+            $res = $this->service->start($token, $input);
 
             return new JsonResponse($this->serializer->serialize($res, 'json'), 201, [], true);
         });

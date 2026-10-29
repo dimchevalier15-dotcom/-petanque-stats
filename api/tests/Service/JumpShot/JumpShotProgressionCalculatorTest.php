@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\JumpShot;
 
+use App\Enum\JumpShotProgressionMode;
 use App\Enum\JumpShotSeriesConsequence;
 use App\Enum\JumpShotThrowResult;
 use App\Enum\ShootingDistance;
@@ -165,6 +166,70 @@ final class JumpShotProgressionCalculatorTest extends TestCase
         );
 
         self::assertFalse($eval->sessionWon);
+    }
+
+    public function testSimplifiedTwoSuccessesMoveUp(): void
+    {
+        $eval = $this->calculator->evaluate(
+            ShootingDistance::SIX_METERS,
+            ShootingDistance::SIX_METERS,
+            $this->results(JumpShotThrowResult::HIT, JumpShotThrowResult::CARREAU, JumpShotThrowResult::MISSED),
+            JumpShotProgressionMode::SIMPLIFIED,
+        );
+
+        self::assertSame(JumpShotSeriesConsequence::UP, $eval->consequence);
+        self::assertSame(ShootingDistance::SEVEN_METERS, $eval->nextDistance);
+    }
+
+    public function testSimplifiedOneSuccessStays(): void
+    {
+        $eval = $this->calculator->evaluate(
+            ShootingDistance::SEVEN_METERS,
+            ShootingDistance::SEVEN_METERS,
+            $this->results(JumpShotThrowResult::CHIQUE, JumpShotThrowResult::MISSED, JumpShotThrowResult::MISSED),
+            JumpShotProgressionMode::SIMPLIFIED,
+        );
+
+        self::assertSame(JumpShotSeriesConsequence::STAY, $eval->consequence);
+    }
+
+    public function testSimplifiedZeroSuccessesMoveDown(): void
+    {
+        $eval = $this->calculator->evaluate(
+            ShootingDistance::SEVEN_METERS,
+            ShootingDistance::SEVEN_METERS,
+            $this->results(JumpShotThrowResult::MISSED, JumpShotThrowResult::MISSED, JumpShotThrowResult::MISSED),
+            JumpShotProgressionMode::SIMPLIFIED,
+        );
+
+        self::assertSame(JumpShotSeriesConsequence::DOWN, $eval->consequence);
+        self::assertSame(ShootingDistance::SIX_METERS, $eval->nextDistance);
+    }
+
+    public function testSimplifiedDoesNotApplyCarreauSalvateur(): void
+    {
+        $eval = $this->calculator->evaluate(
+            ShootingDistance::EIGHT_METERS,
+            ShootingDistance::EIGHT_METERS,
+            $this->results(JumpShotThrowResult::MISSED, JumpShotThrowResult::MISSED, JumpShotThrowResult::CARREAU),
+            JumpShotProgressionMode::SIMPLIFIED,
+        );
+
+        self::assertFalse($eval->isSpecialSeries);
+        self::assertSame(1, $eval->successCount);
+        self::assertSame(JumpShotSeriesConsequence::STAY, $eval->consequence);
+    }
+
+    public function testSimplifiedVictoryAtNineWithTwoSuccesses(): void
+    {
+        $eval = $this->calculator->evaluate(
+            ShootingDistance::NINE_METERS,
+            ShootingDistance::NINE_METERS,
+            $this->results(JumpShotThrowResult::CHIQUE, JumpShotThrowResult::HIT, JumpShotThrowResult::MISSED),
+            JumpShotProgressionMode::SIMPLIFIED,
+        );
+
+        self::assertTrue($eval->sessionWon);
     }
 
     /**

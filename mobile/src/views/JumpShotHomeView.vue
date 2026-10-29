@@ -4,7 +4,18 @@
       :title="t('jumpShot.home.title')"
       :subtitle="t('jumpShot.home.subtitle')"
       :back-to="{ name: 'trainingHome' }"
-    />
+    >
+      <template #actions>
+        <Button
+          icon="pi pi-cog"
+          text
+          rounded
+          class="settings-btn"
+          :aria-label="t('jumpShot.settings.open')"
+          @click="settingsDialog = true"
+        />
+      </template>
+    </PageHeader>
 
     <div class="home-actions">
       <Button
@@ -79,6 +90,26 @@
         </div>
       </div>
     </Dialog>
+
+    <Dialog
+      v-model:visible="settingsDialog"
+      :modal="true"
+      :header="t('jumpShot.settings.title')"
+      class="jump-shot-dialog jump-shot-settings-dialog"
+    >
+      <div class="settings-content">
+        <p class="settings-label">{{ t('jumpShot.settings.progressionMode') }}</p>
+        <SelectButton
+          v-model="progressionMode"
+          :options="progressionModeOptions"
+          option-label="label"
+          option-value="value"
+          :allow-empty="false"
+        />
+        <p class="settings-hint">{{ progressionModeHint }}</p>
+        <Button :label="t('jumpShot.settings.close')" class="settings-close" @click="settingsDialog = false" />
+      </div>
+    </Dialog>
   </AppPage>
 </template>
 
@@ -88,10 +119,12 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
+import SelectButton from 'primevue/selectbutton'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
+import { useJumpShotProgressionMode } from '../composables/useJumpShotProgressionMode'
 import { useDateFormat } from '../composables/useDateFormat'
 import type { JumpShotSessionHistoryItem, JumpShotSessionStarted } from '../models/JumpShot'
 import { jumpShotSessionsService } from '../services/jumpShotSessions'
@@ -103,7 +136,20 @@ const router = useRouter()
 const starting = ref(false)
 const abandoning = ref(false)
 const resumeDialog = ref(false)
+const settingsDialog = ref(false)
 const currentSession = ref<JumpShotSessionStarted | null>(null)
+const { progressionMode } = useJumpShotProgressionMode()
+
+const progressionModeOptions = computed(() => [
+  { value: 'standard' as const, label: t('jumpShot.settings.standard') },
+  { value: 'simplified' as const, label: t('jumpShot.settings.simplified') },
+])
+
+const progressionModeHint = computed(() =>
+  progressionMode.value === 'simplified'
+    ? t('jumpShot.settings.simplifiedHint')
+    : t('jumpShot.settings.standardHint'),
+)
 
 const items = ref<JumpShotSessionHistoryItem[]>([])
 const page = ref(1)
@@ -145,7 +191,7 @@ function loadMore(): void {
 async function startNewSession(): Promise<void> {
   starting.value = true
   try {
-    const session = await jumpShotSessionsService.start()
+    const session = await jumpShotSessionsService.start(progressionMode.value)
     await router.push({ name: 'jumpShotSession', params: { id: session.id } })
   } finally {
     starting.value = false
@@ -266,5 +312,42 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--app-space-sm);
+}
+
+.settings-btn {
+  color: var(--app-text);
+}
+
+.settings-content {
+  display: grid;
+  gap: var(--app-space-md);
+}
+
+.settings-label {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--app-text-muted);
+}
+
+.settings-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--app-text-muted);
+}
+
+.settings-close {
+  justify-self: stretch;
+}
+
+.jump-shot-settings-dialog :deep(.p-selectbutton) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+.jump-shot-settings-dialog :deep(.p-selectbutton .p-button) {
+  justify-content: center;
 }
 </style>

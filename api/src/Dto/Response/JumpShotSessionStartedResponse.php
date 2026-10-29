@@ -11,6 +11,7 @@ final class JumpShotSessionStartedResponse
         public string $createdAt,
         public int $currentDistance,
         public int $seriesCount,
+        public string $progressionMode,
     ) {
     }
 }

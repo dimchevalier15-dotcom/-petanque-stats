@@ -1158,6 +1158,16 @@
       "seriesTag": "{n} sérií",
       "throwsMeta": "{n} zaznamenaných striel"
     },
+    "settings": {
+      "title": "Nastavenia",
+      "open": "Nastavenia cvičenia",
+      "progressionMode": "Pravidlá postupu",
+      "standard": "Oficiálne",
+      "standardHint": "0–1 úspech z 3: nadol · 2: rovnako · 3: nahor. Záchranný carreau zapnutý.",
+      "simplified": "Zjednodušené",
+      "simplifiedHint": "0/3: nadol · 1/3: rovnako · 2/3 alebo 3/3: nahor. Víťazstvo pri 2/3 alebo 3/3 na 9 m.",
+      "close": "Zavrieť"
+    },
     "rules": {
       "title": "Pravidlá",
       "subtitle": "Streľba v skoku",

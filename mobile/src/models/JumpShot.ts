@@ -7,11 +7,15 @@ export type JumpShotThrowResult = (typeof JUMP_SHOT_THROW_RESULTS)[number]
 export const JUMP_SHOT_SERIES_CONSEQUENCES = ['down', 'stay', 'up'] as const
 export type JumpShotSeriesConsequence = (typeof JUMP_SHOT_SERIES_CONSEQUENCES)[number]
 
+export const JUMP_SHOT_PROGRESSION_MODES = ['standard', 'simplified'] as const
+export type JumpShotProgressionMode = (typeof JUMP_SHOT_PROGRESSION_MODES)[number]
+
 export interface JumpShotSessionStarted {
   id: number
   createdAt: string
   currentDistance: JumpShotDistance
   seriesCount: number
+  progressionMode: JumpShotProgressionMode
 }
 
 export interface JumpShotThrowSummary {
@@ -36,6 +40,7 @@ export interface JumpShotSessionSummary {
   won: boolean
   currentDistance: JumpShotDistance
   seriesCount: number
+  progressionMode: JumpShotProgressionMode
   series: JumpShotSeriesSummary[]
 }
 

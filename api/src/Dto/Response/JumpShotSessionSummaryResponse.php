@@ -16,6 +16,7 @@ final class JumpShotSessionSummaryResponse
         public bool $won,
         public int $currentDistance,
         public int $seriesCount,
+        public string $progressionMode,
         public array $series,
     ) {
     }

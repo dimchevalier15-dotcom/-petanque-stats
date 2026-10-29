@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\JumpShot;
 
+use App\Enum\JumpShotProgressionMode;
 use App\Enum\JumpShotSeriesConsequence;
 use App\Enum\JumpShotThrowResult;
 use App\Enum\ShootingDistance;
@@ -29,6 +30,7 @@ final class JumpShotProgressionCalculator
         ShootingDistance $seriesDistance,
         ShootingDistance $sessionCurrentDistance,
         array $resultsByPosition,
+        JumpShotProgressionMode $progressionMode = JumpShotProgressionMode::STANDARD,
     ): JumpShotSeriesEvaluation {
         $first = $resultsByPosition[1];
         $second = $resultsByPosition[2];
@@ -41,7 +43,8 @@ final class JumpShotProgressionCalculator
             }
         }
 
-        $isSpecialSeries = $first === JumpShotThrowResult::MISSED
+        $isSpecialSeries = $progressionMode === JumpShotProgressionMode::STANDARD
+            && $first === JumpShotThrowResult::MISSED
             && $second === JumpShotThrowResult::MISSED
             && $third === JumpShotThrowResult::CARREAU;
 
@@ -50,14 +53,13 @@ final class JumpShotProgressionCalculator
             $consequence = JumpShotSeriesConsequence::STAY;
         } else {
             $successCount = $rawSuccessCount;
-            $consequence = match ($successCount) {
-                0, 1 => JumpShotSeriesConsequence::DOWN,
-                2 => JumpShotSeriesConsequence::STAY,
-                3 => JumpShotSeriesConsequence::UP,
-            };
+            $consequence = $this->consequenceForSuccessCount($successCount, $progressionMode);
         }
 
-        $sessionWon = $seriesDistance === ShootingDistance::NINE_METERS && $rawSuccessCount === 3;
+        $sessionWon = $seriesDistance === ShootingDistance::NINE_METERS
+            && ($progressionMode === JumpShotProgressionMode::SIMPLIFIED
+                ? $rawSuccessCount >= 2
+                : $rawSuccessCount === 3);
         $nextDistance = $sessionWon
             ? $sessionCurrentDistance
             : $this->applyConsequence($sessionCurrentDistance, $consequence);
@@ -69,6 +71,25 @@ final class JumpShotProgressionCalculator
             $nextDistance,
             $sessionWon,
         );
+    }
+
+    private function consequenceForSuccessCount(
+        int $successCount,
+        JumpShotProgressionMode $progressionMode,
+    ): JumpShotSeriesConsequence {
+        if ($progressionMode === JumpShotProgressionMode::SIMPLIFIED) {
+            return match ($successCount) {
+                0 => JumpShotSeriesConsequence::DOWN,
+                1 => JumpShotSeriesConsequence::STAY,
+                default => JumpShotSeriesConsequence::UP,
+            };
+        }
+
+        return match ($successCount) {
+            0, 1 => JumpShotSeriesConsequence::DOWN,
+            2 => JumpShotSeriesConsequence::STAY,
+            3 => JumpShotSeriesConsequence::UP,
+        };
     }
 
     private function applyConsequence(

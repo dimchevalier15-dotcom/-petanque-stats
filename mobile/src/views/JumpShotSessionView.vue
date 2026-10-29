@@ -5,9 +5,17 @@
         <span class="series-label">
           {{ t('jumpShot.play.seriesLabel', { n: currentSeriesNumber }) }}
         </span>
-        <button type="button" class="rules-link" @click="goRules">
-          {{ t('jumpShot.play.rules') }}
-        </button>
+        <div class="scoreboard-top-end">
+          <Tag
+            v-if="progressionMode === 'simplified'"
+            severity="info"
+            :value="t('jumpShot.settings.simplified')"
+            class="mode-tag"
+          />
+          <button type="button" class="rules-link" @click="goRules">
+            {{ t('jumpShot.play.rules') }}
+          </button>
+        </div>
       </div>
       <h2 class="distance-title">{{ t('jumpShot.play.currentDistance', { n: currentDistance }) }}</h2>
       <p class="success-line">
@@ -102,11 +110,13 @@ import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import ProgressSpinner from 'primevue/progressspinner'
+import Tag from 'primevue/tag'
 import {
   JUMP_SHOT_DISTANCES,
   JUMP_SHOT_THROW_RESULTS,
   jumpShotResultIsSuccess,
   type JumpShotDistance,
+  type JumpShotProgressionMode,
   type JumpShotThrowResult,
 } from '../models/JumpShot'
 import { jumpShotSessionsService } from '../services/jumpShotSessions'
@@ -126,6 +136,7 @@ const abandonDialog = ref(false)
 const currentDistance = ref<JumpShotDistance>(6)
 const seriesCount = ref(0)
 const sessionFinished = ref(false)
+const progressionMode = ref<JumpShotProgressionMode>('standard')
 
 const draft = reactive<Record<1 | 2 | 3, JumpShotThrowResult | null>>({
   1: null,
@@ -196,6 +207,7 @@ async function loadSession(): Promise<void> {
     currentDistance.value = summary.currentDistance
     seriesCount.value = summary.seriesCount
     sessionFinished.value = summary.finishedAt !== null
+    progressionMode.value = summary.progressionMode
   } finally {
     loading.value = false
   }
@@ -276,6 +288,17 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   gap: var(--app-space-sm);
+}
+
+.scoreboard-top-end {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.mode-tag :deep(.p-tag) {
+  font-size: 0.625rem;
 }
 
 .series-label {

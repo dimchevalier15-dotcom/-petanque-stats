@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\JumpShotProgressionMode;
 use App\Enum\ShootingDistance;
 use App\Repository\JumpShotSessionRepository;
 use DateTimeImmutable;
@@ -35,11 +36,15 @@ class JumpShotSession
     #[ORM\Column(name: 'won', type: 'boolean', options: ['default' => false])]
     private bool $won = false;
 
-    public function __construct(Player $player)
+    #[ORM\Column(name: 'progression_mode', type: 'string', length: 16, enumType: JumpShotProgressionMode::class)]
+    private JumpShotProgressionMode $progressionMode;
+
+    public function __construct(Player $player, JumpShotProgressionMode $progressionMode = JumpShotProgressionMode::STANDARD)
     {
         $this->player = $player;
         $this->currentDistance = ShootingDistance::SIX_METERS;
         $this->createdAt = new DateTimeImmutable();
+        $this->progressionMode = $progressionMode;
     }
 
     public function getId(): ?int
@@ -75,6 +80,11 @@ class JumpShotSession
     public function isWon(): bool
     {
         return $this->won;
+    }
+
+    public function getProgressionMode(): JumpShotProgressionMode
+    {
+        return $this->progressionMode;
     }
 
     public function isFinished(): bool
