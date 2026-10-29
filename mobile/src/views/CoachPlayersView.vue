@@ -216,11 +216,16 @@ const pageTitle = computed(() =>
   coachSpaceKind.value === 'selection' ? t('selectionGlobale.title') : t('coach.title'),
 )
 
-const listBackTo = computed(() =>
-  coachSpaceKind.value === 'selection'
-    ? { name: 'selectionGlobaleHub' }
-    : { name: 'home' },
-)
+const listBackTo = computed(() => {
+  if (coachSpaceKind.value === 'selection') {
+    const count = auth.user?.coachSelectionGlobales?.length ?? 0
+    if (count > 1) {
+      return { name: 'selectionGlobaleHub', query: { list: '1' } }
+    }
+    return { name: 'home' }
+  }
+  return { name: 'home' }
+})
 
 const coachSpaceQuery = computed(() =>
   selectionGlobaleId.value ? { selectionGlobaleId: selectionGlobaleId.value } : undefined,

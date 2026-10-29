@@ -93,13 +93,13 @@ const routes: RouteRecordRaw[] = [
     path: '/selection-globale',
     name: 'selectionGlobaleHub',
     component: () => import('../views/SelectionGlobaleHubView.vue'),
-    meta: { layout: 'focus', requiresSelectionGlobaleCoach: true },
+    meta: { layout: 'main', requiresSelectionGlobaleCoach: true },
   },
   {
     path: '/selection-globale/:selectionId/players',
     name: 'selectionGlobalePlayers',
     component: () => import('../views/CoachPlayersView.vue'),
-    meta: { layout: 'focus', requiresSelectionGlobaleCoach: true, coachSpace: 'selection' },
+    meta: { layout: 'main', requiresSelectionGlobaleCoach: true, coachSpace: 'selection' },
   },
   {
     path: '/selection-globale/:selectionId/players/:id',

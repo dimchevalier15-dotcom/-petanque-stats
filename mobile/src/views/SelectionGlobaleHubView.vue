@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import ProgressSpinner from 'primevue/progressspinner'
 import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
@@ -36,6 +36,7 @@ import { selectionGlobaleService } from '../services/selectionGlobale'
 import { useAuthStore } from '../stores/auth'
 
 const { t } = useI18n()
+const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
@@ -55,7 +56,7 @@ async function load(): Promise<void> {
     } else {
       selections.value = await selectionGlobaleService.listForCoach()
     }
-    if (selections.value.length === 1) {
+    if (selections.value.length === 1 && route.query.list !== '1') {
       openSelection(selections.value[0].id)
     }
   } finally {
