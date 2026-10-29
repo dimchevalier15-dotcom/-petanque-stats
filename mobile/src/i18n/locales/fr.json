@@ -1183,6 +1183,107 @@
       }
     }
   },
+  "jumpShot": {
+    "home": {
+      "title": "La boule à la sautée",
+      "subtitle": "Progressez de 6 à 9 mètres",
+      "rules": "Lire les règles",
+      "start": "Commencer l'exercice"
+    },
+    "rules": {
+      "title": "Règles",
+      "subtitle": "La boule à la sautée",
+      "start": "Démarrer l'exercice",
+      "sections": {
+        "setup": {
+          "title": "Mise en place",
+          "items": [
+            "Placez 3 boules cibles sur le terrain.",
+            "Placez une seconde boule à 15 cm derrière chacune des 3 cibles (6 boules au total).",
+            "Matérialisez 4 ronds de tir à 6, 7, 8 et 9 mètres."
+          ]
+        },
+        "distances": {
+          "title": "Distances",
+          "intro": "L'exercice se joue exclusivement à 6, 7, 8 ou 9 mètres. Vous commencez toujours à 6 mètres."
+        },
+        "series": {
+          "title": "Séries de 3 tirs",
+          "intro": "À chaque étape, vous effectuez une série de 3 tirs à la distance courante. Chaque tir reçoit un résultat individuel enregistré."
+        },
+        "results": {
+          "title": "Résultats possibles"
+        },
+        "progression": {
+          "title": "Progression",
+          "items": [
+            "0 ou 1 tir réussi sur 3 : descendre d'une distance (minimum 6 m).",
+            "2 tirs réussis sur 3 : rester à la même distance.",
+            "3 tirs réussis sur 3 : monter d'une distance (maximum 9 m)."
+          ]
+        },
+        "special": {
+          "title": "Carreau salvateur",
+          "intro": "Si les deux premiers tirs sont manqués et que le troisième est un carreau, la série compte pour 1/3 et vous restez à la même distance.",
+          "items": [
+            "Les deux premiers tirs restent enregistrés comme manqués.",
+            "Le troisième reste enregistré comme carreau.",
+            "Un chiqué ou une frappée au 3e tir ne déclenche pas cette règle."
+          ]
+        },
+        "victory": {
+          "title": "Victoire",
+          "intro": "Vous remportez l'exercice en réalisant 3 tirs réussis (chiqué, frappée ou carreau) dans une même série à 9 mètres."
+        }
+      }
+    },
+    "results": {
+      "missed": "Manqué",
+      "chique": "Chiqué",
+      "hit": "Frappée",
+      "carreau": "Carreau"
+    },
+    "consequence": {
+      "down": "Série {count}/3 : vous descendez d'une distance.",
+      "stay": "Série {count}/3 : vous restez à la même distance.",
+      "up": "Série {count}/3 : vous montez d'une distance."
+    },
+    "play": {
+      "seriesLabel": "Série n°{n}",
+      "currentDistance": "Distance : {n} m",
+      "successInSeries": "Réussites dans la série : {count}/{total}",
+      "throwLabel": "Tir {n}",
+      "validateSeries": "Valider la série",
+      "undoLastSeries": "Corriger la série précédente",
+      "rules": "Règles",
+      "abandon": "Abandonner",
+      "outcomeTitle": "Résultat de la série",
+      "specialApplied": "Règle spéciale du carreau salvateur appliquée.",
+      "nextDistance": "Prochaine série à {n} m.",
+      "continue": "Continuer"
+    },
+    "victory": {
+      "title": "Exercice remporté !",
+      "subtitle": "Bravo, vous avez validé une série parfaite à 9 mètres.",
+      "seriesCount": "{n} séries jouées",
+      "recapTitle": "Récapitulatif",
+      "seriesLine": "Série {n} · {distance} m",
+      "successTag": "{count}/3",
+      "backHome": "Retour à l'accueil"
+    },
+    "resume": {
+      "title": "Séance en cours",
+      "message": "Une séance est déjà en cours. Voulez-vous la reprendre ou l'abandonner ?",
+      "continue": "Reprendre",
+      "abandon": "Abandonner"
+    },
+    "abandon": {
+      "title": "Abandonner la séance ?",
+      "message": "La progression en cours sera perdue.",
+      "cancel": "Annuler",
+      "confirm": "Abandonner"
+    }
+  },
   "pointing": {
     "home": {
       "title": "Point de précision",
@@ -1600,7 +1701,7 @@
       },
       "tirSautee": {
         "title": "Tir à la sautée",
-        "description": "Exercice de tir en sautée — bientôt disponible."
+        "description": "Progression de 6 à 9 m en séries de 3 tirs."
       }
     },
     "home": {

@@ -1145,6 +1145,107 @@
       }
     }
   },
+  "jumpShot": {
+    "home": {
+      "title": "Streľba v skoku",
+      "subtitle": "Postup od 6 do 9 metrov",
+      "rules": "Prečítať pravidlá",
+      "start": "Začať cvičenie"
+    },
+    "rules": {
+      "title": "Pravidlá",
+      "subtitle": "Streľba v skoku",
+      "start": "Začať cvičenie",
+      "sections": {
+        "setup": {
+          "title": "Príprava",
+          "items": [
+            "Umiestnite 3 cieľové gule.",
+            "Za každým cieľom umiestnite druhú guľu 15 cm vzadu (spolu 6 gúl).",
+            "Označte 4 kruhy na 6, 7, 8 a 9 metrov."
+          ]
+        },
+        "distances": {
+          "title": "Vzdialenosti",
+          "intro": "Cvičenie prebieha len na 6, 7, 8 alebo 9 metrov. Vždy začínate na 6 metroch."
+        },
+        "series": {
+          "title": "Série 3 striel",
+          "intro": "V každom kroku vystrelíte 3 strely z aktuálnej vzdialenosti. Každý striel sa ukladá samostatne."
+        },
+        "results": {
+          "title": "Možné výsledky"
+        },
+        "progression": {
+          "title": "Postup",
+          "items": [
+            "0 alebo 1 úspech z 3: posun o jednu vzdialenosť nadol (min. 6 m).",
+            "2 úspechy z 3: ostanete na rovnakej vzdialenosti.",
+            "3 úspechy z 3: posun o jednu vzdialenosť nahor (max. 9 m)."
+          ]
+        },
+        "special": {
+          "title": "Záchranný carreau",
+          "intro": "Ak prvé dva strely sú minuté a tretí je carreau, séria sa počíta ako 1/3 a zostávate na rovnakej vzdialenosti.",
+          "items": [
+            "Prvé dva strely zostávú zaznamenané ako minuté.",
+            "Tretí zostáva zaznamenaný ako carreau.",
+            "Chique alebo zásah na treťom strele nespúšťa toto pravidlo."
+          ]
+        },
+        "victory": {
+          "title": "Víťazstvo",
+          "intro": "Cvičenie vyhráte, ak v jednej sérii na 9 metroch dosiahnete 3 úspešné strely (chique, zásah alebo carreau)."
+        }
+      }
+    },
+    "results": {
+      "missed": "Minuté",
+      "chique": "Chique",
+      "hit": "Zásah",
+      "carreau": "Carreau"
+    },
+    "consequence": {
+      "down": "Séria {count}/3: posun nadol o jednu vzdialenosť.",
+      "stay": "Séria {count}/3: zostávate na rovnakej vzdialenosti.",
+      "up": "Séria {count}/3: posun nahor o jednu vzdialenosť."
+    },
+    "play": {
+      "seriesLabel": "Séria č. {n}",
+      "currentDistance": "Vzdialenosť: {n} m",
+      "successInSeries": "Úspechy v sérii: {count}/{total}",
+      "throwLabel": "Striel {n}",
+      "validateSeries": "Potvrdiť sériu",
+      "undoLastSeries": "Opraviť predchádzajúcu sériu",
+      "rules": "Pravidlá",
+      "abandon": "Ukončiť",
+      "outcomeTitle": "Výsledok série",
+      "specialApplied": "Použité pravidlo záchranného carreau.",
+      "nextDistance": "Ďalšia séria na {n} m.",
+      "continue": "Pokračovať"
+    },
+    "victory": {
+      "title": "Cvičenie splnené!",
+      "subtitle": "Gratulujeme — perfektná séria na 9 metroch.",
+      "seriesCount": "{n} odohraných sérií",
+      "recapTitle": "Prehľad",
+      "seriesLine": "Séria {n} · {distance} m",
+      "successTag": "{count}/3",
+      "backHome": "Späť na úvod"
+    },
+    "resume": {
+      "title": "Prebiehajúce kolo",
+      "message": "Kolo už prebieha. Chcete pokračovať alebo ho ukončiť?",
+      "continue": "Pokračovať",
+      "abandon": "Ukončiť"
+    },
+    "abandon": {
+      "title": "Ukončiť kolo?",
+      "message": "Aktuálny postup sa stratí.",
+      "cancel": "Zrušiť",
+      "confirm": "Ukončiť"
+    }
+  },
   "pointing": {
     "home": {
       "title": "Presný point",
@@ -1542,7 +1643,7 @@
       },
       "tirSautee": {
         "title": "Streľba v skoku",
-        "description": "Cvičenie streľby v skoku — čoskoro."
+        "description": "Postup od 6 do 9 m v sériách po 3 strely."
       }
     },
     "home": {

@@ -55,7 +55,7 @@ function goPointPrecision(): void {
 }
 
 function goTirSautee(): void {
-  router.push({ name: 'trainingTirSautee' })
+  router.push({ name: 'jumpShotHome' })
 }
 </script>
 

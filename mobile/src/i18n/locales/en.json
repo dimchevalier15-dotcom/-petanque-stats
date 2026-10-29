@@ -1183,6 +1183,107 @@
       }
     }
   },
+  "jumpShot": {
+    "home": {
+      "title": "Jump shot",
+      "subtitle": "Progress from 6 to 9 meters",
+      "rules": "Read the rules",
+      "start": "Start exercise"
+    },
+    "rules": {
+      "title": "Rules",
+      "subtitle": "Jump shot",
+      "start": "Start exercise",
+      "sections": {
+        "setup": {
+          "title": "Setup",
+          "items": [
+            "Place 3 target balls on the terrain.",
+            "Place a second ball 15 cm behind each target (6 balls total).",
+            "Mark 4 shooting circles at 6, 7, 8 and 9 meters."
+          ]
+        },
+        "distances": {
+          "title": "Distances",
+          "intro": "The exercise uses only 6, 7, 8 or 9 meters. You always start at 6 meters."
+        },
+        "series": {
+          "title": "Series of 3 throws",
+          "intro": "At each step you throw 3 shots at the current distance. Each throw is recorded individually."
+        },
+        "results": {
+          "title": "Possible results"
+        },
+        "progression": {
+          "title": "Progression",
+          "items": [
+            "0 or 1 success out of 3: move down one distance (minimum 6 m).",
+            "2 successes out of 3: stay at the same distance.",
+            "3 successes out of 3: move up one distance (maximum 9 m)."
+          ]
+        },
+        "special": {
+          "title": "Saving carreau",
+          "intro": "If the first two throws are missed and the third is a carreau, the series counts as 1/3 and you stay at the same distance.",
+          "items": [
+            "The first two throws remain recorded as missed.",
+            "The third remains recorded as carreau.",
+            "A chique or hit on the third throw does not trigger this rule."
+          ]
+        },
+        "victory": {
+          "title": "Victory",
+          "intro": "You win by scoring 3 successful throws (chique, hit or carreau) in one series at 9 meters."
+        }
+      }
+    },
+    "results": {
+      "missed": "Missed",
+      "chique": "Chique",
+      "hit": "Hit",
+      "carreau": "Carreau"
+    },
+    "consequence": {
+      "down": "Series {count}/3: you move down one distance.",
+      "stay": "Series {count}/3: you stay at the same distance.",
+      "up": "Series {count}/3: you move up one distance."
+    },
+    "play": {
+      "seriesLabel": "Series #{n}",
+      "currentDistance": "Distance: {n} m",
+      "successInSeries": "Successes in series: {count}/{total}",
+      "throwLabel": "Throw {n}",
+      "validateSeries": "Submit series",
+      "undoLastSeries": "Edit previous series",
+      "rules": "Rules",
+      "abandon": "Abandon",
+      "outcomeTitle": "Series result",
+      "specialApplied": "Saving carreau rule applied.",
+      "nextDistance": "Next series at {n} m.",
+      "continue": "Continue"
+    },
+    "victory": {
+      "title": "Exercise completed!",
+      "subtitle": "Well done — perfect series at 9 meters.",
+      "seriesCount": "{n} series played",
+      "recapTitle": "Summary",
+      "seriesLine": "Series {n} · {distance} m",
+      "successTag": "{count}/3",
+      "backHome": "Back to home"
+    },
+    "resume": {
+      "title": "Session in progress",
+      "message": "A session is already in progress. Resume or abandon it?",
+      "continue": "Resume",
+      "abandon": "Abandon"
+    },
+    "abandon": {
+      "title": "Abandon session?",
+      "message": "Current progress will be lost.",
+      "cancel": "Cancel",
+      "confirm": "Abandon"
+    }
+  },
   "pointing": {
     "home": {
       "title": "Precision pointing",
@@ -1575,7 +1676,7 @@
       },
       "tirSautee": {
         "title": "Jump shot",
-        "description": "Jump shooting drill — coming soon."
+        "description": "Progress from 6 to 9 m in series of 3 throws."
       }
     },
     "home": {
