@@ -1343,6 +1343,27 @@
     }
   },
   "training": {
+    "menu": {
+      "title": "Tréning",
+      "subtitle": "Vyber cvičenie",
+      "comingSoon": "Toto cvičenie čoskoro.",
+      "boules": {
+        "title": "Bod alebo streľba",
+        "description": "Sezóny na vzdialenosť, história a štatistiky."
+      },
+      "precisionShooting": {
+        "title": "Presná streľba",
+        "description": "Päť staníc, história a štatistiky."
+      },
+      "pointPrecision": {
+        "title": "Presný bod",
+        "description": "Cvičenie na bod — čoskoro."
+      },
+      "tirSautee": {
+        "title": "Streľba v skoku",
+        "description": "Cvičenie streľby v skoku — čoskoro."
+      }
+    },
     "home": {
       "title": "Tréning",
       "subtitle": "Bod alebo streľba, za pár sekúnd",

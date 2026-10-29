@@ -1411,6 +1411,27 @@
     }
   },
   "training": {
+    "menu": {
+      "title": "Entraînement",
+      "subtitle": "Choisis un exercice",
+      "comingSoon": "Cet exercice arrive bientôt.",
+      "boules": {
+        "title": "Point ou tir",
+        "description": "Séances à distance, historique et statistiques."
+      },
+      "precisionShooting": {
+        "title": "Tir de précision",
+        "description": "Cinq postes, historique et statistiques."
+      },
+      "pointPrecision": {
+        "title": "Point de précision",
+        "description": "Exercice dédié au point — bientôt disponible."
+      },
+      "tirSautee": {
+        "title": "Tir à la sautée",
+        "description": "Exercice de tir en sautée — bientôt disponible."
+      }
+    },
     "home": {
       "title": "Entraînement",
       "subtitle": "Point ou tir, en quelques secondes",

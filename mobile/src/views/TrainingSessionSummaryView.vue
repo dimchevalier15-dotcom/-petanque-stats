@@ -1,6 +1,6 @@
 <template>
   <AppPage>
-    <PageHeader :title="t('training.summary.title')" :back-to="{ name: 'trainingHome' }" />
+    <PageHeader :title="t('training.summary.title')" :back-to="{ name: 'trainingBoules' }" />
 
     <section v-if="summary" class="summary">
       <div class="hero-banner app-card">
@@ -78,7 +78,7 @@ function formatDate(iso: string | null): string {
 }
 
 function goHome(): void {
-  router.push({ name: 'trainingHome' })
+  router.push({ name: 'trainingBoules' })
 }
 
 function goStats(): void {

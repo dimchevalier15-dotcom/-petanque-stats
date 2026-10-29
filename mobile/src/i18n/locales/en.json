@@ -1386,6 +1386,27 @@
     }
   },
   "training": {
+    "menu": {
+      "title": "Training",
+      "subtitle": "Choose an exercise",
+      "comingSoon": "This exercise is coming soon.",
+      "boules": {
+        "title": "Point or shot",
+        "description": "Distance sessions, history and statistics."
+      },
+      "precisionShooting": {
+        "title": "Precision shooting",
+        "description": "Five workshops, history and statistics."
+      },
+      "pointPrecision": {
+        "title": "Precision pointing",
+        "description": "Dedicated pointing drill — coming soon."
+      },
+      "tirSautee": {
+        "title": "Jump shot",
+        "description": "Jump shooting drill — coming soon."
+      }
+    },
     "home": {
       "title": "Training",
       "subtitle": "Point or shoot, in seconds",

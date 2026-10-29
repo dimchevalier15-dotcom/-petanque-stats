@@ -3,7 +3,7 @@
     <PageHeader
       :title="t('training.stats.title')"
       :subtitle="t('training.stats.subtitle')"
-      :back-to="{ name: 'trainingHome' }"
+      :back-to="{ name: 'trainingBoules' }"
     />
 
     <div class="type-filter">
@@ -170,7 +170,7 @@ function setTypeFilter(value: TrainingType | 'all'): void {
 }
 
 function goHome(): void {
-  router.push({ name: 'trainingHome' })
+  router.push({ name: 'trainingBoules' })
 }
 
 async function load(options: { refresh?: boolean } = {}): Promise<void> {

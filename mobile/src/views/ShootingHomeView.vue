@@ -1,5 +1,6 @@
 <template>
-  <AppPage :title="t('shooting.home.title')" :subtitle="t('shooting.home.subtitle')">
+  <AppPage>
+    <PageHeader :title="t('shooting.home.title')" :subtitle="t('shooting.home.subtitle')" />
     <div class="home-actions">
       <Button
         class="action-primary"
@@ -77,6 +78,7 @@ import Dialog from 'primevue/dialog'
 import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import EmptyState from '../components/layout/EmptyState.vue'
+import PageHeader from '../components/layout/PageHeader.vue'
 import { useDateFormat } from '../composables/useDateFormat'
 import { shootingSessionsService } from '../services/shootingSessions'
 import { useImpersonationStore } from '../stores/impersonation'

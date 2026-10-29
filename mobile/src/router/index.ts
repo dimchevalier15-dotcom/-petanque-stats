@@ -13,6 +13,7 @@ import MyStatsView from '../views/MyStatsView.vue'
 import AccountSettingsView from '../views/AccountSettingsView.vue'
 import ShootingHomeView from '../views/ShootingHomeView.vue'
 import TrainingHomeView from '../views/TrainingHomeView.vue'
+import TrainingBoulesView from '../views/TrainingBoulesView.vue'
 import PrivacyView from '../views/PrivacyView.vue'
 import TermsView from '../views/TermsView.vue'
 import LegalNoticeView from '../views/LegalNoticeView.vue'
@@ -34,42 +35,42 @@ const routes: RouteRecordRaw[] = [
   { path: LEGAL_PATHS.terms, name: 'terms', component: TermsView, meta: { layout: 'focus' } },
   { path: LEGAL_PATHS.legal, name: 'legal', component: LegalNoticeView, meta: { layout: 'focus' } },
   { path: LEGAL_PATHS.deleteAccount, name: 'deleteAccount', component: DeleteAccountView, meta: { layout: 'focus' } },
-  { path: '/settings', name: 'settings', component: AccountSettingsView, meta: { layout: 'focus' } },
+  { path: '/settings', name: 'settings', component: AccountSettingsView, meta: { layout: 'main' } },
   {
     path: '/admin',
     name: 'adminHome',
     component: () => import('../views/AdminHomeView.vue'),
-    meta: { layout: 'focus', requiresAdmin: true },
+    meta: { layout: 'main', requiresAdmin: true },
   },
   {
     path: '/admin/impersonate',
     name: 'adminImpersonate',
     component: () => import('../views/AdminImpersonateView.vue'),
-    meta: { layout: 'focus', requiresAdmin: true },
+    meta: { layout: 'main', requiresAdmin: true },
   },
   {
     path: '/admin/competitions',
     name: 'adminCompetitions',
     component: () => import('../views/AdminCompetitionsView.vue'),
-    meta: { layout: 'focus', requiresAdmin: true },
+    meta: { layout: 'main', requiresAdmin: true },
   },
   {
     path: '/admin/clubs',
     name: 'adminClubs',
     component: () => import('../views/AdminClubsView.vue'),
-    meta: { layout: 'focus', requiresAdmin: true },
+    meta: { layout: 'main', requiresAdmin: true },
   },
   {
     path: '/admin/coach',
     name: 'adminCoach',
     component: () => import('../views/AdminCoachView.vue'),
-    meta: { layout: 'focus', requiresAdmin: true },
+    meta: { layout: 'main', requiresAdmin: true },
   },
   {
     path: '/admin/selections-globales',
     name: 'adminSelectionGlobales',
     component: () => import('../views/AdminSelectionGlobalesView.vue'),
-    meta: { layout: 'focus', requiresAdmin: true },
+    meta: { layout: 'main', requiresAdmin: true },
   },
   {
     path: '/coach',
@@ -122,7 +123,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/PendingValidationView.vue'),
     meta: { layout: 'focus' },
   },
-  { path: '/matches/guidelines', name: 'guidelines', component: GuidelinessView, meta: { layout: 'focus' } },
+  { path: '/matches/guidelines', name: 'guidelines', component: GuidelinessView, meta: { layout: 'main' } },
   { path: '/matches/:id/score', name: 'matchScore', component: () => import('../views/MatchPlayView.vue'), meta: { layout: 'play' } },
   { path: '/matches/:id/players', name: 'matchPlayers', component: () => import('../views/MatchPlayersView.vue'), meta: { layout: 'focus' } },
   { path: '/live/:uuid/overlay', name: 'liveMatchOverlay', component: () => import('../views/LiveMatchOverlayView.vue'), meta: { layout: 'overlay' } },
@@ -149,6 +150,24 @@ const routes: RouteRecordRaw[] = [
   { path: '/shooting/:id/summary', name: 'shootingSessionSummary', component: () => import('../views/ShootingSessionSummaryView.vue'), meta: { layout: 'focus' } },
   { path: '/shooting/:id/context', name: 'shootingSessionContext', component: () => import('../views/ShootingSessionContextView.vue'), meta: { layout: 'focus' } },
   { path: '/training', name: 'trainingHome', component: TrainingHomeView, meta: { layout: 'main' } },
+  {
+    path: '/training/boules',
+    name: 'trainingBoules',
+    component: TrainingBoulesView,
+    meta: { layout: 'main' },
+  },
+  {
+    path: '/training/point-precision',
+    name: 'trainingPointPrecision',
+    component: () => import('../views/TrainingExercisePlaceholderView.vue'),
+    meta: { layout: 'main', trainingExercise: 'pointPrecision' },
+  },
+  {
+    path: '/training/tir-sautee',
+    name: 'trainingTirSautee',
+    component: () => import('../views/TrainingExercisePlaceholderView.vue'),
+    meta: { layout: 'main', trainingExercise: 'tirSautee' },
+  },
   { path: '/training/stats', name: 'trainingStats', component: () => import('../views/TrainingStatsView.vue'), meta: { layout: 'main' } },
   { path: '/training/:id', name: 'trainingSession', component: () => import('../views/TrainingSessionView.vue'), meta: { layout: 'play' } },
   { path: '/training/:id/summary', name: 'trainingSessionSummary', component: () => import('../views/TrainingSessionSummaryView.vue'), meta: { layout: 'focus' } },

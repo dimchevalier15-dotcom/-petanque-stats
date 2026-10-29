@@ -154,7 +154,7 @@ async function confirmAbandon(): Promise<void> {
   try {
     await trainingSessionsService.abandon(sessionId)
     abandonDialog.value = false
-    router.push({ name: 'trainingHome' })
+    router.push({ name: 'trainingBoules' })
   } finally {
     abandoning.value = false
   }
