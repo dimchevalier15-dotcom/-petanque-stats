@@ -26,7 +26,7 @@ export function useMatchHistoryFilters() {
 
   const defaultDateFrom = (() => {
     const today = new Date()
-    const from = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate())
+    const from = new Date(today.getFullYear(), today.getMonth() - 12, today.getDate())
     return toInputDate(from)
   })()
 

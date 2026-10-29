@@ -24,7 +24,7 @@ export interface StatsDateRangeParams {
 
 export function useStatsDateRange() {
   const today = startOfDay(new Date())
-  const defaultFrom = subtractMonths(today, 1)
+  const defaultFrom = subtractMonths(today, 12)
 
   const dateFrom = ref(toInputDate(defaultFrom))
   const dateTo = ref(toInputDate(today))
