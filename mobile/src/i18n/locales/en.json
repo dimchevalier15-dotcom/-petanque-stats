@@ -803,7 +803,10 @@
       "sortShootingBest": "Shooting best",
       "shootingAverage": "Avg.",
       "shootingBest": "Best",
-      "shootingSessions": "{n} session(s)"
+      "shootingSessions": "{n} session(s)",
+      "pointingAverage": "Avg. point",
+      "pointingBest": "Point best",
+      "pointingSessions": "{n} point session(s)"
     },
     "addPlayer": {
       "action": "Add player",
@@ -834,6 +837,7 @@
         "label": "Player sections",
         "shooting": "Precision shooting",
         "shootingShort": "Shooting",
+        "pointingShort": "Pointing",
         "training": "Training",
         "trainingShort": "Training",
         "matches": "Matches",
@@ -1183,7 +1187,11 @@
     "home": {
       "title": "Precision pointing",
       "subtitle": "Complete the 5 official workshops",
-      "newSession": "New session"
+      "newSession": "New session",
+      "stats": "Statistics",
+      "historyTitle": "Session history",
+      "empty": "No pointing sessions yet.",
+      "scoreOn300": "{score} / 300"
     },
     "resume": {
       "title": "Session in progress",
@@ -1251,6 +1259,84 @@
       "message": "Entered results will be lost. This cannot be undone.",
       "cancel": "Cancel",
       "confirm": "Abandon"
+    },
+    "context": {
+      "titleAdd": "Add a title",
+      "titleEdit": "Edit title",
+      "hint": "Optional: add context for this session.",
+      "fields": {
+        "playedAt": "Session date",
+        "nature": "Context",
+        "title": "Title",
+        "description": "Description"
+      },
+      "nature": {
+        "training": "Training",
+        "competition": "Competition"
+      },
+      "actions": {
+        "add": "Add a title",
+        "edit": "Edit title",
+        "save": "Save",
+        "skip": "Skip"
+      }
+    },
+    "stats": {
+      "title": "Pointing statistics",
+      "subtitle": "Performance by workshop and distance",
+      "filters": { "all": "All" },
+      "resultTiers": {
+        "missed": "Miss",
+        "p3": "3 pts",
+        "p9": "9 pts",
+        "p15": "15 pts"
+      },
+      "kpi": {
+        "sessions": "Sessions",
+        "best": "Best",
+        "average": "Average"
+      },
+      "hero": {
+        "averageSession": "Average session score",
+        "shotsTracked": "{n} shots tracked"
+      },
+      "insights": {
+        "strength": "Strength",
+        "toWork": "To improve"
+      },
+      "sections": {
+        "evolution": "Progress",
+        "workshops": "By workshop",
+        "distances": "By distance",
+        "results": "Result types",
+        "heatmap": "Performance map"
+      },
+      "evolution": {
+        "hint": "Total score trend on your recent sessions."
+      },
+      "workshops": {
+        "hint": "Average score per shot by workshop (max 15 pts)."
+      },
+      "distances": {
+        "hint": "Average score per shot by distance.",
+        "best": "Best: {n} m",
+        "weakest": "Weakest: {n} m"
+      },
+      "results": {
+        "hint": "Breakdown of all shot results."
+      },
+      "heatmap": {
+        "hint": "Color intensity = average score. Number = shot count."
+      },
+      "empty": {
+        "loadErrorTitle": "Could not load statistics",
+        "retry": "Retry",
+        "noSessionsTitle": "No completed sessions",
+        "noSessionsHint": "Complete a first session to see pointing stats.",
+        "startSession": "Start a session",
+        "noDataInPeriodTitle": "No sessions in this period",
+        "noDataInPeriodHint": "Widen the date range to see pointing stats."
+      }
     },
     "summary": {
       "title": "Session summary",

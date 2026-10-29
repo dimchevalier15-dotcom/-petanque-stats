@@ -124,4 +124,16 @@ class PointingSession
         $this->playedAt = $this->finishedAt;
         $this->totalScore = $totalScore;
     }
+
+    public function setPlayedAt(DateTimeImmutable $playedAt): void
+    {
+        $this->playedAt = $playedAt;
+    }
+
+    public function setContext(?ShootingContextNature $contextNature, ?string $title, ?string $description): void
+    {
+        $this->contextNature = $contextNature;
+        $this->title = $title;
+        $this->description = $description;
+    }
 }

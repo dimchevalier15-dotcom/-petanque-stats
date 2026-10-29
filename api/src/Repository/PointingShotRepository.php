@@ -6,7 +6,13 @@ namespace App\Repository;
 
 use App\Entity\PointingSession;
 use App\Entity\PointingShot;
+use App\Enum\PointingShotResult;
+use App\Enum\PointingWorkshop;
+use App\Enum\ShootingContextNature;
+use App\Enum\ShootingDistance;
+use App\ValueObject\DateRange;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -33,5 +39,146 @@ final class PointingShotRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
 
         return $items;
+    }
+
+    /**
+     * @return list<array{workshop:int,shotCount:int,sumScore:int}>
+     */
+    public function aggregateByWorkshopForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
+    {
+        $qb = $this->createQueryBuilder('sh')
+            ->select('sh.workshop as workshop, COUNT(sh.id) as shotCount, SUM(sh.score) as sumScore')
+            ->join('sh.session', 's')
+            ->where('s.player = :pid')
+            ->andWhere('s.finishedAt IS NOT NULL')
+            ->setParameter('pid', $playerId)
+            ->groupBy('sh.workshop')
+            ->orderBy('sh.workshop', 'ASC');
+
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
+
+        $rows = $qb->getQuery()->getArrayResult();
+
+        return array_map(
+            static fn (array $r): array => [
+                'workshop' => $r['workshop'] instanceof PointingWorkshop ? $r['workshop']->value : (int) $r['workshop'],
+                'shotCount' => (int) $r['shotCount'],
+                'sumScore' => (int) $r['sumScore'],
+            ],
+            $rows,
+        );
+    }
+
+    /**
+     * @return list<array{distance:int,shotCount:int,sumScore:int}>
+     */
+    public function aggregateByDistanceForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
+    {
+        $qb = $this->createQueryBuilder('sh')
+            ->select('sh.distance as distance, COUNT(sh.id) as shotCount, SUM(sh.score) as sumScore')
+            ->join('sh.session', 's')
+            ->where('s.player = :pid')
+            ->andWhere('s.finishedAt IS NOT NULL')
+            ->setParameter('pid', $playerId)
+            ->groupBy('sh.distance')
+            ->orderBy('sh.distance', 'ASC');
+
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
+
+        $rows = $qb->getQuery()->getArrayResult();
+
+        return array_map(
+            static fn (array $r): array => [
+                'distance' => $r['distance'] instanceof ShootingDistance ? $r['distance']->value : (int) $r['distance'],
+                'shotCount' => (int) $r['shotCount'],
+                'sumScore' => (int) $r['sumScore'],
+            ],
+            $rows,
+        );
+    }
+
+    /**
+     * @return list<array{result:string,count:int}>
+     */
+    public function aggregateByResultForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
+    {
+        $qb = $this->createQueryBuilder('sh')
+            ->select('sh.result as result, COUNT(sh.id) as count')
+            ->join('sh.session', 's')
+            ->where('s.player = :pid')
+            ->andWhere('s.finishedAt IS NOT NULL')
+            ->setParameter('pid', $playerId)
+            ->groupBy('sh.result');
+
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
+
+        $rows = $qb->getQuery()->getArrayResult();
+
+        return array_map(
+            static fn (array $r): array => [
+                'result' => $r['result'] instanceof PointingShotResult ? $r['result']->value : (string) $r['result'],
+                'count' => (int) $r['count'],
+            ],
+            $rows,
+        );
+    }
+
+    /**
+     * @return list<array{workshop:int,distance:int,shotCount:int,sumScore:int}>
+     */
+    public function aggregateByWorkshopAndDistanceForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): array
+    {
+        $qb = $this->createQueryBuilder('sh')
+            ->select('sh.workshop as workshop, sh.distance as distance, COUNT(sh.id) as shotCount, SUM(sh.score) as sumScore')
+            ->join('sh.session', 's')
+            ->where('s.player = :pid')
+            ->andWhere('s.finishedAt IS NOT NULL')
+            ->setParameter('pid', $playerId)
+            ->groupBy('sh.workshop, sh.distance')
+            ->orderBy('sh.workshop', 'ASC')
+            ->addOrderBy('sh.distance', 'ASC');
+
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
+
+        $rows = $qb->getQuery()->getArrayResult();
+
+        return array_map(
+            static fn (array $r): array => [
+                'workshop' => $r['workshop'] instanceof PointingWorkshop ? $r['workshop']->value : (int) $r['workshop'],
+                'distance' => $r['distance'] instanceof ShootingDistance ? $r['distance']->value : (int) $r['distance'],
+                'shotCount' => (int) $r['shotCount'],
+                'sumScore' => (int) $r['sumScore'],
+            ],
+            $rows,
+        );
+    }
+
+    public function countShotsForPlayer(int $playerId, ?ShootingContextNature $contextNature = null, ?DateRange $range = null): int
+    {
+        $qb = $this->createQueryBuilder('sh')
+            ->select('COUNT(sh.id)')
+            ->join('sh.session', 's')
+            ->where('s.player = :pid')
+            ->andWhere('s.finishedAt IS NOT NULL')
+            ->setParameter('pid', $playerId);
+
+        $this->applySessionFilters($qb, 's', $contextNature, $range);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    private function applySessionFilters(QueryBuilder $qb, string $sessionAlias, ?ShootingContextNature $contextNature, ?DateRange $range): void
+    {
+        if ($contextNature !== null) {
+            $qb->andWhere($sessionAlias.'.contextNature = :contextNature')
+                ->setParameter('contextNature', $contextNature);
+        }
+
+        if ($range !== null) {
+            $qb->andWhere($sessionAlias.'.playedAt >= :rangeFrom')
+                ->andWhere($sessionAlias.'.playedAt <= :rangeTo')
+                ->setParameter('rangeFrom', $range->from)
+                ->setParameter('rangeTo', $range->to);
+        }
     }
 }

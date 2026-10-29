@@ -28,3 +28,27 @@ export interface PointingSessionSummaryResponseDto {
   description: string | null
   workshops: PointingWorkshopSummaryDto[]
 }
+
+export interface PointingSessionHistoryItemDto {
+  id: number
+  createdAt: string
+  playedAt: string
+  finishedAt: string
+  totalScore: number
+  contextNature: string | null
+  title: string | null
+}
+
+export interface PointingSessionHistoryResponseDto {
+  page: number
+  pageSize: number
+  total: number
+  items: PointingSessionHistoryItemDto[]
+}
+
+export interface UpdatePointingSessionContextRequestDto {
+  contextNature?: string | null
+  title?: string | null
+  description?: string | null
+  playedAt?: string | null
+}

@@ -14,6 +14,7 @@ final class CoachPlayerListItemResponse
         public CoachPlayerShotSummaryResponse $point,
         public CoachPlayerShotSummaryResponse $tir,
         public CoachPlayerShootingSummaryResponse $shooting,
+        public CoachPlayerPointingSummaryResponse $pointing,
     ) {
     }
 }

@@ -30,7 +30,7 @@
     </div>
 
     <div v-show="activeTab === 'training'" class="coach-tab-panel">
-      <EmptyState :title="t('coach.player.trainingComingSoon')" icon="pi pi-wrench" />
+      <PointingStatsPanel :fetch-stats="fetchCoachPlayerPointingStats" class="coach-stats-panel" />
     </div>
 
     <div v-show="activeTab === 'matches'" class="coach-tab-panel">
@@ -59,14 +59,15 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import AppPage from '../components/layout/AppPage.vue'
-import EmptyState from '../components/layout/EmptyState.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
+import PointingStatsPanel from '../components/pointing/PointingStatsPanel.vue'
 import ShootingStatsPanel from '../components/shooting/ShootingStatsPanel.vue'
 import PlayerStatsPanel from '../components/stats/PlayerStatsPanel.vue'
 import { useCoachSpaceFromRoute } from '../composables/useCoachSpace'
 import type { PlayerStatsFetcher } from '../composables/usePlayerStatsPanel'
 import type { StatsDateRangeParams } from '../composables/useStatsDateRange'
 import type { MatchNature } from '../models/MatchContext'
+import type { PointingContextNature, PointingStats } from '../models/Pointing'
 import type { PlayerStats } from '../models/PlayerStats'
 import type { ShootingContextNature, ShootingStats } from '../models/Shooting'
 import { coachService } from '../services/coach'
@@ -86,7 +87,7 @@ const activeTab = ref<CoachPlayerTab>('shooting')
 
 const tabs = computed(() => [
   { id: 'shooting' as const, icon: 'pi pi-bullseye', label: t('coach.player.tabs.shootingShort') },
-  { id: 'training' as const, icon: 'pi pi-wrench', label: t('coach.player.tabs.trainingShort') },
+  { id: 'training' as const, icon: 'pi pi-circle', label: t('coach.player.tabs.pointingShort') },
   { id: 'matches' as const, icon: 'pi pi-chart-line', label: t('coach.player.tabs.matchesShort') },
 ])
 
@@ -131,6 +132,13 @@ function fetchCoachPlayerShootingStats(
   nature: ShootingContextNature | 'all',
 ): Promise<ShootingStats> {
   return coachService.getPlayerShootingStats(playerId, range, nature, coachSpaceQuery.value)
+}
+
+function fetchCoachPlayerPointingStats(
+  range: StatsDateRangeParams,
+  nature: PointingContextNature | 'all',
+): Promise<PointingStats> {
+  return coachService.getPlayerPointingStats(playerId, range, nature, coachSpaceQuery.value)
 }
 
 const fetchCoachPlayerStats: PlayerStatsFetcher = (range, nature, type, distance, competitionId) =>

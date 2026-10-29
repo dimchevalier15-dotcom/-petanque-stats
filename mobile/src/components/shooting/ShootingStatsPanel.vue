@@ -1,27 +1,29 @@
 <template>
   <div class="shooting-stats-panel">
-    <div class="nature-filter">
-      <button
-        v-for="opt in natureFilterOptions"
-        :key="opt.value"
-        type="button"
-        class="filter-btn"
-        :class="{ active: natureFilter === opt.value }"
-        @click="setNatureFilter(opt.value)"
-      >
-        {{ opt.label }}
-      </button>
-    </div>
+    <div class="stats-filters">
+      <div class="nature-filter">
+        <button
+          v-for="opt in natureFilterOptions"
+          :key="opt.value"
+          type="button"
+          class="filter-btn"
+          :class="{ active: natureFilter === opt.value }"
+          @click="setNatureFilter(opt.value)"
+        >
+          {{ opt.label }}
+        </button>
+      </div>
 
-    <StatsDateRangeFilter
-      v-if="showDateFilter"
-      v-model:date-from="dateFrom"
-      v-model:date-to="dateTo"
-      v-model:date-filter-enabled="dateFilterEnabled"
-      :max-date="maxDate"
-      show-all-button
-      @change="onDateRangeChange"
-    />
+      <StatsDateRangeFilter
+        v-if="showDateFilter"
+        v-model:date-from="dateFrom"
+        v-model:date-to="dateTo"
+        v-model:date-filter-enabled="dateFilterEnabled"
+        :max-date="maxDate"
+        show-all-button
+        @change="onDateRangeChange"
+      />
+    </div>
 
     <div v-if="loading && !stats" class="loading">
       <ProgressSpinner stroke-width="4" />
@@ -311,17 +313,23 @@ defineExpose({ reload: load })
 </script>
 
 <style scoped>
+.stats-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-sm);
+}
+
 .panels-grouper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--app-space-sm);
+  padding-top: var(--app-space-sm);
 }
 
 .nature-filter {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--app-space-xs);
-  margin-bottom: var(--app-space-sm);
 }
 
 .filter-btn {

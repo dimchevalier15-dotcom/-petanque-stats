@@ -9,6 +9,16 @@
         <span class="hero-date">{{ formatDate(summary.playedAt) }}</span>
       </div>
 
+      <section v-if="summary.contextNature || summary.title || summary.description" class="panel app-card context-panel">
+        <Tag
+          v-if="summary.contextNature"
+          :value="t(`pointing.context.nature.${summary.contextNature}`)"
+          severity="info"
+        />
+        <h3 v-if="summary.title">{{ summary.title }}</h3>
+        <p v-if="summary.description" class="context-description">{{ summary.description }}</p>
+      </section>
+
       <section class="panel app-card heatmap-panel">
         <h3>{{ t('pointing.summary.performanceMap.title') }}</h3>
         <p class="panel-hint">{{ t('pointing.summary.performanceMap.hint') }}</p>
@@ -36,6 +46,13 @@
       </section>
 
       <div class="app-actions">
+        <Button
+          class="w-full"
+          severity="secondary"
+          outlined
+          :label="contextActionLabel"
+          @click="openContext"
+        />
         <Button class="w-full" :label="t('pointing.summary.actions.backHome')" @click="goHome" />
       </div>
     </section>
@@ -43,10 +60,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
+import Tag from 'primevue/tag'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import { useDateFormat } from '../composables/useDateFormat'
@@ -70,6 +88,12 @@ const router = useRouter()
 
 const sessionId = Number(route.params.id)
 const summary = ref<PointingSessionSummary | null>(null)
+
+const contextActionLabel = computed(() =>
+  summary.value && (summary.value.contextNature || summary.value.title || summary.value.description)
+    ? t('pointing.context.actions.edit')
+    : t('pointing.context.actions.add'),
+)
 
 const workshops = POINTING_WORKSHOPS
 const distances = POINTING_DISTANCES
@@ -101,6 +125,10 @@ function formatDate(iso: string | null): string {
 
 function goHome(): void {
   router.push({ name: 'trainingPointPrecision' })
+}
+
+function openContext(): void {
+  router.push({ name: 'pointingSessionContext', params: { id: sessionId } })
 }
 
 onMounted(async () => {
@@ -242,6 +270,23 @@ onMounted(async () => {
   text-align: center;
   line-height: 1.1;
   max-width: 100%;
+}
+
+.context-panel {
+  gap: 0.375rem;
+}
+
+.context-panel h3 {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.context-description {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--app-text-muted);
+  line-height: 1.45;
+  white-space: pre-wrap;
 }
 
 .w-full {

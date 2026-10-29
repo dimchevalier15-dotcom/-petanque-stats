@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Service\Pointing;
 
 use App\Dto\Request\CompletePointingSessionRequest;
+use App\Dto\Request\UpdatePointingSessionContextRequest;
+use App\Dto\Response\PointingSessionHistoryItemResponse;
+use App\Dto\Response\PointingSessionHistoryResponse;
 use App\Dto\Response\PointingSessionStartedResponse;
 use App\Dto\Response\PointingSessionSummaryResponse;
 use App\Dto\Response\PointingShotSummary;
@@ -14,6 +17,7 @@ use App\Entity\PointingSession;
 use App\Entity\PointingShot;
 use App\Enum\PointingShotResult;
 use App\Enum\PointingWorkshop;
+use App\Enum\ShootingContextNature;
 use App\Enum\ShootingDistance;
 use App\Repository\PlayerRepository;
 use App\Repository\PointingSessionRepository;
@@ -111,6 +115,50 @@ final class PointingSessionService
 
         $this->em->remove($session);
         $this->em->flush();
+    }
+
+    public function updateContext(string $token, int $sessionId, UpdatePointingSessionContextRequest $req): PointingSessionSummaryResponse
+    {
+        $session = $this->getOwnedSession($token, $sessionId);
+
+        $session->setContext(
+            $this->resolveContextNature($req->contextNature),
+            $this->normalizeOptionalString($req->title),
+            $this->normalizeOptionalString($req->description),
+        );
+        $this->applyPlayedAt($session, $req->playedAt);
+        $this->em->flush();
+
+        return $this->toSummaryResponse($session);
+    }
+
+    public function history(
+        string $token,
+        int $page = 1,
+        int $pageSize = 20,
+        ?int $impersonatePlayerId = null,
+    ): PointingSessionHistoryResponse {
+        $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
+        if ($context->playerId === null) {
+            return new PointingSessionHistoryResponse(page: $page, pageSize: $pageSize, total: 0, items: []);
+        }
+
+        [$total, $sessions] = $this->sessions->findHistoryForPlayer($context->playerId, $page, $pageSize);
+
+        $items = array_map(
+            static fn (PointingSession $s): PointingSessionHistoryItemResponse => new PointingSessionHistoryItemResponse(
+                id: (int) $s->getId(),
+                createdAt: $s->getCreatedAt()->format(DATE_ATOM),
+                playedAt: $s->getPlayedAt()->format(DATE_ATOM),
+                finishedAt: (string) $s->getFinishedAt()?->format(DATE_ATOM),
+                totalScore: (int) $s->getTotalScore(),
+                contextNature: $s->getContextNature()?->value,
+                title: $s->getTitle(),
+            ),
+            $sessions,
+        );
+
+        return new PointingSessionHistoryResponse(page: $page, pageSize: $pageSize, total: $total, items: $items);
     }
 
     /**
@@ -273,6 +321,45 @@ final class PointingSessionService
             description: $session->getDescription(),
             workshops: $workshops,
         );
+    }
+
+    private function normalizeOptionalString(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
+    }
+
+    private function resolveContextNature(?string $value): ?ShootingContextNature
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return ShootingContextNature::from($value);
+    }
+
+    private function applyPlayedAt(PointingSession $session, ?string $playedAt): void
+    {
+        if ($playedAt === null || $playedAt === '') {
+            return;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('Y-m-d', $playedAt);
+        if ($date === false || $date->format('Y-m-d') !== $playedAt) {
+            return;
+        }
+
+        $current = $session->getPlayedAt();
+        $session->setPlayedAt($current->setDate(
+            (int) $date->format('Y'),
+            (int) $date->format('n'),
+            (int) $date->format('j'),
+        ));
     }
 }
 

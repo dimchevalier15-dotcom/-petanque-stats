@@ -185,7 +185,7 @@ async function finishSession(): Promise<void> {
   try {
     await pointingSessionsService.complete(sessionId, toCompletionPayload())
     clearPointingDraft(sessionId)
-    router.push({ name: 'pointingSessionSummary', params: { id: sessionId } })
+    router.push({ name: 'pointingSessionContext', params: { id: sessionId } })
   } finally {
     finishing.value = false
   }

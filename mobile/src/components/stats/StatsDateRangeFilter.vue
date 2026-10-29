@@ -104,6 +104,7 @@ function onShowAll(): void {
   padding: var(--app-space-md);
   display: grid;
   gap: var(--app-space-sm);
+  margin-bottom: 8px;
 }
 
 .date-range-filter--embedded {

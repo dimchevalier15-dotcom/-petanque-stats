@@ -8,7 +8,9 @@ import type { PlayerTacticalInsightsResponseDto } from '../dto/player/PlayerTact
 import type { MatchHistoryResponseDto } from '../dto/match/MatchHistoryResponse'
 import type { CoachPlayerListResponseDto } from '../dto/coach/CoachPlayerListResponse'
 import type { ShootingStatsResponseDto } from '../dto/shooting/ShootingStatsResponse'
+import type { PointingStatsResponseDto } from '../dto/pointing/PointingStatsResponse'
 import type { CoachPlayerList } from '../models/Coach'
+import type { PointingContextNature, PointingStats } from '../models/Pointing'
 import type { CreatePlayerResponseDto } from '../dto/player/CreatePlayerResponse'
 import type { PlayerItemDto } from '../dto/player/PlayerItem'
 import type { Player } from '../models/Player'
@@ -17,6 +19,21 @@ import type { ShootingContextNature, ShootingStats } from '../models/Shooting'
 import type { PlayerTacticalInsights } from '../models/PlayerTacticalInsights'
 import type { MatchHistoryPage } from '../models/MatchHistory'
 import { mapPlayerStats } from './stats'
+
+function mapPointingStats(dto: PointingStatsResponseDto): PointingStats {
+  return {
+    status: dto.status,
+    summary: { ...dto.summary },
+    evolution: dto.evolution.map((p) => ({ ...p })),
+    byWorkshop: dto.byWorkshop.map((w) => ({ ...w })),
+    byDistance: dto.byDistance.map((d) => ({ ...d })),
+    byResult: dto.byResult.map((r) => ({
+      result: r.result as PointingStats['byResult'][number]['result'],
+      count: r.count,
+    })),
+    heatmap: dto.heatmap.map((c) => ({ ...c })),
+  }
+}
 
 function mapShootingStats(dto: ShootingStatsResponseDto): ShootingStats {
   return {
@@ -49,6 +66,7 @@ function mapCoachList(dto: CoachPlayerListResponseDto): CoachPlayerList {
       point: { ...item.point },
       tir: { ...item.tir },
       shooting: { ...item.shooting },
+      pointing: { ...item.pointing },
     })),
   }
 }
@@ -198,6 +216,22 @@ export const coachService = {
       },
     })
     return mapShootingStats(data)
+  },
+
+  async getPlayerPointingStats(
+    playerId: number,
+    range: StatsDateRangeParams,
+    nature?: PointingContextNature | 'all',
+    space?: CoachSpaceQuery,
+  ): Promise<PointingStats> {
+    const { data } = await api.get<PointingStatsResponseDto>(`/coach/players/${playerId}/pointing/stats`, {
+      params: {
+        ...range,
+        ...coachSpaceParams(space),
+        ...(nature && nature !== 'all' ? { nature } : {}),
+      },
+    })
+    return mapPointingStats(data)
   },
 
   async getPlayerHistory(

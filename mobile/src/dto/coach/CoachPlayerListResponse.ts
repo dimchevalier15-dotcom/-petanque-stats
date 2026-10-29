@@ -10,6 +10,12 @@ export interface CoachPlayerShootingSummaryDto {
   bestSessionScore: number | null
 }
 
+export interface CoachPlayerPointingSummaryDto {
+  sessionsCount: number
+  averageSessionScore: number | null
+  bestSessionScore: number | null
+}
+
 export interface CoachPlayerListItemDto {
   id: number
   firstName: string
@@ -18,6 +24,7 @@ export interface CoachPlayerListItemDto {
   point: CoachPlayerShotSummaryDto
   tir: CoachPlayerShotSummaryDto
   shooting: CoachPlayerShootingSummaryDto
+  pointing: CoachPlayerPointingSummaryDto
 }
 
 export interface CoachPlayerListResponseDto {

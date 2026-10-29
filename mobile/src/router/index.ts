@@ -163,6 +163,18 @@ const routes: RouteRecordRaw[] = [
     meta: { layout: 'main' },
   },
   {
+    path: '/training/point-precision/stats',
+    name: 'pointingStats',
+    component: () => import('../views/PointingStatsView.vue'),
+    meta: { layout: 'main' },
+  },
+  {
+    path: '/training/point-precision/:id/context',
+    name: 'pointingSessionContext',
+    component: () => import('../views/PointingSessionContextView.vue'),
+    meta: { layout: 'focus' },
+  },
+  {
     path: '/training/point-precision/:id',
     name: 'pointingSession',
     component: () => import('../views/PointingSessionView.vue'),

@@ -6,6 +6,7 @@ namespace App\Service;
 
 use App\Dto\Response\CoachPlayerListItemResponse;
 use App\Dto\Response\CoachPlayerListResponse;
+use App\Dto\Response\CoachPlayerPointingSummaryResponse;
 use App\Dto\Response\CoachPlayerShootingSummaryResponse;
 use App\Dto\Response\CoachPlayerShotSummaryResponse;
 use App\Dto\Response\PlayerItem;
@@ -20,6 +21,7 @@ use App\Repository\GameRepository;
 use App\Repository\PlayerRepository;
 use App\Repository\SelectionGlobalePlayerRepository;
 use App\Repository\SelectionGlobaleRepository;
+use App\Repository\PointingSessionRepository;
 use App\Repository\ShootingSessionRepository;
 use App\ValueObject\DateRange;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,6 +36,7 @@ final class CoachService
         private SelectionGlobaleRepository $selections,
         private SelectionGlobalePlayerRepository $selectionPlayers,
         private ShootingSessionRepository $shootingSessions,
+        private PointingSessionRepository $pointingSessions,
         private EntityManagerInterface $em,
     ) {
     }
@@ -201,6 +204,7 @@ final class CoachService
     {
         $playerIds = array_map(static fn (Player $player): int => (int) $player->getId(), $playerList);
         $shootingMap = $this->shootingSessions->summarizeCompletedForPlayers($playerIds, $dateRange);
+        $pointingMap = $this->pointingSessions->summarizeCompletedForPlayers($playerIds, $dateRange);
 
         $items = [];
         foreach ($playerList as $player) {
@@ -210,6 +214,7 @@ final class CoachService
                 $dateRange,
                 $nature,
                 $shootingMap[$playerId] ?? null,
+                $pointingMap[$playerId] ?? null,
             );
         }
 
@@ -218,12 +223,14 @@ final class CoachService
 
     /**
      * @param array{sessionsCount:int,averageSessionScore:float|null,bestSessionScore:int|null}|null $shootingRaw
+     * @param array{sessionsCount:int,averageSessionScore:float|null,bestSessionScore:int|null}|null $pointingRaw
      */
     private function buildListItem(
         Player $player,
         ?DateRange $dateRange,
         ?MatchNature $nature,
         ?array $shootingRaw = null,
+        ?array $pointingRaw = null,
     ): CoachPlayerListItemResponse {
         $playerId = (int) $player->getId();
         $games = $this->games->findCompletedGamesForPlayer($playerId, $nature, $dateRange);
@@ -244,6 +251,23 @@ final class CoachService
             point: $this->toShotSummary($pointRaw),
             tir: $this->toShotSummary($tirRaw),
             shooting: $this->toShootingSummary($shootingRaw),
+            pointing: $this->toPointingSummary($pointingRaw),
+        );
+    }
+
+    /**
+     * @param array{sessionsCount:int,averageSessionScore:float|null,bestSessionScore:int|null}|null $raw
+     */
+    private function toPointingSummary(?array $raw): CoachPlayerPointingSummaryResponse
+    {
+        if ($raw === null) {
+            return new CoachPlayerPointingSummaryResponse(0, null, null);
+        }
+
+        return new CoachPlayerPointingSummaryResponse(
+            sessionsCount: $raw['sessionsCount'],
+            averageSessionScore: $raw['averageSessionScore'],
+            bestSessionScore: $raw['bestSessionScore'],
         );
     }
 

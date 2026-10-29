@@ -84,6 +84,29 @@
             <div v-if="player.shooting.sessionsCount > 0" class="stat-sessions">
               {{ t('coach.list.shootingSessions', { n: player.shooting.sessionsCount }) }}
             </div>
+            <div class="stat-line stat-line--pointing">
+              <span class="stat-label">{{ t('coach.list.pointingAverage') }}</span>
+              <span class="stat-values">
+                <Tag
+                  v-if="player.pointing.averageSessionScore !== null"
+                  :value="`${player.pointing.averageSessionScore}/300`"
+                  :severity="pointingSessionScoreSeverity(player.pointing.averageSessionScore)"
+                />
+                <span v-else class="stat-empty">—</span>
+              </span>
+            </div>
+            <div class="stat-line">
+              <span class="stat-label">{{ t('coach.list.pointingBest') }}</span>
+              <span class="stat-values">
+                <span v-if="player.pointing.bestSessionScore !== null" class="stat-best">
+                  {{ player.pointing.bestSessionScore }}/300
+                </span>
+                <span v-else class="stat-empty">—</span>
+              </span>
+            </div>
+            <div v-if="player.pointing.sessionsCount > 0" class="stat-sessions">
+              {{ t('coach.list.pointingSessions', { n: player.pointing.sessionsCount }) }}
+            </div>
           </div>
         </button>
       </li>
@@ -188,6 +211,7 @@ import PlayerSearchSelect from '../components/players/PlayerSearchSelect.vue'
 import StatsCollapsibleFilters from '../components/stats/StatsCollapsibleFilters.vue'
 import StatsDateRangeFilter from '../components/stats/StatsDateRangeFilter.vue'
 import { sessionScoreSeverity } from '../composables/useShootingStatsCharts'
+import { sessionScoreSeverity as pointingSessionScoreSeverity } from '../composables/usePointingStatsCharts'
 import { useStatsDateRange, toInputDate } from '../composables/useStatsDateRange'
 import type { CoachPlayerListItem } from '../models/Coach'
 import type { Player } from '../models/Player'

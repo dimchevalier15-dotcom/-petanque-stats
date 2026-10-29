@@ -24,6 +24,7 @@ use App\Service\SelectionGlobaleService;
 use App\Service\PlayerService;
 use App\Service\PlayerStatsService;
 use App\Service\PlayerTacticalInsightsService;
+use App\Service\Pointing\PointingStatsService;
 use App\Service\Shooting\ShootingStatsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -43,6 +44,7 @@ final class CoachController extends AbstractController
         private PlayerTacticalInsightsService $playerTacticalInsightsService,
         private MatchHistoryService $matchHistoryService,
         private ShootingStatsService $shootingStatsService,
+        private PointingStatsService $pointingStatsService,
         private PlayerService $playerService,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
@@ -202,6 +204,29 @@ final class CoachController extends AbstractController
         }
 
         $res = $this->shootingStatsService->statsForPlayerId($id, $shootingNature, $dateRange);
+        $json = $this->serializer->serialize($res, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
+    #[Route('/api/coach/players/{id}/pointing/stats', name: 'api_coach_player_pointing_stats', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function playerPointingStats(int $id, Request $request): JsonResponse
+    {
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
+        $this->coachAccess->assertCoachCanViewPlayer($user, $id, $selectionGlobaleId);
+
+        try {
+            $dateRange = CoachDateRangeResolver::fromRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 400);
+        }
+
+        $pointingNature = $this->parseShootingNature($request);
+        if ($pointingNature === false) {
+            return new JsonResponse(['message' => 'Invalid nature filter.'], 400);
+        }
+
+        $res = $this->pointingStatsService->statsForPlayerId($id, $pointingNature, $dateRange);
         $json = $this->serializer->serialize($res, 'json');
 
         return new JsonResponse($json, 200, [], true);

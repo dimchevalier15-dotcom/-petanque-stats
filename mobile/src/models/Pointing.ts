@@ -76,3 +76,76 @@ export function pointingShotScoreSeverity(score: number): 'secondary' | 'danger'
   if (score >= 3) return 'warn'
   return 'danger'
 }
+
+export type PointingContextNature = 'training' | 'competition'
+
+export interface PointingSessionHistoryItem {
+  id: number
+  createdAt: string
+  playedAt: string
+  finishedAt: string
+  totalScore: number
+  contextNature: PointingContextNature | null
+  title: string | null
+}
+
+export interface PointingSessionHistoryPage {
+  page: number
+  pageSize: number
+  total: number
+  items: PointingSessionHistoryItem[]
+}
+
+export interface PointingSessionContextForm {
+  contextNature: PointingContextNature
+  playedAt: string
+  title: string
+  description: string
+}
+
+export interface PointingStatsSummary {
+  sessionsCount: number
+  totalShots: number
+  averageSessionScore: number | null
+  bestSessionScore: number | null
+}
+
+export interface PointingStatsEvolutionPoint {
+  sessionId: number
+  date: string
+  totalScore: number
+}
+
+export interface PointingStatsWorkshop {
+  workshop: number
+  shotCount: number
+  averageScore: number
+}
+
+export interface PointingStatsDistance {
+  distance: number
+  shotCount: number
+  averageScore: number
+}
+
+export interface PointingStatsResult {
+  result: PointingShotResult
+  count: number
+}
+
+export interface PointingStatsCell {
+  workshop: number
+  distance: number
+  shotCount: number
+  averageScore: number
+}
+
+export interface PointingStats {
+  status: 'ok' | 'no_sessions' | 'no_data_in_period'
+  summary: PointingStatsSummary
+  evolution: PointingStatsEvolutionPoint[]
+  byWorkshop: PointingStatsWorkshop[]
+  byDistance: PointingStatsDistance[]
+  byResult: PointingStatsResult[]
+  heatmap: PointingStatsCell[]
+}

@@ -763,7 +763,13 @@
       "sort": "Zoradenie",
       "sortName": "Meno",
       "sortPoint": "Úspešnosť point",
-      "sortTir": "Úspešnosť tir"
+      "sortTir": "Úspešnosť tir",
+      "shootingAverage": "Priem. streľba",
+      "shootingBest": "Rekord streľba",
+      "shootingSessions": "{n} kolo/kol streľby",
+      "pointingAverage": "Priem. point",
+      "pointingBest": "Rekord point",
+      "pointingSessions": "{n} kolo/kol pointu"
     },
     "addPlayer": {
       "action": "Pridať hráča",
@@ -790,6 +796,14 @@
       "historyLink": "História zápasov",
       "historySubtitle": "História zápasov",
       "tabs": {
+        "label": "Sekcie hráča",
+        "shooting": "Presná streľba",
+        "shootingShort": "Streľba",
+        "pointingShort": "Point",
+        "training": "Tréning",
+        "trainingShort": "Tréning",
+        "matches": "Zápasy",
+        "matchesShort": "Zápasy",
         "stats": "Štatistiky",
         "history": "Zápasy"
       }
@@ -1135,7 +1149,11 @@
     "home": {
       "title": "Presný point",
       "subtitle": "5 oficiálnych staníc za sebou",
-      "newSession": "Nové kolo"
+      "newSession": "Nové kolo",
+      "stats": "Štatistiky",
+      "historyTitle": "História kôl",
+      "empty": "Zatiaľ žiadne kolo pointu.",
+      "scoreOn300": "{score} / 300"
     },
     "resume": {
       "title": "Prebiehajúce kolo",
@@ -1203,6 +1221,84 @@
       "message": "Zadané výsledky sa stratia. Túto akciu nemožno vrátiť.",
       "cancel": "Späť",
       "confirm": "Zrušiť"
+    },
+    "context": {
+      "titleAdd": "Pridať názov",
+      "titleEdit": "Upraviť názov",
+      "hint": "Voliteľné: kontext tohto kola.",
+      "fields": {
+        "playedAt": "Dátum kola",
+        "nature": "Kontext",
+        "title": "Názov",
+        "description": "Popis"
+      },
+      "nature": {
+        "training": "Tréning",
+        "competition": "Súťaž"
+      },
+      "actions": {
+        "add": "Pridať názov",
+        "edit": "Upraviť názov",
+        "save": "Uložiť",
+        "skip": "Preskočiť"
+      }
+    },
+    "stats": {
+      "title": "Štatistiky pointu",
+      "subtitle": "Výkon podľa stanice a vzdialenosti",
+      "filters": { "all": "Všetko" },
+      "resultTiers": {
+        "missed": "Minuté",
+        "p3": "3 b.",
+        "p9": "9 b.",
+        "p15": "15 b."
+      },
+      "kpi": {
+        "sessions": "Kola",
+        "best": "Rekord",
+        "average": "Priemer"
+      },
+      "hero": {
+        "averageSession": "Priemerné skóre kola",
+        "shotsTracked": "{n} analyzovaných hodov"
+      },
+      "insights": {
+        "strength": "Silná stránka",
+        "toWork": "Na zlepšenie"
+      },
+      "sections": {
+        "evolution": "Vývoj",
+        "workshops": "Podľa stanice",
+        "distances": "Podľa vzdialenosti",
+        "results": "Typy výsledkov",
+        "heatmap": "Mapa výkonu"
+      },
+      "evolution": {
+        "hint": "Vývoj celkového skóre na posledných kolách."
+      },
+      "workshops": {
+        "hint": "Priemerné skóre na hod podľa stanice (max 15 b.)."
+      },
+      "distances": {
+        "hint": "Priemerné skóre podľa vzdialenosti.",
+        "best": "Najlepšia: {n} m",
+        "weakest": "Slabšia: {n} m"
+      },
+      "results": {
+        "hint": "Rozdelenie všetkých výsledkov."
+      },
+      "heatmap": {
+        "hint": "Intenzita = priemerné skóre. Číslo = počet hodov."
+      },
+      "empty": {
+        "loadErrorTitle": "Nepodarilo sa načítať štatistiky",
+        "retry": "Skúsiť znova",
+        "noSessionsTitle": "Žiadne ukončené kolo",
+        "noSessionsHint": "Dokončite prvé kolo pre štatistiky pointu.",
+        "startSession": "Začať kolo",
+        "noDataInPeriodTitle": "Žiadne kolo v tomto období",
+        "noDataInPeriodHint": "Rozšírte rozsah dátumov pre štatistiky pointu."
+      }
     },
     "summary": {
       "title": "Súhrn kola",

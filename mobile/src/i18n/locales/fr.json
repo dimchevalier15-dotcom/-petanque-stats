@@ -803,7 +803,10 @@
       "sortShootingBest": "Meilleur tir précision",
       "shootingAverage": "Moy.",
       "shootingBest": "Record",
-      "shootingSessions": "{n} séance(s)"
+      "shootingSessions": "{n} séance(s)",
+      "pointingAverage": "Moy. point",
+      "pointingBest": "Record point",
+      "pointingSessions": "{n} séance(s) point"
     },
     "addPlayer": {
       "action": "Ajouter un joueur",
@@ -834,6 +837,7 @@
         "label": "Sections du joueur",
         "shooting": "Tir de précision",
         "shootingShort": "Tir préc.",
+        "pointingShort": "Point préc.",
         "training": "Entraînement",
         "trainingShort": "Entraîn.",
         "matches": "Matchs",
@@ -1183,7 +1187,11 @@
     "home": {
       "title": "Point de précision",
       "subtitle": "Enchaînez les 5 ateliers officiels",
-      "newSession": "Nouvelle séance"
+      "newSession": "Nouvelle séance",
+      "stats": "Statistiques",
+      "historyTitle": "Historique des séances",
+      "empty": "Aucune séance de point pour le moment.",
+      "scoreOn300": "{score} / 300"
     },
     "resume": {
       "title": "Séance en cours",
@@ -1251,6 +1259,84 @@
       "message": "Les résultats déjà saisis seront perdus. Cette action est irréversible.",
       "cancel": "Annuler",
       "confirm": "Abandonner"
+    },
+    "context": {
+      "titleAdd": "Ajouter un titre",
+      "titleEdit": "Modifier le titre",
+      "hint": "Optionnel : indiquez le contexte de cette séance.",
+      "fields": {
+        "playedAt": "Date de la séance",
+        "nature": "Contexte",
+        "title": "Titre",
+        "description": "Description"
+      },
+      "nature": {
+        "training": "Entraînement",
+        "competition": "Compétition"
+      },
+      "actions": {
+        "add": "Ajouter un titre",
+        "edit": "Modifier le titre",
+        "save": "Enregistrer",
+        "skip": "Passer"
+      }
+    },
+    "stats": {
+      "title": "Statistiques point",
+      "subtitle": "Vos performances par atelier et distance",
+      "filters": { "all": "Tous" },
+      "resultTiers": {
+        "missed": "Raté",
+        "p3": "3 pts",
+        "p9": "9 pts",
+        "p15": "15 pts"
+      },
+      "kpi": {
+        "sessions": "Séances",
+        "best": "Record",
+        "average": "Moyenne"
+      },
+      "hero": {
+        "averageSession": "Score moyen par séance",
+        "shotsTracked": "{n} tirs analysés"
+      },
+      "insights": {
+        "strength": "Point fort",
+        "toWork": "À travailler"
+      },
+      "sections": {
+        "evolution": "Progression",
+        "workshops": "Par atelier",
+        "distances": "Par distance",
+        "results": "Types de résultats",
+        "heatmap": "Carte de performance"
+      },
+      "evolution": {
+        "hint": "Évolution de votre score total sur vos dernières séances."
+      },
+      "workshops": {
+        "hint": "Score moyen par tir pour chaque atelier (sur 15 pts max)."
+      },
+      "distances": {
+        "hint": "Score moyen par tir selon la distance.",
+        "best": "Meilleure : {n} m",
+        "weakest": "À travailler : {n} m"
+      },
+      "results": {
+        "hint": "Répartition de vos résultats sur tous les tirs."
+      },
+      "heatmap": {
+        "hint": "Intensité = score moyen par tir. Le nombre indique le volume de tirs."
+      },
+      "empty": {
+        "loadErrorTitle": "Impossible de charger les statistiques",
+        "retry": "Réessayer",
+        "noSessionsTitle": "Aucune séance terminée",
+        "noSessionsHint": "Complétez une première séance pour voir vos statistiques de point.",
+        "startSession": "Commencer une séance",
+        "noDataInPeriodTitle": "Aucune séance sur cette période",
+        "noDataInPeriodHint": "Élargissez la plage de dates pour afficher vos statistiques de point."
+      }
     },
     "summary": {
       "title": "Résumé de la séance",

@@ -483,6 +483,7 @@ const {
 }
 
 .panels-grouper {
+  margin-top: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
