@@ -29,6 +29,12 @@
         <span class="exercise-title">{{ t('training.menu.tirSautee.title') }}</span>
         <span class="exercise-desc">{{ t('training.menu.tirSautee.description') }}</span>
       </button>
+
+      <button type="button" class="exercise-card app-card" @click="goRings">
+        <i class="pi pi-circle exercise-icon" aria-hidden="true" />
+        <span class="exercise-title">{{ t('training.menu.rings.title') }}</span>
+        <span class="exercise-desc">{{ t('training.menu.rings.description') }}</span>
+      </button>
     </div>
   </AppPage>
 </template>
@@ -56,6 +62,10 @@ function goPointPrecision(): void {
 
 function goTirSautee(): void {
   router.push({ name: 'jumpShotHome' })
+}
+
+function goRings(): void {
+  router.push({ name: 'ringsHome' })
 }
 </script>
 

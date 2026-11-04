@@ -1354,6 +1354,87 @@
       }
     }
   },
+  "rings": {
+    "distanceMeters": "{n} m",
+    "points": {
+      "one": "{n} pt",
+      "other": "{n} pts"
+    },
+    "home": {
+      "title": "Le point dans les ronds",
+      "subtitle": "15 boules, 3 ronds",
+      "newSession": "Nouvelle séance",
+      "rules": "Règles",
+      "historyTitle": "Historique des séances",
+      "empty": "Aucune séance pour le moment.",
+      "scoreOnMax": "{score} / {max}"
+    },
+    "resume": {
+      "title": "Séance en cours",
+      "message": "Vous avez une séance non terminée. Voulez-vous la reprendre ?",
+      "continue": "Reprendre",
+      "abandon": "Abandonner"
+    },
+    "rules": {
+      "title": "Règles",
+      "subtitle": "Le point dans les ronds",
+      "start": "Démarrer une séance",
+      "close": "Fermer",
+      "figureAlt": "Schéma du terrain : cercle de lancer et trois ronds",
+      "throwingCircle": "Cercle de lancer",
+      "sections": {
+        "setup": {
+          "title": "Mise en place",
+          "items": [
+            "Le joueur joue toujours depuis le même cercle de lancer, qui ne bouge pas.",
+            "Trois ronds de {diameter} cm de diamètre sont tracés à {near}, {middle} et {far}, avec un cochonnet au centre de chacun.",
+            "Des boules sont posées en obstacle : une devant le rond de {middle}, deux devant le rond de {far}. Le rond de {near} est dégagé."
+          ]
+        },
+        "play": {
+          "title": "Déroulement",
+          "items": [
+            "Le joueur dispose de {balls} boules pour marquer le maximum de points.",
+            "Avant chaque boule, il choisit librement le rond qu'il vise.",
+            "La boule est réussie si elle s'arrête dans le rond visé : elle rapporte les points de ce rond. Sinon, elle ne rapporte rien.",
+            "Toucher une boule obstacle n'est pas une faute : seule la position finale de la boule compte."
+          ]
+        },
+        "scale": {
+          "title": "Barème",
+          "ring": "Boule dans le rond de {distance}",
+          "missed": "Boule hors du rond visé",
+          "max": "Score maximum : {n} points."
+        }
+      }
+    },
+    "play": {
+      "ball": "Boule {current} / {total}",
+      "allPlayed": "Toutes les boules sont jouées",
+      "successCount": "{count} / {total} réussies",
+      "success": "Réussi",
+      "missed": "Raté",
+      "undo": "Annuler la dernière",
+      "finish": "Terminer la séance",
+      "abandon": "Abandonner",
+      "rules": "Règles",
+      "trackLabel": "Boules jouées"
+    },
+    "abandon": {
+      "title": "Abandonner la séance ?",
+      "message": "Les boules déjà saisies seront perdues. Cette action est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Abandonner"
+    },
+    "summary": {
+      "title": "Récap de la séance",
+      "sessionFinished": "Séance terminée",
+      "byRing": "Par rond",
+      "attempts": "{successes} / {attempts} réussies",
+      "throws": "Détail des boules",
+      "backHome": "Retour à l'accueil"
+    }
+  },
   "pointing": {
     "home": {
       "title": "Point de précision",
@@ -1852,6 +1933,10 @@
       "tirSautee": {
         "title": "Tir à la sautée",
         "description": "Progression de 6 à 9 m en séries de 3 tirs."
+      },
+      "rings": {
+        "title": "Le point dans les ronds",
+        "description": "15 boules pour marquer un maximum de points dans 3 ronds."
       }
     },
     "home": {

@@ -1316,6 +1316,86 @@
       }
     }
   },
+  "rings": {
+    "distanceMeters": "{n} m",
+    "points": {
+      "other": "{n} b."
+    },
+    "home": {
+      "title": "Point do kruhov",
+      "subtitle": "15 gúľ, 3 kruhy",
+      "newSession": "Nové kolo",
+      "rules": "Pravidlá",
+      "historyTitle": "História kôl",
+      "empty": "Zatiaľ žiadne kolo.",
+      "scoreOnMax": "{score} / {max}"
+    },
+    "resume": {
+      "title": "Prebiehajúce kolo",
+      "message": "Máte nedokončené kolo. Chcete pokračovať?",
+      "continue": "Pokračovať",
+      "abandon": "Zrušiť"
+    },
+    "rules": {
+      "title": "Pravidlá",
+      "subtitle": "Point do kruhov",
+      "start": "Začať kolo",
+      "close": "Zavrieť",
+      "figureAlt": "Nákres ihriska: hrací kruh a tri kruhy",
+      "throwingCircle": "Hrací kruh",
+      "sections": {
+        "setup": {
+          "title": "Príprava",
+          "items": [
+            "Hráč hrá vždy z toho istého hracieho kruhu, ktorý sa nehýbe.",
+            "Tri kruhy s priemerom {diameter} cm sú nakreslené na {near}, {middle} a {far}, v strede každého je cieľik.",
+            "Pred kruhmi ležia gule ako prekážky: jedna pred kruhom na {middle}, dve pred kruhom na {far}. Kruh na {near} je voľný."
+          ]
+        },
+        "play": {
+          "title": "Priebeh",
+          "items": [
+            "Hráč má {balls} gúľ na získanie čo najviac bodov.",
+            "Pred každou guľou si voľne vyberie, na ktorý kruh mieri.",
+            "Guľa je úspešná, ak sa zastaví v zvolenom kruhu: získa body tohto kruhu. Inak nezíska nič.",
+            "Dotyk prekážkovej gule nie je chyba: počíta sa len konečná poloha gule."
+          ]
+        },
+        "scale": {
+          "title": "Bodovanie",
+          "ring": "Guľa v kruhu na {distance}",
+          "missed": "Guľa mimo zvoleného kruhu",
+          "max": "Maximálne skóre: {n} bodov."
+        }
+      }
+    },
+    "play": {
+      "ball": "Guľa {current} / {total}",
+      "allPlayed": "Všetky gule odohrané",
+      "successCount": "{count} / {total} úspešných",
+      "success": "Úspech",
+      "missed": "Minuté",
+      "undo": "Zrušiť poslednú",
+      "finish": "Ukončiť kolo",
+      "abandon": "Zrušiť kolo",
+      "rules": "Pravidlá",
+      "trackLabel": "Odohrané gule"
+    },
+    "abandon": {
+      "title": "Zrušiť kolo?",
+      "message": "Zadané gule sa stratia. Túto akciu nemožno vrátiť.",
+      "cancel": "Späť",
+      "confirm": "Zrušiť"
+    },
+    "summary": {
+      "title": "Prehľad kola",
+      "sessionFinished": "Kolo ukončené",
+      "byRing": "Podľa kruhu",
+      "attempts": "{successes} / {attempts} úspešných",
+      "throws": "Detail gúľ",
+      "backHome": "Späť na úvod"
+    }
+  },
   "pointing": {
     "home": {
       "title": "Presný point",
@@ -1794,6 +1874,10 @@
       "tirSautee": {
         "title": "Streľba v skoku",
         "description": "Postup od 6 do 9 m v sériách po 3 strely."
+      },
+      "rings": {
+        "title": "Point do kruhov",
+        "description": "15 gúľ na získanie čo najviac bodov v 3 kruhoch."
       }
     },
     "home": {

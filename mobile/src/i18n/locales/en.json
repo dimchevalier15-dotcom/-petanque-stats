@@ -1354,6 +1354,87 @@
       }
     }
   },
+  "rings": {
+    "distanceMeters": "{n} m",
+    "points": {
+      "one": "{n} pt",
+      "other": "{n} pts"
+    },
+    "home": {
+      "title": "Pointing into the rings",
+      "subtitle": "15 balls, 3 rings",
+      "newSession": "New session",
+      "rules": "Rules",
+      "historyTitle": "Session history",
+      "empty": "No sessions yet.",
+      "scoreOnMax": "{score} / {max}"
+    },
+    "resume": {
+      "title": "Session in progress",
+      "message": "You have an unfinished session. Resume it?",
+      "continue": "Resume",
+      "abandon": "Discard"
+    },
+    "rules": {
+      "title": "Rules",
+      "subtitle": "Pointing into the rings",
+      "start": "Start a session",
+      "close": "Close",
+      "figureAlt": "Field diagram: throwing circle and three rings",
+      "throwingCircle": "Throwing circle",
+      "sections": {
+        "setup": {
+          "title": "Setup",
+          "items": [
+            "The player always plays from the same throwing circle, which never moves.",
+            "Three rings of {diameter} cm diameter are drawn at {near}, {middle} and {far}, with a jack in the centre of each.",
+            "Balls are laid as obstacles: one in front of the {middle} ring, two in front of the {far} ring. The {near} ring is clear."
+          ]
+        },
+        "play": {
+          "title": "How it works",
+          "items": [
+            "The player has {balls} balls to score as many points as possible.",
+            "Before each ball, the player freely chooses which ring to aim at.",
+            "A ball succeeds if it stops inside the aimed ring: it scores that ring's points. Otherwise it scores nothing.",
+            "Touching an obstacle ball is not a fault: only the ball's final position counts."
+          ]
+        },
+        "scale": {
+          "title": "Scoring",
+          "ring": "Ball inside the {distance} ring",
+          "missed": "Ball outside the aimed ring",
+          "max": "Maximum score: {n} points."
+        }
+      }
+    },
+    "play": {
+      "ball": "Ball {current} / {total}",
+      "allPlayed": "All balls played",
+      "successCount": "{count} / {total} successful",
+      "success": "Success",
+      "missed": "Missed",
+      "undo": "Undo last",
+      "finish": "Finish session",
+      "abandon": "Discard",
+      "rules": "Rules",
+      "trackLabel": "Balls played"
+    },
+    "abandon": {
+      "title": "Discard the session?",
+      "message": "Balls already recorded will be lost. This cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Discard"
+    },
+    "summary": {
+      "title": "Session recap",
+      "sessionFinished": "Session finished",
+      "byRing": "By ring",
+      "attempts": "{successes} / {attempts} successful",
+      "throws": "Ball details",
+      "backHome": "Back to home"
+    }
+  },
   "pointing": {
     "home": {
       "title": "Precision pointing",
@@ -1827,6 +1908,10 @@
       "tirSautee": {
         "title": "Jump shot",
         "description": "Progress from 6 to 9 m in series of 3 throws."
+      },
+      "rings": {
+        "title": "Pointing into the rings",
+        "description": "15 balls to score as many points as possible in 3 rings."
       }
     },
     "home": {
