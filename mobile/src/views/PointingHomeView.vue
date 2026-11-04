@@ -7,11 +7,12 @@
     />
     <div class="home-actions">
       <Button
-        class="action-primary"
-        :label="t('pointing.home.newSession')"
-        icon="pi pi-circle"
-        :loading="starting"
-        @click="startNewSession"
+        class="action-secondary"
+        :label="t('pointing.home.rules')"
+        icon="pi pi-book"
+        severity="secondary"
+        outlined
+        @click="goRules"
       />
       <Button
         class="action-secondary"
@@ -20,6 +21,13 @@
         severity="secondary"
         outlined
         @click="goStats"
+      />
+      <Button
+        class="action-primary action-span"
+        :label="t('pointing.home.newSession')"
+        icon="pi pi-circle"
+        :loading="starting"
+        @click="startNewSession"
       />
     </div>
 
@@ -157,6 +165,10 @@ function openSummary(id: number): void {
   router.push({ name: 'pointingSessionSummary', params: { id } })
 }
 
+function goRules(): void {
+  router.push({ name: 'pointingRules' })
+}
+
 function goStats(): void {
   router.push({ name: 'pointingStats' })
 }
@@ -196,6 +208,10 @@ watch(
 .action-secondary {
   min-height: 2.75rem;
   font-weight: 700;
+}
+
+.action-span {
+  grid-column: 1 / -1;
 }
 
 .history-section {

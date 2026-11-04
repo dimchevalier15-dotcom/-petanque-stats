@@ -1321,10 +1321,90 @@
       "title": "Presný point",
       "subtitle": "5 oficiálnych staníc za sebou",
       "newSession": "Nové kolo",
+      "rules": "Pravidlá",
       "stats": "Štatistiky",
       "historyTitle": "História kôl",
       "empty": "Zatiaľ žiadne kolo pointu.",
       "scoreOn300": "{score} / 300"
+    },
+    "rules": {
+      "title": "Pravidlá",
+      "subtitle": "Presný point",
+      "open": "Pravidlá stanice",
+      "allRules": "Všetky pravidlá",
+      "close": "Zavrieť",
+      "start": "Začať kolo",
+      "workshopNumber": "Stanica {n}",
+      "figureAlt": "Nákres stanice {n}",
+      "points": "{n} b.",
+      "labels": {
+        "setup": "Príprava",
+        "objective": "Cieľ",
+        "scale": "Bodovanie"
+      },
+      "sections": {
+        "setup": {
+          "title": "Princíp",
+          "items": [
+            "Kolo pozostáva z 5 staníc. Na každej stanici hráte jednu guľu z 6, 7, 8 a 9 metrov.",
+            "Pred kruhom leží hranol 4×4: 2 m pred kruhom pre 6 a 7 m, 3 m pred kruhom pre 8 a 9 m.",
+            "Každá guľa získa 0, 3, 9 alebo 15 bodov podľa bodovania stanice.",
+            "Maximum: 60 bodov za stanicu, 300 bodov za kolo."
+          ]
+        }
+      },
+      "workshops": {
+        "w1": {
+          "setup": "Kruh s priemerom 80 cm, cieľik v strede.",
+          "objective": "Priblížiť sa čo najviac k cieľiku bez toho, aby ste ho vytlačili z kruhu.",
+          "scale": {
+            "missed": "Guľa mimo kruhu",
+            "p3": "Do 40 cm od cieľika",
+            "p9": "Do 30 cm od cieľika",
+            "p15": "Do 20 cm od cieľika"
+          }
+        },
+        "w2": {
+          "setup": "Kruh s priemerom 80 cm, cieľik v strede. Pred ním je čierna guľa, 50 cm od cieľika.",
+          "objective": "Priblížiť sa čo najviac k cieľiku bez dotyku čiernej gule a bez vytlačenia cieľika z kruhu.",
+          "scale": {
+            "missed": "Guľa mimo kruhu",
+            "p3": "Do 40 cm od cieľika",
+            "p9": "Do 30 cm od cieľika",
+            "p15": "Do 20 cm od cieľika"
+          }
+        },
+        "w3": {
+          "setup": "Kruh s priemerom 80 cm, cieľik v strede. Guľa ① 35 cm od cieľika, 10 cm vľavo. Guľa ② 50 cm od cieľika, 10 cm vpravo.",
+          "objective": "Dostať sa bližšie k cieľiku ako obe položené gule, bez vytlačenia cieľika z kruhu.",
+          "scale": {
+            "missed": "Guľa mimo kruhu",
+            "p3": "Do 40 cm od cieľika",
+            "p9": "Berie bod",
+            "p15": "Berie bod bez narušenia hry"
+          }
+        },
+        "w4": {
+          "setup": "Kruh s priemerom 80 cm, cieľik v strede. Dve čierne gule na okraji kruhu, 15 cm od seba. Biela cieľová guľa je 15 cm pred kruhom, 7,5 cm od každej čiernej gule.",
+          "objective": "Vtlačiť bielu cieľovú guľu do kruhu čo najbližšie k cieľiku, bez vytlačenia cieľika z kruhu.",
+          "scale": {
+            "missed": "Cieľová guľa minutá",
+            "p3": "Dotyk cieľovej gule",
+            "p9": "Cieľová guľa v kruhu, hraná guľa mimo",
+            "p15": "Cieľová aj hraná guľa v kruhu"
+          }
+        },
+        "w5": {
+          "setup": "Kruh s priemerom 1 m, cieľik 15 cm pred kruhom.",
+          "objective": "Vtlačiť cieľik do kruhu. Hraná guľa nesmie skončiť viac ako 30 cm za kruhom.",
+          "scale": {
+            "missed": "Cieľik minutý",
+            "p3": "Dotyk cieľika, ale nie v kruhu",
+            "p9": "Cieľik v kruhu, hraná guľa mimo",
+            "p15": "Cieľik aj hraná guľa v kruhu"
+          }
+        }
+      }
     },
     "resume": {
       "title": "Prebiehajúce kolo",

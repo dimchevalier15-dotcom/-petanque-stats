@@ -12,7 +12,18 @@
       />
       <div class="scoreboard-main">
         <span class="workshop-pill">{{ t('pointing.progress', { current: currentWorkshopIndex + 1, total: 5 }) }}</span>
-        <h2 class="workshop-title">{{ workshopLabel(currentWorkshop) }}</h2>
+        <div class="workshop-title-row">
+          <h2 class="workshop-title">{{ workshopLabel(currentWorkshop) }}</h2>
+          <Button
+            class="rules-btn"
+            icon="pi pi-question-circle"
+            text
+            rounded
+            size="small"
+            :aria-label="t('pointing.rules.open')"
+            @click="rulesDialog = true"
+          />
+        </div>
         <div class="score-row">
           <span class="score-label">{{ t('pointing.score.total') }}</span>
           <strong class="score-value">{{ totalScore }}<span class="score-max">/300</span></strong>
@@ -95,6 +106,8 @@
         </div>
       </div>
     </Dialog>
+
+    <PointingWorkshopRulesDialog v-model:visible="rulesDialog" :workshop="currentWorkshop" @show-all="goRules" />
   </section>
 </template>
 
@@ -105,9 +118,11 @@ import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import Tag from 'primevue/tag'
+import PointingWorkshopRulesDialog from '../components/pointing/PointingWorkshopRulesDialog.vue'
 import { usePointingSessionPlay, clearPointingDraft } from '../composables/usePointingSessionPlay'
 import {
   POINTING_DISTANCES,
+  POINTING_WORKSHOPS,
   pointingResultI18nKey,
   pointingShotScoreSeverity,
   pointingWorkshopI18nKey,
@@ -141,6 +156,11 @@ const {
   toCompletionPayload,
 } = usePointingSessionPlay(sessionId)
 
+const initialWorkshop = Number(route.query.workshop)
+if (POINTING_WORKSHOPS.includes(initialWorkshop as PointingWorkshop)) {
+  currentWorkshopIndex.value = initialWorkshop - 1
+}
+
 const distances = POINTING_DISTANCES
 
 function resultAt(distance: PointingDistance): PointingShotResult | undefined {
@@ -170,6 +190,13 @@ function resultLabel(workshop: PointingWorkshop, result: PointingShotResult): st
 function severityFor(score: number | undefined): 'secondary' | 'danger' | 'warn' | 'success' | 'help' {
   if (score === undefined) return 'secondary'
   return pointingShotScoreSeverity(score)
+}
+
+const rulesDialog = ref(false)
+
+function goRules(): void {
+  rulesDialog.value = false
+  router.push({ name: 'pointingRules', query: { sessionId: String(sessionId), workshop: String(currentWorkshop.value) } })
 }
 
 function goPrev(): void {
@@ -303,6 +330,20 @@ async function confirmAbandon(): Promise<void> {
   text-align: center;
   font-size: 0.8125rem;
   color: var(--app-text-muted);
+}
+
+.workshop-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+}
+
+.rules-btn {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  color: var(--app-primary);
 }
 
 .play-main {

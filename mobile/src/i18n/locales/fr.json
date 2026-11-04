@@ -1359,10 +1359,90 @@
       "title": "Point de précision",
       "subtitle": "Enchaînez les 5 ateliers officiels",
       "newSession": "Nouvelle séance",
+      "rules": "Règles",
       "stats": "Statistiques",
       "historyTitle": "Historique des séances",
       "empty": "Aucune séance de point pour le moment.",
       "scoreOn300": "{score} / 300"
+    },
+    "rules": {
+      "title": "Règles",
+      "subtitle": "Le point de précision",
+      "open": "Règles de l'atelier",
+      "allRules": "Toutes les règles",
+      "close": "Fermer",
+      "start": "Démarrer une séance",
+      "workshopNumber": "Atelier {n}",
+      "figureAlt": "Schéma de l'atelier {n}",
+      "points": "{n} pts",
+      "labels": {
+        "setup": "Mise en place",
+        "objective": "Objectif",
+        "scale": "Barème"
+      },
+      "sections": {
+        "setup": {
+          "title": "Principe",
+          "items": [
+            "La séance enchaîne 5 ateliers. Dans chaque atelier, vous jouez une boule à 6, 7, 8 et 9 mètres.",
+            "Une planche (madrier 4×4) est posée devant le cercle : à 2 m du cercle pour les distances de 6 et 7 m, à 3 m pour 8 et 9 m.",
+            "Chaque boule rapporte 0, 3, 9 ou 15 points selon le barème de l'atelier.",
+            "Maximum : 60 points par atelier, 300 points par séance."
+          ]
+        }
+      },
+      "workshops": {
+        "w1": {
+          "setup": "Cercle de 80 cm de diamètre, cochonnet placé au centre.",
+          "objective": "Pointer au plus près du cochonnet sans le sortir du cercle.",
+          "scale": {
+            "missed": "Boule hors du cercle",
+            "p3": "À moins de 40 cm du cochonnet",
+            "p9": "À moins de 30 cm du cochonnet",
+            "p15": "À moins de 20 cm du cochonnet"
+          }
+        },
+        "w2": {
+          "setup": "Cercle de 80 cm de diamètre, cochonnet au centre. Une boule (noire) est placée devant, à 50 cm du cochonnet.",
+          "objective": "Pointer au plus près du cochonnet sans toucher la boule noire ni sortir le cochonnet du cercle.",
+          "scale": {
+            "missed": "Boule hors du cercle",
+            "p3": "À moins de 40 cm du cochonnet",
+            "p9": "À moins de 30 cm du cochonnet",
+            "p15": "À moins de 20 cm du cochonnet"
+          }
+        },
+        "w3": {
+          "setup": "Cercle de 80 cm de diamètre, cochonnet au centre. Boule ① à 35 cm du cochonnet, décalée de 10 cm à gauche. Boule ② à 50 cm du cochonnet, décalée de 10 cm à droite.",
+          "objective": "Pointer plus près du cochonnet que les deux boules en place, sans sortir le cochonnet du cercle.",
+          "scale": {
+            "missed": "Boule hors du cercle",
+            "p3": "À moins de 40 cm du cochonnet",
+            "p9": "Prend le point",
+            "p15": "Prend le point sans toucher au jeu en place"
+          }
+        },
+        "w4": {
+          "setup": "Cercle de 80 cm de diamètre, cochonnet au centre. Deux boules noires sur le bord du cercle, espacées de 15 cm. Une boule cible (blanche) est placée à 15 cm devant le cercle, à 7,5 cm de chaque boule noire.",
+          "objective": "Pousser la boule cible (blanche) dans le cercle, au plus près du cochonnet, sans sortir le cochonnet du cercle.",
+          "scale": {
+            "missed": "Boule cible manquée",
+            "p3": "Boule cible touchée",
+            "p9": "Boule cible dans le cercle, boule jouée hors du cercle",
+            "p15": "Boule cible et boule jouée dans le cercle"
+          }
+        },
+        "w5": {
+          "setup": "Cercle de 1 m de diamètre, cochonnet placé à 15 cm devant le cercle.",
+          "objective": "Pousser le cochonnet dans le cercle. La boule jouée ne doit pas dépasser 30 cm derrière le cercle.",
+          "scale": {
+            "missed": "Cochonnet manqué",
+            "p3": "Cochonnet touché mais pas dans le cercle",
+            "p9": "Cochonnet dans le cercle, boule jouée hors du cercle",
+            "p15": "Cochonnet et boule jouée dans le cercle"
+          }
+        }
+      }
     },
     "resume": {
       "title": "Séance en cours",

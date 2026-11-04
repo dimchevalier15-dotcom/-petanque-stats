@@ -1359,10 +1359,90 @@
       "title": "Precision pointing",
       "subtitle": "Complete the 5 official workshops",
       "newSession": "New session",
+      "rules": "Rules",
       "stats": "Statistics",
       "historyTitle": "Session history",
       "empty": "No pointing sessions yet.",
       "scoreOn300": "{score} / 300"
+    },
+    "rules": {
+      "title": "Rules",
+      "subtitle": "Precision pointing",
+      "open": "Workshop rules",
+      "allRules": "All rules",
+      "close": "Close",
+      "start": "Start a session",
+      "workshopNumber": "Workshop {n}",
+      "figureAlt": "Diagram of workshop {n}",
+      "points": "{n} pts",
+      "labels": {
+        "setup": "Setup",
+        "objective": "Objective",
+        "scale": "Scoring"
+      },
+      "sections": {
+        "setup": {
+          "title": "Overview",
+          "items": [
+            "A session chains 5 workshops. In each workshop, you play one ball from 6, 7, 8 and 9 metres.",
+            "A 4×4 piece of timber is laid in front of the circle: 2 m in front of it for 6 and 7 m, 3 m in front of it for 8 and 9 m.",
+            "Each ball scores 0, 3, 9 or 15 points according to the workshop's scale.",
+            "Maximum: 60 points per workshop, 300 points per session."
+          ]
+        }
+      },
+      "workshops": {
+        "w1": {
+          "setup": "80 cm diameter circle, jack placed in the centre.",
+          "objective": "Get as close as possible to the jack without knocking it out of the circle.",
+          "scale": {
+            "missed": "Ball outside the circle",
+            "p3": "Within 40 cm of the jack",
+            "p9": "Within 30 cm of the jack",
+            "p15": "Within 20 cm of the jack"
+          }
+        },
+        "w2": {
+          "setup": "80 cm diameter circle, jack in the centre. A (black) ball is placed in front, 50 cm from the jack.",
+          "objective": "Get as close as possible to the jack without touching the black ball or knocking the jack out of the circle.",
+          "scale": {
+            "missed": "Ball outside the circle",
+            "p3": "Within 40 cm of the jack",
+            "p9": "Within 30 cm of the jack",
+            "p15": "Within 20 cm of the jack"
+          }
+        },
+        "w3": {
+          "setup": "80 cm diameter circle, jack in the centre. Ball ① 35 cm from the jack, 10 cm to the left. Ball ② 50 cm from the jack, 10 cm to the right.",
+          "objective": "Get closer to the jack than the two balls in place, without knocking the jack out of the circle.",
+          "scale": {
+            "missed": "Ball outside the circle",
+            "p3": "Within 40 cm of the jack",
+            "p9": "Holding the point",
+            "p15": "Holding the point without disturbing the end"
+          }
+        },
+        "w4": {
+          "setup": "80 cm diameter circle, jack in the centre. Two black balls on the edge of the circle, 15 cm apart. A white target ball is placed 15 cm in front of the circle, 7.5 cm from each black ball.",
+          "objective": "Push the white target ball into the circle, as close as possible to the jack, without knocking the jack out of the circle.",
+          "scale": {
+            "missed": "Target ball missed",
+            "p3": "Target ball touched",
+            "p9": "Target ball in the circle, thrown ball outside",
+            "p15": "Target ball and thrown ball in the circle"
+          }
+        },
+        "w5": {
+          "setup": "1 m diameter circle, jack placed 15 cm in front of the circle.",
+          "objective": "Push the jack into the circle. The thrown ball must not go more than 30 cm beyond the circle.",
+          "scale": {
+            "missed": "Jack missed",
+            "p3": "Jack touched but not in the circle",
+            "p9": "Jack in the circle, thrown ball outside",
+            "p15": "Jack and thrown ball in the circle"
+          }
+        }
+      }
     },
     "resume": {
       "title": "Session in progress",
