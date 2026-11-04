@@ -5,14 +5,14 @@
     <section class="rules-section">
       <h4>{{ t('rings.rules.sections.setup.title') }}</h4>
       <ul>
-          <li v-for="n in 3" :key="'setup-' + n">{{ t(`rings.rules.sections.setup.items.${n - 1}`, ruleParams) }}</li>
+          <li v-for="n in 3" :key="'setup-' + n">{{ ruleText(`rings.rules.sections.setup.items.${n - 1}`) }}</li>
       </ul>
     </section>
 
     <section class="rules-section">
       <h4>{{ t('rings.rules.sections.play.title') }}</h4>
       <ul>
-          <li v-for="n in 4" :key="'play-' + n">{{ t(`rings.rules.sections.play.items.${n - 1}`, ruleParams) }}</li>
+          <li v-for="n in 4" :key="'play-' + n">{{ ruleText(`rings.rules.sections.play.items.${n - 1}`) }}</li>
       </ul>
     </section>
 
@@ -56,6 +56,10 @@ const ruleParams = computed(() => ({
   diameter: RINGS_RING_DIAMETER_CM,
   balls: RINGS_THROWS_PER_SESSION,
 }))
+
+function ruleText(key: string): string {
+  return t(key, ruleParams.value)
+}
 </script>
 
 <style scoped>

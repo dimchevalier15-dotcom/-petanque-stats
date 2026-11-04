@@ -1,13 +1,16 @@
 <template>
   <AppPage>
-    <PageHeader :title="t('rings.summary.title')" :back-to="{ name: 'ringsHome' }" />
+    <PageHeader :title="t('rings.summary.title')" :subtitle="t(config.titleKey)" :back-to="{ name: config.routes.home }" />
 
     <section v-if="summary" class="summary">
       <div class="hero-banner app-card">
         <span class="hero-badge">{{ t('rings.summary.sessionFinished') }}</span>
-        <strong class="hero-score">{{ summary.totalScore }}<span class="hero-max">/{{ RINGS_MAX_SESSION_SCORE }}</span></strong>
+        <strong class="hero-score">{{ summary.totalScore }}<span class="hero-max">/{{ maxScore }}</span></strong>
         <span class="hero-meta">
           {{ t('rings.play.successCount', { count: successCount, total: summary.throws.length }) }}
+        </span>
+        <span v-if="allowsCarreau" class="hero-meta">
+          {{ t('ringsShooting.play.carreauCount', { count: carreauCount }) }}
         </span>
         <span class="hero-date">{{ formatShortDate(summary.playedAt) }}</span>
       </div>
@@ -19,6 +22,9 @@
             <span class="ring-distance">{{ distanceLabel(row.target) }}</span>
             <span class="ring-attempts">
               {{ t('rings.summary.attempts', { successes: row.successes, attempts: row.attempts }) }}
+              <template v-if="allowsCarreau && row.carreaux > 0">
+                · {{ t('ringsShooting.play.carreauCount', { count: row.carreaux }) }}
+              </template>
             </span>
             <strong class="ring-points">+{{ row.points }}</strong>
           </li>
@@ -45,8 +51,17 @@ import PageHeader from '../components/layout/PageHeader.vue'
 import RingsThrowTrack from '../components/rings/RingsThrowTrack.vue'
 import { useDateFormat } from '../composables/useDateFormat'
 import { useRingsTargetLabels } from '../composables/useRingsTargetLabels'
-import { RINGS_MAX_SESSION_SCORE, ringsTargetBreakdown, type RingsSessionSummary } from '../models/Rings'
+import {
+  RINGS_MODE_CONFIG,
+  ringsAllowsCarreau,
+  ringsMaxSessionScore,
+  ringsTargetBreakdown,
+  type RingsMode,
+  type RingsSessionSummary,
+} from '../models/Rings'
 import { ringsSessionsService } from '../services/ringsSessions'
+
+const props = withDefaults(defineProps<{ mode?: RingsMode }>(), { mode: 'point' })
 
 const { t } = useI18n()
 const { formatShortDate } = useDateFormat()
@@ -54,21 +69,26 @@ const { distanceLabel } = useRingsTargetLabels()
 const route = useRoute()
 const router = useRouter()
 
+const config = computed(() => RINGS_MODE_CONFIG[props.mode])
+const allowsCarreau = computed(() => ringsAllowsCarreau(props.mode))
+const maxScore = computed(() => ringsMaxSessionScore(props.mode))
+
 const sessionId = Number(route.params.id)
 const summary = ref<RingsSessionSummary | null>(null)
 
 const breakdown = computed(() => ringsTargetBreakdown(summary.value?.throws ?? []))
 const successCount = computed(() => summary.value?.throws.filter((th) => th.success).length ?? 0)
+const carreauCount = computed(() => summary.value?.throws.filter((th) => th.carreau).length ?? 0)
 
 function goHome(): void {
-  void router.push({ name: 'ringsHome' })
+  void router.push({ name: config.value.routes.home })
 }
 
 onMounted(async () => {
   try {
     summary.value = await ringsSessionsService.getSummary(sessionId)
   } catch {
-    void router.replace({ name: 'ringsHome' })
+    void router.replace({ name: config.value.routes.home })
   }
 })
 </script>

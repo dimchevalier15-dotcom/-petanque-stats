@@ -37,14 +37,17 @@ export function useRingsSessionPlay(sessionId: number) {
   const throws = reactive<RingsThrow[]>(loadDraft(sessionId))
 
   const isComplete = computed(() => throws.length >= RINGS_THROWS_PER_SESSION)
-  const totalScore = computed(() => throws.reduce((sum, t) => sum + ringsThrowScore(t.target, t.success), 0))
+  const totalScore = computed(() =>
+    throws.reduce((sum, t) => sum + ringsThrowScore(t.target, t.success, t.carreau), 0),
+  )
   const successCount = computed(() => throws.filter((t) => t.success).length)
+  const carreauCount = computed(() => throws.filter((t) => t.carreau === true).length)
   /** 1-based number of the ball about to be played, capped at the last ball. */
   const currentBall = computed(() => Math.min(throws.length + 1, RINGS_THROWS_PER_SESSION))
 
-  function addThrow(target: RingsTarget, success: boolean): void {
+  function addThrow(target: RingsTarget, success: boolean, carreau = false): void {
     if (isComplete.value) return
-    throws.push({ target, success })
+    throws.push({ target, success, carreau: success && carreau })
     saveDraft(sessionId, throws)
   }
 
@@ -55,7 +58,7 @@ export function useRingsSessionPlay(sessionId: number) {
   }
 
   function toCompletionPayload(): CompleteRingsSessionRequestDto {
-    return { throws: throws.map((t) => ({ target: t.target, success: t.success })) }
+    return { throws: throws.map((t) => ({ target: t.target, success: t.success, carreau: t.carreau === true })) }
   }
 
   return {
@@ -63,6 +66,7 @@ export function useRingsSessionPlay(sessionId: number) {
     isComplete,
     totalScore,
     successCount,
+    carreauCount,
     currentBall,
     addThrow,
     undoLast,

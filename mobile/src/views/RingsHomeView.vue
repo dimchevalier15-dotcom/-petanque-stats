@@ -1,17 +1,14 @@
 <template>
   <AppPage>
-    <PageHeader
-      :title="t('rings.home.title')"
-      :subtitle="t('rings.home.subtitle')"
-      :back-to="{ name: 'trainingHome' }"
-    />
+    <PageHeader :title="t(config.titleKey)" :subtitle="t(config.subtitleKey)" :back-to="{ name: 'trainingHome' }" />
     <div class="home-actions">
       <Button
-        class="action-primary"
-        :label="t('rings.home.newSession')"
-        icon="pi pi-play"
-        :loading="starting"
-        @click="startNewSession"
+        class="action-secondary"
+        :label="t('rings.home.stats')"
+        icon="pi pi-chart-bar"
+        severity="secondary"
+        outlined
+        @click="goStats"
       />
       <Button
         class="action-secondary"
@@ -20,6 +17,13 @@
         severity="secondary"
         outlined
         @click="goRules"
+      />
+      <Button
+        class="action-primary action-span"
+        :label="t('rings.home.newSession')"
+        icon="pi pi-play"
+        :loading="starting"
+        @click="startNewSession"
       />
     </div>
 
@@ -32,7 +36,7 @@
         <li v-for="s in items" :key="s.id">
           <button type="button" class="session-card app-card" @click="openSummary(s.id)">
             <span class="date">{{ formatShortDate(s.playedAt) }}</span>
-            <Tag :value="t('rings.home.scoreOnMax', { score: s.totalScore, max: RINGS_MAX_SESSION_SCORE })" severity="info" />
+            <Tag :value="t('rings.home.scoreOnMax', { score: s.totalScore, max: maxScore })" severity="info" />
           </button>
         </li>
       </ul>
@@ -78,12 +82,23 @@ import EmptyState from '../components/layout/EmptyState.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
 import { useDateFormat } from '../composables/useDateFormat'
 import { clearRingsDraft } from '../composables/useRingsSessionPlay'
-import { RINGS_MAX_SESSION_SCORE, type RingsSessionHistoryItem, type RingsSessionStarted } from '../models/Rings'
+import {
+  RINGS_MODE_CONFIG,
+  ringsMaxSessionScore,
+  type RingsMode,
+  type RingsSessionHistoryItem,
+  type RingsSessionStarted,
+} from '../models/Rings'
 import { ringsSessionsService } from '../services/ringsSessions'
+
+const props = withDefaults(defineProps<{ mode?: RingsMode }>(), { mode: 'point' })
 
 const { t } = useI18n()
 const { formatShortDate } = useDateFormat()
 const router = useRouter()
+
+const config = computed(() => RINGS_MODE_CONFIG[props.mode])
+const maxScore = computed(() => ringsMaxSessionScore(props.mode))
 
 const items = ref<RingsSessionHistoryItem[]>([])
 const page = ref(1)
@@ -99,7 +114,7 @@ const canLoadMore = computed(() => items.value.length < total.value)
 async function loadHistory(): Promise<void> {
   loading.value = true
   try {
-    const res = await ringsSessionsService.getHistory(page.value)
+    const res = await ringsSessionsService.getHistory(props.mode, page.value)
     total.value = res.total
     const known = new Set(items.value.map((i) => i.id))
     items.value = [...items.value, ...res.items.filter((i) => !known.has(i.id))]
@@ -117,8 +132,8 @@ function loadMore(): void {
 async function startNewSession(): Promise<void> {
   starting.value = true
   try {
-    const session = await ringsSessionsService.start()
-    await router.push({ name: 'ringsSession', params: { id: session.id } })
+    const session = await ringsSessionsService.start(props.mode)
+    await router.push({ name: config.value.routes.session, params: { id: session.id } })
   } finally {
     starting.value = false
   }
@@ -127,7 +142,7 @@ async function startNewSession(): Promise<void> {
 function resumeCurrent(): void {
   if (!currentSession.value) return
   resumeDialog.value = false
-  void router.push({ name: 'ringsSession', params: { id: currentSession.value.id } })
+  void router.push({ name: config.value.routes.session, params: { id: currentSession.value.id } })
 }
 
 async function abandonCurrent(): Promise<void> {
@@ -144,16 +159,20 @@ async function abandonCurrent(): Promise<void> {
 }
 
 function goRules(): void {
-  void router.push({ name: 'ringsRules' })
+  void router.push({ name: config.value.routes.rules })
+}
+
+function goStats(): void {
+  void router.push({ name: config.value.routes.stats })
 }
 
 function openSummary(id: number): void {
-  void router.push({ name: 'ringsSessionSummary', params: { id } })
+  void router.push({ name: config.value.routes.summary, params: { id } })
 }
 
 onMounted(async () => {
   try {
-    currentSession.value = await ringsSessionsService.current()
+    currentSession.value = await ringsSessionsService.current(props.mode)
     resumeDialog.value = currentSession.value !== null
   } catch {
     // ignore
@@ -173,6 +192,10 @@ onMounted(async () => {
 .action-secondary {
   min-height: 2.75rem;
   font-weight: 700;
+}
+
+.action-span {
+  grid-column: 1 / -1;
 }
 
 .history-section {

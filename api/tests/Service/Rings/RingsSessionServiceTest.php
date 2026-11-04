@@ -6,8 +6,10 @@ namespace App\Tests\Service\Rings;
 
 use App\Dto\Request\CompleteRingsSessionRequest;
 use App\Dto\Request\RingsThrowInputDto;
+use App\Dto\Request\StartRingsSessionRequest;
 use App\Entity\Player;
 use App\Entity\User;
+use App\Enum\RingsMode;
 use App\Service\Rings\InvalidRingsSessionStructureException;
 use App\Service\Rings\NoLinkedPlayerException;
 use App\Service\Rings\RingsSessionAccessDeniedException;
@@ -132,6 +134,76 @@ final class RingsSessionServiceTest extends KernelDatabaseTestCase
         self::assertSame(45, $history->items[0]->totalScore);
     }
 
+    public function testCarreauDoublesThePointsOfAShootingThrow(): void
+    {
+        $token = $this->createUserWithLinkedPlayer();
+        $started = $this->service->start($token, $this->startRequest('shooting'));
+
+        $summary = $this->service->complete($token, $started->id, $this->buildRequest([
+            ['far', true, true],
+            ['middle', true, true],
+            ['near', true, false],
+            ['middle', true, false],
+            ...array_fill(0, 11, ['far', false]),
+        ]));
+
+        self::assertSame('shooting', $summary->mode);
+        self::assertSame(10 + 6 + 1 + 3, $summary->totalScore);
+        self::assertTrue($summary->throws[0]->carreau);
+        self::assertSame(10, $summary->throws[0]->score);
+        self::assertFalse($summary->throws[2]->carreau);
+    }
+
+    public function testAllFarCarreauxGiveTheShootingMaximumScore(): void
+    {
+        $token = $this->createUserWithLinkedPlayer();
+        $started = $this->service->start($token, $this->startRequest('shooting'));
+
+        $summary = $this->service->complete($token, $started->id, $this->buildRequest(array_fill(0, 15, ['far', true, true])));
+
+        self::assertSame(150, $summary->totalScore);
+    }
+
+    public function testCarreauIsRejectedInPointMode(): void
+    {
+        $token = $this->createUserWithLinkedPlayer();
+        $started = $this->service->start($token);
+
+        $this->expectException(InvalidRingsSessionStructureException::class);
+        $this->service->complete($token, $started->id, $this->buildRequest([
+            ['far', true, true],
+            ...array_fill(0, 14, ['near', false]),
+        ]));
+    }
+
+    public function testCarreauOnAMissedShotIsRejected(): void
+    {
+        $token = $this->createUserWithLinkedPlayer();
+        $started = $this->service->start($token, $this->startRequest('shooting'));
+
+        $this->expectException(InvalidRingsSessionStructureException::class);
+        $this->service->complete($token, $started->id, $this->buildRequest([
+            ['far', false, true],
+            ...array_fill(0, 14, ['near', false]),
+        ]));
+    }
+
+    public function testCurrentAndHistoryAreScopedByMode(): void
+    {
+        $token = $this->createUserWithLinkedPlayer();
+        $point = $this->service->start($token);
+        $shooting = $this->service->start($token, $this->startRequest('shooting'));
+
+        self::assertSame($point->id, $this->service->current($token, RingsMode::POINT)?->id);
+        self::assertSame($shooting->id, $this->service->current($token, RingsMode::SHOOTING)?->id);
+
+        $this->service->complete($token, $shooting->id, $this->buildRequest(array_fill(0, 15, ['near', true])));
+
+        self::assertSame(0, $this->service->history($token)->total);
+        self::assertSame(1, $this->service->history($token, mode: RingsMode::SHOOTING)->total);
+        self::assertNull($this->service->current($token, RingsMode::SHOOTING));
+    }
+
     public function testStartFailsWithoutLinkedPlayer(): void
     {
         $email = sprintf('rings-%s@example.test', bin2hex(random_bytes(6)));
@@ -159,16 +231,25 @@ final class RingsSessionServiceTest extends KernelDatabaseTestCase
         return $this->jwtEncoder->encode(['username' => $email, 'sub' => (string) $user->getId()]);
     }
 
+    private function startRequest(string $mode): StartRingsSessionRequest
+    {
+        $req = new StartRingsSessionRequest();
+        $req->mode = $mode;
+
+        return $req;
+    }
+
     /**
-     * @param list<array{0:string,1:bool}> $throws
+     * @param list<array{0:string,1:bool,2?:bool}> $throws
      */
     private function buildRequest(array $throws): CompleteRingsSessionRequest
     {
         $req = new CompleteRingsSessionRequest();
-        foreach ($throws as [$target, $success]) {
+        foreach ($throws as $throw) {
             $input = new RingsThrowInputDto();
-            $input->target = $target;
-            $input->success = $success;
+            $input->target = $throw[0];
+            $input->success = $throw[1];
+            $input->carreau = $throw[2] ?? false;
             $req->throws[] = $input;
         }
 

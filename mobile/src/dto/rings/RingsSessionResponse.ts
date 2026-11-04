@@ -10,6 +10,7 @@ export interface RingsThrowSummaryDto {
   position: number
   target: RingsTarget
   success: boolean
+  carreau: boolean
   score: number
 }
 

@@ -3,7 +3,10 @@
     <li v-for="slot in slots" :key="slot.number" class="track-slot" :class="slot.className">
       <template v-if="slot.played">
         <span>{{ distanceLabel(slot.played.target) }}</span>
-        <span class="slot-score">+{{ ringsThrowScore(slot.played.target, slot.played.success) }}</span>
+        <span class="slot-score">
+          +{{ ringsThrowScore(slot.played.target, slot.played.success, slot.played.carreau) }}
+          <i v-if="slot.played.carreau" class="pi pi-star-fill slot-carreau" :aria-label="t('ringsShooting.play.carreau')" />
+        </span>
       </template>
       <span v-else>{{ slot.number }}</span>
     </li>
@@ -27,7 +30,7 @@ const slots = computed(() =>
   Array.from({ length: RINGS_THROWS_PER_SESSION }, (_, index) => {
     const played = props.throws[index]
     let className = ''
-    if (played) className = played.success ? 'is-success' : 'is-missed'
+    if (played) className = played.carreau ? 'is-carreau' : played.success ? 'is-success' : 'is-missed'
     else if (props.highlightNext && index === props.throws.length) className = 'is-current'
     return { number: index + 1, played, className }
   }),
@@ -66,6 +69,16 @@ const slots = computed(() =>
   border: none;
   background: #22c55e;
   color: #fff;
+}
+
+.track-slot.is-carreau {
+  border: none;
+  background: #8b5cf6;
+  color: #fff;
+}
+
+.slot-carreau {
+  font-size: 0.5625rem;
 }
 
 .track-slot.is-missed {

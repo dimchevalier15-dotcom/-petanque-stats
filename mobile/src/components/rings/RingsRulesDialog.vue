@@ -1,12 +1,13 @@
 <template>
   <Dialog
     v-model:visible="visible"
-    :header="t('rings.rules.title')"
+    :header="t(mode === 'shooting' ? 'ringsShooting.rules.title' : 'rings.rules.title')"
     :modal="true"
     :dismissableMask="true"
     class="rings-rules-dialog"
   >
-    <RingsRules />
+    <RingsShootingRules v-if="mode === 'shooting'" />
+    <RingsRules v-else />
     <Button class="close-btn" :label="t('rings.rules.close')" @click="visible = false" />
   </Dialog>
 </template>
@@ -16,6 +17,10 @@ import { useI18n } from 'vue-i18n'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import RingsRules from './RingsRules.vue'
+import RingsShootingRules from './RingsShootingRules.vue'
+import type { RingsMode } from '../../models/Rings'
+
+withDefaults(defineProps<{ mode?: RingsMode }>(), { mode: 'point' })
 
 const visible = defineModel<boolean>('visible', { default: false })
 

@@ -1,6 +1,6 @@
 <template>
   <AppPage compact>
-    <PageHeader :title="t('rings.home.title')" :back-to="{ name: 'ringsHome' }">
+    <PageHeader :title="t(config.titleKey)" :back-to="{ name: config.routes.home }">
       <template #actions>
         <Button
           class="rules-btn"
@@ -17,24 +17,43 @@
       <span class="ball-pill">
         {{ isComplete ? t('rings.play.allPlayed') : t('rings.play.ball', { current: currentBall, total: RINGS_THROWS_PER_SESSION }) }}
       </span>
-      <strong class="score-value">{{ totalScore }}<span class="score-max">/{{ RINGS_MAX_SESSION_SCORE }}</span></strong>
-      <span class="score-meta">{{ t('rings.play.successCount', { count: successCount, total: throws.length }) }}</span>
+      <strong class="score-value">{{ totalScore }}<span class="score-max">/{{ maxScore }}</span></strong>
+      <span class="score-meta">
+        {{ t('rings.play.successCount', { count: successCount, total: throws.length }) }}
+        <template v-if="allowsCarreau"> · {{ t('ringsShooting.play.carreauCount', { count: carreauCount }) }}</template>
+      </span>
     </header>
 
     <div class="targets">
       <article v-for="target in RINGS_TARGETS" :key="target" class="target-card app-card">
         <div class="target-head">
           <span class="target-distance">{{ distanceLabel(target) }}</span>
-          <Tag :value="pointsLabel(target)" severity="success" />
+          <span class="target-tags">
+            <Tag :value="pointsLabel(target)" severity="success" />
+            <Tag
+              v-if="allowsCarreau"
+              :value="t('ringsShooting.play.carreauPoints', { points: pointsText(ringsThrowScore(target, true, true)) })"
+              severity="help"
+            />
+          </span>
         </div>
-        <div class="target-actions">
+        <div class="target-actions" :class="{ 'with-carreau': allowsCarreau }">
           <Button
             class="throw-btn"
-            :label="t('rings.play.success')"
+            :label="allowsCarreau ? t('ringsShooting.play.hit') : t('rings.play.success')"
             icon="pi pi-check"
             severity="success"
             :disabled="isComplete"
             @click="addThrow(target, true)"
+          />
+          <Button
+            v-if="allowsCarreau"
+            class="throw-btn"
+            :label="t('ringsShooting.play.carreau')"
+            icon="pi pi-star-fill"
+            severity="help"
+            :disabled="isComplete"
+            @click="addThrow(target, true, true)"
           />
           <Button
             class="throw-btn"
@@ -89,12 +108,12 @@
       </div>
     </Dialog>
 
-    <RingsRulesDialog v-model:visible="rulesDialog" />
+    <RingsRulesDialog v-model:visible="rulesDialog" :mode="mode" />
   </AppPage>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
@@ -106,17 +125,40 @@ import RingsRulesDialog from '../components/rings/RingsRulesDialog.vue'
 import RingsThrowTrack from '../components/rings/RingsThrowTrack.vue'
 import { clearRingsDraft, useRingsSessionPlay } from '../composables/useRingsSessionPlay'
 import { useRingsTargetLabels } from '../composables/useRingsTargetLabels'
-import { RINGS_MAX_SESSION_SCORE, RINGS_TARGETS, RINGS_THROWS_PER_SESSION } from '../models/Rings'
+import {
+  RINGS_MODE_CONFIG,
+  RINGS_TARGETS,
+  RINGS_THROWS_PER_SESSION,
+  ringsAllowsCarreau,
+  ringsMaxSessionScore,
+  ringsThrowScore,
+  type RingsMode,
+} from '../models/Rings'
 import { ringsSessionsService } from '../services/ringsSessions'
+
+const props = withDefaults(defineProps<{ mode?: RingsMode }>(), { mode: 'point' })
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const { distanceLabel, pointsLabel } = useRingsTargetLabels()
+const { distanceLabel, pointsLabel, pointsText } = useRingsTargetLabels()
+
+const config = computed(() => RINGS_MODE_CONFIG[props.mode])
+const allowsCarreau = computed(() => ringsAllowsCarreau(props.mode))
+const maxScore = computed(() => ringsMaxSessionScore(props.mode))
 
 const sessionId = Number(route.params.id)
-const { throws, isComplete, totalScore, successCount, currentBall, addThrow, undoLast, toCompletionPayload } =
-  useRingsSessionPlay(sessionId)
+const {
+  throws,
+  isComplete,
+  totalScore,
+  successCount,
+  carreauCount,
+  currentBall,
+  addThrow,
+  undoLast,
+  toCompletionPayload,
+} = useRingsSessionPlay(sessionId)
 
 const rulesDialog = ref(false)
 const abandonDialog = ref(false)
@@ -128,7 +170,7 @@ async function finishSession(): Promise<void> {
   try {
     await ringsSessionsService.complete(sessionId, toCompletionPayload())
     clearRingsDraft(sessionId)
-    await router.push({ name: 'ringsSessionSummary', params: { id: sessionId } })
+    await router.push({ name: config.value.routes.summary, params: { id: sessionId } })
   } finally {
     finishing.value = false
   }
@@ -139,7 +181,7 @@ async function confirmAbandon(): Promise<void> {
   try {
     await ringsSessionsService.abandon(sessionId)
     clearRingsDraft(sessionId)
-    await router.push({ name: 'ringsHome' })
+    await router.push({ name: config.value.routes.home })
   } finally {
     abandoning.value = false
     abandonDialog.value = false
@@ -213,15 +255,30 @@ async function confirmAbandon(): Promise<void> {
   font-weight: 800;
 }
 
+.target-tags {
+  display: flex;
+  gap: var(--app-space-xs);
+}
+
 .target-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--app-space-sm);
 }
 
+.target-actions.with-carreau {
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--app-space-xs);
+}
+
 .throw-btn {
   min-height: 3rem;
   font-weight: 700;
+}
+
+.with-carreau .throw-btn {
+  padding-inline: 0.375rem;
+  font-size: 0.875rem;
 }
 
 .play-actions {

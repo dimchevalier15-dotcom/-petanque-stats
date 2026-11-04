@@ -6,6 +6,8 @@ namespace App\Controller\Rings;
 
 use App\Dto\Request\CompleteRingsSessionRequest;
 use App\Dto\Request\StartRingsSessionRequest;
+use App\Enum\RingsMode;
+use App\Http\StatsDateRangeResolver;
 use App\Security\ImpersonationResolver;
 use App\Service\Auth\InvalidTokenException;
 use App\Service\Rings\InvalidRingsSessionStructureException;
@@ -14,6 +16,7 @@ use App\Service\Rings\RingsSessionAccessDeniedException;
 use App\Service\Rings\RingsSessionAlreadyFinishedException;
 use App\Service\Rings\RingsSessionNotFoundException;
 use App\Service\Rings\RingsSessionService;
+use App\Service\Rings\RingsStatsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +29,7 @@ final class RingsSessionController extends AbstractController
 {
     public function __construct(
         private RingsSessionService $service,
+        private RingsStatsService $statsService,
         private ImpersonationResolver $impersonation,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
@@ -56,8 +60,13 @@ final class RingsSessionController extends AbstractController
     #[Route('/api/rings-sessions/current', name: 'api_rings_sessions_current', methods: ['GET'])]
     public function current(Request $request): JsonResponse
     {
-        return $this->withToken($request, function (string $token) {
-            $res = $this->service->current($token);
+        return $this->withToken($request, function (string $token) use ($request) {
+            $mode = $this->resolveMode($request);
+            if ($mode === null) {
+                return $this->invalidModeError();
+            }
+
+            $res = $this->service->current($token, $mode);
             if ($res === null) {
                 return new JsonResponse('null', 200, [], true);
             }
@@ -70,10 +79,37 @@ final class RingsSessionController extends AbstractController
     public function history(Request $request): JsonResponse
     {
         return $this->withToken($request, function (string $token) use ($request) {
+            $mode = $this->resolveMode($request);
+            if ($mode === null) {
+                return $this->invalidModeError();
+            }
+
             $page = $request->query->get('page') !== null ? max(1, (int) $request->query->get('page')) : 1;
             $size = $request->query->get('size') !== null ? max(1, (int) $request->query->get('size')) : 20;
             $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
-            $res = $this->service->history($token, $page, $size, $impersonatePlayerId);
+            $res = $this->service->history($token, $page, $size, $impersonatePlayerId, $mode);
+
+            return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
+        });
+    }
+
+    #[Route('/api/rings-sessions/stats', name: 'api_rings_sessions_stats', methods: ['GET'])]
+    public function stats(Request $request): JsonResponse
+    {
+        return $this->withToken($request, function (string $token) use ($request) {
+            try {
+                $dateRange = StatsDateRangeResolver::fromRequest($request);
+            } catch (\InvalidArgumentException $e) {
+                return new JsonResponse(['message' => $e->getMessage()], 400);
+            }
+
+            $mode = $this->resolveMode($request);
+            if ($mode === null) {
+                return $this->invalidModeError();
+            }
+
+            $impersonatePlayerId = $this->impersonation->resolveOptionalFromToken($token, $request);
+            $res = $this->statsService->stats($token, $dateRange, $impersonatePlayerId, $mode);
 
             return new JsonResponse($this->serializer->serialize($res, 'json'), 200, [], true);
         });
@@ -139,6 +175,18 @@ final class RingsSessionController extends AbstractController
                 return new JsonResponse(['message' => 'Session already finished.'], 409);
             }
         });
+    }
+
+    private function resolveMode(Request $request): ?RingsMode
+    {
+        $raw = $request->query->get('mode');
+
+        return $raw === null || $raw === '' ? RingsMode::POINT : RingsMode::tryFrom((string) $raw);
+    }
+
+    private function invalidModeError(): JsonResponse
+    {
+        return new JsonResponse(['errors' => ['mode' => 'Invalid mode.']], 400);
     }
 
     private function validationError(ConstraintViolationListInterface $violations): JsonResponse

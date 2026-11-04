@@ -25,7 +25,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class RingsSessionService
 {
-    public const THROWS_PER_SESSION = 15;
+    public const THROWS_PER_SESSION = RingsMode::THROWS_PER_SESSION;
 
     public function __construct(
         private CurrentUserService $currentUser,
@@ -55,10 +55,10 @@ final class RingsSessionService
     /**
      * @throws NoLinkedPlayerException
      */
-    public function current(string $token): ?RingsSessionStartedResponse
+    public function current(string $token, RingsMode $mode = RingsMode::POINT): ?RingsSessionStartedResponse
     {
         $player = $this->resolveOwnPlayer($token);
-        $session = $this->sessions->findInProgressForPlayer((int) $player->getId());
+        $session = $this->sessions->findInProgressForPlayer((int) $player->getId(), $mode);
 
         return $session !== null ? $this->toStartedResponse($session) : null;
     }
@@ -86,12 +86,12 @@ final class RingsSessionService
             throw new RingsSessionAlreadyFinishedException();
         }
 
-        $parsed = $this->parseThrows($req);
+        $parsed = $this->parseThrows($req, $session->getMode());
 
         $this->em->wrapInTransaction(function () use ($session, $parsed): void {
             $total = 0;
-            foreach ($parsed as $index => [$target, $success]) {
-                $throw = new RingsThrow($session, $index + 1, $target, $success);
+            foreach ($parsed as $index => [$target, $success, $carreau]) {
+                $throw = new RingsThrow($session, $index + 1, $target, $success, $carreau);
                 $this->em->persist($throw);
                 $total += $throw->getScore();
             }
@@ -118,14 +118,19 @@ final class RingsSessionService
         $this->em->flush();
     }
 
-    public function history(string $token, int $page = 1, int $pageSize = 20, ?int $impersonatePlayerId = null): RingsSessionHistoryResponse
-    {
+    public function history(
+        string $token,
+        int $page = 1,
+        int $pageSize = 20,
+        ?int $impersonatePlayerId = null,
+        RingsMode $mode = RingsMode::POINT,
+    ): RingsSessionHistoryResponse {
         $context = $this->playerViewContext->resolve($token, $impersonatePlayerId);
         if ($context->playerId === null) {
             return new RingsSessionHistoryResponse(page: $page, pageSize: $pageSize, total: 0, items: []);
         }
 
-        [$total, $sessions] = $this->sessions->findHistoryForPlayer($context->playerId, $page, $pageSize);
+        [$total, $sessions] = $this->sessions->findHistoryForPlayer($context->playerId, $page, $pageSize, $mode);
 
         $items = array_map(
             static fn (RingsSession $s): RingsSessionHistoryItemResponse => new RingsSessionHistoryItemResponse(
@@ -142,10 +147,10 @@ final class RingsSessionService
     }
 
     /**
-     * @return list<array{0:RingsTarget,1:bool}>
+     * @return list<array{0:RingsTarget,1:bool,2:bool}>
      * @throws InvalidRingsSessionStructureException
      */
-    private function parseThrows(CompleteRingsSessionRequest $req): array
+    private function parseThrows(CompleteRingsSessionRequest $req, RingsMode $mode): array
     {
         if (\count($req->throws) !== self::THROWS_PER_SESSION) {
             throw new InvalidRingsSessionStructureException(['throws' => sprintf('Exactly %d throws are required.', self::THROWS_PER_SESSION)]);
@@ -159,7 +164,15 @@ final class RingsSessionService
                 $errors["throws[$index]"] = 'Invalid target or success.';
                 continue;
             }
-            $parsed[] = [$target, $input->success];
+            if ($input->carreau && !$mode->allowsCarreau()) {
+                $errors["throws[$index]"] = 'Carreau is only allowed in shooting mode.';
+                continue;
+            }
+            if ($input->carreau && !$input->success) {
+                $errors["throws[$index]"] = 'A carreau must be a successful shot.';
+                continue;
+            }
+            $parsed[] = [$target, $input->success, $input->carreau];
         }
 
         if ($errors !== []) {
@@ -243,6 +256,7 @@ final class RingsSessionService
                 position: $t->getPosition(),
                 target: $t->getTarget()->value,
                 success: $t->isSuccess(),
+                carreau: $t->isCarreau(),
                 score: $t->getScore(),
             ),
             $this->throws->findBySession($session),

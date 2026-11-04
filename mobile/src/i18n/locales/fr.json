@@ -1365,6 +1365,7 @@
       "subtitle": "15 boules, 3 ronds",
       "newSession": "Nouvelle séance",
       "rules": "Règles",
+      "stats": "Statistiques",
       "historyTitle": "Historique des séances",
       "empty": "Aucune séance pour le moment.",
       "scoreOnMax": "{score} / {max}"
@@ -1426,6 +1427,54 @@
       "cancel": "Annuler",
       "confirm": "Abandonner"
     },
+    "stats": {
+      "title": "Statistiques",
+      "subtitle": "Le point dans les ronds",
+      "kpi": {
+        "sessions": "Séances",
+        "best": "Meilleur score",
+        "average": "Moyenne"
+      },
+      "hero": {
+        "averageSession": "Score moyen par séance",
+        "successRate": "Taux de réussite global : {rate} %",
+        "throwsTracked": "{n} boules analysées"
+      },
+      "insights": {
+        "strength": "Rond le plus sûr",
+        "toWork": "À travailler"
+      },
+      "sections": {
+        "deciles": "Répartition des scores",
+        "evolution": "Progression",
+        "targets": "Réussite par rond",
+        "averageByTarget": "Points moyens par tentative"
+      },
+      "deciles": {
+        "hint": "Nombre de séances dont le score total tombe dans chaque tranche (sur {max} pts max).",
+        "range": "{min}–{max}"
+      },
+      "evolution": {
+        "hint": "Évolution de votre score total sur vos séances terminées."
+      },
+      "targets": {
+        "hint": "Pourcentage de réussite lorsque vous visez chaque rond.",
+        "attempts": "{successes} / {attempts} réussies",
+        "avgPoints": "Ø {n} pts / tentative"
+      },
+      "averageByTarget": {
+        "hint": "Points marqués en moyenne par boule, selon le rond visé."
+      },
+      "empty": {
+        "loadErrorTitle": "Impossible de charger les statistiques",
+        "retry": "Réessayer",
+        "noSessionsTitle": "Aucune séance terminée",
+        "noSessionsHint": "Terminez une première séance pour voir vos statistiques.",
+        "startSession": "Commencer une séance",
+        "noDataInPeriodTitle": "Aucune séance sur cette période",
+        "noDataInPeriodHint": "Élargissez la plage de dates pour afficher vos statistiques."
+      }
+    },
     "summary": {
       "title": "Récap de la séance",
       "sessionFinished": "Séance terminée",
@@ -1433,6 +1482,84 @@
       "attempts": "{successes} / {attempts} réussies",
       "throws": "Détail des boules",
       "backHome": "Retour à l'accueil"
+    }
+  },
+  "ringsShooting": {
+    "home": {
+      "title": "Le tir dans les ronds",
+      "subtitle": "15 tirs, 3 boules cibles"
+    },
+    "play": {
+      "hit": "Touché",
+      "carreau": "Carreau",
+      "carreauCount": "Carreaux : {count}",
+      "carreauPoints": "Carreau {points}"
+    },
+    "stats": {
+      "carreauRate": "Carreaux : {count} ({rate} % des tirs)",
+      "carreauSection": "Carreaux par rond",
+      "carreauHint": "Part des tirs terminés en carreau, selon le rond visé."
+    },
+    "rules": {
+      "title": "Règles",
+      "subtitle": "Le tir dans les ronds",
+      "start": "Commencer une séance",
+      "figureAlt": "Schéma du terrain : cercle de lancer et trois ronds avec leurs boules cibles",
+      "detailAlt": "Détail des trois ronds : boule seule, boule avec but devant, boule entre deux boules",
+      "detailCaption": "Vue de dessus, le tireur est en bas.",
+      "throwingCircle": "Cercle de lancer",
+      "cm": "{n} cm",
+      "legend": {
+        "target": "Boule cible",
+        "neighbour": "Boule voisine",
+        "jack": "But"
+      },
+      "sections": {
+        "setup": {
+          "title": "Mise en place",
+          "items": [
+            "Le tireur joue toujours depuis le même cercle de lancer, qui ne bouge pas.",
+            "Trois ronds de {diameter} cm de diamètre sont tracés à {near}, {middle} et {far}, avec une boule cible au centre de chacun.",
+            "À {near} : la boule cible est seule dans le rond.",
+            "À {middle} : un but est placé {jackGap} cm devant la boule cible, côté tireur.",
+            "À {far} : la boule cible est encadrée par deux boules, à {sideGap} cm de chaque côté."
+          ]
+        },
+        "play": {
+          "title": "Déroulement",
+          "items": [
+            "Le tireur dispose de {balls} boules pour marquer un maximum de points.",
+            "Avant chaque boule, il choisit librement le rond qu'il vise.",
+            "Le tir est réussi s'il touche la boule cible, directement ou après avoir touché le sol dans le rond : il rapporte les points du rond."
+          ]
+        },
+        "carreau": {
+          "title": "Carreau",
+          "lead": "En plus du simple touché, un tir peut être un carreau : la boule tirée chasse la boule cible et prend sa place au même endroit, dans le rond.",
+          "items": [
+            "Touché : la boule tirée frappe la boule cible sans la chasser (ou sans rester à sa place). Vous marquez les points « Touché » du barème.",
+            "Carreau : la boule tirée chasse la boule cible et reste à sa place dans le rond. Vous marquez le double : 2 points à {near}, 6 points à {middle}, 10 points à {far}.",
+            "Un carreau ne vaut que si le tir est valable (voir « Tir non valable ») : par exemple, toucher le sol avant le rond, le but à {middle} ou une boule voisine à {far} annule le tir, carreau compris.",
+            "En séance, enregistrez « Carreau » uniquement lorsque la boule tirée a bien pris la place de la boule cible."
+          ]
+        },
+        "invalid": {
+          "title": "Tir non valable",
+          "items": [
+            "La boule tirée touche le sol avant le rond, même si elle frappe ensuite la boule cible.",
+            "À {middle}, la boule tirée touche le but.",
+            "À {far}, la boule tirée touche une boule voisine avant la boule cible."
+          ]
+        },
+        "scale": {
+          "title": "Barème",
+          "intro": "Pour chaque rond, un touché simple rapporte la colonne « Touché » ; un carreau rapporte le double (colonne « Carreau »).",
+          "hit": "Touché",
+          "carreau": "Carreau",
+          "ring": "Boule cible à {distance}",
+          "missed": "Tir manqué ou non valable"
+        }
+      }
     }
   },
   "pointing": {
@@ -1937,6 +2064,10 @@
       "rings": {
         "title": "Le point dans les ronds",
         "description": "15 boules pour marquer un maximum de points dans 3 ronds."
+      },
+      "ringsShooting": {
+        "title": "Le tir dans les ronds",
+        "description": "15 tirs sur 3 boules cibles de difficulté croissante, carreau = points doublés."
       }
     },
     "home": {

@@ -1326,6 +1326,7 @@
       "subtitle": "15 gúľ, 3 kruhy",
       "newSession": "Nové kolo",
       "rules": "Pravidlá",
+      "stats": "Štatistiky",
       "historyTitle": "História kôl",
       "empty": "Zatiaľ žiadne kolo.",
       "scoreOnMax": "{score} / {max}"
@@ -1387,6 +1388,54 @@
       "cancel": "Späť",
       "confirm": "Zrušiť"
     },
+    "stats": {
+      "title": "Štatistiky",
+      "subtitle": "Point do kruhov",
+      "kpi": {
+        "sessions": "Kola",
+        "best": "Rekord",
+        "average": "Priemer"
+      },
+      "hero": {
+        "averageSession": "Priemerné skóre za kolo",
+        "successRate": "Celková úspešnosť: {rate} %",
+        "throwsTracked": "{n} analyzovaných gúľ"
+      },
+      "insights": {
+        "strength": "Najistejší kruh",
+        "toWork": "Na zlepšenie"
+      },
+      "sections": {
+        "deciles": "Rozdelenie skóre",
+        "evolution": "Vývoj",
+        "targets": "Úspešnosť podľa kruhu",
+        "averageByTarget": "Priemerné body na pokus"
+      },
+      "deciles": {
+        "hint": "Počet kôl, ktorých celkové skóre spadá do každého pásma (max. {max} bodov).",
+        "range": "{min}–{max}"
+      },
+      "evolution": {
+        "hint": "Vývoj celkového skóre v ukončených kolách."
+      },
+      "targets": {
+        "hint": "Úspešnosť pri mierení na jednotlivé kruhy.",
+        "attempts": "{successes} / {attempts} úspešných",
+        "avgPoints": "Ø {n} b. / pokus"
+      },
+      "averageByTarget": {
+        "hint": "Priemerné body získané na guľu podľa zvoleného kruhu."
+      },
+      "empty": {
+        "loadErrorTitle": "Nepodarilo sa načítať štatistiky",
+        "retry": "Skúsiť znova",
+        "noSessionsTitle": "Žiadne ukončené kolo",
+        "noSessionsHint": "Dokončite kolo, aby ste videli štatistiky.",
+        "startSession": "Začať kolo",
+        "noDataInPeriodTitle": "Žiadne údaje v tomto období",
+        "noDataInPeriodHint": "Rozšírte rozsah dátumov alebo vypnite filter."
+      }
+    },
     "summary": {
       "title": "Prehľad kola",
       "sessionFinished": "Kolo ukončené",
@@ -1394,6 +1443,84 @@
       "attempts": "{successes} / {attempts} úspešných",
       "throws": "Detail gúľ",
       "backHome": "Späť na úvod"
+    }
+  },
+  "ringsShooting": {
+    "home": {
+      "title": "Streľba do kruhov",
+      "subtitle": "15 striel, 3 cieľové gule"
+    },
+    "play": {
+      "hit": "Zásah",
+      "carreau": "Karo",
+      "carreauCount": "Karo: {count}",
+      "carreauPoints": "Karo {points}"
+    },
+    "stats": {
+      "carreauRate": "Karo: {count} ({rate} % striel)",
+      "carreauSection": "Karo podľa kruhu",
+      "carreauHint": "Podiel striel zakončených karom podľa zvoleného kruhu."
+    },
+    "rules": {
+      "title": "Pravidlá",
+      "subtitle": "Streľba do kruhov",
+      "start": "Začať kolo",
+      "figureAlt": "Nákres ihriska: hrací kruh a tri kruhy s cieľovými guľami",
+      "detailAlt": "Detail troch kruhov: samotná guľa, guľa s cieľikom vpredu, guľa medzi dvoma guľami",
+      "detailCaption": "Pohľad zhora, strelec je dole.",
+      "throwingCircle": "Hrací kruh",
+      "cm": "{n} cm",
+      "legend": {
+        "target": "Cieľová guľa",
+        "neighbour": "Bočná guľa",
+        "jack": "Cieľik"
+      },
+      "sections": {
+        "setup": {
+          "title": "Príprava",
+          "items": [
+            "Strelec hrá vždy z toho istého hracieho kruhu, ktorý sa nehýbe.",
+            "Tri kruhy s priemerom {diameter} cm sú nakreslené na {near}, {middle} a {far}, v strede každého je cieľová guľa.",
+            "Na {near}: cieľová guľa je v kruhu sama.",
+            "Na {middle}: cieľik leží {jackGap} cm pred cieľovou guľou, na strane strelca.",
+            "Na {far}: cieľová guľa je medzi dvoma guľami, {sideGap} cm na každú stranu."
+          ]
+        },
+        "play": {
+          "title": "Priebeh",
+          "items": [
+            "Strelec má {balls} gúľ na získanie čo najviac bodov.",
+            "Pred každou guľou si voľne vyberie, na ktorý kruh mieri.",
+            "Streľba je úspešná, ak zasiahne cieľovú guľu priamo alebo po dopade v kruhu: získa body tohto kruhu."
+          ]
+        },
+        "carreau": {
+          "title": "Karo",
+          "lead": "Okrem obyčajného zásahu môže byť strela karo: vystrelená guľa odpáli cieľovú guľu a zostane na jej mieste v kruhu.",
+          "items": [
+            "Zásah: vystrelená guľa zasiahne cieľovú guľu, ale nezostane na jej mieste. Počítajú sa body v stĺpci « Zásah ».",
+            "Karo: vystrelená guľa odpáli cieľovú guľu a zostane na jej mieste v kruhu. Body sa zdvojnásobia: 2 body na {near}, 6 na {middle}, 10 na {far}.",
+            "Karo platí len pri platnej strele (pozri « Neplatná streľba »): napr. dopad pred kruhom, dotyk cieľika na {middle} alebo bočnej gule na {far} ruší aj karo.",
+            "V kole zaznamenajte « Karo » len keď vystrelená guľa naozaj zaujala miesto cieľovej gule."
+          ]
+        },
+        "invalid": {
+          "title": "Neplatná streľba",
+          "items": [
+            "Guľa dopadne pred kruh, aj keď potom zasiahne cieľovú guľu.",
+            "Na {middle} sa guľa dotkne cieľika.",
+            "Na {far} sa guľa dotkne bočnej gule skôr ako cieľovej."
+          ]
+        },
+        "scale": {
+          "title": "Bodovanie",
+          "intro": "Pri každom kruhu obyčajný zásah dáva body « Zásah »; karo dáva dvojnásobok (stĺpec « Karo »).",
+          "hit": "Zásah",
+          "carreau": "Karo",
+          "ring": "Cieľová guľa na {distance}",
+          "missed": "Minutá alebo neplatná streľba"
+        }
+      }
     }
   },
   "pointing": {
@@ -1878,6 +2005,10 @@
       "rings": {
         "title": "Point do kruhov",
         "description": "15 gúľ na získanie čo najviac bodov v 3 kruhoch."
+      },
+      "ringsShooting": {
+        "title": "Streľba do kruhov",
+        "description": "15 striel na 3 cieľové gule s rastúcou obtiažnosťou, karo zdvojnásobí body."
       }
     },
     "home": {

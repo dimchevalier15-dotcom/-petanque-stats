@@ -15,4 +15,6 @@ final class RingsThrowInputDto
 
     #[Assert\NotNull]
     public ?bool $success = null;
+
+    public bool $carreau = false;
 }

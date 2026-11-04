@@ -10,6 +10,7 @@ final class RingsThrowSummaryResponse
         public int $position,
         public string $target,
         public bool $success,
+        public bool $carreau,
         public int $score,
     ) {
     }

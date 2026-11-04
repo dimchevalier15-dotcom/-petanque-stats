@@ -35,6 +35,12 @@
         <span class="exercise-title">{{ t('training.menu.rings.title') }}</span>
         <span class="exercise-desc">{{ t('training.menu.rings.description') }}</span>
       </button>
+
+      <button type="button" class="exercise-card app-card" @click="goRingsShooting">
+        <i class="pi pi-bolt exercise-icon" aria-hidden="true" />
+        <span class="exercise-title">{{ t('training.menu.ringsShooting.title') }}</span>
+        <span class="exercise-desc">{{ t('training.menu.ringsShooting.description') }}</span>
+      </button>
     </div>
   </AppPage>
 </template>
@@ -66,6 +72,10 @@ function goTirSautee(): void {
 
 function goRings(): void {
   router.push({ name: 'ringsHome' })
+}
+
+function goRingsShooting(): void {
+  router.push({ name: 'ringsShootingHome' })
 }
 </script>
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\RingsMode;
 use App\Enum\RingsTarget;
 use App\Repository\RingsThrowRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,16 +32,24 @@ class RingsThrow
     #[ORM\Column(type: 'boolean')]
     private bool $success;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $carreau;
+
     #[ORM\Column(type: 'smallint')]
     private int $score;
 
-    public function __construct(RingsSession $session, int $position, RingsTarget $target, bool $success)
+    public function __construct(RingsSession $session, int $position, RingsTarget $target, bool $success, bool $carreau = false)
     {
+        if ($carreau && (!$success || !$session->getMode()->allowsCarreau())) {
+            throw new \InvalidArgumentException('A carreau must be a successful shot in a shooting session.');
+        }
+
         $this->session = $session;
         $this->position = $position;
         $this->target = $target;
         $this->success = $success;
-        $this->score = $success ? $target->points() : 0;
+        $this->carreau = $carreau;
+        $this->score = $success ? $target->points() * ($carreau ? RingsMode::CARREAU_MULTIPLIER : 1) : 0;
     }
 
     public function getId(): ?int
@@ -66,6 +75,11 @@ class RingsThrow
     public function isSuccess(): bool
     {
         return $this->success;
+    }
+
+    public function isCarreau(): bool
+    {
+        return $this->carreau;
     }
 
     public function getScore(): int

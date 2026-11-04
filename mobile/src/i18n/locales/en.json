@@ -1365,6 +1365,7 @@
       "subtitle": "15 balls, 3 rings",
       "newSession": "New session",
       "rules": "Rules",
+      "stats": "Statistics",
       "historyTitle": "Session history",
       "empty": "No sessions yet.",
       "scoreOnMax": "{score} / {max}"
@@ -1426,6 +1427,54 @@
       "cancel": "Cancel",
       "confirm": "Discard"
     },
+    "stats": {
+      "title": "Statistics",
+      "subtitle": "Pointing into the rings",
+      "kpi": {
+        "sessions": "Sessions",
+        "best": "Best score",
+        "average": "Average"
+      },
+      "hero": {
+        "averageSession": "Average score per session",
+        "successRate": "Overall success rate: {rate}%",
+        "throwsTracked": "{n} balls analysed"
+      },
+      "insights": {
+        "strength": "Strongest ring",
+        "toWork": "To work on"
+      },
+      "sections": {
+        "deciles": "Score distribution",
+        "evolution": "Progress",
+        "targets": "Success by ring",
+        "averageByTarget": "Average points per attempt"
+      },
+      "deciles": {
+        "hint": "Number of sessions whose total score falls in each band (out of {max} max).",
+        "range": "{min}–{max}"
+      },
+      "evolution": {
+        "hint": "How your total score evolves across finished sessions."
+      },
+      "targets": {
+        "hint": "Success rate when aiming at each ring.",
+        "attempts": "{successes} / {attempts} successful",
+        "avgPoints": "Ø {n} pts / attempt"
+      },
+      "averageByTarget": {
+        "hint": "Average points scored per ball, by ring aimed at."
+      },
+      "empty": {
+        "loadErrorTitle": "Could not load statistics",
+        "retry": "Retry",
+        "noSessionsTitle": "No finished sessions",
+        "noSessionsHint": "Complete a session to see your statistics.",
+        "startSession": "Start a session",
+        "noDataInPeriodTitle": "No sessions in this period",
+        "noDataInPeriodHint": "Widen the date range to show your statistics."
+      }
+    },
     "summary": {
       "title": "Session recap",
       "sessionFinished": "Session finished",
@@ -1433,6 +1482,84 @@
       "attempts": "{successes} / {attempts} successful",
       "throws": "Ball details",
       "backHome": "Back to home"
+    }
+  },
+  "ringsShooting": {
+    "home": {
+      "title": "Shooting into the rings",
+      "subtitle": "15 shots, 3 target balls"
+    },
+    "play": {
+      "hit": "Hit",
+      "carreau": "Carreau",
+      "carreauCount": "Carreaux: {count}",
+      "carreauPoints": "Carreau {points}"
+    },
+    "stats": {
+      "carreauRate": "Carreaux: {count} ({rate}% of shots)",
+      "carreauSection": "Carreaux by ring",
+      "carreauHint": "Share of shots ending in a carreau, by ring aimed at."
+    },
+    "rules": {
+      "title": "Rules",
+      "subtitle": "Shooting into the rings",
+      "start": "Start a session",
+      "figureAlt": "Field diagram: throwing circle and three rings with their target balls",
+      "detailAlt": "Detail of the three rings: lone ball, ball with a jack in front, ball between two balls",
+      "detailCaption": "Top view, the shooter is at the bottom.",
+      "throwingCircle": "Throwing circle",
+      "cm": "{n} cm",
+      "legend": {
+        "target": "Target ball",
+        "neighbour": "Side ball",
+        "jack": "Jack"
+      },
+      "sections": {
+        "setup": {
+          "title": "Setup",
+          "items": [
+            "The shooter always plays from the same throwing circle, which does not move.",
+            "Three {diameter} cm rings are drawn at {near}, {middle} and {far}, with a target ball in the centre of each.",
+            "At {near}: the target ball is alone in the ring.",
+            "At {middle}: a jack is placed {jackGap} cm in front of the target ball, on the shooter's side.",
+            "At {far}: the target ball sits between two balls, {sideGap} cm away on each side."
+          ]
+        },
+        "play": {
+          "title": "How to play",
+          "items": [
+            "The shooter has {balls} balls to score as many points as possible.",
+            "Before each ball, they freely choose which ring to aim at.",
+            "A shot succeeds if it hits the target ball, directly or after landing inside the ring: it scores that ring's points."
+          ]
+        },
+        "carreau": {
+          "title": "Carreau",
+          "lead": "Besides a simple hit, a shot can be a carreau: the shot ball drives the target ball away and takes its place in the ring.",
+          "items": [
+            "Hit: the shot ball strikes the target ball without driving it away and staying in its place. You score the « Hit » points in the table.",
+            "Carreau: the shot ball drives the target ball away and stays in its place in the ring. You score double: 2 points at {near}, 6 at {middle}, 10 at {far}.",
+            "A carreau only counts if the shot is valid (see « Invalid shot »): e.g. landing before the ring, touching the jack at {middle}, or a side ball at {far} cancels the shot, carreau included.",
+            "During a session, record « Carreau » only when the shot ball has clearly taken the target ball's place."
+          ]
+        },
+        "invalid": {
+          "title": "Invalid shot",
+          "items": [
+            "The shot lands before the ring, even if it then hits the target ball.",
+            "At {middle}, the shot touches the jack.",
+            "At {far}, the shot touches a side ball before the target ball."
+          ]
+        },
+        "scale": {
+          "title": "Scoring",
+          "intro": "For each ring, a simple hit scores the « Hit » column; a carreau scores double (the « Carreau » column).",
+          "hit": "Hit",
+          "carreau": "Carreau",
+          "ring": "Target ball at {distance}",
+          "missed": "Missed or invalid shot"
+        }
+      }
     }
   },
   "pointing": {
@@ -1912,6 +2039,10 @@
       "rings": {
         "title": "Pointing into the rings",
         "description": "15 balls to score as many points as possible in 3 rings."
+      },
+      "ringsShooting": {
+        "title": "Shooting into the rings",
+        "description": "15 shots at 3 target balls of increasing difficulty, a carreau doubles the points."
       }
     },
     "home": {
