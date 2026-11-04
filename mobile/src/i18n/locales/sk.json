@@ -797,16 +797,22 @@
       "historySubtitle": "História zápasov",
       "tabs": {
         "label": "Sekcie hráča",
-        "shooting": "Presná streľba",
-        "shootingShort": "Streľba",
-        "pointingShort": "Point",
-        "jumpShotShort": "Skok",
-        "training": "Tréning",
-        "trainingShort": "Tréning",
-        "matches": "Zápasy",
+        "exercisesShort": "Cvičenia",
+        "precisionShort": "Presnosť",
         "matchesShort": "Zápasy",
+        "shooting": "Presná streľba",
+        "training": "Tréning",
+        "matches": "Zápasy",
         "stats": "Štatistiky",
         "history": "Zápasy"
+      },
+      "subTabs": {
+        "label": "Cvičenie alebo presnosť",
+        "jumpShot": "Streľba do skoku",
+        "ringsPoint": "Point do kruhov",
+        "ringsShooting": "Streľba do kruhov",
+        "shooting": "Presná streľba",
+        "pointing": "Presný point"
       }
     }
   },

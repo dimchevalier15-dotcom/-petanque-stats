@@ -9,6 +9,7 @@ use App\Dto\Request\CreatePlayerRequest;
 use App\Enum\DistanceBucket;
 use App\Enum\GameType;
 use App\Enum\MatchNature;
+use App\Enum\RingsMode;
 use App\Enum\ShootingContextNature;
 use App\Http\CoachDateRangeResolver;
 use App\Service\Auth\CurrentUserService;
@@ -26,6 +27,7 @@ use App\Service\PlayerStatsService;
 use App\Service\PlayerTacticalInsightsService;
 use App\Service\JumpShot\JumpShotStatsService;
 use App\Service\Pointing\PointingStatsService;
+use App\Service\Rings\RingsStatsService;
 use App\Service\Shooting\ShootingStatsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -47,6 +49,7 @@ final class CoachController extends AbstractController
         private ShootingStatsService $shootingStatsService,
         private PointingStatsService $pointingStatsService,
         private JumpShotStatsService $jumpShotStatsService,
+        private RingsStatsService $ringsStatsService,
         private PlayerService $playerService,
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
@@ -252,6 +255,29 @@ final class CoachController extends AbstractController
         return new JsonResponse($json, 200, [], true);
     }
 
+    #[Route('/api/coach/players/{id}/rings/stats', name: 'api_coach_player_rings_stats', methods: ['GET'], requirements: ['id' => '\d+'])]
+    public function playerRingsStats(int $id, Request $request): JsonResponse
+    {
+        [$user, $selectionGlobaleId] = $this->requireCoachContext($request);
+        $this->coachAccess->assertCoachCanViewPlayer($user, $id, $selectionGlobaleId);
+
+        try {
+            $dateRange = CoachDateRangeResolver::fromRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['message' => $e->getMessage()], 400);
+        }
+
+        $mode = $this->parseRingsMode($request);
+        if ($mode === null) {
+            return new JsonResponse(['message' => 'Invalid mode filter.'], 400);
+        }
+
+        $res = $this->ringsStatsService->statsForPlayerId($id, $dateRange, $mode);
+        $json = $this->serializer->serialize($res, 'json');
+
+        return new JsonResponse($json, 200, [], true);
+    }
+
     #[Route('/api/coach/players/{id}/stats', name: 'api_coach_player_stats', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function playerStats(int $id, Request $request): JsonResponse
     {
@@ -434,6 +460,13 @@ final class CoachController extends AbstractController
         }
 
         return ShootingContextNature::tryFrom((string) $natureParam) ?? false;
+    }
+
+    private function parseRingsMode(Request $request): ?RingsMode
+    {
+        $raw = $request->query->get('mode');
+
+        return $raw === null || $raw === '' ? RingsMode::POINT : RingsMode::tryFrom((string) $raw);
     }
 
     private function parseType(Request $request): GameType|null|false

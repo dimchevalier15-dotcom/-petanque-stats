@@ -10,9 +10,11 @@ import type { CoachPlayerListResponseDto } from '../dto/coach/CoachPlayerListRes
 import type { JumpShotStatsResponseDto } from '../dto/jumpShot/JumpShotStatsResponse'
 import type { ShootingStatsResponseDto } from '../dto/shooting/ShootingStatsResponse'
 import type { PointingStatsResponseDto } from '../dto/pointing/PointingStatsResponse'
+import type { RingsStatsResponseDto } from '../dto/rings/RingsStatsResponse'
 import type { CoachPlayerList } from '../models/Coach'
 import type { JumpShotDistance, JumpShotStats, JumpShotThrowResult } from '../models/JumpShot'
 import type { PointingContextNature, PointingStats } from '../models/Pointing'
+import type { RingsMode, RingsStats } from '../models/Rings'
 import type { CreatePlayerResponseDto } from '../dto/player/CreatePlayerResponse'
 import type { PlayerItemDto } from '../dto/player/PlayerItem'
 import type { Player } from '../models/Player'
@@ -66,6 +68,16 @@ function mapJumpShotStats(dto: JumpShotStatsResponseDto): JumpShotStats {
       result: r.result as JumpShotThrowResult,
       count: r.count,
     })),
+  }
+}
+
+function mapRingsStats(dto: RingsStatsResponseDto): RingsStats {
+  return {
+    status: dto.status,
+    summary: { ...dto.summary },
+    evolution: dto.evolution.map((p) => ({ ...p })),
+    byTarget: dto.byTarget.map((r) => ({ ...r })),
+    scoreByDecile: dto.scoreByDecile.map((d) => ({ ...d })),
   }
 }
 
@@ -265,6 +277,22 @@ export const coachService = {
       },
     })
     return mapJumpShotStats(data)
+  },
+
+  async getPlayerRingsStats(
+    playerId: number,
+    range: StatsDateRangeParams,
+    mode: RingsMode,
+    space?: CoachSpaceQuery,
+  ): Promise<RingsStats> {
+    const { data } = await api.get<RingsStatsResponseDto>(`/coach/players/${playerId}/rings/stats`, {
+      params: {
+        ...range,
+        mode,
+        ...coachSpaceParams(space),
+      },
+    })
+    return mapRingsStats(data)
   },
 
   async getPlayerHistory(

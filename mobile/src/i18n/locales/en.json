@@ -835,16 +835,22 @@
       "trainingComingSoon": "Training statistics are coming soon.",
       "tabs": {
         "label": "Player sections",
-        "shooting": "Precision shooting",
-        "shootingShort": "Shooting",
-        "pointingShort": "Pointing",
-        "jumpShotShort": "Jump shot",
-        "training": "Training",
-        "trainingShort": "Training",
-        "matches": "Matches",
+        "exercisesShort": "Exercises",
+        "precisionShort": "Precision",
         "matchesShort": "Matches",
+        "shooting": "Precision shooting",
+        "training": "Training",
+        "matches": "Matches",
         "stats": "Statistics",
         "history": "Matches"
+      },
+      "subTabs": {
+        "label": "Exercise or precision drill",
+        "jumpShot": "Jump shot",
+        "ringsPoint": "Pointing into the rings",
+        "ringsShooting": "Shooting into the rings",
+        "shooting": "Precision shooting",
+        "pointing": "Precision pointing"
       }
     }
   },

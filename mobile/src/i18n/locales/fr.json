@@ -835,16 +835,22 @@
       "trainingComingSoon": "Les statistiques d'entraînement arrivent bientôt.",
       "tabs": {
         "label": "Sections du joueur",
+        "exercisesShort": "Exercices",
+        "precisionShort": "Précision",
+        "matchesShort": "Match",
         "shooting": "Tir de précision",
-        "shootingShort": "Tir préc.",
-        "pointingShort": "Point préc.",
-        "jumpShotShort": "Sautée",
         "training": "Entraînement",
-        "trainingShort": "Entraîn.",
         "matches": "Matchs",
-        "matchesShort": "Matchs",
         "stats": "Statistiques",
         "history": "Matchs"
+      },
+      "subTabs": {
+        "label": "Exercice ou précision",
+        "jumpShot": "Tir à la sautée",
+        "ringsPoint": "Point dans les ronds",
+        "ringsShooting": "Tir dans les ronds",
+        "shooting": "Tir de précision",
+        "pointing": "Point de précision"
       }
     }
   },
