@@ -37,7 +37,11 @@ final class JumpShotProgressionCalculator
         $third = $resultsByPosition[3];
 
         $rawSuccessCount = 0;
+        $hasCarreau = false;
         foreach ($resultsByPosition as $result) {
+            if ($result === JumpShotThrowResult::CARREAU) {
+                $hasCarreau = true;
+            }
             if ($result->isSuccess()) {
                 ++$rawSuccessCount;
             }
@@ -53,13 +57,11 @@ final class JumpShotProgressionCalculator
             $consequence = JumpShotSeriesConsequence::STAY;
         } else {
             $successCount = $rawSuccessCount;
-            $consequence = $this->consequenceForSuccessCount($successCount, $progressionMode);
+            $consequence = $this->consequenceForSuccessCount($successCount, $progressionMode, $hasCarreau);
         }
 
         $sessionWon = $seriesDistance === ShootingDistance::NINE_METERS
-            && ($progressionMode === JumpShotProgressionMode::SIMPLIFIED
-                ? $rawSuccessCount >= 2
-                : $rawSuccessCount === 3);
+            && $this->isVictorySeries($rawSuccessCount, $hasCarreau, $progressionMode);
         $nextDistance = $sessionWon
             ? $sessionCurrentDistance
             : $this->applyConsequence($sessionCurrentDistance, $consequence);
@@ -76,19 +78,35 @@ final class JumpShotProgressionCalculator
     private function consequenceForSuccessCount(
         int $successCount,
         JumpShotProgressionMode $progressionMode,
+        bool $hasCarreau,
     ): JumpShotSeriesConsequence {
-        if ($progressionMode === JumpShotProgressionMode::SIMPLIFIED) {
-            return match ($successCount) {
-                0 => JumpShotSeriesConsequence::DOWN,
-                1 => JumpShotSeriesConsequence::STAY,
+        return match ($progressionMode) {
+            JumpShotProgressionMode::EASY => match ($successCount) {
+                0, 1 => JumpShotSeriesConsequence::STAY,
                 default => JumpShotSeriesConsequence::UP,
-            };
-        }
+            },
+            JumpShotProgressionMode::STANDARD => match ($successCount) {
+                0 => JumpShotSeriesConsequence::DOWN,
+                3 => JumpShotSeriesConsequence::UP,
+                default => JumpShotSeriesConsequence::STAY,
+            },
+            JumpShotProgressionMode::HARD => match (true) {
+                $successCount <= 1 => JumpShotSeriesConsequence::DOWN,
+                $successCount === 3 && $hasCarreau => JumpShotSeriesConsequence::UP,
+                default => JumpShotSeriesConsequence::STAY,
+            },
+        };
+    }
 
-        return match ($successCount) {
-            0, 1 => JumpShotSeriesConsequence::DOWN,
-            2 => JumpShotSeriesConsequence::STAY,
-            3 => JumpShotSeriesConsequence::UP,
+    private function isVictorySeries(
+        int $rawSuccessCount,
+        bool $hasCarreau,
+        JumpShotProgressionMode $progressionMode,
+    ): bool {
+        return match ($progressionMode) {
+            JumpShotProgressionMode::EASY => $rawSuccessCount >= 2,
+            JumpShotProgressionMode::STANDARD => $rawSuccessCount === 3,
+            JumpShotProgressionMode::HARD => $rawSuccessCount === 3 && $hasCarreau,
         };
     }
 

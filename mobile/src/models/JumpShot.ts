@@ -7,7 +7,7 @@ export type JumpShotThrowResult = (typeof JUMP_SHOT_THROW_RESULTS)[number]
 export const JUMP_SHOT_SERIES_CONSEQUENCES = ['down', 'stay', 'up'] as const
 export type JumpShotSeriesConsequence = (typeof JUMP_SHOT_SERIES_CONSEQUENCES)[number]
 
-export const JUMP_SHOT_PROGRESSION_MODES = ['standard', 'simplified'] as const
+export const JUMP_SHOT_PROGRESSION_MODES = ['easy', 'standard', 'hard'] as const
 export type JumpShotProgressionMode = (typeof JUMP_SHOT_PROGRESSION_MODES)[number]
 
 export interface JumpShotSessionStarted {

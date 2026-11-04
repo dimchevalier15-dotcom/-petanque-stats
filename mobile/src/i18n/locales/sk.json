@@ -1168,10 +1168,12 @@
       "title": "Nastavenia",
       "open": "Nastavenia cvičenia",
       "progressionMode": "Pravidlá postupu",
-      "standard": "Oficiálne",
-      "standardHint": "0–1 úspech z 3: nadol · 2: rovnako · 3: nahor. Záchranný carreau zapnutý.",
-      "simplified": "Zjednodušené",
-      "simplifiedHint": "0/3: nadol · 1/3: rovnako · 2/3 alebo 3/3: nahor. Víťazstvo pri 2/3 alebo 3/3 na 9 m.",
+      "easy": "Easy",
+      "easyHint": "Nikdy nadol · 0–1/3: rovnako · 2–3/3: nahor. Víťazstvo pri 2/3 alebo 3/3 na 9 m.",
+      "standard": "Standard",
+      "standardHint": "0/3: nadol · 1–2/3: rovnako · 3/3: nahor. Záchranný carreau (len režim Standard).",
+      "hard": "Extreme",
+      "hardHint": "0–1/3: nadol · 2/3: rovnako · 3/3 s aspoň 1 carreau: nahor. Víťazstvo: 3/3 s carreau na 9 m.",
       "close": "Zavrieť"
     },
     "rules": {
@@ -1198,17 +1200,35 @@
         "results": {
           "title": "Možné výsledky"
         },
-        "progression": {
+        "progressionModes": {
           "title": "Postup",
-          "items": [
-            "0 alebo 1 úspech z 3: posun o jednu vzdialenosť nadol (min. 6 m).",
-            "2 úspechy z 3: ostanete na rovnakej vzdialenosti.",
-            "3 úspechy z 3: posun o jednu vzdialenosť nahor (max. 9 m)."
-          ]
+          "intro": "Pred začiatkom si v nastaveniach zvoľte pravidlá. Po každej sérii 3 striel:",
+          "easy": {
+            "items": [
+              "0 alebo 1 úspech z 3: ostanete na rovnakej vzdialenosti.",
+              "2 alebo 3 úspechy z 3: posun o jednu vzdialenosť nahor (max. 9 m).",
+              "Nikdy nezostupujete o vzdialenosť."
+            ]
+          },
+          "standard": {
+            "items": [
+              "0 úspechov z 3: posun o jednu vzdialenosť nadol (min. 6 m).",
+              "1 alebo 2 úspechy z 3: ostanete na rovnakej vzdialenosti.",
+              "3 úspechy z 3: posun o jednu vzdialenosť nahor (max. 9 m)."
+            ]
+          },
+          "hard": {
+            "items": [
+              "0 alebo 1 úspech z 3: posun o jednu vzdialenosť nadol (min. 6 m).",
+              "2 úspechy z 3: ostanete na rovnakej vzdialenosti.",
+              "3 úspechy z 3 bez carreau: ostanete na rovnakej vzdialenosti.",
+              "3 úspechy z 3 s aspoň 1 carreau: posun o jednu vzdialenosť nahor (max. 9 m)."
+            ]
+          }
         },
         "special": {
           "title": "Záchranný carreau",
-          "intro": "Ak prvé dva strely sú minuté a tretí je carreau, séria sa počíta ako 1/3 a zostávate na rovnakej vzdialenosti.",
+          "intro": "Len v režime Standard: ak prvé dva strely sú minuté a tretí je carreau, séria sa počíta ako 1/3 a zostávate na rovnakej vzdialenosti.",
           "items": [
             "Prvé dva strely zostávú zaznamenané ako minuté.",
             "Tretí zostáva zaznamenaný ako carreau.",
@@ -1217,7 +1237,9 @@
         },
         "victory": {
           "title": "Víťazstvo",
-          "intro": "Cvičenie vyhráte, ak v jednej sérii na 9 metroch dosiahnete 3 úspešné strely (chique, zásah alebo carreau)."
+          "easy": "2 alebo 3 úspešné strely v jednej sérii na 9 metroch.",
+          "standard": "3 úspešné strely (chique, zásah alebo carreau) v jednej sérii na 9 metroch.",
+          "hard": "3 úspešné strely vrátane aspoň jedného carreau v jednej sérii na 9 metroch."
         }
       }
     },

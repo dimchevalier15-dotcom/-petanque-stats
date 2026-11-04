@@ -7,9 +7,9 @@
         </span>
         <div class="scoreboard-top-end">
           <Tag
-            v-if="progressionMode === 'simplified'"
+            v-if="progressionMode !== 'standard'"
             severity="info"
-            :value="t('jumpShot.settings.simplified')"
+            :value="progressionModeLabel"
             class="mode-tag"
           />
           <button type="button" class="rules-link" @click="goRules">
@@ -145,6 +145,8 @@ const draft = reactive<Record<1 | 2 | 3, JumpShotThrowResult | null>>({
 })
 
 const currentSeriesNumber = computed(() => seriesCount.value + 1)
+
+const progressionModeLabel = computed(() => t(`jumpShot.settings.${progressionMode.value}`))
 
 const successCountInDraft = computed(() =>
   [1, 2, 3].reduce((acc, pos) => {

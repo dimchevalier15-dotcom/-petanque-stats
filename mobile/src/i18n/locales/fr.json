@@ -1206,10 +1206,12 @@
       "title": "Paramètres",
       "open": "Paramètres de l'exercice",
       "progressionMode": "Règle de progression",
-      "standard": "Officielle",
-      "standardHint": "0–1 réussite sur 3 : descendre · 2 : rester · 3 : monter. Carreau salvateur actif.",
-      "simplified": "Simplifiée",
-      "simplifiedHint": "0/3 : descendre · 1/3 : rester · 2/3 ou 3/3 : monter. Victoire à 2/3 ou 3/3 à 9 m.",
+      "easy": "Easy",
+      "easyHint": "Pas de descente · 0–1/3 : rester · 2–3/3 : monter. Victoire à 2/3 ou 3/3 à 9 m.",
+      "standard": "Standard",
+      "standardHint": "0/3 : descendre · 1–2/3 : rester · 3/3 : monter. Carreau salvateur (mode Standard uniquement).",
+      "hard": "Extreme",
+      "hardHint": "0–1/3 : descendre · 2/3 : rester · 3/3 avec au moins 1 carreau : monter. Victoire : 3/3 avec carreau à 9 m.",
       "close": "Fermer"
     },
     "rules": {
@@ -1236,17 +1238,35 @@
         "results": {
           "title": "Résultats possibles"
         },
-        "progression": {
+        "progressionModes": {
           "title": "Progression",
-          "items": [
-            "0 ou 1 tir réussi sur 3 : descendre d'une distance (minimum 6 m).",
-            "2 tirs réussis sur 3 : rester à la même distance.",
-            "3 tirs réussis sur 3 : monter d'une distance (maximum 9 m)."
-          ]
+          "intro": "Choisissez une règle dans les paramètres avant de commencer. Après chaque série de 3 tirs :",
+          "easy": {
+            "items": [
+              "0 ou 1 tir réussi sur 3 : rester à la même distance.",
+              "2 ou 3 tirs réussis sur 3 : monter d'une distance (maximum 9 m).",
+              "Vous ne descendez jamais d'une distance."
+            ]
+          },
+          "standard": {
+            "items": [
+              "0 tir réussi sur 3 : descendre d'une distance (minimum 6 m).",
+              "1 ou 2 tirs réussis sur 3 : rester à la même distance.",
+              "3 tirs réussis sur 3 : monter d'une distance (maximum 9 m)."
+            ]
+          },
+          "hard": {
+            "items": [
+              "0 ou 1 tir réussi sur 3 : descendre d'une distance (minimum 6 m).",
+              "2 tirs réussis sur 3 : rester à la même distance.",
+              "3 tirs réussis sur 3 sans carreau : rester à la même distance.",
+              "3 tirs réussis sur 3 avec au moins 1 carreau : monter d'une distance (maximum 9 m)."
+            ]
+          }
         },
         "special": {
           "title": "Carreau salvateur",
-          "intro": "Si les deux premiers tirs sont manqués et que le troisième est un carreau, la série compte pour 1/3 et vous restez à la même distance.",
+          "intro": "Uniquement en mode Standard : si les deux premiers tirs sont manqués et que le troisième est un carreau, la série compte pour 1/3 et vous restez à la même distance.",
           "items": [
             "Les deux premiers tirs restent enregistrés comme manqués.",
             "Le troisième reste enregistré comme carreau.",
@@ -1255,7 +1275,9 @@
         },
         "victory": {
           "title": "Victoire",
-          "intro": "Vous remportez l'exercice en réalisant 3 tirs réussis (chiqué, frappée ou carreau) dans une même série à 9 mètres."
+          "easy": "2 ou 3 tirs réussis dans une même série à 9 mètres.",
+          "standard": "3 tirs réussis (chiqué, frappée ou carreau) dans une même série à 9 mètres.",
+          "hard": "3 tirs réussis dont au moins un carreau, dans une même série à 9 mètres."
         }
       }
     },

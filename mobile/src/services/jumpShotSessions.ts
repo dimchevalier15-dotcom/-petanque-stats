@@ -47,7 +47,13 @@ function mapSeries(dto: JumpShotSessionSummaryResponseDto['series'][number]): Ju
 }
 
 function mapProgressionMode(value: string): JumpShotProgressionMode {
-  return value === 'simplified' ? 'simplified' : 'standard'
+  if (value === 'simplified') {
+    return 'easy'
+  }
+  if (value === 'easy' || value === 'hard') {
+    return value
+  }
+  return 'standard'
 }
 
 function mapStarted(dto: JumpShotSessionStartedResponseDto): JumpShotSessionStarted {

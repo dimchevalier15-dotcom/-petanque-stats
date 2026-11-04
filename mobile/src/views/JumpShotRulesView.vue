@@ -34,10 +34,20 @@
       </section>
 
       <section class="rules-section">
-        <h3>{{ t('jumpShot.rules.sections.progression.title') }}</h3>
-        <ul>
-          <li v-for="n in 4" :key="'prog-' + n">{{ t(`jumpShot.rules.sections.progression.items.${n - 1}`) }}</li>
-        </ul>
+        <h3>{{ t('jumpShot.rules.sections.progressionModes.title') }}</h3>
+        <p>{{ t('jumpShot.rules.sections.progressionModes.intro') }}</p>
+        <div
+          v-for="mode in JUMP_SHOT_PROGRESSION_MODES"
+          :key="mode"
+          class="mode-block"
+        >
+          <h4>{{ t(`jumpShot.settings.${mode}`) }}</h4>
+          <ul>
+            <li v-for="n in progressionItemCount(mode)" :key="mode + '-' + n">
+              {{ t(`jumpShot.rules.sections.progressionModes.${mode}.items.${n - 1}`) }}
+            </li>
+          </ul>
+        </div>
       </section>
 
       <section class="rules-section">
@@ -50,7 +60,12 @@
 
       <section class="rules-section">
         <h3>{{ t('jumpShot.rules.sections.victory.title') }}</h3>
-        <p>{{ t('jumpShot.rules.sections.victory.intro') }}</p>
+        <ul>
+          <li v-for="mode in JUMP_SHOT_PROGRESSION_MODES" :key="'victory-' + mode">
+            <strong>{{ t(`jumpShot.settings.${mode}`) }} :</strong>
+            {{ t(`jumpShot.rules.sections.victory.${mode}`) }}
+          </li>
+        </ul>
       </section>
     </article>
 
@@ -72,12 +87,18 @@ import { useRoute, useRouter } from 'vue-router'
 import Button from 'primevue/button'
 import AppPage from '../components/layout/AppPage.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
+import {
+  JUMP_SHOT_PROGRESSION_MODES,
+  useJumpShotProgressionMode,
+  type JumpShotProgressionMode,
+} from '../composables/useJumpShotProgressionMode'
 import { JUMP_SHOT_THROW_RESULTS } from '../models/JumpShot'
 import { jumpShotSessionsService } from '../services/jumpShotSessions'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const { progressionMode } = useJumpShotProgressionMode()
 
 const starting = ref(false)
 const sessionId = computed(() => {
@@ -92,10 +113,14 @@ const backTarget = computed(() => {
   return { name: 'jumpShotHome' }
 })
 
+function progressionItemCount(mode: JumpShotProgressionMode): number {
+  return mode === 'hard' ? 4 : 3
+}
+
 async function startSession(): Promise<void> {
   starting.value = true
   try {
-    const session = await jumpShotSessionsService.start()
+    const session = await jumpShotSessionsService.start(progressionMode.value)
     await router.push({ name: 'jumpShotSession', params: { id: session.id } })
   } finally {
     starting.value = false
@@ -113,6 +138,15 @@ async function startSession(): Promise<void> {
 .rules-section h3 {
   margin: 0 0 var(--app-space-xs);
   font-size: 1rem;
+}
+
+.rules-section h4 {
+  margin: var(--app-space-sm) 0 var(--app-space-xs);
+  font-size: 0.9375rem;
+}
+
+.mode-block:first-of-type h4 {
+  margin-top: var(--app-space-xs);
 }
 
 .rules-section p {

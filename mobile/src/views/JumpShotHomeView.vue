@@ -141,15 +141,15 @@ const currentSession = ref<JumpShotSessionStarted | null>(null)
 const { progressionMode } = useJumpShotProgressionMode()
 
 const progressionModeOptions = computed(() => [
+  { value: 'easy' as const, label: t('jumpShot.settings.easy') },
   { value: 'standard' as const, label: t('jumpShot.settings.standard') },
-  { value: 'simplified' as const, label: t('jumpShot.settings.simplified') },
+  { value: 'hard' as const, label: t('jumpShot.settings.hard') },
 ])
 
-const progressionModeHint = computed(() =>
-  progressionMode.value === 'simplified'
-    ? t('jumpShot.settings.simplifiedHint')
-    : t('jumpShot.settings.standardHint'),
-)
+const progressionModeHint = computed(() => {
+  const key = `jumpShot.settings.${progressionMode.value}Hint` as const
+  return t(key)
+})
 
 const items = ref<JumpShotSessionHistoryItem[]>([])
 const page = ref(1)

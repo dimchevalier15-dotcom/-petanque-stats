@@ -43,22 +43,22 @@ final class JumpShotSessionServiceTest extends KernelDatabaseTestCase
         self::assertSame('standard', $started->progressionMode);
     }
 
-    public function testStartSimplifiedSession(): void
+    public function testStartEasySession(): void
     {
         [$token] = $this->createUserWithLinkedPlayer();
 
         $req = new StartJumpShotSessionRequest();
-        $req->progressionMode = 'simplified';
+        $req->progressionMode = 'easy';
         $started = $this->service->start($token, $req);
 
-        self::assertSame('simplified', $started->progressionMode);
+        self::assertSame('easy', $started->progressionMode);
     }
 
-    public function testSimplifiedProgressionTwoOfThreeMovesUp(): void
+    public function testEasyProgressionTwoOfThreeMovesUp(): void
     {
         [$token] = $this->createUserWithLinkedPlayer();
         $req = new StartJumpShotSessionRequest();
-        $req->progressionMode = 'simplified';
+        $req->progressionMode = 'easy';
         $started = $this->service->start($token, $req);
 
         $res = $this->service->submitSeries($token, $started->id, $this->seriesRequest([

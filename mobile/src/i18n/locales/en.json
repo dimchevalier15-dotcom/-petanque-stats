@@ -1206,10 +1206,12 @@
       "title": "Settings",
       "open": "Exercise settings",
       "progressionMode": "Progression rules",
-      "standard": "Official",
-      "standardHint": "0–1 success out of 3: down · 2: stay · 3: up. Saving carreau enabled.",
-      "simplified": "Simplified",
-      "simplifiedHint": "0/3: down · 1/3: stay · 2/3 or 3/3: up. Win with 2/3 or 3/3 at 9 m.",
+      "easy": "Easy",
+      "easyHint": "Never move down · 0–1/3: stay · 2–3/3: up. Win with 2/3 or 3/3 at 9 m.",
+      "standard": "Standard",
+      "standardHint": "0/3: down · 1–2/3: stay · 3/3: up. Saving carreau (Standard mode only).",
+      "hard": "Extreme",
+      "hardHint": "0–1/3: down · 2/3: stay · 3/3 with at least 1 carreau: up. Win: 3/3 with a carreau at 9 m.",
       "close": "Close"
     },
     "rules": {
@@ -1236,17 +1238,35 @@
         "results": {
           "title": "Possible results"
         },
-        "progression": {
+        "progressionModes": {
           "title": "Progression",
-          "items": [
-            "0 or 1 success out of 3: move down one distance (minimum 6 m).",
-            "2 successes out of 3: stay at the same distance.",
-            "3 successes out of 3: move up one distance (maximum 9 m)."
-          ]
+          "intro": "Pick a rule set in settings before you start. After each series of 3 throws:",
+          "easy": {
+            "items": [
+              "0 or 1 success out of 3: stay at the same distance.",
+              "2 or 3 successes out of 3: move up one distance (maximum 9 m).",
+              "You never move down a distance."
+            ]
+          },
+          "standard": {
+            "items": [
+              "0 successes out of 3: move down one distance (minimum 6 m).",
+              "1 or 2 successes out of 3: stay at the same distance.",
+              "3 successes out of 3: move up one distance (maximum 9 m)."
+            ]
+          },
+          "hard": {
+            "items": [
+              "0 or 1 success out of 3: move down one distance (minimum 6 m).",
+              "2 successes out of 3: stay at the same distance.",
+              "3 successes out of 3 with no carreau: stay at the same distance.",
+              "3 successes out of 3 with at least 1 carreau: move up one distance (maximum 9 m)."
+            ]
+          }
         },
         "special": {
           "title": "Saving carreau",
-          "intro": "If the first two throws are missed and the third is a carreau, the series counts as 1/3 and you stay at the same distance.",
+          "intro": "Standard mode only: if the first two throws are missed and the third is a carreau, the series counts as 1/3 and you stay at the same distance.",
           "items": [
             "The first two throws remain recorded as missed.",
             "The third remains recorded as carreau.",
@@ -1255,7 +1275,9 @@
         },
         "victory": {
           "title": "Victory",
-          "intro": "You win by scoring 3 successful throws (chique, hit or carreau) in one series at 9 meters."
+          "easy": "2 or 3 successful throws in one series at 9 meters.",
+          "standard": "3 successful throws (chique, hit or carreau) in one series at 9 meters.",
+          "hard": "3 successful throws including at least one carreau, in one series at 9 meters."
         }
       }
     },
