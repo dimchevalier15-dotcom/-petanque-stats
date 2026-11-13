@@ -130,6 +130,12 @@ const routes: RouteRecordRaw[] = [
 		meta: { layout: "main", requiresAdmin: true },
 	},
 	{
+		path: "/admin/merge-players",
+		name: "adminMergePlayers",
+		component: () => import("../views/AdminMergePlayersView.vue"),
+		meta: { layout: "main", requiresAdmin: true },
+	},
+	{
 		path: "/coach",
 		name: "coachPlayers",
 		component: () => import("../views/CoachPlayersView.vue"),

@@ -652,7 +652,8 @@
       "competitions": "Competitions",
       "clubs": "Clubs",
       "coach": "Coaches",
-      "selectionGlobale": "Global selections"
+      "selectionGlobale": "Global selections",
+      "mergePlayers": "Merge players"
     },
     "impersonate": {
       "title": "Impersonate mode",
@@ -665,6 +666,33 @@
       "active": "Active mode: {name}",
       "banner": "Impersonate mode — {name}",
       "stop": "Exit"
+    },
+    "merge": {
+      "title": "Merge players",
+      "hint": "Everything on the duplicate (matches, training, selections, tournaments) is moved onto the player you keep. The duplicate is then deleted.",
+      "keepLabel": "Player to keep",
+      "dropLabel": "Duplicate to merge",
+      "searchPlaceholder": "Search (3 characters min.)",
+      "empty": "No player matches your search.",
+      "linkedAccount": "Linked account: {email}",
+      "noAccount": "No linked account",
+      "singleAccount": "Account {email} will stay linked to the kept player.",
+      "chooseUser": "Both players have an account. Which one stays linked?",
+      "confirm": "Merge",
+      "confirmMessage": "Merge {drop} into {keep}? This cannot be undone.",
+      "success": "{drop} was merged into {keep}.",
+      "errors": {
+        "samePlayer": "Pick two different players.",
+        "previewFailed": "Could not prepare the merge.",
+        "failed": "The merge failed.",
+        "not_found": "One of the players no longer exists.",
+        "placeholder": "Technical players cannot be merged.",
+        "user_choice_required": "Choose which account to keep.",
+        "invalid_user": "The chosen account is not linked to either player.",
+        "same_match": "Both players are in the same match. Fix that match before merging.",
+        "same_tournament": "Both players are in the same tournament, on different teams.",
+        "unmoved_reference": "Some data linked to the duplicate could not be moved."
+      }
     },
     "competitions": {
       "title": "Competitions",

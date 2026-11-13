@@ -652,7 +652,8 @@
       "competitions": "Compétitions",
       "clubs": "Clubs",
       "coach": "Coaches",
-      "selectionGlobale": "Sélections globales"
+      "selectionGlobale": "Sélections globales",
+      "mergePlayers": "Fusionner des joueurs"
     },
     "impersonate": {
       "title": "Mode impersonate",
@@ -665,6 +666,33 @@
       "active": "Mode actif : {name}",
       "banner": "Mode impersonate — {name}",
       "stop": "Quitter"
+    },
+    "merge": {
+      "title": "Fusionner des joueurs",
+      "hint": "Toutes les données du doublon (matchs, entraînements, sélections, tournois) sont déplacées vers le joueur conservé. Le doublon est ensuite supprimé.",
+      "keepLabel": "Joueur à conserver",
+      "dropLabel": "Doublon à fusionner",
+      "searchPlaceholder": "Rechercher (3 caractères min.)",
+      "empty": "Aucun joueur ne correspond à votre recherche.",
+      "linkedAccount": "Compte lié : {email}",
+      "noAccount": "Aucun compte lié",
+      "singleAccount": "Le compte {email} sera lié au joueur conservé.",
+      "chooseUser": "Les deux joueurs ont un compte. Lequel reste lié ?",
+      "confirm": "Fusionner",
+      "confirmMessage": "Fusionner {drop} dans {keep} ? Cette action est irréversible.",
+      "success": "{drop} a été fusionné dans {keep}.",
+      "errors": {
+        "samePlayer": "Choisissez deux joueurs différents.",
+        "previewFailed": "Impossible de préparer la fusion.",
+        "failed": "La fusion a échoué.",
+        "not_found": "Un des joueurs n'existe plus.",
+        "placeholder": "Les joueurs techniques ne peuvent pas être fusionnés.",
+        "user_choice_required": "Choisissez le compte à conserver.",
+        "invalid_user": "Le compte choisi n'appartient à aucun des deux joueurs.",
+        "same_match": "Les deux joueurs participent au même match. Corrigez ce match avant de fusionner.",
+        "same_tournament": "Les deux joueurs sont dans le même tournoi, dans des équipes différentes.",
+        "unmoved_reference": "Des données liées au doublon n'ont pas pu être déplacées."
+      }
     },
     "competitions": {
       "title": "Compétitions",

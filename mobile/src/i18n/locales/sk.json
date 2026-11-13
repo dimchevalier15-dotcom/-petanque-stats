@@ -664,7 +664,8 @@
       "impersonate": "Impersonate",
       "competitions": "Súťaže",
       "clubs": "Kluby",
-      "coach": "Tréneri"
+      "coach": "Tréneri",
+      "mergePlayers": "Zlúčiť hráčov"
     },
     "impersonate": {
       "title": "Režim impersonate",
@@ -677,6 +678,33 @@
       "active": "Aktívny režim: {name}",
       "banner": "Režim impersonate — {name}",
       "stop": "Ukončiť"
+    },
+    "merge": {
+      "title": "Zlúčiť hráčov",
+      "hint": "Všetky údaje duplicity (zápasy, tréningy, výbery, turnaje) sa presunú na ponechaného hráča. Duplicita sa potom odstráni.",
+      "keepLabel": "Hráč, ktorého ponechať",
+      "dropLabel": "Duplicita na zlúčenie",
+      "searchPlaceholder": "Hľadať (min. 3 znaky)",
+      "empty": "Žiadny hráč nezodpovedá hľadaniu.",
+      "linkedAccount": "Prepojený účet: {email}",
+      "noAccount": "Žiadny prepojený účet",
+      "singleAccount": "Účet {email} zostane prepojený s ponechaným hráčom.",
+      "chooseUser": "Obaja hráči majú účet. Ktorý zostane prepojený?",
+      "confirm": "Zlúčiť",
+      "confirmMessage": "Zlúčiť {drop} do {keep}? Táto akcia je nevratná.",
+      "success": "{drop} bol zlúčený do {keep}.",
+      "errors": {
+        "samePlayer": "Vyberte dvoch rôznych hráčov.",
+        "previewFailed": "Zlúčenie sa nepodarilo pripraviť.",
+        "failed": "Zlúčenie zlyhalo.",
+        "not_found": "Jeden z hráčov už neexistuje.",
+        "placeholder": "Technických hráčov nemožno zlúčiť.",
+        "user_choice_required": "Vyberte účet, ktorý sa má ponechať.",
+        "invalid_user": "Vybraný účet nepatrí ani jednému z hráčov.",
+        "same_match": "Obaja hráči sú v tom istom zápase. Najprv upravte tento zápas.",
+        "same_tournament": "Obaja hráči sú v tom istom turnaji, v rôznych tímoch.",
+        "unmoved_reference": "Niektoré údaje duplicity sa nepodarilo presunúť."
+      }
     },
     "competitions": {
       "title": "Súťaže",

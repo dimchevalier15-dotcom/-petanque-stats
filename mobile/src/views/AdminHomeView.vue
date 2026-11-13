@@ -23,6 +23,10 @@
         <i class="pi pi-flag" aria-hidden="true" />
         <span>{{ t('admin.home.selectionGlobale') }}</span>
       </button>
+      <button type="button" class="quick-item app-card" @click="goMergePlayers">
+        <i class="pi pi-clone" aria-hidden="true" />
+        <span>{{ t('admin.home.mergePlayers') }}</span>
+      </button>
     </div>
   </AppPage>
 </template>
@@ -54,6 +58,10 @@ function goCoachAdmin(): void {
 
 function goSelectionGlobalesAdmin(): void {
   router.push({ name: 'adminSelectionGlobales' })
+}
+
+function goMergePlayers(): void {
+  router.push({ name: 'adminMergePlayers' })
 }
 </script>
 
