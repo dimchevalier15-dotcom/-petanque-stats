@@ -2357,6 +2357,7 @@
       "empty": "Aucune journée pour le moment.",
       "championship": "Championnat",
       "playoffs": "Play-offs",
+      "phaseNav": "Phase du tournoi",
       "day": "Journée {number}",
       "lane": "Terrain {lane}",
       "scheduled": "À jouer",

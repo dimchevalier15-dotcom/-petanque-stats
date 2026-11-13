@@ -20,6 +20,7 @@
         :tournament-name="detail.name"
         :days="detail.days"
         :teams="detail.teams"
+        :playoffs-generated="detail.playoffsGenerated"
         :admin="false"
         :save-score="noopSave"
         :save-lane="noopSave"

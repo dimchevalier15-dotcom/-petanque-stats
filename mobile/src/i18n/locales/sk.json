@@ -2298,6 +2298,7 @@
       "empty": "Zatiaľ žiadny deň.",
       "championship": "Šampionát",
       "playoffs": "Play-off",
+      "phaseNav": "Fáza turnaja",
       "day": "Deň {number}",
       "lane": "Ihrisko {lane}",
       "scheduled": "Na hranie",

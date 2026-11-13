@@ -16,6 +16,7 @@
         :tournament-name="detail.name"
         :days="detail.days"
         :teams="detail.teams"
+        :playoffs-generated="detail.playoffsGenerated"
         :admin="detail.viewerIsAdmin"
         :save-score="saveScore"
         :save-lane="saveLane"

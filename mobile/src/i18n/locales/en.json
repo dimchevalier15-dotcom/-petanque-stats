@@ -2332,6 +2332,7 @@
       "empty": "No day yet.",
       "championship": "Championship",
       "playoffs": "Play-offs",
+      "phaseNav": "Tournament phase",
       "day": "Day {number}",
       "lane": "Lane {lane}",
       "scheduled": "To play",

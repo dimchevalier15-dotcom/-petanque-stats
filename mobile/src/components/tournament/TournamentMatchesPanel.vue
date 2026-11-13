@@ -2,105 +2,172 @@
   <section class="matches">
     <p v-if="championshipDays.length === 0 && playoffDays.length === 0" class="empty">{{ t('tournaments.matches.empty') }}</p>
 
-    <template v-if="playoffDays.length">
-      <p class="section-label playoff-label">{{ t('tournaments.matches.playoffs') }}</p>
-      <nav class="coach-subsegments" role="tablist" :aria-label="t('tournaments.matches.playoffs')">
-        <div ref="playoffTrack" class="coach-subsegments-track">
-          <button
-            v-for="day in playoffDays"
-            :key="day.id"
-            type="button"
-            role="tab"
-            class="coach-subsegment"
-            :class="{ 'coach-subsegment--active': day.id === selectedPlayoffDayId }"
-            :aria-selected="day.id === selectedPlayoffDayId"
-            @click="selectPlayoffDay(day.id)"
-          >
-            {{ playoffTitle(day) }}
-          </button>
-        </div>
-      </nav>
-
-      <div v-if="selectedPlayoffDay" class="day-body">
-        <DayMatches
+    <!-- Avant tirage des play-offs : championnat (et play-offs vides) comme aujourd’hui -->
+    <template v-if="!splitByPhase">
+      <template v-if="playoffDays.length">
+        <p class="section-label playoff-label">{{ t('tournaments.matches.playoffs') }}</p>
+        <nav class="coach-subsegments" role="tablist" :aria-label="t('tournaments.matches.playoffs')">
+          <div ref="playoffTrack" class="coach-subsegments-track">
+            <button
+              v-for="day in visiblePlayoffDays"
+              :key="day.id"
+              type="button"
+              role="tab"
+              class="coach-subsegment"
+              :class="{ 'coach-subsegment--active': day.id === selectedPlayoffDayId }"
+              :aria-selected="day.id === selectedPlayoffDayId"
+              @click="selectPlayoffDay(day.id)"
+            >
+              {{ playoffTitle(day) }}
+            </button>
+          </div>
+        </nav>
+        <TournamentMatchesDaySection
+          v-if="selectedPlayoffDay"
           :day="selectedPlayoffDay"
           :teams="teams"
           :admin="admin"
-          :save-score="props.saveScore"
-          :save-lane="props.saveLane"
-          :save-teams="props.saveTeams"
+          :deleting-day="deletingDay"
+          :save-score="saveScore"
+          :save-lane="saveLane"
+          :save-teams="saveTeams"
+          :show-pdf="true"
+          @export-pdf="exportDayPdf"
         />
-        <div v-if="admin" class="day-actions">
-          <Button
-            type="button"
-            outlined
-            icon="pi pi-file-pdf"
-            :label="t('tournaments.actions.exportDayPdf')"
-            @click="exportDayPdf(selectedPlayoffDay)"
-          />
-        </div>
-      </div>
+      </template>
+
+      <template v-if="championshipDays.length">
+        <p v-if="playoffDays.length" class="section-label championship-label">{{ t('tournaments.matches.championship') }}</p>
+        <nav class="coach-subsegments" role="tablist" :aria-label="t('tournaments.matches.championship')">
+          <div ref="championshipTrack" class="coach-subsegments-track">
+            <button
+              v-for="day in championshipDays"
+              :key="day.id"
+              type="button"
+              role="tab"
+              class="coach-subsegment"
+              :class="{ 'coach-subsegment--active': day.id === selectedChampionshipDayId }"
+              :aria-selected="day.id === selectedChampionshipDayId"
+              @click="selectChampionshipDay(day.id)"
+            >
+              {{ t('tournaments.matches.day', { number: day.number }) }}
+            </button>
+          </div>
+        </nav>
+        <TournamentMatchesDaySection
+          v-if="selectedChampionshipDay"
+          :day="selectedChampionshipDay"
+          :teams="teams"
+          :admin="admin"
+          :deleting-day="deletingDay"
+          :save-score="saveScore"
+          :save-lane="saveLane"
+          :save-teams="saveTeams"
+          :show-pdf="true"
+          :show-admin-day-actions="true"
+          @export-pdf="exportDayPdf"
+          @close-day="emit('close', $event)"
+          @delete-day="removeDay"
+        />
+      </template>
     </template>
 
-    <template v-if="championshipDays.length">
-      <p v-if="playoffDays.length" class="section-label championship-label">{{ t('tournaments.matches.championship') }}</p>
-      <nav class="coach-subsegments" role="tablist" :aria-label="t('tournaments.matches.championship')">
-        <div ref="championshipTrack" class="coach-subsegments-track">
+    <!-- Après tirage : un seul bloc avec sous-menu Championnat / Play-offs -->
+    <template v-else>
+      <nav class="phase-nav" role="tablist" :aria-label="t('tournaments.matches.phaseNav')">
+        <div class="coach-subsegments-track">
           <button
-            v-for="day in championshipDays"
-            :key="day.id"
             type="button"
             role="tab"
-            class="coach-subsegment"
-            :class="{ 'coach-subsegment--active': day.id === selectedChampionshipDayId }"
-            :aria-selected="day.id === selectedChampionshipDayId"
-            @click="selectChampionshipDay(day.id)"
+            class="coach-subsegment phase-tab"
+            :class="{ 'coach-subsegment--active': phaseView === 'playoff' }"
+            :aria-selected="phaseView === 'playoff'"
+            @click="phaseView = 'playoff'"
           >
-            {{ t('tournaments.matches.day', { number: day.number }) }}
+            {{ t('tournaments.matches.playoffs') }}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            class="coach-subsegment phase-tab"
+            :class="{ 'coach-subsegment--active': phaseView === 'championship' }"
+            :aria-selected="phaseView === 'championship'"
+            @click="phaseView = 'championship'"
+          >
+            {{ t('tournaments.matches.championship') }}
           </button>
         </div>
       </nav>
 
-      <div v-if="selectedChampionshipDay" class="day-body">
-        <DayMatches
+      <template v-if="phaseView === 'playoff'">
+        <nav class="coach-subsegments" role="tablist" :aria-label="t('tournaments.matches.playoffs')">
+          <div ref="playoffTrack" class="coach-subsegments-track">
+            <button
+              v-for="day in visiblePlayoffDays"
+              :key="day.id"
+              type="button"
+              role="tab"
+              class="coach-subsegment"
+              :class="{ 'coach-subsegment--active': day.id === selectedPlayoffDayId }"
+              :aria-selected="day.id === selectedPlayoffDayId"
+              @click="selectPlayoffDay(day.id)"
+            >
+              {{ playoffTitle(day) }}
+            </button>
+          </div>
+        </nav>
+        <TournamentMatchesDaySection
+          v-if="selectedPlayoffDay"
+          :day="selectedPlayoffDay"
+          :teams="teams"
+          :admin="admin"
+          :deleting-day="deletingDay"
+          :save-score="saveScore"
+          :save-lane="saveLane"
+          :save-teams="saveTeams"
+          :show-pdf="true"
+          @export-pdf="exportDayPdf"
+        />
+      </template>
+
+      <template v-else>
+        <nav class="coach-subsegments" role="tablist" :aria-label="t('tournaments.matches.championship')">
+          <div ref="championshipTrack" class="coach-subsegments-track">
+            <button
+              v-for="day in championshipDays"
+              :key="day.id"
+              type="button"
+              role="tab"
+              class="coach-subsegment"
+              :class="{ 'coach-subsegment--active': day.id === selectedChampionshipDayId }"
+              :aria-selected="day.id === selectedChampionshipDayId"
+              @click="selectChampionshipDay(day.id)"
+            >
+              {{ t('tournaments.matches.day', { number: day.number }) }}
+            </button>
+          </div>
+        </nav>
+        <TournamentMatchesDaySection
+          v-if="selectedChampionshipDay"
           :day="selectedChampionshipDay"
           :teams="teams"
           :admin="admin"
-          :save-score="props.saveScore"
-          :save-lane="props.saveLane"
-          :save-teams="props.saveTeams"
+          :deleting-day="deletingDay"
+          :save-score="saveScore"
+          :save-lane="saveLane"
+          :save-teams="saveTeams"
+          :show-pdf="true"
+          :show-admin-day-actions="true"
+          @export-pdf="exportDayPdf"
+          @close-day="emit('close', $event)"
+          @delete-day="removeDay"
         />
-        <div v-if="admin" class="day-actions">
-          <Button
-            type="button"
-            outlined
-            icon="pi pi-file-pdf"
-            :label="t('tournaments.actions.exportDayPdf')"
-            @click="exportDayPdf(selectedChampionshipDay)"
-          />
-          <Button
-            v-if="selectedChampionshipDay.deletable"
-            class="delete-day"
-            severity="danger"
-            outlined
-            :label="t('tournaments.actions.deleteDay')"
-            :loading="deletingDay"
-            @click="removeDay(selectedChampionshipDay.id)"
-          />
-          <Button
-            v-if="selectedChampionshipDay.readyToClose"
-            class="close"
-            :label="t('tournaments.actions.closeDay')"
-            @click="emit('close', selectedChampionshipDay.id)"
-          />
-        </div>
-      </div>
+      </template>
     </template>
   </section>
 </template>
 
 <script setup lang="ts">
-import Button from "primevue/button";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { TournamentDay } from "../../models/TournamentDay";
@@ -111,12 +178,16 @@ import {
 	currentChampionshipDayId,
 	currentPlayoffDayId,
 } from "../../utils/tournamentDays";
-import DayMatches from "./TournamentDayMatches.vue";
+
+import TournamentMatchesDaySection from "./TournamentMatchesDaySection.vue";
+
+type PhaseView = "championship" | "playoff";
 
 const props = defineProps<{
 	tournamentName: string;
 	days: TournamentDay[];
 	teams: TournamentTeam[];
+	playoffsGenerated: boolean;
 	admin: boolean;
 	saveScore: (
 		payload:
@@ -140,6 +211,7 @@ const emit = defineEmits<{
 }>();
 
 const deletingDay = ref(false);
+const phaseView = ref<PhaseView>("playoff");
 
 const { t } = useI18n();
 const championshipTrack = ref<HTMLElement | null>(null);
@@ -153,10 +225,19 @@ const championshipDays = computed(() =>
 const playoffDays = computed(() =>
 	props.days.filter((day) => day.phase === "playoff"),
 );
+const visiblePlayoffDays = computed(() =>
+	playoffDays.value.filter((day) => day.matches.length > 0),
+);
+const splitByPhase = computed(
+	() => props.playoffsGenerated && visiblePlayoffDays.value.length > 0,
+);
+
 const currentChampionshipId = computed(() =>
 	currentChampionshipDayId(props.days),
 );
-const currentPlayoffId = computed(() => currentPlayoffDayId(props.days));
+const currentPlayoffId = computed(() =>
+	currentPlayoffDayId(props.days),
+);
 
 async function removeDay(dayId: number): Promise<void> {
 	deletingDay.value = true;
@@ -173,7 +254,18 @@ const selectedChampionshipDay = computed(() =>
 	),
 );
 const selectedPlayoffDay = computed(() =>
-	playoffDays.value.find((day) => day.id === selectedPlayoffDayId.value),
+	visiblePlayoffDays.value.find(
+		(day) => day.id === selectedPlayoffDayId.value,
+	),
+);
+
+watch(
+	() => props.playoffsGenerated,
+	(generated) => {
+		if (generated) {
+			phaseView.value = "playoff";
+		}
+	},
 );
 
 watch(
@@ -197,9 +289,9 @@ watch(
 );
 
 watch(
-	[playoffDays, currentPlayoffId],
+	[visiblePlayoffDays, currentPlayoffId],
 	() => {
-		const ids = playoffDays.value.map((day) => day.id);
+		const ids = visiblePlayoffDays.value.map((day) => day.id);
 		if (ids.length === 0) {
 			selectedPlayoffDayId.value = null;
 			return;
@@ -210,21 +302,37 @@ watch(
 		) {
 			const preferred = currentPlayoffId.value;
 			selectedPlayoffDayId.value =
-				preferred !== null && ids.includes(preferred) ? preferred : ids[0];
+				preferred !== null && ids.includes(preferred)
+					? preferred
+					: ids[ids.length - 1];
 		}
 	},
 	{ immediate: true },
 );
 
+watch(phaseView, () => {
+	void scrollActiveTab(
+		phaseView.value === "playoff" ? playoffTrack : championshipTrack,
+	);
+});
+
 watch(selectedChampionshipDayId, () => {
-	void scrollActiveTab(championshipTrack);
+	if (!splitByPhase.value || phaseView.value === "championship") {
+		void scrollActiveTab(championshipTrack);
+	}
 });
 
 watch(selectedPlayoffDayId, () => {
-	void scrollActiveTab(playoffTrack);
+	if (!splitByPhase.value || phaseView.value === "playoff") {
+		void scrollActiveTab(playoffTrack);
+	}
 });
 
 onMounted(() => {
+	if (splitByPhase.value) {
+		void scrollActiveTab(playoffTrack);
+		return;
+	}
 	if (playoffDays.value.length > 0) {
 		void scrollActiveTab(playoffTrack);
 		return;
@@ -299,6 +407,17 @@ async function exportDayPdf(day: TournamentDay): Promise<void> {
   min-width: 0;
 }
 
+.phase-nav .coach-subsegments-track {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+
+.phase-tab {
+  width: 100%;
+  justify-content: center;
+}
+
 .coach-subsegments-track {
   display: flex;
   gap: 0.375rem;
@@ -332,12 +451,6 @@ async function exportDayPdf(day: TournamentDay): Promise<void> {
   color: var(--app-primary-dark);
 }
 
-.day-body {
-  display: grid;
-  gap: var(--app-space-sm);
-  min-width: 0;
-}
-
 .section-label {
   margin: 0;
   font-size: 0.8125rem;
@@ -353,16 +466,5 @@ async function exportDayPdf(day: TournamentDay): Promise<void> {
 
 .empty {
   margin: 0;
-}
-
-.day-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.delete-day,
-.close {
-  justify-self: start;
 }
 </style>
