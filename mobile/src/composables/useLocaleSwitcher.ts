@@ -5,6 +5,8 @@ export const APP_LOCALES = [
   { code: 'fr', short: 'FR', label: 'Français' },
   { code: 'en', short: 'EN', label: 'English' },
   { code: 'sk', short: 'SK', label: 'Slovenčina' },
+  { code: 'cs', short: 'CS', label: 'Čeština' },
+  { code: 'de', short: 'DE', label: 'Deutsch (Österreich)' },
 ] as const
 
 export type AppLocaleCode = (typeof APP_LOCALES)[number]['code']

@@ -1,0 +1,2489 @@
+{
+  "app": {
+    "title": "Pétanque-Analyse",
+    "update": {
+      "recommendedTitle": "Eine neue Version ist verfügbar!",
+      "recommendedSubtitle": "Genießen Sie die neuesten Verbesserungen.",
+      "requiredTitle": "Update erforderlich",
+      "requiredSubtitle": "Diese Version von Pétanque Analytics ist nicht mehr kompatibel.",
+      "action": "Aktualisieren",
+      "dismiss": "Zurückweisen"
+    }
+  },
+  "common": {
+    "hello": "Hallo Welt",
+    "comingSoon": "Kommt bald"
+  },
+  "dateRange": {
+    "label": "Zeitraum",
+    "from": "Aus",
+    "to": "Zu",
+    "showAll": "Alle anzeigen"
+  },
+  "nav": {
+    "aria": "Hauptnavigation",
+    "home": "Heim",
+    "history": "Geschichte",
+    "newMatch": "Neues Spiel",
+    "coach": "Trainerin",
+    "selectionGlobale": "Auswahl",
+    "stats": "Statistiken",
+    "tournaments": "Turniere",
+    "back": "Zurück"
+  },
+  "validation": {
+    "menu": "Zu validierende Übereinstimmungen",
+    "title": "Zu validierende Übereinstimmungen",
+    "empty": "Keine Übereinstimmungen bis zur Validierung.",
+    "vs": "vs",
+    "accept": "Ich spielte",
+    "reject": "Ich habe nicht gespielt",
+    "summaryTitle": "Meine Teilnahme",
+    "summaryHint": "Bestätigen Sie, ob Sie dieses Spiel tatsächlich gespielt haben. Dies wirkt sich auf Ihren Verlauf und Ihre Statistiken aus."
+  },
+  "summary": {
+    "title": "Spielzusammenfassung",
+    "winner": "{team} gewinnt",
+    "ends": "{n} endet",
+    "teamAverage": "Mannschaftsdurchschnitt",
+    "sections": {
+      "comparison": "Spielervergleich",
+      "teamDistribution": "Teamverteilung",
+      "distribution": "Notenverteilung",
+      "shotDetails": "Punkt-/Schussdetails",
+      "endGrid": "Wirkung bis zum Ende"
+    },
+    "endGrid": {
+      "hint": "Summe der Ballnoten jedes Spielers am Ende. Abgebrochene Enden sind inbegriffen.",
+      "player": "Spieler",
+      "total": "Gesamt",
+      "canceled": "Abgesagt"
+    },
+    "comparison": {
+      "hint": "Gesamtdurchschnitt für jeden Spieler in diesem Spiel."
+    },
+    "charts": {
+      "average": "Durchschnitt"
+    },
+    "empty": {
+      "noTrackedDataTitle": "Keine Bälle verfolgt",
+      "noTrackedData": "Spielstatistiken sind für dieses Spiel nicht verfügbar.",
+      "noPlayerData": "Für diesen Spieler wurden keine Bälle aufgezeichnet."
+    },
+    "table": {
+      "player": "Spieler",
+      "avg": "Durchschnitt"
+    },
+    "actions": {
+      "backHome": "Zurück nach Hause"
+    },
+    "tabs": {
+      "label": "Zusammenfassungsabschnitte",
+      "overview": "Statistiken",
+      "tactics": "Taktische Analyse"
+    },
+    "insights": {
+      "title": "Taktische Analyse",
+      "subtitle": "Erweitertes Lesen anhand der tatsächlichen Schussreihenfolge.",
+      "coverage": "{rate} % der Schüsse haben eine Distanz · {ends} endet analysiert",
+      "unavailable": {
+        "not_all_tracked": "Jeder Spieler im Spiel muss verfolgt werden, um eine taktische Analyse zu ermöglichen.",
+        "invalid_sequence": "Die chronologische Schussreihenfolge ist bei diesem Spiel unvollständig oder inkonsistent.",
+        "no_data": "Kein Ende mit aufgezeichneten Aufnahmen."
+      },
+      "marking": {
+        "title": "Erfolg mit dem Markierungsball",
+        "hint": "Wenn der letzte Ball des Gegners +1 oder +2 ist, zählt jeder verbleibende Schuss bis zum ersten Erfolg (+1/+2). Nur eine Mannschaft punktet pro Ende.",
+        "point": "Zeigen",
+        "tir": "Schießen",
+        "rate": "{rate} % ({made}/{total})",
+        "noData": "—",
+        "empty": "Sie haben keine Markierungsbälle gespielt"
+      },
+      "rajout": {
+        "title": "Extra-Ball-Erfolg",
+        "hint": "Wenn der letzte Ball des Gegners 0 oder weniger beträgt, ist jeder weitere Schlag ein zusätzlicher Ball. Andernfalls gelten nach einem erfolgreichen Markierungswurf mit noch verbleibenden Bällen die folgenden Schläge als Extrabälle.",
+        "point": "Zeigen",
+        "tir": "Schießen",
+        "rate": "{rate} % ({made}/{total})",
+        "noData": "—",
+        "empty": "Du hast keine zusätzlichen Bälle gespielt"
+      },
+      "heldEndError": {
+        "title": "Fehler beim Halten des Endes",
+        "hint": "Anteil von −2 gespielten Schüssen, während der Gegner keine Bälle mehr hat, an allen in dieser Situation gespielten Schüssen.",
+        "label": "−2 Rate",
+        "rate": "{rate} % ({errors}/{balls})",
+        "noData": "—"
+      },
+      "endSequenceDominance": {
+        "title": "Schluss mit der Dominanz",
+        "hint": "Wird für eine Mannschaft gezählt, wenn der Gegner zuerst drei aufeinanderfolgende Schüsse ausführt, während diese Mannschaft noch Bälle übrig hat.",
+        "endsLegend": {
+          "one": "{count} Ende dominiert ({wonPart})",
+          "other": "{count} endet dominiert ({wonPart})"
+        },
+        "endsWonPart": {
+          "zero": "keiner hat gewonnen",
+          "one": "{won} hat gewonnen",
+          "other": "{won} hat gewonnen"
+        },
+        "pointsLegend": {
+          "one": "{total} Punkte erzielt ({dominatedPart})",
+          "other": "{total} Punkte erzielt ({dominatedPart})"
+        },
+        "pointsDominatedPart": {
+          "zero": "keine, während er dominiert",
+          "one": "{dominated} beim Dominieren",
+          "other": "{dominated} beim Dominieren"
+        },
+        "empty": "Du hast kein Ende dominiert"
+      },
+      "point": {
+        "title": "Ends gewonnen, während man den Wagenheber hält",
+        "hint": "Endet dort, wo die Mannschaft den ersten Ball gespielt hat. Ein Ende ist gut begonnen, wenn der erste Ball +1 oder +2 erzielt.",
+        "wonLegend": {
+          "one": "{opened} Ende geöffnet ({wonPart})",
+          "other": "{opened} endet geöffnet ({wonPart})"
+        },
+        "wellStartedLegend": {
+          "zero": "Kein gut begonnenes Ende ({wonPart})",
+          "one": "{total} gut begonnenes Ende ({wonPart})",
+          "other": "{total} gut begonnen endet ({wonPart})"
+        },
+        "wonPart": {
+          "zero": "keiner hat gewonnen",
+          "one": "{won} hat gewonnen",
+          "other": "{won} hat gewonnen"
+        },
+        "barRate": "({rate}%)",
+        "empty": "Sie haben kein Ende geöffnet, während Sie den Wagenheber festgehalten haben"
+      },
+      "closing": {
+        "title": "Bälle in der Hand und in der Verteidigung",
+        "hint": "Ausnutzen, wenn der Gegner keine Bälle mehr hat, oder eine solide Verteidigung, bei der keiner mehr übrig ist.",
+        "capitalized": "Bälle in der Hand: {count}/{total} Endpunkte erzielt (Durchschnitt {avg} Punkte)",
+        "defended": "Keine Bälle mehr übrig: {count}/{total} erfolgreiche Verteidigungen (durchschnittlich {avg} kassierte Punkte)",
+        "noCapitalization": "Kein Ende mit Bällen in der Hand.",
+        "noDefense": "Keine Verteidigungssituation ohne Bälle."
+      },
+      "distance": {
+        "title": "Distanzdominanz",
+        "monopoly": "{team} dominiert bei jeder aufgezeichneten Distanz.",
+        "none": "Nicht genügend Entfernungsdaten für einen sinnvollen Vergleich."
+      }
+    },
+    "share": {
+      "title": "Zusammenfassung teilen",
+      "hint": "Senden Sie diesen Link oder QR-Code, damit jeder die vollständigen Spielstatistiken sehen kann.",
+      "copy": "Link kopieren",
+      "copied": "Link kopiert",
+      "native": "Aktie",
+      "qrCaption": "Scan",
+      "qrAria": "QR-Code passend zur Zusammenfassung",
+      "publicTitle": "Zusammenfassung des Spiels",
+      "loading": "Laden…",
+      "notFound": "Diese Zusammenfassung existiert nicht oder ist nicht mehr verfügbar."
+    }
+  },
+  "context": {
+    "titleAdd": "Kontext hinzufügen",
+    "titleEdit": "Kontext bearbeiten",
+    "summaryTitle": "Kontext",
+    "hint": "Alle Felder sind optional. Das Datum ist nützlich, wenn Sie später ein Spiel aus einem Video protokollieren.",
+    "placeholders": {
+      "select": "Wählen"
+    },
+    "fields": {
+      "playedAt": "Spieldatum",
+      "comment": "Kommentar",
+      "teamAName": "Team-A-Name",
+      "teamBName": "Name von Team B",
+      "nature": "Passen Sie die Natur an",
+      "competitionName": "Wettbewerb",
+      "competitionNameOther": "Wettbewerbsname (andere)",
+      "competitionStage": "Wettbewerbsphase",
+      "terrainType": "Geländetyp"
+    },
+    "nature": {
+      "friendly": "Freundlich",
+      "training": "Ausbildung",
+      "competition": "Wettbewerb"
+    },
+    "competition": {
+      "other": "Andere"
+    },
+    "competitionStage": {
+      "group": "Gruppenphase",
+      "swiss": "Schweizer System",
+      "top64": "Top 64",
+      "top32": "Top 32",
+      "top16": "Top 16",
+      "quarterFinal": "Viertelfinale",
+      "semiFinal": "Halbfinale",
+      "final": "Finale",
+      "other": "Andere"
+    },
+    "terrain": {
+      "gravel": "Kies",
+      "stabilized": "Stabilisiert",
+      "indoor": "Drinnen",
+      "other": "Andere"
+    },
+    "actions": {
+      "add": "Kontext hinzufügen",
+      "edit": "Kontext bearbeiten",
+      "save": "Speichern",
+      "skip": "Zurück zur Zusammenfassung"
+    }
+  },
+  "home": {
+    "welcome": "Willkommen!",
+    "connectedAs": "Angemeldet als {email}",
+    "quickActions": "Mehr",
+    "language": "Sprache",
+    "actions": {
+      "newMatch": "Neues Spiel",
+      "addPlayer": "Spieler hinzufügen",
+      "history": "Spielverlauf",
+      "myStats": "Meine Statistiken",
+      "settings": "Einstellungen",
+      "admin": "Verwaltung",
+      "coach": "Busraum",
+      "logout": "Abmelden",
+      "shooting": "Präzisionsschießen",
+      "training": "Ausbildung"
+    }
+  },
+  "placeholders": {
+    "newMatch": {
+      "title": "Neues Spiel",
+      "content": "Bildschirm kommt bald."
+    },
+    "addPlayer": {
+      "title": "Spieler hinzufügen",
+      "content": "Bildschirm kommt bald."
+    }
+  },
+  "guest": {
+    "entry": {
+      "prompt": "Willst du einfach nur spielen?",
+      "playWithoutAccount": "Starten Sie sofort ein Match, ohne Konto"
+    },
+    "summary": {
+      "saveTitle": "Dieses Match behalten?",
+      "saveHint": "Für dieses Spiel sind Ihre Statistiken verfügbar. Erstellen Sie ein Konto oder melden Sie sich an, um es zu speichern und Ihren Verlauf zu erstellen.",
+      "createAccount": "Mein Konto erstellen",
+      "login": "Ich habe bereits ein Konto – Melden Sie sich an",
+      "backToLogin": "Zurück zum Menü"
+    },
+    "save": {
+      "inProgress": "Speichern Sie Ihr Spiel…"
+    }
+  },
+  "auth": {
+    "email": "E-Mail",
+    "password": "Passwort",
+    "login": {
+      "title": "anmelden",
+      "submit": "anmelden",
+      "link": "anmelden"
+    },
+    "register": {
+      "title": "Benutzerkonto erstellen",
+      "submit": "Registrieren",
+      "link": "Benutzerkonto erstellen",
+      "profile": {
+        "title": "Ihr Spielerprofil (falls nicht vorhanden)",
+        "hint": "Diese Informationen werden für Ihren Player in der App verwendet."
+      },
+      "linkPlayer": {
+        "title": "Bereits zu einem Match hinzugefügt?",
+        "hint": "Sie können Ihren vorhandenen Player finden und ihn mit Ihrem Konto verknüpfen. Dieser Schritt ist optional.",
+        "searchPlaceholder": "Nach einem Spieler suchen (mind. 3 Zeichen)",
+        "empty": "Im Moment sind keine Spieler verfügbar."
+      }
+    },
+    "noAccount": "Noch kein Konto?",
+    "haveAccount": "Sie haben bereits ein Konto?",
+    "logout": "Abmelden",
+    "errors": {
+      "invalidCredentials": "Falsche E-Mail-Adresse oder falsches Passwort.",
+      "generic": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+      "validation": "Bitte korrigieren Sie die hervorgehobenen Felder.",
+      "emailAlreadyUsed": "Diese E-Mail wird bereits verwendet.",
+      "playerAlreadyLinked": "Dieser Spieler ist bereits mit einem anderen Konto verknüpft.",
+      "playerNotFound": "Dieser Player existiert nicht mehr oder ist nicht verfügbar.",
+      "tooManyRequests": "Zu viele Versuche. Bitte versuchen Sie es in ein paar Minuten noch einmal."
+    },
+    "validations": {
+      "required": "Erforderliches Feld",
+      "emailInvalid": "Ungültige E-Mail-Adresse.",
+      "passwordMinLength": "Das Passwort muss mindestens 8 Zeichen lang sein."
+    },
+    "forgot": {
+      "link": "Passwort vergessen?",
+      "title": "Passwort vergessen",
+      "submit": "Link zum Zurücksetzen senden",
+      "success": "Wenn für diese E-Mail ein Konto vorhanden ist, wurde eine E-Mail zum Zurücksetzen des Passworts gesendet.",
+      "back": "Zurück zur Anmeldung"
+    },
+    "reset": {
+      "title": "Neues Passwort",
+      "password": "Neues Passwort",
+      "confirm": "Passwort bestätigen",
+      "submit": "Passwort speichern",
+      "success": "Ihr Passwort wurde aktualisiert. Sie können sich anmelden.",
+      "invalidToken": "Dieser Link ist ungültig oder abgelaufen. Fordern Sie ein neues an.",
+      "mismatch": "Passwörter stimmen nicht überein."
+    },
+    "verify": {
+      "banner": "Ihre E-Mail-Adresse ist noch nicht bestätigt. Bitte überprüfen Sie Ihren Posteingang.",
+      "resend": "E-Mail erneut senden",
+      "resent": "Wenn Ihre Adresse noch nicht bestätigt ist, wurde eine neue E-Mail gesendet."
+    }
+  },
+  "legal": {
+    "updatedAt": "Letzte Aktualisierung: 25. August 2026",
+    "authNotice": "Durch die Nutzung von Pétanque Analytics akzeptieren Sie die {terms} und erkennen die {privacy} an.",
+    "nav": {
+      "label": "Rechtliche Seiten",
+      "terms": "Nutzungsbedingungen",
+      "privacy": "Datenschutzrichtlinie",
+      "legal": "Rechtlicher Hinweis",
+      "deleteAccount": "Mein Konto löschen"
+    },
+    "publisher": {
+      "country": "Slowakei",
+      "labels": {
+        "serviceName": "Dienstname",
+        "company": "Herausgeberin",
+        "legalForm": "Rechtsform",
+        "address": "Adresse",
+        "email": "Kontakt-E-Mail",
+        "publicationDirector": "Publikationsleiter",
+        "ico": "IČO (Firmen-ID)",
+        "dic": "DIČ (Steuer-ID)",
+        "icDph": "IČ DPH (USt-IdNr.)",
+        "commercialRegister": "Handelsregister (OR SR)",
+        "incorporationDate": "Gründungsdatum"
+      }
+    },
+    "privacy": {
+      "title": "Datenschutzrichtlinie",
+      "intro": "Diese Richtlinie beschreibt, wie personenbezogene Daten basierend auf der aktuellen Funktionsweise von Pétanque Analytics verarbeitet werden. Es ist keine Garantie für die vollständige Rechtskonformität.",
+      "s1": {
+        "title": "1. Dienstidentität",
+        "p1": "Pétanque Analytics ist eine App zur Verwaltung und Analyse von Pétanque-Statistiken (Spiele, Training, Präzisionsschießen). Es ist im Internet (petanque-analytics.com) und auf Android verfügbar.",
+        "contactLabel": "Kontakt für Fragen zum Datenschutz"
+      },
+      "s2": {
+        "title": "2. Zweck der Verarbeitung",
+        "intro": "Zur Erbringung des Dienstes werden Daten verarbeitet, darunter:",
+        "items": [
+          "creating and authenticating a user account;",
+          "verifying the email address and enabling password reset;",
+          "recording players, matches, training sessions and shooting sessions linked to the account;",
+          "calculating and displaying statistics from entered game actions."
+        ],
+        "outro": "Diese Verarbeitung ist erforderlich, um die von Ihnen angeforderte Dienstleistung bereitzustellen. Die App ist heute nicht monetarisiert: Es ist keine Werbung eingebunden und es werden keine Zahlungsdaten erhoben."
+      },
+      "s3": {
+        "title": "3. Erhobene personenbezogene Daten",
+        "accountTitle": "Benutzerkonto",
+        "accountItems": [
+          "email address;",
+          "password (stored only as a hash, never returned by the API);",
+          "account creation date;",
+          "email verification date, if applicable."
+        ],
+        "playerTitle": "Spielerprofil (wenn Sie einen Spieler erstellen oder verknüpfen)",
+        "playerItems": [
+          "first name, last name, nickname;",
+          "a “club” column exists in the database but is not offered in the current interface."
+        ],
+        "gameTitle": "Mit dem Spieler verknüpfte Spieldaten",
+        "gameItems": [
+          "matches: format, target score, statistics mode, team names, nature, competition, terrain type, comment, participants, ends, roles, balls (score, point/shot type, optional distance);",
+          "training sessions (point or shot): distance, number of balls, attempts, scores, dates;",
+          "precision shooting sessions: 20 shots, scores, optional title / description / context nature."
+        ],
+        "statsNote": "Die angezeigten Statistiken werden nicht separat gespeichert: Sie werden beim Lesen aus aufgezeichneten Aktionen berechnet.",
+        "authTitle": "Authentifizierung",
+        "authItems": [
+          "session token (JWT) issued by the API, kept on the device in browser or app local storage, for about 14 days;",
+          "one-time tokens (hashed) for email verification (valid 24 hours) and password reset (valid 1 hour)."
+        ],
+        "deviceTitle": "Auf dem Gerät",
+        "deviceItems": [
+          "session token;",
+          "language preference;",
+          "match or shooting session drafts not yet sent to the server."
+        ],
+        "notCollected": "Die App erfasst nicht in ihrem aktuellen Code: Telefonnummer, Profilfoto, Werbe-ID, Kontakte, GPS-Standort, Zahlungsdaten oder Gesundheitsdaten."
+      },
+      "s4": {
+        "title": "4. Anbieter und Hosting",
+        "p1": "Geschäftsdaten werden in der Anwendungsinfrastruktur gespeichert (API https://api.petanque-analytics.com, MySQL auf demselben virtuellen Server, nicht öffentlich zugänglich gemacht). Die Website wird über HTTPS über Caddy (Let’s Encrypt-Zertifikate) bereitgestellt.",
+        "hosting": "Hosting: virtueller Server (VPS) bei Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Deutschland.",
+        "resend": "Transaktions-E-Mails (Adressbestätigung, Passwort-Reset) werden über Resend versendet. Resend erhält die E-Mail-Adresse des Empfängers und den Nachrichteninhalt (einmaliger Link). Im aktuellen Zustand versendet die App keine Marketing-E-Mails.",
+        "googlePlay": "Wenn die App über Google Play installiert wird, verarbeitet Google möglicherweise Daten im Zusammenhang mit der App-Verbreitung, die nicht im Rahmen des Pétanque Analytics-Codes liegen.",
+        "noTracking": "Die App umfasst keine Zielgruppenanalysen, Absturzberichte oder Werbekits (kein Google Analytics, Firebase Analytics, Sentry oder gleichwertiges im Code)."
+      },
+      "s5": {
+        "title": "5. Cookies",
+        "p1": "Das Web-Frontend verwendet keine Tracking- oder Werbecookies. Die Authentifizierung basiert auf einem lokal gespeicherten Token (localStorage), nicht auf einem Sitzungscookie."
+      },
+      "s6": {
+        "title": "6. Technische Protokolle",
+        "p1": "Wie jeder Webdienst kann der Reverse-Proxy (Caddy) für den Betrieb und die Sicherheit technische Protokolle (z. B. IP-Adresse, Datum, angeforderte URL) aufzeichnen. Die API protokolliert möglicherweise eine interne Benutzerkennung, wenn der E-Mail-Versand fehlschlägt. Ein Ratenbegrenzer nutzt die IP-Adresse und einen Hash der E-Mail, um Missbrauch einzudämmen (Passwort vergessen, Bestätigungs-E-Mail erneut senden). Die Aufbewahrung dieser Infrastrukturprotokolle ist im Anwendungscode nicht definiert."
+      },
+      "s7": {
+        "title": "7. Keine Werbung oder Verkauf von Daten",
+        "p1": "Im aktuellen Code enthält die App keine Werbung. Persönliche Daten werden nicht verkauft."
+      },
+      "s8": {
+        "title": "8. Aufbewahrung",
+        "p1": "Konto- und Spieldaten bleiben bestehen, solange das Konto besteht. Nach dem Löschen des Kontos (siehe unten) werden die mit dem Konto verknüpfte E-Mail-Adresse, das gehashte Passwort und die Authentifizierungstoken entfernt. Verifizierungs- und Reset-Tokens verfallen entsprechend der oben genannten Zeitspanne, wenn sie nicht verwendet werden."
+      },
+      "s9": {
+        "title": "9. Kontolöschung und gespeicherte Daten",
+        "p1": "Sie können Ihr Konto nach der Anmeldung in der App (Einstellungen) oder im {link} löschen.",
+        "deletedIntro": "Beim Löschen:",
+        "deletedItems": [
+          "the account (email, password, verification date) is removed;",
+          "verification and reset tokens linked to the account are removed;",
+          "the session token becomes invalid; the app signs you out."
+        ],
+        "kept": "Das Spielerprofil (Vorname, Nachname, Spitzname) wird nicht zerstört: Die Verknüpfung zum Konto wird entfernt. Spiele, Trainings- und Schießsitzungen, die mit diesem Spieler verknüpft sind, werden gespeichert. Dadurch bleibt der Spielverlauf anderer Spieler erhalten. Der Link „Erstellt von“ bei einer Übereinstimmung mit dem Konto wird entfernt.",
+        "extended": "Wenn Sie eine umfassendere Löschung der noch mit Ihrem Namen verbundenen Spieldaten wünschen, können Sie diese unter der oben genannten Kontaktadresse beantragen. Eine solche Anfrage kann sich auf den für andere Benutzer sichtbaren Verlauf auswirken."
+      },
+      "s10": {
+        "title": "10. Ihre Rechte",
+        "intro": "Nach geltendem Recht (einschließlich der DSGVO, wenn Sie sich im Europäischen Wirtschaftsraum befinden) haben Sie möglicherweise Rechte auf Zugang, Berichtigung, Löschung, Einschränkung, Widerspruch und gegebenenfalls auf Übertragbarkeit.",
+        "items": [
+          "player profile rectification: Account settings, once signed in;",
+          "account erasure: delete account, subject to the limits described above;",
+          "other requests: by email to the contact address below."
+        ],
+        "contact": "Kontakt"
+      },
+      "s11": {
+        "title": "11. Sicherheit",
+        "p1": "Die Kommunikation zwischen der App und der API erfolgt über HTTPS. Passwörter werden gehasht. Dadurch werden bestimmte Risiken reduziert, es ist jedoch keine Garantie dafür, dass es keine Vorfälle gibt."
+      },
+      "s12": {
+        "title": "12. Änderungen",
+        "p1": "Diese Richtlinie kann aktualisiert werden, um Serviceänderungen widerzuspiegeln. Das Datum oben auf der Seite ist die letzte Aktualisierung des in der App veröffentlichten Textes."
+      }
+    },
+    "terms": {
+      "title": "Nutzungsbedingungen",
+      "intro": "Diese Nutzungsbedingungen regeln den Zugang zu Pétanque Analytics. Durch die Erstellung eines Kontos oder die Nutzung des Dienstes akzeptieren Sie diese Bedingungen.",
+      "contactLabel": "Kontakt",
+      "s1": {
+        "title": "1. Zweck des Dienstes",
+        "p1": "Pétanque Analytics ist ein kostenloser Dienst zur Verfolgung und Analyse von Pétanque-Statistiken. Damit können Sie Spiele, Trainingseinheiten und Präzisionsschießsitzungen aufzeichnen und anhand dieser Einträge berechnete Statistiken anzeigen.",
+        "p2": "Der Dienst wird „wie besehen“ bereitgestellt. Es handelt sich nicht um ein offizielles Wettbewerbstool und es wird keine Garantie für sportliche Genauigkeit, das Fehlen von Eingabefehlern oder ein bestimmtes Ergebnis übernommen."
+      },
+      "s2": {
+        "title": "2. Zugangsbedingungen",
+        "p1": "Für die Hauptfunktionen ist die Erstellung eines Kontos mit einer E-Mail-Adresse und einem Passwort erforderlich. Ein Internetzugang ist erforderlich. Die Android-App und die Website verwenden dieselbe API.",
+        "p2": "Sie müssen eine gültige E-Mail-Adresse angeben. Eine Bestätigungs-E-Mail wird gesendet. Einige Funktionen bleiben möglicherweise vor der Bestätigung nutzbar. Sie sollten Ihre Adresse bestätigen, wenn Sie dazu aufgefordert werden."
+      },
+      "s3": {
+        "title": "3. Konto und Sicherheit",
+        "p1": "Sie sind für die vertrauliche Behandlung Ihrer Anmeldedaten und die Nutzung Ihres Kontos verantwortlich. Wenn Sie glauben, dass ein Dritter Zugriff hat, ändern Sie Ihr Passwort über „Passwort vergessen“.",
+        "p2": "Das Passwort muss die bei der Registrierung erforderliche Mindestlänge haben. Es wird als Hash gespeichert. Auf Ihrem Gerät wird ein Sitzungstoken gespeichert. Durch das Abmelden wird es lokal entfernt, ohne dass das Konto gelöscht wird."
+      },
+      "s4": {
+        "title": "4. Nutzung des Dienstes",
+        "intro": "Sie erklären sich damit einverstanden, den Dienst normal und rechtmäßig zu nutzen, einschließlich:",
+        "items": [
+          "not impersonating others;",
+          "not knowingly entering unlawful content in free fields (comments, names, etc.);",
+          "not attempting to disrupt, overload, or bypass the service, its technical limits, or its security;",
+          "not accessing another account’s data or attempting to do so."
+        ],
+        "outro": "Die von Ihnen eingegebenen Spieler, Vereine (falls jemals erfasst) und Statistiken liegen in Ihrer Verantwortung. Sie müssen über die erforderlichen Informationen verfügen, um diese insbesondere gegenüber Dritten aufzuzeichnen."
+      },
+      "s5": {
+        "title": "5. Von Ihnen bereitgestellte Daten",
+        "p1": "Sie bleiben der Eigentümer der von Ihnen eingegebenen Informationen. Sie ermächtigen den Herausgeber, die Daten ausschließlich zur Bereitstellung, Wartung und Sicherung des Dienstes gemäß {privacy} zu hosten und zu verarbeiten.",
+        "p2": "Sie können Ihr Konto jederzeit löschen. Auswirkungen auf Spieldaten (im Spielverlauf gespeichertes Spielerprofil) werden im {privacy} beschrieben.",
+        "p3": "Details finden Sie auch auf der Seite {delete}."
+      },
+      "s6": {
+        "title": "6. Geistiges Eigentum",
+        "p1": "Die App, ihr Name, ihre Schnittstelle und ihr Code sind geschützt. Es ist Ihnen nicht gestattet, den Dienst über den persönlichen Gebrauch hinaus zu kopieren, zu extrahieren oder wiederzuverwenden, außer mit Genehmigung oder soweit gesetzlich zulässig."
+      },
+      "s7": {
+        "title": "7. Verfügbarkeit, Wartung und Änderungen",
+        "p1": "Der Herausgeber ist bestrebt, den Dienst verfügbar zu halten, kann jedoch keinen unterbrechungsfreien Zugriff garantieren. Es kann zu Ausfällen kommen (Wartung, Vorfall, Entwicklung, Hosting-Einschränkungen).",
+        "p2": "Funktionen können hinzugefügt, geändert oder entfernt werden. Da der Dienst kostenlos ist und sich ständig weiterentwickelt, können im Rahmen des Zumutbaren Änderungen ohne vorherige Ankündigung erfolgen."
+      },
+      "s8": {
+        "title": "8. Sperrung oder Löschung wegen Missbrauchs",
+        "p1": "Im Falle einer missbräuchlichen, betrügerischen oder nicht gesetzeskonformen Nutzung kann der Herausgeber nach Prüfung des Sachverhalts den betreffenden Account sperren oder löschen. Dabei handelt es sich nicht um eine allgemeine Inhaltsüberwachungspflicht."
+      },
+      "s9": {
+        "title": "9. Haftung",
+        "p1": "Im gesetzlich zulässigen Rahmen haftet der Herausgeber nicht für indirekte Schäden, Datenverlust aufgrund eines Ausfalls, Ihrer Eingabefehler oder einer nicht bestimmungsgemäßen Nutzung des Dienstes.",
+        "p2": "Nichts hierin schließt eine Haftung aus, die nicht gesetzlich eingeschränkt werden kann (einschließlich grober Fahrlässigkeit oder vorsätzlichem Fehlverhalten nach geltendem Recht)."
+      },
+      "s10": {
+        "title": "10. Änderungen dieser Bedingungen",
+        "p1": "Diese Bedingungen können aktualisiert werden, um Serviceänderungen widerzuspiegeln. Das Datum oben ist die letzte Aktualisierung. Die fortgesetzte Nutzung nach der Veröffentlichung bedeutet die Annahme der aktualisierten Bedingungen, sofern nichts anderes erforderlich ist."
+      },
+      "s11": {
+        "title": "11. Anwendbares Recht",
+        "p1": "Diese Bedingungen unterliegen slowakischem Recht, vorbehaltlich zwingender Vorschriften im Wohnsitzland des Benutzers. Streitigkeiten werden den zuständigen Gerichten gemäß den geltenden Verfahrensregeln vorgelegt."
+      }
+    },
+    "notice": {
+      "title": "Rechtlicher Hinweis",
+      "intro": "Informationen zum Herausgeber von Pétanque Analytics (öffentliche OR SR / FinStat-Daten) und dessen Hosting.",
+      "s1": {
+        "title": "1. Herausgeber"
+      },
+      "s2": {
+        "title": "2. Hosting",
+        "intro": "Die Anwendung (Website, API und Datenbank) wird auf einem virtuellen Server (VPS) bereitgestellt. Der Hosting-Anbieter für diese Infrastruktur ist:",
+        "hetzner": "Hetzner Online GmbH \nIndustriestr. 25 \n91710 Gunzenhausen \nDeutschland",
+        "site": "Öffentliche Website",
+        "api": "API",
+        "https": "HTTPS wird von Caddy mit Let’s Encrypt-Zertifikaten bereitgestellt."
+      },
+      "s3": {
+        "title": "3. Transaktions-E-Mail",
+        "p1": "Nachrichten zur E-Mail-Verifizierung und zum Zurücksetzen des Passworts werden über „Resend“ von der technischen Adresse noreply@petanque-analytics.com gesendet. Diese Adresse ist kein Kontaktkanal."
+      },
+      "s4": {
+        "title": "4. Geistiges Eigentum",
+        "p1": "Der Name Pétanque Analytics, die Schnittstelle und die Serviceelemente sind geschützt. Die unerlaubte Vervielfältigung ist vorbehaltlich gesetzlicher Ausnahmen untersagt."
+      },
+      "s5": {
+        "title": "5. Persönliche Daten",
+        "p1": "Die Verarbeitung personenbezogener Daten wird im {privacy} beschrieben. Das Löschen des Kontos wird auf der Seite {delete} erläutert."
+      },
+      "s6": {
+        "title": "6. Nutzungsbedingungen",
+        "p1": "Die Nutzung des Dienstes unterliegt den {terms}."
+      }
+    },
+    "delete": {
+      "title": "Mein Konto löschen",
+      "needLogin": "Melden Sie sich an, um Ihr Konto zu löschen.",
+      "loginLink": "anmelden",
+      "intro": "Auf dieser Seite wird erläutert, wie Sie ein Pétanque Analytics-Konto löschen. Es ist ohne Konto zugänglich, wie es für Google Play erforderlich ist. Zum Löschen selbst ist eine Anmeldung erforderlich, sodass nur der Kontoinhaber das Konto löschen kann.",
+      "s1": {
+        "title": "1. So löschen Sie Ihr Konto",
+        "steps": [
+          "Sign in with the email address of the account to delete.",
+          "Open this page, or go to Settings then Delete my account.",
+          "Confirm deletion in the confirmation dialog."
+        ]
+      },
+      "s2": {
+        "title": "2. Daten gelöscht",
+        "items": [
+          "email address and hashed password;",
+          "account creation date and email verification status;",
+          "email verification and password reset tokens;",
+          "session token validity: you are signed out and can no longer sign in with this email."
+        ]
+      },
+      "s3": {
+        "title": "3. Datenspeicherung",
+        "p1": "Das Spielerprofil (Vorname, Nachname, Spitzname) bleibt in der Datenbank und ist nicht mit einem Konto verknüpft. Mit diesem Spieler verknüpfte Spiele, Trainings- und Schießsitzungen werden gespeichert, sodass der mit anderen Spielern geteilte Verlauf nicht gelöscht wird. Der Link, der anzeigt, welches Konto eine Übereinstimmung erstellt hat, wurde entfernt.",
+        "p2": "Auf dem Gerät gespeicherte Entwürfe werden nicht an den Server gesendet; Durch das Abmelden werden diese lokalen Entwürfe nicht automatisch gelöscht."
+      }
+    }
+  },
+  "settings": {
+    "title": "Kontoeinstellungen",
+    "loading": "Laden…",
+    "profile": {
+      "title": "Spielerprofil",
+      "hint": "Bearbeiten Sie die für Ihren Player in der App angezeigten Informationen.",
+      "save": "Speichern",
+      "saved": "Profil gespeichert."
+    },
+    "linked": {
+      "title": "Verlinkter Spieler",
+      "hint": "Ihr Konto ist mit diesem Player verknüpft. Spielverlauf und Statistiken bleiben in der App verfügbar."
+    },
+    "unlinked": {
+      "title": "Finden Sie einen vorhandenen Spieler",
+      "hint": "Wenn Sie bereits zu einem Spiel hinzugefügt wurden, ohne ein Konto zu erstellen, können Sie diesen Spieler mit Ihrem Konto verknüpfen.",
+      "searchLabel": "Suchen Sie nach einem Spieler",
+      "searchPlaceholder": "Suche (mind. 3 Zeichen)",
+      "empty": "Keine nicht verknüpften Spieler entsprechen Ihrer Suche.",
+      "linkAction": "Verlinke diesen Spieler"
+    },
+    "validation": {
+      "title": "Übereinstimmungsvalidierung",
+      "hint": "Wenn jemand anderes Sie zu einem Spiel hinzufügt, müssen Sie bestätigen, dass Sie tatsächlich gespielt haben, bevor das Spiel in Ihre Statistiken aufgenommen wird.",
+      "toggle": "Für jede Übereinstimmung ist eine Validierung erforderlich",
+      "saved": "Präferenz gespeichert."
+    },
+    "errors": {
+      "loadFailed": "Kontoinformationen können nicht geladen werden.",
+      "profileSaveFailed": "Profil kann nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "noLinkedPlayer": "Es ist kein Spieler mit Ihrem Konto verknüpft.",
+      "linkFailed": "Dieser Player konnte nicht verknüpft werden. Bitte versuchen Sie es erneut.",
+      "playerAlreadyLinked": "Dieser Spieler ist bereits mit einem anderen Konto verknüpft.",
+      "playerNotFound": "Dieser Player existiert nicht mehr oder ist nicht verfügbar.",
+      "userAlreadyHasPlayer": "Ihr Konto ist bereits mit einem Spieler verknüpft.",
+      "preferencesSaveFailed": "Präferenz konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "deleteFailed": "Das Konto kann nicht gelöscht werden. Bitte versuchen Sie es erneut."
+    },
+    "legal": {
+      "title": "Rechtliche Informationen"
+    },
+    "delete": {
+      "title": "Konto löschen",
+      "hint": "Dies kann nicht rückgängig gemacht werden. Ihre E-Mail-Adresse und Ihr Passwort werden entfernt. Das Spielerprofil bleibt im Spielverlauf und ist nicht mit einem Konto verknüpft.",
+      "action": "Mein Konto löschen",
+      "confirmTitle": "Bestätigen Sie den Löschvorgang",
+      "confirmMessage": "Möchten Sie Ihr Konto wirklich löschen? Sie werden abgemeldet und können sich mit dieser E-Mail-Adresse nicht mehr anmelden.",
+      "cancel": "Stornieren",
+      "confirm": "Dauerhaft löschen"
+    }
+  },
+  "admin": {
+    "home": {
+      "title": "Verwaltung",
+      "impersonate": "Imitieren",
+      "competitions": "Wettbewerbe",
+      "clubs": "Vereine",
+      "coach": "Trainerinnen",
+      "selectionGlobale": "Globale Auswahl",
+      "mergePlayers": "Spieler zusammenführen"
+    },
+    "impersonate": {
+      "title": "Imitieren-Modus",
+      "hint": "Sehen Sie sich die Statistiken und den Spielverlauf eines Spielers an, als wären Sie dieser Spieler.",
+      "searchLabel": "Spieler",
+      "searchPlaceholder": "Suche (mindestens 3 Zeichen)",
+      "empty": "Kein Spieler entspricht Ihrer Suche.",
+      "start": "Als dieser Spieler ansehen",
+      "exit": "Verlassen Sie den Identitätswechselmodus",
+      "active": "Aktiver Modus: {name}",
+      "banner": "Imitieren-Modus – {name}",
+      "stop": "Ausfahrt"
+    },
+    "merge": {
+      "title": "Spieler zusammenführen",
+      "hint": "Alles auf dem Duplikat (Spiele, Training, Auswahlen, Turniere) wird auf den Spieler verschoben, den Sie behalten. Das Duplikat wird dann gelöscht.",
+      "keepLabel": "Spieler zum Behalten",
+      "dropLabel": "Zum Zusammenführen duplizieren",
+      "searchPlaceholder": "Suche (mindestens 3 Zeichen)",
+      "empty": "Kein Spieler entspricht Ihrer Suche.",
+      "linkedAccount": "Verknüpftes Konto: {email}",
+      "noAccount": "Kein verknüpftes Konto",
+      "singleAccount": "Konto {email} bleibt mit dem behaltenen Spieler verknüpft.",
+      "chooseUser": "Beide Spieler haben ein Konto. Welches bleibt verbunden?",
+      "confirm": "Verschmelzen",
+      "confirmMessage": "{drop} in {keep} zusammenführen? Dies kann nicht rückgängig gemacht werden.",
+      "success": "{drop} wurde in {keep} zusammengeführt.",
+      "errors": {
+        "samePlayer": "Wählen Sie zwei verschiedene Spieler aus.",
+        "previewFailed": "Die Zusammenführung konnte nicht vorbereitet werden.",
+        "failed": "Die Zusammenführung ist fehlgeschlagen.",
+        "not_found": "Einer der Spieler existiert nicht mehr.",
+        "placeholder": "Technische Spieler können nicht zusammengelegt werden.",
+        "user_choice_required": "Wählen Sie aus, welches Konto Sie behalten möchten.",
+        "invalid_user": "Das ausgewählte Konto ist mit keinem der Spieler verknüpft.",
+        "same_match": "Beide Spieler sind im selben Spiel. Korrigieren Sie die Übereinstimmung vor dem Zusammenführen.",
+        "same_tournament": "Beide Spieler nehmen am selben Turnier teil, in unterschiedlichen Teams.",
+        "unmoved_reference": "Einige mit dem Duplikat verknüpfte Daten konnten nicht verschoben werden."
+      }
+    },
+    "competitions": {
+      "title": "Wettbewerbe",
+      "addTitle": "Wettbewerb hinzufügen",
+      "editTitle": "Wettbewerb bearbeiten",
+      "loading": "Laden…",
+      "empty": "Noch keine Wettbewerbe.",
+      "confirmDelete": "„{name}“ löschen?",
+      "fields": {
+        "name": "Name",
+        "eventDate": "Datum",
+        "country": "Land",
+        "context": "Kontext"
+      },
+      "actions": {
+        "add": "Hinzufügen",
+        "save": "Speichern",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "cancelEdit": "Stornieren"
+      },
+      "validations": {
+        "required": "Dieses Feld ist erforderlich."
+      },
+      "errors": {
+        "saveFailed": "Konkurrenz kann nicht gerettet werden.",
+        "deleteFailed": "Wettbewerb kann nicht gelöscht werden."
+      }
+    },
+    "clubs": {
+      "title": "Vereine",
+      "addTitle": "Verein hinzufügen",
+      "editTitle": "Verein bearbeiten",
+      "loading": "Laden…",
+      "empty": "Noch keine Vereine.",
+      "confirmDelete": "„{name}“ löschen?",
+      "placeholders": {
+        "country": "Wählen Sie ein Land"
+      },
+      "fields": {
+        "name": "Name",
+        "country": "Land",
+        "description": "Beschreibung"
+      },
+      "actions": {
+        "add": "Hinzufügen",
+        "save": "Speichern",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "cancelEdit": "Stornieren"
+      },
+      "validations": {
+        "required": "Dieses Feld ist erforderlich."
+      },
+      "errors": {
+        "saveFailed": "Verein kann nicht gespeichert werden.",
+        "deleteFailed": "Der Verein konnte nicht gelöscht werden."
+      }
+    },
+    "coach": {
+      "title": "Weisen Sie einen Trainer zu",
+      "hint": "Verknüpfen Sie ein Benutzerkonto mit einem Verein, um Trainerzugriff zu gewähren.",
+      "fields": {
+        "email": "E-Mail-Adresse des Kontos",
+        "club": "Trainerclub"
+      },
+      "placeholders": {
+        "club": "Wählen Sie einen Verein aus"
+      },
+      "clearHint": "Lassen Sie das Feld leer und speichern Sie es, um die Trainerrechte zu entfernen.",
+      "actions": {
+        "save": "Speichern"
+      },
+      "success": "Trainerrechte aktualisiert.",
+      "errors": {
+        "emailRequired": "E-Mail ist erforderlich.",
+        "saveFailed": "Die Trainerrechte konnten nicht aktualisiert werden."
+      }
+    },
+    "selectionGlobale": {
+      "title": "Globale Auswahl",
+      "addTitle": "Neue Auswahl",
+      "editTitle": "Auswahl bearbeiten",
+      "manageTitle": "{name} verwalten",
+      "coachesTitle": "Trainerinnen",
+      "playersTitle": "Spielerinnen",
+      "noCoaches": "Keine Trainer zugewiesen.",
+      "noPlayers": "Keine Spieler in dieser Auswahl.",
+      "coachEmail": "E-Mail des Trainers",
+      "addPlayer": "Fügen Sie einen Spieler hinzu",
+      "playerSearch": "Spieler suchen (min. 3 Zeichen)",
+      "loading": "Laden…",
+      "empty": "Noch keine globale Auswahl.",
+      "fields": {
+        "name": "Auswahlname"
+      },
+      "validations": {
+        "required": "Dieses Feld ist erforderlich."
+      },
+      "actions": {
+        "add": "Erstellen",
+        "save": "Speichern",
+        "cancelEdit": "Stornieren",
+        "manage": "Verwalten",
+        "delete": "Löschen",
+        "addCoach": "Trainer hinzufügen"
+      },
+      "errors": {
+        "saveFailed": "Die Auswahl konnte nicht gespeichert werden."
+      }
+    }
+  },
+  "selectionGlobale": {
+    "title": "Globale Auswahl",
+    "empty": "Ihnen ist keine Auswahl zugewiesen.",
+    "addPlayer": {
+      "title": "Spieler zur Auswahl hinzufügen",
+      "hint": "Der Spieler wird zu {selection} hinzugefügt.",
+      "searchTitle": "Vorhandener Spieler",
+      "searchEmpty": "Keine passenden Spieler.",
+      "attach": "Zur Auswahl hinzufügen",
+      "attachSuccess": "Spieler zur Auswahl hinzugefügt.",
+      "attachError": "Dieser Spieler konnte nicht zur Auswahl hinzugefügt werden.",
+      "createSubmit": "Erstellen und zur Auswahl hinzufügen",
+      "success": "Spieler erstellt und zur Auswahl hinzugefügt."
+    }
+  },
+  "coach": {
+    "title": "Busraum",
+    "empty": "Keine Spieler mit diesem Verein verbunden.",
+    "list": {
+      "sort": "Sortieren",
+      "sortName": "Name",
+      "sortPoint": "Punkterfolg",
+      "sortTir": "Ihr Erfolg",
+      "sortShootingAvg": "Aufnahmedurchschnitt.",
+      "sortShootingBest": "Am besten schießen",
+      "shootingAverage": "Durchschn.",
+      "shootingBest": "Am besten",
+      "shootingSessions": "{n} Sitzung(en)",
+      "pointingAverage": "Durchschn. Punkt",
+      "pointingBest": "Punkt am besten",
+      "pointingSessions": "{n} Punktsitzung(en)"
+    },
+    "addPlayer": {
+      "action": "Spieler hinzufügen",
+      "title": "Spieler zum Verein hinzufügen",
+      "hint": "Der Player wird mit {club} verknüpft.",
+      "searchTitle": "Bestehender Spieler ohne Verein",
+      "searchLabel": "Suchen Sie nach einem Spieler",
+      "searchPlaceholder": "Suche (mindestens 3 Zeichen)",
+      "searchEmpty": "Kein Spieler ohne Verein spielt.",
+      "attach": "Zum Club hinzufügen",
+      "attachSuccess": "Spieler zum Verein hinzugefügt.",
+      "attachError": "Dieser Spieler konnte dem Club nicht hinzugefügt werden.",
+      "orCreate": "oder erstellen",
+      "createTitle": "Neuer Spieler",
+      "createSubmit": "Erstellen und hinzufügen",
+      "cancel": "Stornieren",
+      "success": "Spieler erstellt und dem Club hinzugefügt.",
+      "error": "Der Player konnte nicht erstellt werden."
+    },
+    "player": {
+      "title": "Spieler",
+      "subtitle": "Spielerstatistiken",
+      "noStats": "Keine Daten für den ausgewählten Zeitraum.",
+      "historyLink": "Spielverlauf",
+      "historySubtitle": "Spielverlauf",
+      "trainingComingSoon": "Trainingsstatistiken folgen in Kürze.",
+      "tabs": {
+        "label": "Spielerabschnitte",
+        "exercisesShort": "Übungen",
+        "precisionShort": "Präzision",
+        "matchesShort": "Streichhölzer",
+        "shooting": "Präzisionsschießen",
+        "training": "Ausbildung",
+        "matches": "Streichhölzer",
+        "stats": "Statistiken",
+        "history": "Streichhölzer"
+      },
+      "subTabs": {
+        "label": "Übungs- oder Präzisionsübung",
+        "jumpShot": "Sprungschuss",
+        "ringsPoint": "In die Ringe zeigen",
+        "ringsShooting": "In die Ringe schießen",
+        "shooting": "Präzisionsschießen",
+        "pointing": "Präzises Zeigen"
+      }
+    }
+  },
+  "players": {
+    "create": {
+      "title": "Spieler hinzufügen",
+      "toast": {
+        "success": "Spieler erstellt."
+      }
+    },
+    "fields": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "nickname": "Spitzname",
+      "club": "Verein"
+    },
+    "placeholders": {
+      "club": "Wählen Sie einen Club (optional)"
+    },
+    "actions": {
+      "submit": "Speichern"
+    },
+    "validations": {
+      "required": "Erforderliches Feld"
+    }
+  },
+  "matches": {
+    "create": {
+      "title": "Neues Spiel",
+      "subtitle": "Wählen Sie Ihre Teams aus und beginnen Sie zu spielen",
+      "typeSection": "Übereinstimmungstyp",
+      "versus": "VS",
+      "teamNameHint": "Teamname (optional)",
+      "role": "Rolle",
+      "trackPlayer": "Verfolgen Sie Statistiken",
+      "addProvisional": "Fügen Sie „{name}“ zum Spiel hinzu",
+      "provisionalBadge": "Zum Verlinken am Ende",
+      "addSelf": "Mich",
+      "inProgress": {
+        "title": "Nehmen Sie an einem laufenden Spiel teil",
+        "hint": "Geben Sie den aktuellen Punktestand ein, wenn Sie einem bereits begonnenen Spiel beitreten. Die Statistiken umfassen nur die von nun an gespielten Enden.",
+        "invalid": "Die Startpunktzahl ist ungültig."
+      },
+      "defaultPlayer": "Spieler {letter}"
+    },
+    "players": {
+      "title": "Match-Spieler",
+      "subtitle": "Letzter Schritt vor dem Speichern",
+      "hint": "Einige Spieler wurden während des Spiels eingetippt. Sie können sie verknüpfen oder erstellen oder ohne Verlinkung speichern.",
+      "kinds": {
+        "skip": "Nicht verlinken",
+        "new": "Neuer Spieler",
+        "existing": "Vorhandener Spieler"
+      },
+      "skipHint": "Dieser Spieler wird ohne individuelle Statistiken gespeichert.",
+      "searchPlaceholder": "Einen Spieler suchen (mind. 3 Zeichen)",
+      "searchEmpty": "Kein Spieler gefunden.",
+      "incomplete": "Geben Sie einen Vor- und Nachnamen ein oder wählen Sie einen vorhandenen Spieler aus.",
+      "duplicate": "Ein Spieler kann nicht zwei Plätze im selben Spiel einnehmen.",
+      "save": "Spiel speichern",
+      "saveError": "Das Speichern ist fehlgeschlagen. Ihre Daten bleiben erhalten, bitte versuchen Sie es erneut.",
+      "tooManyPlaceholders": "Zu viele nicht verknüpfte Spieler zum Speichern ohne Verknüpfung. Verlinke oder erstelle mindestens einen Spieler."
+    },
+    "resume": {
+      "title": "Spiel läuft",
+      "message": "Sie haben ein unvollendetes Spiel. Fortsetzen oder ein neues beginnen?",
+      "continue": "Wieder aufnehmen",
+      "abandon": "Verwerfen",
+      "abandonTitle": "Das Spiel verwerfen?",
+      "abandonMessage": "Diese Übereinstimmung wird nur auf diesem Gerät gespeichert. Durch das Verwerfen wird es endgültig gelöscht.",
+      "abandonCancel": "Zurück",
+      "abandonConfirm": "Verwerfen",
+      "score": "Aktueller Punktestand: {scoreA} – {scoreB}"
+    },
+    "teams": {
+      "a": "Team A",
+      "b": "Team B",
+      "aShort": "A",
+      "bShort": "B"
+    },
+    "types": {
+      "teteATete": "Kopf an Kopf",
+      "doublette": "Doublette",
+      "triplette": "Triplette"
+    },
+    "fields": {
+      "playerN": "Spieler {n}"
+    },
+    "stats": {
+      "sectionTitle": "Statistiken",
+      "mode": {
+        "title": "Bewertungsmodus"
+      },
+      "modes": {
+        "standard": "Standard",
+        "simple": "Einfach",
+        "standardHint": "Jeder Ball wird mit -2 bis +2 bewertet: detaillierte Analyse.",
+        "simpleHint": "Jeder Ball ist ein Hit oder ein Miss: schnellerer Einstieg."
+      },
+      "tracked": {
+        "title": "Verfolgte Spieler"
+      }
+    },
+    "roles": {
+      "pointeur": "Zeiger",
+      "milieu": "Mitte",
+      "tireur": "Schütze"
+    },
+    "actions": {
+      "start": "Spiel starten"
+    },
+    "validations": {
+      "required": "Erforderliches Feld",
+      "duplicates": "Ein Spieler kann nicht zweimal ausgewählt werden.",
+      "generic": "Die Übereinstimmung konnte nicht erstellt werden."
+    },
+    "score": {
+      "title": "Aufnahme beenden",
+      "content": "Bildschirm kommt bald."
+    }
+  },
+  "notationHelp": {
+    "title": "Wie bewertet man ein Boulespiel?",
+    "close": "Schließen",
+    "ariaLabel": "Scoring-Hilfe",
+    "levels": {
+      "minus2": "Deine Kugel verschlimmert die Situation",
+      "minus1": "Deine Kugel bringt nichts ins Spiel",
+      "zero": "Neutrale Boule – sie kann gespielt werden, oder sie ist berührend, aber nutzlos",
+      "plus1": "Die Arbeit ist erledigt",
+      "plus2": "Ihre Kugel macht den Unterschied"
+    }
+  },
+  "play": {
+    "end": "Ende",
+    "score": "Punktzahl",
+    "timer": {
+      "start": "Starten Sie den Timer",
+      "pause": "Stoppen Sie den Timer"
+    },
+    "endScore": {
+      "title": "Endergebnis",
+      "earlyHint": "Nicht gespielte Bälle werden in der Statistik nicht gezählt.",
+      "zeroHint": "0 Punkte, wenn der Bube beim letzten Ball ausgeht."
+    },
+    "nav": {
+      "prevEnd": "Vorheriges Ende",
+      "nextEnd": "Nächstes Ende"
+    },
+    "shots": {
+      "point": "Punkt",
+      "tir": "Schuss",
+      "cochonnet": "Schweineschuss"
+    },
+    "roles": {
+      "title": "Rollen wechseln",
+      "hint": "Rollen für diesen Zweck – zum Ändern antippen"
+    },
+    "distancePlaceholder": "Entfernung in Metern",
+    "distanceEstimate": "Geschätzte Entfernung",
+    "formChart": {
+      "title": "Spielform",
+      "titleFor": "Formular – {name}",
+      "empty": "Noch kein abgeschlossenes Ende, um das Diagramm anzuzeigen.",
+      "total": "Gesamt pro Ende",
+      "pointAverage": "Punktedurchschnitt",
+      "tirAverage": "Schussdurchschnitt",
+      "endLabel": "E{n}"
+    },
+    "actions": {
+      "saveEnd": "Ende speichern",
+      "validateEnd": "Ende validieren",
+      "cancelEnd": "Ende abbrechen",
+      "finish": "Spiel beenden",
+      "undoShot": "Letzte Aktion rückgängig machen"
+    },
+    "options": {
+      "open": "Optionen"
+    },
+    "substitution": {
+      "action": "Auswechslung",
+      "title": "Spielerwechsel",
+      "hint": "Eine Auswechslung pro Team und Spiel. Die Statistiken bleiben bei jedem Spieler.",
+      "team": "Team",
+      "playerOut": "Spieler zum Ersetzen",
+      "playerIn": "Ersatzspieler",
+      "searchPlaceholder": "Suchen oder geben Sie einen Namen ein",
+      "confirm": "Ersetzung bestätigen",
+      "abort": "Stornieren",
+      "error": "Diese Ersetzung kann nicht angewendet werden.",
+      "replaces": "Ersetzt {name}",
+      "playedBefore": "Gespielt vor der Auswechslung"
+    },
+    "cancel": {
+      "title": "Ende abgesagt",
+      "message1": "Der Wagenheber ist raus.",
+      "message2": "Dieses Ende wird aufgehoben.",
+      "question": "Weitermachen?",
+      "confirm": "Bestätigen",
+      "abort": "Stornieren"
+    },
+    "finish": {
+      "title": "Spiel beenden",
+      "message1": "Spiel jetzt beenden?",
+      "message2": "Der aktuelle Punktestand bleibt erhalten.",
+      "pendingParticipants": "{count} Spieler müssen vor dem Speichern noch verknüpft werden.",
+      "error": "Das Speichern ist fehlgeschlagen. Ihre Daten bleiben erhalten, bitte versuchen Sie es erneut.",
+      "confirm": "Beenden",
+      "abort": "Zurück"
+    },
+    "endCanceled": "Ende abgesagt",
+    "advanced": {
+      "open": "Erweiterter Eintrag",
+      "title": "Erweiterter Eintrag",
+      "hint": "Einige Enden verpasst? Geben Sie den aktuellen Spielstand ein – nur aufgezeichnete Enden zählen in den Statistiken. Anschließend können Sie mit der Balleingabe fortfahren.",
+      "confirm": "Legen Sie diese Punktzahl fest",
+      "abort": "Stornieren",
+      "errorBelowRecorded": "Die Punktzahl kann nicht niedriger sein als die bereits in den notierten Enden aufgezeichnete Punktzahl ({scoreA}–{scoreB})."
+    }
+  },
+  "history": {
+    "title": "Spielverlauf",
+    "empty": "Noch keine Übereinstimmungen.",
+    "emptyFiltered": "Keine Übereinstimmungen entsprechen diesen Filtern.",
+    "loadMore": "Mehr laden",
+    "victory": "Sieg",
+    "defeat": "Verlust",
+    "refused": "Habe nicht teilgenommen",
+    "filters": {
+      "showRefused": "Abgelehnte Übereinstimmungen anzeigen"
+    }
+  },
+  "shooting": {
+    "home": {
+      "title": "Präzisionsschießen",
+      "subtitle": "Schließe die 5 offiziellen Workshops ab",
+      "newSession": "Neue Sitzung",
+      "stats": "Statistiken",
+      "historyTitle": "Sitzungsverlauf",
+      "empty": "Noch kein Shooting.",
+      "scoreOn100": "{score} / 100"
+    },
+    "resume": {
+      "title": "Sitzung läuft",
+      "message": "Sie haben eine unvollendete Präzisionsschießsitzung. Möchten Sie es fortsetzen?",
+      "continue": "Wieder aufnehmen",
+      "abandon": "Aufgeben"
+    },
+    "progress": "Workshop {current} / {total}",
+    "workshopHint": "Notieren Sie das Ergebnis jedes Balls, um den Workshop abzuschließen.",
+    "distanceMeters": "{n} m",
+    "score": {
+      "total": "Gesamtpunktzahl",
+      "workshop": "Workshop-Partitur"
+    },
+    "workshops": {
+      "ballAlone": "Ball allein",
+      "ballBehindJack": "Ball hinter Jack",
+      "betweenTwoBalls": "Zwischen zwei Bällen",
+      "jumpedBall": "Ball gesprungen",
+      "jack": "Jack"
+    },
+    "results": {
+      "missed": "Verpasst",
+      "touched": "Berührt",
+      "successful": "Erfolgreich",
+      "carreau": "Carreau"
+    },
+    "nav": {
+      "prevWorkshop": "Vorheriger Workshop",
+      "nextWorkshop": "Nächster Workshop"
+    },
+    "actions": {
+      "nextWorkshop": "Nächster Workshop",
+      "finishSession": "Beenden Sie die Sitzung",
+      "abandon": "Sitzung abbrechen"
+    },
+    "abandon": {
+      "title": "Sitzung abbrechen?",
+      "message": "Bereits eingegebene Ergebnisse gehen verloren. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "cancel": "Stornieren",
+      "confirm": "Aufgeben"
+    },
+    "summary": {
+      "title": "Zusammenfassung der Sitzung",
+      "sessionFinished": "Sitzung beendet",
+      "performanceMap": {
+        "title": "Leistungskarte",
+        "hint": "Jede Zelle repräsentiert eine Aufnahme aus dieser Sitzung."
+      },
+      "actions": {
+        "backHome": "Zurück zum Präzisionsschießen"
+      }
+    },
+    "context": {
+      "titleAdd": "Fügen Sie einen Titel hinzu",
+      "titleEdit": "Titel bearbeiten",
+      "hint": "Optional: Beschreiben Sie den Kontext dieser Sitzung.",
+      "fields": {
+        "playedAt": "Sitzungsdatum",
+        "nature": "Kontext",
+        "title": "Titel",
+        "description": "Beschreibung"
+      },
+      "nature": {
+        "training": "Ausbildung",
+        "competition": "Wettbewerb"
+      },
+      "actions": {
+        "add": "Fügen Sie einen Titel hinzu",
+        "edit": "Titel bearbeiten",
+        "save": "Speichern",
+        "skip": "Überspringen"
+      }
+    },
+    "stats": {
+      "title": "Schießstatistiken",
+      "subtitle": "Leistung nach Workshop und Distanz",
+      "filters": {
+        "all": "Alle"
+      },
+      "kpi": {
+        "sessions": "Sitzungen",
+        "best": "Am besten",
+        "average": "Durchschnitt"
+      },
+      "hero": {
+        "averageSession": "Durchschnittliche Sitzungspunktzahl",
+        "shotsTracked": "{n} Schüsse analysiert"
+      },
+      "insights": {
+        "strength": "Stärke",
+        "toWork": "Um sich zu verbessern"
+      },
+      "sections": {
+        "evolution": "Fortschritt",
+        "workshops": "Von der Werkstatt",
+        "distances": "Nach Entfernung",
+        "results": "Ergebnistypen",
+        "heatmap": "Leistungskarte"
+      },
+      "evolution": {
+        "hint": "Der Trend Ihrer Gesamtpunktzahl in den letzten Sitzungen."
+      },
+      "workshops": {
+        "hint": "Durchschnittliche Punktzahl pro Schuss für jeden Workshop (maximal 5 Punkte)."
+      },
+      "distances": {
+        "hint": "Durchschnittliche Punktzahl pro Schuss nach Distanz.",
+        "best": "Am besten: {n} m",
+        "weakest": "Zu bearbeiten: {n} m"
+      },
+      "results": {
+        "hint": "Aufschlüsselung aller Ihrer Schussergebnisse."
+      },
+      "heatmap": {
+        "hint": "Farbintensität = durchschnittliche Punktzahl pro Aufnahme. Anzahl = Anzahl der Schüsse."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiken konnten nicht geladen werden",
+        "retry": "Wiederholen",
+        "noSessionsTitle": "Keine abgeschlossenen Sitzungen",
+        "noSessionsHint": "Absolvieren Sie eine erste Sitzung, um Ihre Schießstatistiken anzuzeigen.",
+        "startSession": "Starten Sie eine Sitzung",
+        "noDataInPeriodTitle": "Keine Sitzungen in diesem Zeitraum",
+        "noDataInPeriodHint": "Erweitern Sie den Datumsbereich, um Ihre Schießstatistiken anzuzeigen."
+      }
+    }
+  },
+  "jumpShot": {
+    "home": {
+      "title": "Sprungschuss",
+      "subtitle": "Fortschritt von 6 auf 9 Meter",
+      "rules": "Lesen Sie die Regeln",
+      "stats": "Statistiken",
+      "start": "Beginnen Sie mit dem Training",
+      "historyTitle": "Abgeschlossene Übungen",
+      "empty": "Noch keine abgeschlossene Übung.",
+      "seriesTag": "{n} Serie",
+      "throwsMeta": "{n} Würfe aufgezeichnet"
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "open": "Übungseinstellungen",
+      "progressionMode": "Fortschrittsregeln",
+      "easy": "Einfach",
+      "easyHint": "Niemals nach unten bewegen · 0–1/3: bleiben · 2–3/3: nach oben. Gewinnen Sie mit 2/3 oder 3/3 auf 9 m.",
+      "standard": "Standard",
+      "standardHint": "0/3: unten · 1–2/3: bleiben · 3/3: oben. Carreau speichern (nur Standardmodus).",
+      "hard": "Extrem",
+      "hardHint": "0–1/3: unten · 2/3: bleiben · 3/3 mit mindestens 1 Carreau: oben. Sieg: 3/3 mit einem Carreau auf 9 m.",
+      "close": "Schließen"
+    },
+    "rules": {
+      "title": "Regeln",
+      "subtitle": "Sprungschuss",
+      "start": "Beginnen Sie mit dem Training",
+      "sections": {
+        "setup": {
+          "title": "Aufstellen",
+          "items": [
+            "Place 3 target balls on the terrain.",
+            "Place a second ball 15 cm behind each target (6 balls total).",
+            "Mark 4 shooting circles at 6, 7, 8 and 9 meters."
+          ]
+        },
+        "distances": {
+          "title": "Entfernungen",
+          "intro": "Für die Übung werden nur 6, 7, 8 oder 9 Meter benötigt. Sie beginnen immer bei 6 Metern."
+        },
+        "series": {
+          "title": "Serie von 3 Würfen",
+          "intro": "Bei jedem Schritt werfen Sie 3 Schüsse auf die aktuelle Entfernung. Jeder Wurf wird einzeln aufgezeichnet."
+        },
+        "results": {
+          "title": "Mögliche Ergebnisse"
+        },
+        "progressionModes": {
+          "title": "Progression",
+          "intro": "Wählen Sie in den Einstellungen einen Regelsatz aus, bevor Sie beginnen. Nach jeder Serie von 3 Würfen:",
+          "easy": {
+            "items": [
+              "0 or 1 success out of 3: stay at the same distance.",
+              "2 or 3 successes out of 3: move up one distance (maximum 9 m).",
+              "You never move down a distance."
+            ]
+          },
+          "standard": {
+            "items": [
+              "0 successes out of 3: move down one distance (minimum 6 m).",
+              "1 or 2 successes out of 3: stay at the same distance.",
+              "3 successes out of 3: move up one distance (maximum 9 m)."
+            ]
+          },
+          "hard": {
+            "items": [
+              "0 or 1 success out of 3: move down one distance (minimum 6 m).",
+              "2 successes out of 3: stay at the same distance.",
+              "3 successes out of 3 with no carreau: stay at the same distance.",
+              "3 successes out of 3 with at least 1 carreau: move up one distance (maximum 9 m)."
+            ]
+          }
+        },
+        "special": {
+          "title": "Carreau retten",
+          "intro": "Nur im Standardmodus: Wenn die ersten beiden Würfe verfehlt werden und der dritte ein Carreau ist, zählt die Serie als 1/3 und die Distanz bleibt gleich.",
+          "items": [
+            "The first two throws remain recorded as missed.",
+            "The third remains recorded as carreau.",
+            "A chique or hit on the third throw does not trigger this rule."
+          ]
+        },
+        "victory": {
+          "title": "Sieg",
+          "easy": "2 oder 3 erfolgreiche Würfe in einer Serie auf 9 Metern.",
+          "standard": "3 erfolgreiche Würfe (Chique, Hit oder Carreau) in einer Serie auf 9 Metern.",
+          "hard": "3 erfolgreiche Würfe, darunter mindestens ein Carreau, in einer Serie auf 9 Meter."
+        }
+      }
+    },
+    "results": {
+      "missed": "Verpasst",
+      "chique": "Chique",
+      "hit": "Schlag",
+      "carreau": "Carreau"
+    },
+    "consequence": {
+      "down": "Serie {count}/3: Man bewegt sich eine Distanz nach unten.",
+      "stay": "Serie {count}/3: Sie bleiben im gleichen Abstand.",
+      "up": "Serie {count}/3: Man rückt eine Distanz nach oben."
+    },
+    "play": {
+      "seriesLabel": "Serie #{n}",
+      "currentDistance": "Entfernung: {n} m",
+      "successInSeries": "Erfolge in Serie: {count}/{total}",
+      "throwLabel": "Werfen {n}",
+      "validateSeries": "Serie einreichen",
+      "undoLastSeries": "Vorherige Serie bearbeiten",
+      "rules": "Regeln",
+      "abandon": "Aufgeben",
+      "outcomeTitle": "Serienergebnis",
+      "specialApplied": "Es wurde die Carreau-Einsparungsregel angewendet.",
+      "nextDistance": "Nächste Serie um {n} m.",
+      "continue": "Weitermachen"
+    },
+    "victory": {
+      "title": "Übung abgeschlossen!",
+      "subtitle": "Gut gemacht – perfekte Serie auf 9 Metern.",
+      "seriesCount": "{n} Serie gespielt",
+      "recapTitle": "Zusammenfassung",
+      "seriesLine": "Serie {n} · {distance} m",
+      "successTag": "{count}/3",
+      "backHome": "Zurück nach Hause"
+    },
+    "resume": {
+      "title": "Sitzung läuft",
+      "message": "Eine Sitzung läuft bereits. Fortsetzen oder aufgeben?",
+      "continue": "Wieder aufnehmen",
+      "abandon": "Aufgeben"
+    },
+    "abandon": {
+      "title": "Sitzung abbrechen?",
+      "message": "Der aktuelle Fortschritt geht verloren.",
+      "cancel": "Stornieren",
+      "confirm": "Aufgeben"
+    },
+    "summary": {
+      "title": "Übungsdetails",
+      "subtitleWon": "Übung gewonnen",
+      "won": "Sieg",
+      "seriesCount": "{n} Serie gespielt",
+      "seriesTitle": "Serie {n} · {distance} m",
+      "specialBadge": "Carreau retten",
+      "backHome": "Zurück nach Hause"
+    },
+    "stats": {
+      "title": "Statistiken",
+      "subtitle": "Sprungschuss",
+      "distanceMeters": "{n} m",
+      "kpi": {
+        "sessions": "Übungen",
+        "fewestSeries": "Beste (Serie)",
+        "avgSeries": "Durchschn. Serie"
+      },
+      "hero": {
+        "successRate": "Erfolgsquote",
+        "throwsTracked": "{n} Würfe analysiert"
+      },
+      "insights": {
+        "strength": "Stärkste Distanz",
+        "toWork": "Um sich zu verbessern"
+      },
+      "sections": {
+        "evolution": "Trend",
+        "distances": "Nach Entfernung",
+        "results": "Wurfarten"
+      },
+      "evolution": {
+        "hint": "Anzahl der Serien pro abgeschlossener Übung."
+      },
+      "distances": {
+        "hint": "Erfolgsquote (nicht verfehlt) pro Seriendistanz."
+      },
+      "results": {
+        "hint": "Aufschlüsselung aller aufgezeichneten Würfe."
+      },
+      "special": {
+        "title": "Carreau retten",
+        "hint": "{n}-Serie mit angewendeter Sonderregel."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiken konnten nicht geladen werden",
+        "retry": "Wiederholen",
+        "noSessionsTitle": "Keine abgeschlossene Übung",
+        "noSessionsHint": "Gewinnen Sie eine Übung, um Ihre Statistiken zu sehen.",
+        "startSession": "Beginnen Sie eine Übung",
+        "noDataInPeriodTitle": "Keine Daten in diesem Zeitraum",
+        "noDataInPeriodHint": "Erweitern Sie den Datumsbereich oder deaktivieren Sie den Filter."
+      }
+    }
+  },
+  "rings": {
+    "distanceMeters": "{n} m",
+    "points": {
+      "one": "{n} Pkt",
+      "other": "{n} Pkte"
+    },
+    "home": {
+      "title": "In die Ringe zeigen",
+      "subtitle": "15 Bälle, 3 Ringe",
+      "newSession": "Neue Sitzung",
+      "rules": "Regeln",
+      "stats": "Statistiken",
+      "historyTitle": "Sitzungsverlauf",
+      "empty": "Noch keine Sitzungen.",
+      "scoreOnMax": "{score} / {max}"
+    },
+    "resume": {
+      "title": "Sitzung läuft",
+      "message": "Sie haben eine unvollendete Sitzung. Fortsetzen?",
+      "continue": "Wieder aufnehmen",
+      "abandon": "Verwerfen"
+    },
+    "rules": {
+      "title": "Regeln",
+      "subtitle": "In die Ringe zeigen",
+      "start": "Starten Sie eine Sitzung",
+      "close": "Schließen",
+      "figureAlt": "Felddiagramm: Wurfkreis und drei Ringe",
+      "throwingCircle": "Wurfkreis",
+      "sections": {
+        "setup": {
+          "title": "Aufstellen",
+          "items": [
+            "The player always plays from the same throwing circle, which never moves.",
+            "Three rings of {diameter} cm diameter are drawn at {near}, {middle} and {far}, with a jack in the centre of each.",
+            "Balls are laid as obstacles: one in front of the {middle} ring, two in front of the {far} ring. The {near} ring is clear."
+          ]
+        },
+        "play": {
+          "title": "Wie es funktioniert",
+          "items": [
+            "The player has {balls} balls to score as many points as possible.",
+            "Before each ball, the player freely chooses which ring to aim at.",
+            "A ball succeeds if it stops inside the aimed ring: it scores that ring's points. Otherwise it scores nothing.",
+            "Touching an obstacle ball is not a fault: only the ball's final position counts."
+          ]
+        },
+        "scale": {
+          "title": "Wertung",
+          "ring": "Ball im {distance}-Ring",
+          "missed": "Ball außerhalb des Zielrings",
+          "max": "Maximale Punktzahl: {n} Punkte."
+        }
+      }
+    },
+    "play": {
+      "ball": "Kugel {current} / {total}",
+      "allPlayed": "Alle Bälle gespielt",
+      "successCount": "{count} / {total} erfolgreich",
+      "success": "Erfolg",
+      "missed": "Verpasst",
+      "undo": "Zuletzt rückgängig machen",
+      "finish": "Beenden Sie die Sitzung",
+      "abandon": "Verwerfen",
+      "rules": "Regeln",
+      "trackLabel": "Bälle gespielt"
+    },
+    "abandon": {
+      "title": "Sitzung verwerfen?",
+      "message": "Bereits erfasste Bälle gehen verloren. Dies kann nicht rückgängig gemacht werden.",
+      "cancel": "Stornieren",
+      "confirm": "Verwerfen"
+    },
+    "stats": {
+      "title": "Statistiken",
+      "subtitle": "In die Ringe zeigen",
+      "kpi": {
+        "sessions": "Sitzungen",
+        "best": "Bestes Ergebnis",
+        "average": "Durchschnitt"
+      },
+      "hero": {
+        "averageSession": "Durchschnittliche Punktzahl pro Sitzung",
+        "successRate": "Gesamterfolgsquote: {rate} %",
+        "throwsTracked": "{n} Bälle analysiert"
+      },
+      "insights": {
+        "strength": "Stärkster Ring",
+        "toWork": "Daran arbeiten"
+      },
+      "sections": {
+        "deciles": "Punkteverteilung",
+        "evolution": "Fortschritt",
+        "targets": "Erfolg per Ring",
+        "averageByTarget": "Durchschnittliche Punkte pro Versuch"
+      },
+      "deciles": {
+        "hint": "Anzahl der Sitzungen, deren Gesamtpunktzahl in jede Gruppe fällt (von {max} max.).",
+        "range": "{min}–{max}"
+      },
+      "evolution": {
+        "hint": "Wie sich Ihre Gesamtpunktzahl über die abgeschlossenen Sitzungen hinweg entwickelt."
+      },
+      "targets": {
+        "hint": "Erfolgsquote beim Zielen auf jeden Ring.",
+        "attempts": "{successes} / {attempts} erfolgreich",
+        "avgPoints": "Ø {n} Punkte / Versuch"
+      },
+      "averageByTarget": {
+        "hint": "Durchschnittliche Punkte pro Ball und Zielring."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiken konnten nicht geladen werden",
+        "retry": "Wiederholen",
+        "noSessionsTitle": "Keine abgeschlossenen Sitzungen",
+        "noSessionsHint": "Schließen Sie eine Sitzung ab, um Ihre Statistiken anzuzeigen.",
+        "startSession": "Starten Sie eine Sitzung",
+        "noDataInPeriodTitle": "Keine Sitzungen in diesem Zeitraum",
+        "noDataInPeriodHint": "Erweitern Sie den Datumsbereich, um Ihre Statistiken anzuzeigen."
+      }
+    },
+    "summary": {
+      "title": "Zusammenfassung der Sitzung",
+      "sessionFinished": "Sitzung beendet",
+      "byRing": "Per Klingeln",
+      "attempts": "{successes} / {attempts} erfolgreich",
+      "throws": "Balldetails",
+      "backHome": "Zurück nach Hause"
+    }
+  },
+  "ringsShooting": {
+    "home": {
+      "title": "In die Ringe schießen",
+      "subtitle": "15 Schüsse, 3 Zielbälle"
+    },
+    "play": {
+      "hit": "Schlag",
+      "carreau": "Carreau",
+      "carreauCount": "Carreaux: {count}",
+      "carreauPoints": "Carreau {points}"
+    },
+    "stats": {
+      "carreauRate": "Carreaux: {count} ({rate} % der Schüsse)",
+      "carreauSection": "Carreaux per Ring",
+      "carreauHint": "Anteil der Schüsse, die in einem Carreau enden, nach Zielring."
+    },
+    "rules": {
+      "title": "Regeln",
+      "subtitle": "In die Ringe schießen",
+      "start": "Starten Sie eine Sitzung",
+      "figureAlt": "Felddiagramm: Wurfkreis und drei Ringe mit ihren Zielbällen",
+      "detailAlt": "Detail der drei Ringe: einsamer Ball, Ball mit einem Buben davor, Ball zwischen zwei Bällen",
+      "detailCaption": "Draufsicht, der Schütze ist unten.",
+      "throwingCircle": "Wurfkreis",
+      "cm": "{n} cm",
+      "legend": {
+        "target": "Zielball",
+        "neighbour": "Seitenball",
+        "jack": "Jack"
+      },
+      "sections": {
+        "setup": {
+          "title": "Aufstellen",
+          "items": [
+            "The shooter always plays from the same throwing circle, which does not move.",
+            "Three {diameter} cm rings are drawn at {near}, {middle} and {far}, with a target ball in the centre of each.",
+            "At {near}: the target ball is alone in the ring.",
+            "At {middle}: a jack is placed {jackGap} cm in front of the target ball, on the shooter's side.",
+            "At {far}: the target ball sits between two balls, {sideGap} cm away on each side."
+          ]
+        },
+        "play": {
+          "title": "Wie man spielt",
+          "items": [
+            "The shooter has {balls} balls to score as many points as possible.",
+            "Before each ball, they freely choose which ring to aim at.",
+            "A shot succeeds if it hits the target ball, directly or after landing inside the ring: it scores that ring's points."
+          ]
+        },
+        "carreau": {
+          "title": "Carreau",
+          "lead": "Neben einem einfachen Schlag kann ein Schuss auch ein Carreau sein: Der geschossene Ball treibt den Zielball weg und nimmt seinen Platz im Ring ein.",
+          "items": [
+            "Hit: the shot ball strikes the target ball without driving it away and staying in its place. You score the « Hit » points in the table.",
+            "Carreau: the shot ball drives the target ball away and stays in its place in the ring. You score double: 2 points at {near}, 6 at {middle}, 10 at {far}.",
+            "A carreau only counts if the shot is valid (see « Invalid shot »): e.g. landing before the ring, touching the jack at {middle}, or a side ball at {far} cancels the shot, carreau included.",
+            "During a session, record « Carreau » only when the shot ball has clearly taken the target ball's place."
+          ]
+        },
+        "invalid": {
+          "title": "Ungültiger Schuss",
+          "items": [
+            "The shot lands before the ring, even if it then hits the target ball.",
+            "At {middle}, the shot touches the jack.",
+            "At {far}, the shot touches a side ball before the target ball."
+          ]
+        },
+        "scale": {
+          "title": "Wertung",
+          "intro": "Für jeden Ring wird ein einfacher Treffer in der Spalte „Treffer“ gewertet; Ein Carreau erhält die doppelte Punktzahl (Spalte „Carreau“).",
+          "hit": "Schlag",
+          "carreau": "Carreau",
+          "ring": "Zielball bei {distance}",
+          "missed": "Fehlschuss oder ungültiger Schuss"
+        }
+      }
+    }
+  },
+  "pointing": {
+    "home": {
+      "title": "Präzises Zeigen",
+      "subtitle": "Schließe die 5 offiziellen Workshops ab",
+      "newSession": "Neue Sitzung",
+      "rules": "Regeln",
+      "stats": "Statistiken",
+      "historyTitle": "Sitzungsverlauf",
+      "empty": "Noch keine Zeigesitzungen.",
+      "scoreOn300": "{score} / 300"
+    },
+    "rules": {
+      "title": "Regeln",
+      "subtitle": "Präzises Zeigen",
+      "open": "Werkstattregeln",
+      "allRules": "Alle Regeln",
+      "close": "Schließen",
+      "start": "Starten Sie eine Sitzung",
+      "workshopNumber": "Workshop {n}",
+      "figureAlt": "Diagramm der Werkstatt {n}",
+      "points": "{n} Pkte",
+      "labels": {
+        "setup": "Aufstellen",
+        "objective": "Objektiv",
+        "scale": "Wertung"
+      },
+      "sections": {
+        "setup": {
+          "title": "Überblick",
+          "items": [
+            "A session chains 5 workshops. In each workshop, you play one ball from 6, 7, 8 and 9 metres.",
+            "A 4×4 piece of timber is laid in front of the circle: 2 m in front of it for 6 and 7 m, 3 m in front of it for 8 and 9 m.",
+            "Each ball scores 0, 3, 9 or 15 points according to the workshop's scale.",
+            "Maximum: 60 points per workshop, 300 points per session."
+          ]
+        }
+      },
+      "workshops": {
+        "w1": {
+          "setup": "Kreis mit 80 cm Durchmesser, Wagenheber in der Mitte.",
+          "objective": "Gehen Sie so nah wie möglich an den Wagenheber heran, ohne ihn aus dem Kreis zu stoßen.",
+          "scale": {
+            "missed": "Ball außerhalb des Kreises",
+            "p3": "Innerhalb von 40 cm vom Wagenheber entfernt",
+            "p9": "Innerhalb von 30 cm vom Wagenheber entfernt",
+            "p15": "Innerhalb von 20 cm vom Wagenheber entfernt"
+          }
+        },
+        "w2": {
+          "setup": "Kreis mit 80 cm Durchmesser, Klinke in der Mitte. Ein (schwarzer) Ball wird 50 cm vom Wagenheber entfernt nach vorne gelegt.",
+          "objective": "Gehen Sie so nah wie möglich an den Buben heran, ohne die schwarze Kugel zu berühren oder den Buben aus dem Kreis zu werfen.",
+          "scale": {
+            "missed": "Ball außerhalb des Kreises",
+            "p3": "Innerhalb von 40 cm vom Wagenheber entfernt",
+            "p9": "Innerhalb von 30 cm vom Wagenheber entfernt",
+            "p15": "Innerhalb von 20 cm vom Wagenheber entfernt"
+          }
+        },
+        "w3": {
+          "setup": "Kreis mit 80 cm Durchmesser, Klinke in der Mitte. Ball ① 35 cm vom Wagenheber entfernt, 10 cm nach links. Ball ② 50 cm vom Wagenheber entfernt, 10 cm nach rechts.",
+          "objective": "Gehen Sie näher an den Wagenheber heran als die beiden Kugeln an Ort und Stelle, ohne den Wagenheber aus dem Kreis zu stoßen.",
+          "scale": {
+            "missed": "Ball außerhalb des Kreises",
+            "p3": "Innerhalb von 40 cm vom Wagenheber entfernt",
+            "p9": "Den Punkt festhalten",
+            "p15": "Den Punkt festhalten, ohne das Ende zu stören"
+          }
+        },
+        "w4": {
+          "setup": "Kreis mit 80 cm Durchmesser, Klinke in der Mitte. Zwei schwarze Kugeln am Rand des Kreises im Abstand von 15 cm. Ein weißer Zielball wird 15 cm vor dem Kreis platziert, 7,5 cm von jedem schwarzen Ball entfernt.",
+          "objective": "Schieben Sie die weiße Zielkugel in den Kreis, so nah wie möglich am Wagenheber, ohne den Wagenheber aus dem Kreis zu stoßen.",
+          "scale": {
+            "missed": "Zielball verfehlt",
+            "p3": "Zielball berührt",
+            "p9": "Zielball im Kreis, geworfener Ball draußen",
+            "p15": "Zielball und geworfener Ball im Kreis"
+          }
+        },
+        "w5": {
+          "setup": "Kreis mit 1 m Durchmesser, Wagenheber 15 cm vor dem Kreis platziert.",
+          "objective": "Schieben Sie den Wagenheber in den Kreis. Der geworfene Ball darf den Kreis nicht weiter als 30 cm überschreiten.",
+          "scale": {
+            "missed": "Jack hat es verfehlt",
+            "p3": "Jack berührte sich, aber nicht im Kreis",
+            "p9": "Jack im Kreis, Ball nach draußen geworfen",
+            "p15": "Jack und geworfener Ball im Kreis"
+          }
+        }
+      }
+    },
+    "resume": {
+      "title": "Sitzung läuft",
+      "message": "Sie haben eine noch nicht abgeschlossene Sitzung zum Präzisionszeigen. Fortsetzen?",
+      "continue": "Wieder aufnehmen",
+      "abandon": "Verwerfen"
+    },
+    "progress": "Workshop {current} / {total}",
+    "workshopHint": "Notieren Sie jedes Schussergebnis, um den Workshop abzuschließen.",
+    "distanceMeters": "{n} m",
+    "score": {
+      "total": "Gesamtpunktzahl",
+      "workshop": "Workshop-Partitur"
+    },
+    "workshops": {
+      "jackAlone": "Jack allein",
+      "ballInFrontOfJack": "Ball vor Jack",
+      "twoBallsInFrontOfJack": "Zwei Bälle vor Jack",
+      "pushBall": "Schieben Sie den Ball",
+      "pushJack": "Drücken Sie den Wagenheber"
+    },
+    "results": {
+      "w1": {
+        "missed": "Vermissen",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w2": {
+        "missed": "Vermissen",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w3": {
+        "missed": "Vermissen",
+        "p3": "< 40 cm",
+        "p9": "Nimmt den Punkt",
+        "p15": "Kein Hindernis"
+      },
+      "w4": {
+        "missed": "Ziel verfehlen",
+        "p3": "Ziel berühren",
+        "p9": "Ziel im Ring",
+        "p15": "Ziel + Ball"
+      },
+      "w5": {
+        "missed": "Vermissen",
+        "p3": "Jack berührte",
+        "p9": "Jack im Ring",
+        "p15": "Bube + Ball"
+      }
+    },
+    "nav": {
+      "prevWorkshop": "Vorheriger Workshop",
+      "nextWorkshop": "Nächster Workshop"
+    },
+    "actions": {
+      "nextWorkshop": "Nächster Workshop",
+      "finishSession": "Beenden Sie die Sitzung",
+      "abandon": "Sitzung abbrechen"
+    },
+    "abandon": {
+      "title": "Sitzung abbrechen?",
+      "message": "Eingegebene Ergebnisse gehen verloren. Dies kann nicht rückgängig gemacht werden.",
+      "cancel": "Stornieren",
+      "confirm": "Aufgeben"
+    },
+    "context": {
+      "titleAdd": "Fügen Sie einen Titel hinzu",
+      "titleEdit": "Titel bearbeiten",
+      "hint": "Optional: Kontext für diese Sitzung hinzufügen.",
+      "fields": {
+        "playedAt": "Sitzungsdatum",
+        "nature": "Kontext",
+        "title": "Titel",
+        "description": "Beschreibung"
+      },
+      "nature": {
+        "training": "Ausbildung",
+        "competition": "Wettbewerb"
+      },
+      "actions": {
+        "add": "Fügen Sie einen Titel hinzu",
+        "edit": "Titel bearbeiten",
+        "save": "Speichern",
+        "skip": "Überspringen"
+      }
+    },
+    "stats": {
+      "title": "Zeigestatistiken",
+      "subtitle": "Leistung nach Workshop und Distanz",
+      "filters": {
+        "all": "Alle"
+      },
+      "resultTiers": {
+        "missed": "Vermissen",
+        "p3": "3 Pkt",
+        "p9": "9 Pkt",
+        "p15": "15 Pkt"
+      },
+      "kpi": {
+        "sessions": "Sitzungen",
+        "best": "Am besten",
+        "average": "Durchschnitt"
+      },
+      "hero": {
+        "averageSession": "Durchschnittliche Sitzungspunktzahl",
+        "shotsTracked": "{n} Schüsse verfolgt"
+      },
+      "insights": {
+        "strength": "Stärke",
+        "toWork": "Um sich zu verbessern"
+      },
+      "sections": {
+        "evolution": "Fortschritt",
+        "workshops": "Von der Werkstatt",
+        "distances": "Nach Entfernung",
+        "results": "Ergebnistypen",
+        "heatmap": "Leistungskarte"
+      },
+      "evolution": {
+        "hint": "Gesamtpunktzahltrend Ihrer letzten Sitzungen."
+      },
+      "workshops": {
+        "hint": "Durchschnittliche Punktzahl pro Schuss nach Werkstatt (maximal 15 Punkte)."
+      },
+      "distances": {
+        "hint": "Durchschnittliche Punktzahl pro Schuss nach Distanz.",
+        "best": "Am besten: {n} m",
+        "weakest": "Schwächster Wert: {n} m"
+      },
+      "results": {
+        "hint": "Aufschlüsselung aller Schussergebnisse."
+      },
+      "heatmap": {
+        "hint": "Farbintensität = durchschnittliche Punktzahl. Anzahl = Anzahl der Schüsse."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiken konnten nicht geladen werden",
+        "retry": "Wiederholen",
+        "noSessionsTitle": "Keine abgeschlossenen Sitzungen",
+        "noSessionsHint": "Absolvieren Sie eine erste Sitzung, um die Pointing-Statistiken anzuzeigen.",
+        "startSession": "Starten Sie eine Sitzung",
+        "noDataInPeriodTitle": "Keine Sitzungen in diesem Zeitraum",
+        "noDataInPeriodHint": "Erweitern Sie den Datumsbereich, um Zeigestatistiken anzuzeigen."
+      }
+    },
+    "summary": {
+      "title": "Zusammenfassung der Sitzung",
+      "sessionFinished": "Sitzung abgeschlossen",
+      "performanceMap": {
+        "title": "Leistungskarte",
+        "hint": "Jede Zelle ist eine Aufnahme aus dieser Sitzung."
+      },
+      "actions": {
+        "backHome": "Zurück zum Präzisionszeigen"
+      }
+    }
+  },
+  "stats": {
+    "title": "Meine Statistiken",
+    "actions": {
+      "back": "Zurück"
+    },
+    "filters": {
+      "all": "Alle",
+      "title": "Filter",
+      "nature": "Natur",
+      "format": "Format",
+      "competition": "Wettbewerb",
+      "distance": "Distanz"
+    },
+    "tabs": {
+      "label": "Statistikansicht",
+      "overview": "Statistiken",
+      "tactics": "Taktische Analyse"
+    },
+    "tactical": {
+      "title": "Taktische Analyse",
+      "subtitle": "Ihre Markierungen und zusätzlichen Bälle, zusammengefasst über gefilterte Spiele.",
+      "coverage": "{matches}/{eligible} Übereinstimmungen analysiert · {ends} endet · {rate} % mit Abstand",
+      "noDistanceData": "In dieser Auswahl gibt es keine Markierung oder zusätzliche Bälle mit Distanz.",
+      "loadErrorTitle": "Die taktische Analyse konnte nicht geladen werden",
+      "loadErrorHint": "Bitte versuchen Sie es gleich noch einmal.",
+      "noEligibleTitle": "Keine analysierbaren Übereinstimmungen",
+      "noEligibleHint": "Bei Spielen muss jeder Spieler verfolgt werden und eine vollständige chronologische Schussreihenfolge vorliegen.",
+      "point": {
+        "hint": "Endet dort, wo Sie den ersten Ball gespielt haben. Ein Ende ist gut begonnen, wenn der erste Ball +1 oder +2 erzielt.",
+        "empty": "Sie haben kein Ende geöffnet, während Sie den Wagenheber festgehalten haben"
+      }
+    },
+    "kpi": {
+      "matches": "Streichhölzer",
+      "victories": "Siege",
+      "defeats": "Verluste",
+      "winRate": "Gewinnrate"
+    },
+    "overallAverage": "Insgesamt durchschnittlich",
+    "ballsTracked": "{n} Bälle verfolgt",
+    "successRate": {
+      "label": "Erfolgsquote",
+      "value": "{rate}%",
+      "empty": "Keine Daten"
+    },
+    "details": {
+      "title": "Details",
+      "balls": "{n} Bälle"
+    },
+    "sections": {
+      "evolution": "Trend",
+      "distribution": "Bewertungsverteilung",
+      "shots": "Point & Shoot",
+      "byNature": "Von Natur aus",
+      "byFormat": "Nach Format",
+      "byDistance": "Nach Entfernung"
+    },
+    "notes": {
+      "m2": "-2",
+      "m1": "-1",
+      "p0": "0",
+      "p1": "+1",
+      "p2": "+2"
+    },
+    "evolution": {
+      "average": "Durchschnitt",
+      "matchLabel": "M{n}",
+      "hint": "Grüne Punkte = Sieg, rot = Niederlage. Die letzten 10 verfolgten Spiele."
+    },
+    "byNature": {
+      "hint": "Nur Übereinstimmungen mit ausgefülltem Kontext.",
+      "meta": "{matches} Spiele · {balls} Bälle"
+    },
+    "byFormat": {
+      "hint": "Leistung nach Spielformat.",
+      "meta": "{matches} Spiele · {victories} Siege · {balls} Bälle"
+    },
+    "byDistance": {
+      "hint": "Nur Bälle mit aufgezeichneter Distanz.",
+      "meta": "{balls} Bälle",
+      "buckets": {
+        "under_6": "< 6 m",
+        "6_7": "6-7 m",
+        "7_8": "7-8 m",
+        "8_9": "8-9 m",
+        "9_10": "9-10 m",
+        "10_plus": "10+ m"
+      }
+    },
+    "empty": {
+      "noPlayerTitle": "Kein verknüpfter Spieler",
+      "noPlayerHint": "Ihr Konto ist noch keinem Spieler zugeordnet. Statistiken werden angezeigt, sobald dieser Link vorhanden ist.",
+      "noMatchesTitle": "Noch keine Übereinstimmungen",
+      "noMatchesHint": "Spielen Sie Ihr erstes Spiel, um Ihre Leistung zu verfolgen.",
+      "noDataInPeriodTitle": "Keine Spiele in diesem Zeitraum",
+      "noDataInPeriodHint": "Erweitern Sie den Datumsbereich, um Ihre Statistiken anzuzeigen.",
+      "noDataTitle": "Nicht genügend Daten",
+      "noDataHint": "Spielen Sie weiter, um Ihre Statistiken zu verbessern.",
+      "noTrackedDataTitle": "Keine Ballstatistik",
+      "noTrackedData": "Sie haben Spiele aufgezeichnet, aber es wurden keine Bälle für Sie getrackt.",
+      "noPointData": "Keine Punktdaten.",
+      "noTirData": "Keine Aufnahmedaten.",
+      "noShotBreakdown": "Nicht genügend Daten, um Punkt zu teilen und zu schießen.",
+      "startMatch": "Neues Spiel",
+      "goHome": "Zurück nach Hause",
+      "loadErrorTitle": "Statistiken können nicht geladen werden",
+      "loadErrorHint": "Überprüfen Sie Ihre Verbindung oder versuchen Sie es gleich noch einmal.",
+      "retry": "Wiederholen"
+    }
+  },
+  "doc": {
+    "title": "Bewertungsleitfaden",
+    "introduction": "In diesem Leitfaden wird die Bewertungsskala erläutert, mit der jede Kugel bewertet wird. Ziel ist es, konsistente und vergleichbare Statistiken für alle Spieler zu erstellen.",
+    "why": {
+      "title": "Warum Boule bewerten?",
+      "text": "Die Anwendung beurteilt nicht die technischen Fähigkeiten eines Spielers. Es misst die tatsächliche Wirkung jeder Kugel am Ende, um aussagekräftige Statistiken zu erstellen."
+    },
+    "commonScale": {
+      "title": "Eine gemeinsame Bewertungsskala",
+      "text": "Damit Statistiken aussagekräftig sind, sollte jeder Spieler die gleiche Skala verwenden. Mit ein wenig Übung gelingt die Bewertung von Boule-Spielen schnell und natürlich."
+    },
+    "scale": {
+      "title": "Die Bewertungsskala",
+      "minus2": {
+        "title": "🟥 -2 · Schädliches Boule",
+        "description": "Die Boule verschlimmert die Situation für Ihr Team eindeutig.",
+        "example1": "Ein Punkt, der eine Ihrer eigenen Kugeln wegstößt.",
+        "example2": "Ein Fehlschuss, der das Spiel für den Gegner komplett eröffnet.",
+        "example3": "Jede Kugel, die dazu führt, dass Ihr Team einen erheblichen Vorteil verliert.",
+        "summary": "Eine -2-Kugel schadet Ihrem Team eindeutig."
+      },
+      "minus1": {
+        "title": "🟧 -1 · Nutzlose Kugel",
+        "description": "Die Boule bringt Ihrem Team keinen Nutzen.",
+        "example1": "Ein völliger Fehlschlag.",
+        "example2": "Ein Punkt, der viel zu lang oder zu kurz ist.",
+        "example3": "Eine Kugel, die völlig aus dem Spiel ist.",
+        "example4": "Ein Fehlschuss ohne wirkliche Konsequenzen.",
+        "summary": "Die Kugel leistet keinen sinnvollen Beitrag."
+      },
+      "zero": {
+        "title": "⚪ 0 · Durchschnittliches Boule",
+        "description": "Die Kugel hat am Ende nur einen begrenzten Einfluss.",
+        "example1": "Ein Punkt, der ziemlich nah dran ist, aber nicht gut genug.",
+        "example2": "Ein Schuss, der knapp daneben geht.",
+        "example3": "Eine Kugel, die etwas Druck ausübt, ohne das Spiel wirklich zu verändern.",
+        "summary": "Die Kugel hat nur einen geringen Einfluss."
+      },
+      "plus1": {
+        "title": "🟩 +1 · Gutes Boule",
+        "description": "Die Kugel erreicht ihr Ziel.",
+        "example1": "Ein guter Punkt.",
+        "example2": "Ein gelungener Schuss.",
+        "example3": "Den Punkt zurückgewinnen.",
+        "example4": "Ein wirksamer Blocker.",
+        "summary": "Eine solide Kugel, die genau das tut, was man erwartet hat."
+      },
+      "plus2": {
+        "title": "🟦 +2 · Hervorragendes Boule",
+        "description": "Die Boule verschafft Ihrem Team einen großen Vorteil.",
+        "example1": "Ein Carreau.",
+        "example2": "Ein fast unschlagbarer Punkt.",
+        "example3": "Ein Blocker, der das Spiel komplett sperrt.",
+        "example4": "Jede Kugel, die das Endergebnis dramatisch verändert.",
+        "summary": "Eine +2-Kugel hat eine viel größere Wirkung als eine gewöhnliche gute Kugel."
+      }
+    },
+    "faq": {
+      "title": "Häufig gestellte Fragen",
+      "carreau": {
+        "title": "Ist ein Carreau immer +2 wert?",
+        "answer": "Nein. Die Bewertung hängt immer von der tatsächlichen Wirkung der Kugel ab. Die meisten Carreaux verdienen eine Bewertung von +2, aber ein sehr einfacher Schuss oder ein Schuss mit geringer Auswirkung kann einfach mit +1 bewertet werden."
+      },
+      "palet": {
+        "title": "Ist eine Palette +2 wert?",
+        "answer": "Nein. Eine Palette wird normalerweise mit +1 bewertet, weil sie ihr Ziel perfekt erreicht. Es verdient nur dann +2, wenn es einen außergewöhnlichen Vorteil bietet."
+      },
+      "firstPoint": {
+        "title": "Kann der erste Punkt eines Endes +2 wert sein?",
+        "answer": "Ja. Ein erster Punkt, der kaum zu schlagen ist oder das Ende sofort festlegt, verdient möglicherweise +2. Ein einfach guter erster Punkt bleibt +1."
+      },
+      "difficulty": {
+        "title": "Wird die Schwierigkeit des Wurfes berücksichtigt?",
+        "answer": "Nein. Die Bewertung misst nicht den technischen Schwierigkeitsgrad. Es misst nur den Wert, den die Kugel der Mannschaft bringt, wenn sie gespielt wird."
+      },
+      "beautiful": {
+        "title": "Kann eine technisch schöne Kugel eine schlechte Bewertung erhalten?",
+        "answer": "Ja. Eine technisch beeindruckende Kugel mit geringer wirklicher Wirkung erhält möglicherweise eine durchschnittliche Bewertung. Andererseits kann eine weniger spektakuläre Kugel +2 verdienen, wenn ihre Wirkung außergewöhnlich ist."
+      }
+    },
+    "philosophy": {
+      "title": "Die Philosophie hinter dem System",
+      "text1": "Eine Bewertung belohnt keinen schönen Wurf. Es misst nur den Wert, den die Kugel für das Team bringt.",
+      "text2": "Wenn alle die gleiche Skala verwenden, werden die Statistiken zwischen Spielern und über Spiele hinweg vergleichbar.",
+      "quote": "Fragen Sie sich nicht, ob die Kugel schön war. Fragen Sie sich, wie viel es Ihrem Team gebracht hat."
+    }
+  },
+  "training": {
+    "menu": {
+      "title": "Ausbildung",
+      "subtitle": "Wählen Sie eine Übung",
+      "comingSoon": "Diese Übung kommt bald.",
+      "boules": {
+        "title": "Punkt oder Schuss",
+        "description": "Distanzsitzungen, Verlauf und Statistiken."
+      },
+      "precisionShooting": {
+        "title": "Präzisionsschießen",
+        "description": "Fünf Workshops, Geschichte und Statistik."
+      },
+      "pointPrecision": {
+        "title": "Präzises Zeigen",
+        "description": "Fünf PLAS-Workshops mit einer Bewertung von 300."
+      },
+      "tirSautee": {
+        "title": "Sprungschuss",
+        "description": "Fortschritt von 6 auf 9 m in einer Serie von 3 Würfen."
+      },
+      "rings": {
+        "title": "In die Ringe zeigen",
+        "description": "15 Bälle, um in 3 Ringen möglichst viele Punkte zu erzielen."
+      },
+      "ringsShooting": {
+        "title": "In die Ringe schießen",
+        "description": "15 Schüsse auf 3 Zielbälle mit steigendem Schwierigkeitsgrad, ein Carreau verdoppelt die Punkte."
+      }
+    },
+    "home": {
+      "title": "Ausbildung",
+      "subtitle": "Zielen oder schießen, in Sekundenschnelle",
+      "stats": "Statistiken",
+      "historyTitle": "Sitzungsverlauf",
+      "empty": "Noch keine Trainingseinheiten.",
+      "successRate": "{rate}%"
+    },
+    "config": {
+      "type": "Typ",
+      "distance": "Distanz",
+      "balls": "Anzahl der Kugeln",
+      "start": "Start"
+    },
+    "types": {
+      "point": "Punkt",
+      "tir": "Schießen"
+    },
+    "distanceMeters": "{n} m",
+    "scoreLabel": "Punktzahl: {score}",
+    "resume": {
+      "title": "Sitzung läuft",
+      "message": "Sie haben eine noch nicht abgeschlossene Trainingseinheit. Möchten Sie es fortsetzen?",
+      "continue": "Wieder aufnehmen",
+      "abandon": "Aufgeben"
+    },
+    "play": {
+      "ballProgress": "Boule {current} / {total}",
+      "hint": "Notieren Sie das Ergebnis dieser Kugel."
+    },
+    "results": {
+      "perfect": "Perfekt",
+      "very_good": "Sehr gut",
+      "good": "Gut",
+      "acceptable": "Akzeptabel",
+      "bad": "Schlecht",
+      "useless": "Nutzlos",
+      "missed": "Verpasst",
+      "touched": "Berührt",
+      "successful": "Schlag",
+      "palet": "Palette",
+      "carreau": "Carreau"
+    },
+    "actions": {
+      "abandon": "Sitzung abbrechen"
+    },
+    "abandon": {
+      "title": "Sitzung abbrechen?",
+      "message": "Aufgezeichnete Versuche gehen verloren, wenn Sie abbrechen.",
+      "cancel": "Stornieren",
+      "confirm": "Aufgeben"
+    },
+    "summary": {
+      "title": "Zusammenfassung der Sitzung",
+      "sessionFinished": "Sitzung beendet",
+      "attempts": "Boule-Details",
+      "actions": {
+        "stats": "Sehen Sie sich meine Statistiken an",
+        "newSession": "Neue Sitzung"
+      }
+    },
+    "stats": {
+      "title": "Trainingsstatistik",
+      "subtitle": "Ihre Leistung nach Art und Distanz",
+      "filters": {
+        "all": "Alle"
+      },
+      "kpi": {
+        "sessions": "Sitzungen",
+        "balls": "Boule",
+        "success": "Erfolg",
+        "best": "Bestes Ergebnis"
+      },
+      "hero": {
+        "averageScore": "Durchschnittliche Punktzahl"
+      },
+      "sections": {
+        "evolution": "Fortschritt",
+        "byType": "Punkt gegen Schießen",
+        "distances": "Nach Entfernung"
+      },
+      "evolution": {
+        "hint": "Erfolgsratentrend während Ihrer letzten Sitzungen."
+      },
+      "byType": {
+        "hint": "Erfolgsquote nach Trainingstyp."
+      },
+      "distances": {
+        "hint": "Erfolgsquote nach Entfernung."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiken konnten nicht geladen werden",
+        "retry": "Wiederholen",
+        "noSessionsTitle": "Keine Trainingseinheiten",
+        "noSessionsHint": "Starten Sie eine Sitzung, um Ihre Statistiken anzuzeigen.",
+        "startSession": "Starten Sie eine Sitzung",
+        "noDataInPeriodTitle": "Keine Daten in diesem Zeitraum",
+        "noDataInPeriodHint": "Verlängern Sie den Zeitraum oder starten Sie eine neue Sitzung."
+      }
+    }
+  },
+  "live": {
+    "action": "Gehen Sie live",
+    "share": {
+      "title": "Live-Spiel teilen",
+      "hint": "Senden Sie diesen Link, damit Zuschauer das Spiel in Echtzeit verfolgen können.",
+      "copy": "Link kopieren",
+      "copied": "Link kopiert",
+      "native": "Aktie",
+      "overlayTitle": "Streaming-Overlay",
+      "overlayHint": "Verwendung in OBS → Browser-Quelle",
+      "overlayCopy": "Overlay-URL kopieren",
+      "overlayCopied": "URL kopiert"
+    },
+    "overlay": {
+      "statsPromo": "Detaillierte Spielstatistiken zu Petanque-Analytics",
+      "end": "Ende {n}",
+      "balls": "Bälle",
+      "finished": "Fertig",
+      "winner": "{team} gewinnt"
+    },
+    "view": {
+      "title": "Live-Spiel",
+      "recapTitle": "Zusammenfassung des Spiels",
+      "loading": "Laden…",
+      "notFound": "Dieses Live-Spiel existiert nicht oder ist nicht mehr verfügbar.",
+      "finished": "Spiel beendet",
+      "winner": "{team} gewinnt",
+      "lastUpdate": "Aktualisiert am {time}",
+      "endsRecap": "End-by-End-Zusammenfassung",
+      "endResult": "{winner} +{points}",
+      "teamA": "Team A",
+      "teamB": "Team B",
+      "feed": {
+        "title": "Beenden Sie Play-by-Play",
+        "point": {
+          "plus2": "{name} hat einen magischen Punkt gespielt",
+          "plus1": "{name} hat einen guten Punkt gespielt",
+          "zero": "{name} hat einen durchschnittlichen Punkt gespielt",
+          "minus1": "{name} völlig verfehlt",
+          "minus2": "{name} spielte einen Strafpunkt"
+        },
+        "tir": {
+          "plus2": "{name} hat einen Carreau getroffen",
+          "plus1": "{name} das Ziel treffen",
+          "zero": "{name} hat den Schuss knapp verfehlt",
+          "minus1": "{name} völlig verfehlt",
+          "minus2": "{name} spielte einen Strafstoß"
+        },
+        "cochonnet": {
+          "plus2": "{name} einen Carreau am Buben treffen",
+          "plus1": "{name} triff den Wagenheber",
+          "zero": "{name} hat den Zielschuss nur knapp verpasst",
+          "minus1": "{name} hat den Jack Shot verpasst",
+          "minus2": "{name} hat einen schlechten Jack-Shot gespielt"
+        }
+      },
+      "installApp": {
+        "title": "Verfolgen Sie Ihre Spiele und Statistiken",
+        "subtitle": "Installieren Sie die App, um Spiele zu punkten, Ihre Statistiken zu überprüfen und Live-Rückblicke zu teilen.",
+        "action": "Holen Sie es sich bei Google Play",
+        "qrCaption": "Scan",
+        "qrAria": "QR-Code zu Google Play"
+      }
+    }
+  },
+  "tournaments": {
+    "title": "Turniere",
+    "subtitle": "Turniere, denen Sie angehören",
+    "create": "Erstellen Sie ein Turnier",
+    "empty": "Sie sind noch kein Mitglied eines Turniers.",
+    "loading": "Laden…",
+    "formatLabel": "Meisterschaft im Einzelspiel. Die besten 8 qualifizieren sich für die Play-offs.",
+    "status": {
+      "upcoming": "Demnächst",
+      "in_progress": "Im Gange",
+      "finished": "Fertig"
+    },
+    "tabs": {
+      "matches": "Streichhölzer",
+      "ranking": "Rangliste",
+      "admin": "Admin"
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Beschreibung",
+      "admins": "Administratorinnen",
+      "adminSearch": "Durchsuchen Sie eine E-Mail",
+      "minPlayers": "Mindestteilnehmerzahl",
+      "maxPlayers": "Maximale Spielerzahl",
+      "pointsWin": "Punkte für einen Sieg",
+      "pointsDraw": "Punkte für ein Unentschieden",
+      "draws": "Ziehungen erlaubt",
+      "lanes": "Anzahl der Fahrspuren",
+      "excludedLanes": "Ausgeschlossene Spuren (z. B. 5, 8)",
+      "startsAt": "Startdatum",
+      "endsAt": "Enddatum",
+      "teamName": "Teamname",
+      "fakeTeam": "Fiktives Team"
+    },
+    "actions": {
+      "search": "Suchen",
+      "save": "Speichern",
+      "add": "Hinzufügen",
+      "remove": "Entfernen",
+      "generate": "Generiere den Tag",
+      "closeDay": "Schließen Sie den Tag ab",
+      "deleteDay": "Löschen Sie den Tag",
+      "editScore": "Partitur bearbeiten",
+      "clearScore": "Klare Punktzahl",
+      "exportDayPdf": "Als PDF exportieren",
+      "validate": "Bestätigen",
+      "saved": "Gespeichert",
+      "saveScore": "Punktzahl",
+      "saveLane": "Fahrbahn",
+      "saveTeams": "Mannschaften",
+      "generatePlayoffs": "Play-offs generieren",
+      "createCatchUpMatch": "Übereinstimmung erstellen",
+      "deleteCatchUpMatch": "Übereinstimmung löschen",
+      "cancel": "Stornieren"
+    },
+    "pdf": {
+      "lane": "Fahrbahn",
+      "team1": "Mannschaft 1",
+      "team2": "Mannschaft 2",
+      "score": "Punktzahl"
+    },
+    "matches": {
+      "empty": "Noch kein Tag.",
+      "championship": "Meisterschaft",
+      "playoffs": "Play-offs",
+      "catchUp": "Nachholspiele",
+      "catchUpDay": "Nachholtag",
+      "phaseNav": "Turnierphase",
+      "day": "Tag {number}",
+      "lane": "Spur {lane}",
+      "scheduled": "Zum Spielen",
+      "finished": "Fertig",
+      "generated": "Generiert",
+      "in_progress": "Im Gange",
+      "closed": "Geschlossen",
+      "fictional": "Fiktiv",
+      "pending": "Gewinner {round} {slot}",
+      "rounds": {
+        "quarter": "Viertelfinale",
+        "semi": "Halbfinale",
+        "final": "Finale"
+      }
+    },
+    "ranking": {
+      "empty": "Kein Team in der Gesamtwertung.",
+      "tie": "Ein Unentschieden konnte mit den definierten Regeln nicht geteilt werden.",
+      "position": "#",
+      "team": "Team",
+      "played": "P",
+      "wins": "W",
+      "draws": "D",
+      "losses": "L",
+      "points": "Pkt",
+      "for": "PF",
+      "against": "PA",
+      "diff": "Diff",
+      "qualified": "Qualifiziert"
+    },
+    "public": {
+      "title": "Turnier",
+      "loading": "Laden…",
+      "notFound": "Dieses Turnier existiert nicht oder ist nicht mehr verfügbar.",
+      "hint": "Öffentliche Ansicht: Die Ergebnisse werden alle 2 Minuten aktualisiert.",
+      "share": {
+        "title": "Öffentliches Turnier folgt",
+        "hint": "Teilen Sie diesen Link oder QR-Code, damit jeder ohne Konto Spiele und Tabellen sehen kann.",
+        "copy": "Link kopieren",
+        "copied": "Link kopiert",
+        "native": "Aktie",
+        "qrCaption": "Scan",
+        "qrAria": "QR-Code zur öffentlichen Turnierseite"
+      }
+    },
+    "admin": {
+      "shareTab": "Öffentliches Folgen",
+      "schedule": "Generieren Sie einen Tag",
+      "scheduleHint": "Jedes echte Team spielt standardmäßig. Deaktivieren Sie die fehlenden.",
+      "present": "Mannschaften anwesend",
+      "lanes": "Verfügbare Spuren",
+      "teams": "Mannschaften",
+      "playerHint": "Das mit dem Spieler verknüpfte Konto wird automatisch Turniermitglied.",
+      "players": "Fügen Sie einen Spieler hinzu",
+      "noTeams": "Kein Team.",
+      "addTeam": "Fügen Sie ein Team hinzu",
+      "playerCount": "{count} Spieler",
+      "noPlayersInTeam": "Noch keine Spieler in diesem Team.",
+      "addPlayer": "Fügen Sie einen Spieler hinzu",
+      "createPlayer": "Erstellen und hinzufügen",
+      "removeTeam": "Team löschen",
+      "teamSizeHint": "Wählen Sie zwischen {min} und {max} Spielern aus, um das Team zu erstellen.",
+      "members": "Mitglieder",
+      "makeAdmin": "Administratorin",
+      "playoffs": "Play-offs",
+      "playoffsHint": "Play-offs für die Top 8 (oder jedes Team, wenn weniger). Klammern Sie 1-8, 4-5, 2-7, 3-6 mit Byes, wenn nötig. Fehlende Meisterschaftsspiele blockieren nicht die Generierung.",
+      "playoffsDone": "Die Klammer ist bereits generiert.",
+      "playoffsReady": "Jeder Meisterschaftstag ist geschlossen.",
+      "playoffsWaiting": "Schließen Sie jeden Meisterschaftstag ab, bevor Sie die Klammer erstellen.",
+      "settings": "Einstellungen",
+      "catchUp": "Aufholjagd",
+      "catchUpHint": "Für verpasste Begegnungen (Abwesenheiten). Zählt als Meisterschaftsspiel.",
+      "catchUpBlocked": "Nicht verfügbar, nachdem Play-offs generiert wurden.",
+      "catchUpTeam1": "Mannschaft 1",
+      "catchUpTeam2": "Mannschaft 2",
+      "catchUpPickTeam": "Wählen Sie ein Team"
+    },
+    "errors": {
+      "generic": "Der Vorgang konnte nicht abgeschlossen werden.",
+      "not_found": "Dieses Turnier ist nicht verfügbar.",
+      "forbidden": "Dies ist Ihnen nicht gestattet.",
+      "conflict": "Diese Operation würde eine bereits geplante Konfrontation nachbilden. Es wurde nichts gerettet.",
+      "day_already_closed": "Dieser Tag ist bereits geschlossen.",
+      "day_already_started": "Dieser Tag hat bereits begonnen und kann nicht entfernt werden.",
+      "day_not_deletable": "Nur ein Meisterschaftstag, der noch nicht begonnen hat, kann entfernt werden.",
+      "day_closed": "Dieser Tag ist geschlossen. Nur ein Administrator kann die Punktzahl ändern.",
+      "day_not_closable": "Jedes echte Spiel braucht ein Ergebnis, bevor der Tag abgeschlossen werden kann.",
+      "lane_unavailable": "Diese Spur ist nicht verfügbar.",
+      "lane_taken": "Diese Fahrspur ist an diesem Tag bereits befahren.",
+      "playoff_already_generated": "Die Play-offs sind bereits generiert.",
+      "unknown_team": "Dieses Team gehört nicht zum Turnier.",
+      "invalid_settings": "Die Turniereinstellungen sind ungültig.",
+      "not_enough_teams": "Es gibt nicht genügend Teams für diese Operation.",
+      "no_valid_pairing": "Mit den ausgewählten Teams und den bereits geplanten Konfrontationen kann kein gültiger Tag generiert werden.",
+      "not_enough_lanes": "Es sind nicht genügend Fahrspuren verfügbar.",
+      "playoff_not_ready": "Schließen Sie jeden Meisterschaftstag ab, bevor Sie die Play-offs generieren.",
+      "playoff_sides_fixed": "Play-off-Teams folgen der Klammer und können nicht geändert werden.",
+      "fictional_sides_fixed": "Die Mannschaften eines fiktiven Spiels bleiben so, wie sie bei der Generierung des Tages ausgewählt wurden.",
+      "duplicate_pairing": "Diese beiden Teams sind bereits in der Meisterschaft eingeplant.",
+      "catch_up_not_allowed": "Nachholspiele sind nicht mehr verfügbar, nachdem Play-offs generiert wurden.",
+      "match_not_removable": "Nur ein nicht gewertetes Nachholspiel kann entfernt werden.",
+      "team_already_playing": "Eine echte Mannschaft kann nicht zwei Spiele am selben Tag spielen.",
+      "match_not_ready": "Beide Teams müssen bekannt sein, bevor ein Punktestand gespeichert wird.",
+      "score_required": "Es sind beide Noten erforderlich.",
+      "score_out_of_range": "Die Punkte müssen zwischen 0 und 13 liegen.",
+      "playoff_draw": "Ein Play-off-Spiel kann nicht unentschieden enden.",
+      "draws_not_allowed": "Unentschieden sind in diesem Turnier nicht erlaubt.",
+      "match_locked": "Ein späteres Play-off-Spiel hat bereits ein Ergebnis.",
+      "user_not_found": "Dieser Benutzer konnte nicht gefunden werden.",
+      "member_exists": "Dieser Benutzer ist bereits Mitglied.",
+      "last_admin": "Das Turnier muss mindestens einen Administrator behalten.",
+      "team_has_matches": "Dieses Team hat bereits Spiele und kann nicht gelöscht werden.",
+      "team_size": "Die Anzahl der Spieler entspricht nicht den Turnierlimits.",
+      "player_not_found": "Dieser Spieler konnte nicht gefunden werden.",
+      "player_already_assigned": "Dieser Spieler gehört bereits einem Team in diesem Turnier an.",
+      "player_still_in_team": "Dieses Mitglied spielt in einem Team und bleibt im Turnier.",
+      "member_not_found": "Dieser Benutzer ist kein Mitglied des Turniers.",
+      "unknown_day": "Dieser Tag konnte nicht gefunden werden.",
+      "unknown_match": "Diese Übereinstimmung konnte nicht gefunden werden."
+    }
+  }
+}

@@ -1,0 +1,2489 @@
+{
+  "app": {
+    "title": "Pétanque Analytics",
+    "update": {
+      "recommendedTitle": "K dispozici je nová verze!",
+      "recommendedSubtitle": "Užijte si nejnovější vylepšení.",
+      "requiredTitle": "Je vyžadována aktualizace",
+      "requiredSubtitle": "Tato verze Pétanque Analytics již není kompatibilní.",
+      "action": "Aktualizovat",
+      "dismiss": "Propustit"
+    }
+  },
+  "common": {
+    "hello": "Ahoj světe",
+    "comingSoon": "Již brzy"
+  },
+  "dateRange": {
+    "label": "Období",
+    "from": "Z",
+    "to": "Na",
+    "showAll": "Zobrazit vše"
+  },
+  "nav": {
+    "aria": "Hlavní navigace",
+    "home": "Domov",
+    "history": "Dějiny",
+    "newMatch": "Nový zápas",
+    "coach": "Trenér",
+    "selectionGlobale": "Výběr",
+    "stats": "Statistiky",
+    "tournaments": "Turnaje",
+    "back": "Zadní"
+  },
+  "validation": {
+    "menu": "Shody k ověření",
+    "title": "Shody k ověření",
+    "empty": "Žádné shody čekající na ověření.",
+    "vs": "vs",
+    "accept": "hrál jsem",
+    "reject": "nehrál jsem",
+    "summaryTitle": "Moje účast",
+    "summaryHint": "Potvrďte, zda jste tento zápas skutečně hráli. To ovlivní vaši historii a statistiky."
+  },
+  "summary": {
+    "title": "Souhrn zápasu",
+    "winner": "{team} vyhrává",
+    "ends": "{n} končí",
+    "teamAverage": "Průměr týmu",
+    "sections": {
+      "comparison": "Srovnání hráčů",
+      "teamDistribution": "Týmová distribuce",
+      "distribution": "Distribuce poznámek",
+      "shotDetails": "Detaily bodu / výstřelu",
+      "endGrid": "Dopad na konec"
+    },
+    "endGrid": {
+      "hint": "Součet míčových not každého hráče na konci. Jsou zahrnuty zrušené konce.",
+      "player": "Hráč",
+      "total": "Celkový",
+      "canceled": "Zrušeno"
+    },
+    "comparison": {
+      "hint": "Celkový průměr pro každého hráče v tomto zápase."
+    },
+    "charts": {
+      "average": "Průměrný"
+    },
+    "empty": {
+      "noTrackedDataTitle": "Žádné koule nejsou sledovány",
+      "noTrackedData": "Herní statistiky nejsou pro tento zápas k dispozici.",
+      "noPlayerData": "Pro tohoto hráče nebyly zaznamenány žádné míče."
+    },
+    "table": {
+      "player": "Hráč",
+      "avg": "Průměrný"
+    },
+    "actions": {
+      "backHome": "Zpátky domů"
+    },
+    "tabs": {
+      "label": "Souhrnné sekce",
+      "overview": "Statistika",
+      "tactics": "Taktická analýza"
+    },
+    "insights": {
+      "title": "Taktická analýza",
+      "subtitle": "Pokročilé čtení ze skutečného pořadí střel.",
+      "coverage": "{rate} % výstřelů má analyzovanou vzdálenost · {ends} konců",
+      "unavailable": {
+        "not_all_tracked": "Každý hráč v zápase musí být sledován, aby prokázal taktickou analýzu.",
+        "invalid_sequence": "Chronologické pořadí střel je u tohoto zápasu neúplné nebo nekonzistentní.",
+        "no_data": "S nahranými záběry není konec."
+      },
+      "marking": {
+        "title": "Značkovací míček úspěch",
+        "hint": "Když je soupeřův poslední míček +1 nebo +2, počítá se každý zbývající úder až do prvního úspěchu (+1/+2). Pouze jeden tým boduje za end.",
+        "point": "Ukazování",
+        "tir": "Natáčení",
+        "rate": "{rate}% ({made}/{total})",
+        "noData": "—",
+        "empty": "Nehráli jste žádné značkovací koule"
+      },
+      "rajout": {
+        "title": "Úspěch mimo ples",
+        "hint": "Pokud je soupeřův poslední míč 0 nebo méně, každý následující úder je míč navíc. V opačném případě, po úspěšném značkovacím odpalu s míčky, které ještě zbývají, jsou následující odpaly míčky navíc.",
+        "point": "Ukazování",
+        "tir": "Natáčení",
+        "rate": "{rate}% ({made}/{total})",
+        "noData": "—",
+        "empty": "Nehráli jste žádné extra míče"
+      },
+      "heldEndError": {
+        "title": "Chyby při držení konce",
+        "hint": "Podíl −2 úderů zahraných, zatímco soupeř nemá žádné koule, ze všech úderů zahraných v dané situaci.",
+        "label": "−2 sazba",
+        "rate": "{rate}% ({errors}/{balls})",
+        "noData": "—"
+      },
+      "endSequenceDominance": {
+        "title": "Konec dominance",
+        "hint": "Započítává se pro tým, když soupeř zahraje jako první 3 po sobě jdoucí rány, zatímco tomuto týmu ještě zbývají míčky.",
+        "endsLegend": {
+          "one": "{count} konec dominuje ({wonPart})",
+          "other": "{count} převládají konce ({wonPart})"
+        },
+        "endsWonPart": {
+          "zero": "nikdo nevyhrál",
+          "one": "Vyhrálo {won}",
+          "other": "Vyhrálo {won}"
+        },
+        "pointsLegend": {
+          "one": "Skórováno {total} bodů ({dominatedPart})",
+          "other": "{total} bodů ({dominatedPart})"
+        },
+        "pointsDominatedPart": {
+          "zero": "žádný, zatímco dominuje",
+          "one": "{dominated} při dominanci",
+          "other": "{dominated} při dominanci"
+        },
+        "empty": "Nedominovali jste žádnému konci"
+      },
+      "point": {
+        "title": "Ends vyhrál, zatímco drží jack",
+        "hint": "Končí tam, kde tým odehrál první míč. End je dobře zahájen, když je první míč skórován +1 nebo +2.",
+        "wonLegend": {
+          "one": "{opened} konec otevřen ({wonPart})",
+          "other": "{opened} končí otevřeno ({wonPart})"
+        },
+        "wellStartedLegend": {
+          "zero": "Žádný dobře zahájený konec ({wonPart})",
+          "one": "{total} dobře započatý konec ({wonPart})",
+          "other": "{total} dobře započaté konce ({wonPart})"
+        },
+        "wonPart": {
+          "zero": "nikdo nevyhrál",
+          "one": "Vyhrálo {won}",
+          "other": "Vyhrálo {won}"
+        },
+        "barRate": "({rate}%)",
+        "empty": "Při držení zvedáku jste neotevřeli žádný konec"
+      },
+      "closing": {
+        "title": "Míče v ruce a obrana",
+        "hint": "Kapitalizace, když soupeř nemá koule, nebo solidní obrana, když už žádná nezbývá.",
+        "capitalized": "Míče v ruce: {count}/{total} skórovaných konců (průměr {avg} bodů)",
+        "defended": "Nezbývá žádné koule: {count}/{total} úspěšných obran (průměr {avg} získaných bodů)",
+        "noCapitalization": "Žádné zavírání s míčky v ruce.",
+        "noDefense": "Žádná obranná situace bez míčů."
+      },
+      "distance": {
+        "title": "Dominance na dálku",
+        "monopoly": "{team} dominuje na každé zaznamenané vzdálenosti.",
+        "none": "Není dostatek údajů o vzdálenosti pro užitečné srovnání."
+      }
+    },
+    "share": {
+      "title": "Sdílejte rekapitulaci",
+      "hint": "Pošlete tento odkaz nebo QR kód, aby si každý mohl prohlédnout úplné statistiky zápasu.",
+      "copy": "Zkopírujte odkaz",
+      "copied": "Odkaz zkopírován",
+      "native": "Podíl",
+      "qrCaption": "Skenovat",
+      "qrAria": "QR kód odpovídající rekapitulaci",
+      "publicTitle": "Rekapitulace zápasu",
+      "loading": "Načítání…",
+      "notFound": "Tato rekapitulace neexistuje nebo již není dostupná."
+    }
+  },
+  "context": {
+    "titleAdd": "Přidejte kontext",
+    "titleEdit": "Upravit kontext",
+    "summaryTitle": "Kontext",
+    "hint": "Všechna pole jsou volitelná. Datum je užitečné, když později zaznamenáte zápas z videa.",
+    "placeholders": {
+      "select": "Vybrat"
+    },
+    "fields": {
+      "playedAt": "Datum zápasu",
+      "comment": "Komentář",
+      "teamAName": "Jméno týmu A",
+      "teamBName": "Název týmu B",
+      "nature": "Odpovídat přírodě",
+      "competitionName": "Soutěž",
+      "competitionNameOther": "Název soutěže (jiné)",
+      "competitionStage": "Soutěžní fáze",
+      "terrainType": "Typ terénu"
+    },
+    "nature": {
+      "friendly": "Přátelský",
+      "training": "Výcvik",
+      "competition": "Soutěž"
+    },
+    "competition": {
+      "other": "Ostatní"
+    },
+    "competitionStage": {
+      "group": "Skupinová fáze",
+      "swiss": "švýcarský systém",
+      "top64": "Top 64",
+      "top32": "Top 32",
+      "top16": "Top 16",
+      "quarterFinal": "Čtvrtfinálový",
+      "semiFinal": "Semifinále",
+      "final": "Finále",
+      "other": "Ostatní"
+    },
+    "terrain": {
+      "gravel": "Štěrk",
+      "stabilized": "Stabilizovaný",
+      "indoor": "Krytý",
+      "other": "Ostatní"
+    },
+    "actions": {
+      "add": "Přidejte kontext",
+      "edit": "Upravit kontext",
+      "save": "Uložit",
+      "skip": "Zpět na shrnutí"
+    }
+  },
+  "home": {
+    "welcome": "Vítejte!",
+    "connectedAs": "Jste přihlášeni jako {email}",
+    "quickActions": "Více",
+    "language": "Jazyk",
+    "actions": {
+      "newMatch": "Nový zápas",
+      "addPlayer": "Přidat hráče",
+      "history": "Historie zápasů",
+      "myStats": "Moje statistika",
+      "settings": "Nastavení",
+      "admin": "Správa",
+      "coach": "Prostor pro trenéry",
+      "logout": "Odhlášení",
+      "shooting": "Přesná střelba",
+      "training": "Výcvik"
+    }
+  },
+  "placeholders": {
+    "newMatch": {
+      "title": "Nový zápas",
+      "content": "Obrazovka již brzy."
+    },
+    "addPlayer": {
+      "title": "Přidat hráče",
+      "content": "Obrazovka již brzy."
+    }
+  },
+  "guest": {
+    "entry": {
+      "prompt": "Chcete si jen hrát?",
+      "playWithoutAccount": "Začněte zápas ihned, bez účtu"
+    },
+    "summary": {
+      "saveTitle": "Ponechat tento zápas?",
+      "saveHint": "Pro tento zápas jsou k dispozici vaše statistiky. Vytvořte si účet nebo se přihlaste, abyste jej uložili a vytvořili svou historii.",
+      "createAccount": "Vytvořit můj účet",
+      "login": "Již mám účet — Přihlaste se",
+      "backToLogin": "Zpět do menu"
+    },
+    "save": {
+      "inProgress": "Ukládání zápasu…"
+    }
+  },
+  "auth": {
+    "email": "E-mail",
+    "password": "Heslo",
+    "login": {
+      "title": "Přihlaste se",
+      "submit": "Přihlaste se",
+      "link": "Přihlaste se"
+    },
+    "register": {
+      "title": "Vytvořit účet",
+      "submit": "Rejstřík",
+      "link": "Vytvořit účet",
+      "profile": {
+        "title": "Váš hráčský profil (pokud neexistuje)",
+        "hint": "Tyto informace budou použity pro váš přehrávač v aplikaci."
+      },
+      "linkPlayer": {
+        "title": "Už jste přidali do zápasu?",
+        "hint": "Můžete najít svého stávajícího hráče a propojit ho se svým účtem. Tento krok je volitelný.",
+        "searchPlaceholder": "Vyhledejte hráče (min. 3 znaky)",
+        "empty": "Momentálně nejsou k dispozici žádní hráči."
+      }
+    },
+    "noAccount": "Ještě nemáte účet?",
+    "haveAccount": "Už máte účet?",
+    "logout": "Odhlášení",
+    "errors": {
+      "invalidCredentials": "Nesprávný e-mail nebo heslo.",
+      "generic": "Něco se pokazilo. Zkuste to prosím znovu.",
+      "validation": "Opravte prosím zvýrazněná pole.",
+      "emailAlreadyUsed": "Tento e-mail se již používá.",
+      "playerAlreadyLinked": "Tento hráč je již propojen s jiným účtem.",
+      "playerNotFound": "Tento přehrávač již neexistuje nebo je nedostupný.",
+      "tooManyRequests": "Příliš mnoho pokusů. Zkuste to znovu za několik minut."
+    },
+    "validations": {
+      "required": "Povinné pole",
+      "emailInvalid": "Neplatná e-mailová adresa.",
+      "passwordMinLength": "Heslo musí mít alespoň 8 znaků."
+    },
+    "forgot": {
+      "link": "Zapomněli jste heslo?",
+      "title": "Zapomenuté heslo",
+      "submit": "Odeslat odkaz na reset",
+      "success": "Pokud pro tento e-mail existuje účet, byl odeslán e-mail pro obnovení hesla.",
+      "back": "Zpět k přihlášení"
+    },
+    "reset": {
+      "title": "Nové heslo",
+      "password": "Nové heslo",
+      "confirm": "Potvrďte heslo",
+      "submit": "Uložit heslo",
+      "success": "Vaše heslo bylo aktualizováno. Můžete se přihlásit.",
+      "invalidToken": "Tento odkaz je neplatný nebo jeho platnost vypršela. Vyžádejte si nový.",
+      "mismatch": "Hesla se neshodují."
+    },
+    "verify": {
+      "banner": "Vaše e-mailová adresa ještě není potvrzena. Zkontrolujte prosím svou doručenou poštu.",
+      "resend": "Znovu odeslat e-mail",
+      "resent": "Pokud vaše adresa ještě není ověřena, byl vám odeslán nový e-mail."
+    }
+  },
+  "legal": {
+    "updatedAt": "Poslední aktualizace: 25. srpna 2026",
+    "authNotice": "Používáním Pétanque Analytics přijímáte {terms} a berete na vědomí {privacy}.",
+    "nav": {
+      "label": "Právní stránky",
+      "terms": "Podmínky použití",
+      "privacy": "Zásady ochrany osobních údajů",
+      "legal": "Právní upozornění",
+      "deleteAccount": "Smazat můj účet"
+    },
+    "publisher": {
+      "country": "Slovensko",
+      "labels": {
+        "serviceName": "Název služby",
+        "company": "Vydavatel",
+        "legalForm": "Právní forma",
+        "address": "Adresa",
+        "email": "Kontaktní email",
+        "publicationDirector": "Ředitel publikace",
+        "ico": "IČO (IČO společnosti)",
+        "dic": "DIČ (DIČ)",
+        "icDph": "IČ DPH (DIČ)",
+        "commercialRegister": "Obchodní rejstřík (OR SR)",
+        "incorporationDate": "Datum založení"
+      }
+    },
+    "privacy": {
+      "title": "Zásady ochrany osobních údajů",
+      "intro": "Tyto zásady popisují, jak jsou osobní údaje zpracovávány na základě toho, jak Pétanque Analytics aktuálně funguje. Nezaručuje plnou právní shodu.",
+      "s1": {
+        "title": "1. Identita služby",
+        "p1": "Pétanque Analytics je aplikace pro správu a analýzu statistik pétanque (zápasy, tréninky, střelba na přesnost). Je k dispozici na webu (petanque-analytics.com) a na Androidu.",
+        "contactLabel": "Kontakt pro otázky týkající se ochrany osobních údajů"
+      },
+      "s2": {
+        "title": "2. Účel zpracování",
+        "intro": "Údaje jsou zpracovávány za účelem poskytování služby, včetně:",
+        "items": [
+          "creating and authenticating a user account;",
+          "verifying the email address and enabling password reset;",
+          "recording players, matches, training sessions and shooting sessions linked to the account;",
+          "calculating and displaying statistics from entered game actions."
+        ],
+        "outro": "Toto zpracování je nezbytné pro poskytování vámi požadované služby. Aplikace dnes není monetizována: není integrována žádná reklama a neshromažďují se žádné platební údaje."
+      },
+      "s3": {
+        "title": "3. Shromážděné osobní údaje",
+        "accountTitle": "Uživatelský účet",
+        "accountItems": [
+          "email address;",
+          "password (stored only as a hash, never returned by the API);",
+          "account creation date;",
+          "email verification date, if applicable."
+        ],
+        "playerTitle": "Profil hráče (pokud vytvoříte nebo propojíte hráče)",
+        "playerItems": [
+          "first name, last name, nickname;",
+          "a “club” column exists in the database but is not offered in the current interface."
+        ],
+        "gameTitle": "Herní data spojená s přehrávačem",
+        "gameItems": [
+          "matches: format, target score, statistics mode, team names, nature, competition, terrain type, comment, participants, ends, roles, balls (score, point/shot type, optional distance);",
+          "training sessions (point or shot): distance, number of balls, attempts, scores, dates;",
+          "precision shooting sessions: 20 shots, scores, optional title / description / context nature."
+        ],
+        "statsNote": "Zobrazené statistiky se neukládají samostatně: počítají se při čtení ze zaznamenaných akcí.",
+        "authTitle": "Autentizace",
+        "authItems": [
+          "session token (JWT) issued by the API, kept on the device in browser or app local storage, for about 14 days;",
+          "one-time tokens (hashed) for email verification (valid 24 hours) and password reset (valid 1 hour)."
+        ],
+        "deviceTitle": "Na zařízení",
+        "deviceItems": [
+          "session token;",
+          "language preference;",
+          "match or shooting session drafts not yet sent to the server."
+        ],
+        "notCollected": "Aplikace ve svém aktuálním kódu neshromažďuje: telefonní číslo, profilovou fotku, reklamní ID, kontakty, polohu GPS, platební údaje ani zdravotní údaje."
+      },
+      "s4": {
+        "title": "4. Poskytovatelé a hosting",
+        "p1": "Obchodní data jsou uložena v aplikační infrastruktuře (API https://api.petanque-analytics.com, MySQL na stejném virtuálním serveru, veřejně nepřístupné). Web je obsluhován přes HTTPS přes Caddy (Let’s Encrypt certifikáty).",
+        "hosting": "Hosting: virtuální server (VPS) u Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Německo.",
+        "resend": "Transakční e-maily (potvrzení adresy, reset hesla) se zasílají přes Znovu odeslat. Znovu odeslat obdrží e-mailovou adresu příjemce a obsah zprávy (jednorázový odkaz). Aplikace v aktuálním stavu neodesílá žádné marketingové e-maily.",
+        "googlePlay": "Pokud je aplikace nainstalována z Google Play, může Google zpracovávat data související s distribucí aplikací mimo rozsah kódu Pétanque Analytics.",
+        "noTracking": "Aplikace nezahrnuje analýzu publika, hlášení o selhání ani reklamní sady (v kódu nejsou žádné služby Google Analytics, Firebase Analytics, Sentry nebo podobné)."
+      },
+      "s5": {
+        "title": "5. Soubory cookie",
+        "p1": "Webové rozhraní nepoužívá sledovací ani reklamní soubory cookie. Autentizace závisí na lokálně uloženém tokenu (localStorage), nikoli na souboru cookie relace."
+      },
+      "s6": {
+        "title": "6. Technické deníky",
+        "p1": "Jako každá webová služba může reverzní proxy (Caddy) zaznamenávat technické protokoly (např. IP adresu, datum, požadované URL) pro provoz a zabezpečení. Pokud selže odeslání e-mailu, rozhraní API může přihlásit interní identifikátor uživatele. Omezovač rychlosti používá IP adresu a hash e-mailu k omezení zneužití (zapomenuté heslo, opětovné odeslání ověřovacího e-mailu). Uchovávání těchto protokolů infrastruktury není definováno v kódu aplikace."
+      },
+      "s7": {
+        "title": "7. Žádná reklama nebo prodej dat",
+        "p1": "V aktuálním kódu aplikace neobsahuje žádnou reklamu. Osobní údaje se neprodávají."
+      },
+      "s8": {
+        "title": "8. Retence",
+        "p1": "Údaje o účtu a hře zůstávají, dokud účet existuje. Po smazání účtu (viz níže) se odstraní e-mail, hashované heslo a ověřovací tokeny spojené s účtem. Platnost ověřovacích a resetovacích tokenů vyprší podle výše uvedeného trvání, pokud se nepoužívají."
+      },
+      "s9": {
+        "title": "9. Smazání účtu a uchovaná data",
+        "p1": "Svůj účet můžete smazat z aplikace (Nastavení) nebo z {link} po přihlášení.",
+        "deletedIntro": "Při smazání:",
+        "deletedItems": [
+          "the account (email, password, verification date) is removed;",
+          "verification and reset tokens linked to the account are removed;",
+          "the session token becomes invalid; the app signs you out."
+        ],
+        "kept": "Profil hráče (jméno, příjmení, přezdívka) není zničen: odkaz na účet je odstraněn. Zápasy, tréninky a střelby spojené s tímto hráčem jsou zachovány. Tím se zachová historie zápasů s ostatními hráči. Odkaz „vytvořil“ u shody s účtem je odstraněn.",
+        "extended": "Pokud chcete širší smazání herních dat stále spojených s vaším jménem, ​​můžete o to požádat na výše uvedené kontaktní adrese. Takový požadavek může ovlivnit historii viditelnou pro ostatní uživatele."
+      },
+      "s10": {
+        "title": "10. Vaše práva",
+        "intro": "Podle platných zákonů (včetně GDPR, pokud se nacházíte v Evropském hospodářském prostoru) můžete mít práva na přístup, opravu, vymazání, omezení, námitku a případně přenositelnost.",
+        "items": [
+          "player profile rectification: Account settings, once signed in;",
+          "account erasure: delete account, subject to the limits described above;",
+          "other requests: by email to the contact address below."
+        ],
+        "contact": "Kontakt"
+      },
+      "s11": {
+        "title": "11. Bezpečnost",
+        "p1": "Komunikace mezi aplikací a API využívá HTTPS. Hesla jsou hašována. To snižuje určitá rizika, ale nezaručuje nulové incidenty."
+      },
+      "s12": {
+        "title": "12. Změny",
+        "p1": "Tyto zásady mohou být aktualizovány, aby odrážely změny služby. Datum v horní části stránky je poslední aktualizací textu publikovaného v aplikaci."
+      }
+    },
+    "terms": {
+      "title": "Podmínky použití",
+      "intro": "Tyto podmínky použití upravují přístup k Pétanque Analytics. Vytvořením účtu nebo používáním služby souhlasíte s těmito podmínkami.",
+      "contactLabel": "Kontakt",
+      "s1": {
+        "title": "1. Účel služby",
+        "p1": "Pétanque Analytics je bezplatná služba pro sledování a analýzu statistik pétanque. Umožňuje vám zaznamenávat zápasy, tréninky a přesné střelby a zobrazovat statistiky vypočítané z těchto záznamů.",
+        "p2": "Služba je poskytována „tak jak je“. Nejedná se o oficiální soutěžní nástroj a nezaručuje sportovní přesnost, absenci vstupních chyb ani žádný konkrétní výsledek."
+      },
+      "s2": {
+        "title": "2. Podmínky přístupu",
+        "p1": "Hlavní funkce vyžadují vytvoření účtu s e-mailovou adresou a heslem. Je vyžadován přístup k internetu. Aplikace a webové stránky pro Android používají stejné rozhraní API.",
+        "p2": "Musíte zadat platnou e-mailovou adresu. Odešle se ověřovací e-mail. Některé funkce mohou zůstat použitelné před potvrzením; na požádání byste měli potvrdit svou adresu."
+      },
+      "s3": {
+        "title": "3. Účet a zabezpečení",
+        "p1": "Jste odpovědní za zachování důvěrnosti svých přihlašovacích údajů a za používání svého účtu. Pokud si myslíte, že má přístup třetí strana, změňte své heslo pomocí „zapomenuté heslo“.",
+        "p2": "Heslo musí splňovat minimální délku požadovanou při registraci. Je uložen jako hash. Token relace je uložen ve vašem zařízení; odhlášením se odstraní lokálně bez smazání účtu."
+      },
+      "s4": {
+        "title": "4. Používání služby",
+        "intro": "Souhlasíte s tím, že budete službu používat normálně a zákonně, včetně:",
+        "items": [
+          "not impersonating others;",
+          "not knowingly entering unlawful content in free fields (comments, names, etc.);",
+          "not attempting to disrupt, overload, or bypass the service, its technical limits, or its security;",
+          "not accessing another account’s data or attempting to do so."
+        ],
+        "outro": "Hráči, kluby (pokud byly zaznamenány) a statistiky, které zadáte, jsou vaší odpovědností. K jejich zaznamenání musíte mít potřebné informace, zejména pro třetí strany."
+      },
+      "s5": {
+        "title": "5. Údaje, které poskytnete",
+        "p1": "Zůstáváte vlastníkem informací, které zadáte. Autorizujete vydavatele, aby je hostoval a zpracovával pouze za účelem poskytování, údržby a zabezpečení služby v souladu s {privacy}.",
+        "p2": "Svůj účet můžete kdykoli smazat. Účinky na herní data (profil hráče uchovávaný v historii zápasů) jsou popsány v {privacy}.",
+        "p3": "Podrobnosti jsou také k dispozici na stránce {delete}."
+      },
+      "s6": {
+        "title": "6. Duševní vlastnictví",
+        "p1": "Aplikace, její název, rozhraní a kód jsou chráněny. Službu nesmíte kopírovat, extrahovat nebo znovu používat nad rámec osobního použití, s výjimkou případů, kdy to povoluje zákon."
+      },
+      "s7": {
+        "title": "7. Dostupnost, údržba a změny",
+        "p1": "Vydavatel se snaží udržovat službu dostupnou, ale nemůže zaručit nepřetržitý přístup. Mohou nastat výpadky (údržba, incident, vývoj, omezení hostování).",
+        "p2": "Funkce mohou být přidány, změněny nebo odebrány. Vzhledem k tomu, že služba je bezplatná a vyvíjí se, může dojít ke změnám bez upozornění a v rozumných mezích."
+      },
+      "s8": {
+        "title": "8. Pozastavení nebo vymazání z důvodu zneužití",
+        "p1": "V případě zneužití, podvodného použití nebo použití v rozporu s předpisy může vydavatel po posouzení skutečností pozastavit nebo smazat příslušný účet. Nejedná se o obecnou povinnost sledování obsahu."
+      },
+      "s9": {
+        "title": "9. Odpovědnost",
+        "p1": "V mezích povolených zákonem nenese vydavatel odpovědnost za nepřímé škody, ztrátu dat v důsledku výpadku, vašich chyb při zadávání nebo používání služby v rozporu s předpisy.",
+        "p2": "Nic v tomto dokumentu nevylučuje odpovědnost, kterou nelze omezit zákonem (včetně hrubé nedbalosti nebo úmyslného pochybení, podle platných zákonů)."
+      },
+      "s10": {
+        "title": "10. Změny těchto podmínek",
+        "p1": "Tyto podmínky mohou být aktualizovány, aby odrážely změny služby. Datum v horní části je poslední aktualizace. Další používání po zveřejnění znamená přijetí aktualizovaných podmínek, pokud není požadováno jinak."
+      },
+      "s11": {
+        "title": "11. Rozhodné právo",
+        "p1": "Tyto podmínky se řídí slovenským právem a podléhají povinným pravidlům v zemi bydliště uživatele. Spory se předkládají příslušným soudům podle platných procesních pravidel."
+      }
+    },
+    "notice": {
+      "title": "Právní upozornění",
+      "intro": "Informace o vydavateli Pétanque Analytics (veřejná data OR SR / FinStat) a jeho hostingu.",
+      "s1": {
+        "title": "1. Vydavatel"
+      },
+      "s2": {
+        "title": "2. Hosting",
+        "intro": "Aplikace (webová stránka, API a databáze) je nasazena na virtuálním serveru (VPS). Poskytovatel hostingu pro tuto infrastrukturu je:",
+        "hetzner": "Hetzner Online GmbH \nIndustriestr. 25 \n91710 Gunzenhausen \nNěmecko",
+        "site": "Veřejný web",
+        "api": "API",
+        "https": "HTTPS poskytuje Caddy s certifikáty Let’s Encrypt."
+      },
+      "s3": {
+        "title": "3. Transakční e-mail",
+        "p1": "Ověření e-mailu a zprávy o resetování hesla se zasílají prostřednictvím možnosti Znovu odeslat z technické adresy noreply@petanque-analytics.com. Tato adresa není kontaktním kanálem."
+      },
+      "s4": {
+        "title": "4. Duševní vlastnictví",
+        "p1": "Název Pétanque Analytics, rozhraní a prvky služby jsou chráněny. Neoprávněná reprodukce je až na zákonné výjimky zakázána."
+      },
+      "s5": {
+        "title": "5. Osobní údaje",
+        "p1": "Zpracování osobních údajů je popsáno v {privacy}. Smazání účtu je vysvětleno na stránce {delete}."
+      },
+      "s6": {
+        "title": "6. Podmínky použití",
+        "p1": "Používání služby podléhá {terms}."
+      }
+    },
+    "delete": {
+      "title": "Smazat můj účet",
+      "needLogin": "Chcete-li smazat svůj účet, přihlaste se.",
+      "loginLink": "Přihlaste se",
+      "intro": "Tato stránka vysvětluje, jak smazat účet Pétanque Analytics. Je přístupný bez účtu, jak to vyžaduje Google Play. Samotné smazání vyžaduje přihlášení, takže jej může smazat pouze majitel účtu.",
+      "s1": {
+        "title": "1. Jak smazat svůj účet",
+        "steps": [
+          "Sign in with the email address of the account to delete.",
+          "Open this page, or go to Settings then Delete my account.",
+          "Confirm deletion in the confirmation dialog."
+        ]
+      },
+      "s2": {
+        "title": "2. Údaje vymazány",
+        "items": [
+          "email address and hashed password;",
+          "account creation date and email verification status;",
+          "email verification and password reset tokens;",
+          "session token validity: you are signed out and can no longer sign in with this email."
+        ]
+      },
+      "s3": {
+        "title": "3. Údaje jsou uchovány",
+        "p1": "Profil hráče (jméno, příjmení, přezdívka) zůstává v databázi, odpojen od jakéhokoli účtu. Zápasy, tréninky a střelby spojené s tímto hráčem jsou uchovávány, takže sdílená historie s ostatními hráči není vymazána. Odkaz ukazující, který účet vytvořil shodu, je odstraněn.",
+        "p2": "Koncepty uložené v zařízení se neodesílají na server; odhlášení automaticky nevymaže tyto místní koncepty."
+      }
+    }
+  },
+  "settings": {
+    "title": "Nastavení účtu",
+    "loading": "Načítání…",
+    "profile": {
+      "title": "Profil hráče",
+      "hint": "Upravte informace zobrazené pro váš přehrávač v aplikaci.",
+      "save": "Uložit",
+      "saved": "Profil uložen."
+    },
+    "linked": {
+      "title": "Propojený hráč",
+      "hint": "Váš účet je propojen s tímto hráčem. Historie zápasů a statistiky zůstávají k dispozici v aplikaci."
+    },
+    "unlinked": {
+      "title": "Najděte stávajícího hráče",
+      "hint": "Pokud jste již byli přidáni do zápasu bez vytvoření účtu, můžete tohoto hráče propojit se svým účtem.",
+      "searchLabel": "Vyhledejte hráče",
+      "searchPlaceholder": "Hledat (min. 3 znaky)",
+      "empty": "Vašemu vyhledávání neodpovídají žádní nepropojení hráči.",
+      "linkAction": "Propojit tento přehrávač"
+    },
+    "validation": {
+      "title": "Ověření shody",
+      "hint": "Když vás do zápasu přidá někdo jiný, budete muset potvrdit, že jste skutečně hráli, než bude zápas zahrnut do vašich statistik.",
+      "toggle": "Vyžadovat ověření pro každý zápas",
+      "saved": "Předvolba uložena."
+    },
+    "errors": {
+      "loadFailed": "Nelze načíst informace o účtu.",
+      "profileSaveFailed": "Profil nelze uložit. Zkuste to prosím znovu.",
+      "noLinkedPlayer": "K vašemu účtu není připojen žádný hráč.",
+      "linkFailed": "Tento přehrávač nelze propojit. Zkuste to prosím znovu.",
+      "playerAlreadyLinked": "Tento hráč je již propojen s jiným účtem.",
+      "playerNotFound": "Tento přehrávač již neexistuje nebo je nedostupný.",
+      "userAlreadyHasPlayer": "Váš účet je již propojen s hráčem.",
+      "preferencesSaveFailed": "Předvolbu nelze uložit. Zkuste to prosím znovu.",
+      "deleteFailed": "Účet nelze smazat. Zkuste to prosím znovu."
+    },
+    "legal": {
+      "title": "Právní informace"
+    },
+    "delete": {
+      "title": "Smazat účet",
+      "hint": "Toto nelze vrátit zpět. Váš e-mail a heslo jsou odstraněny. Profil hráče zůstává v historii zápasů a není propojen s žádným účtem.",
+      "action": "Smazat můj účet",
+      "confirmTitle": "Potvrďte smazání",
+      "confirmMessage": "Opravdu chcete smazat svůj účet? Budete odhlášeni a pomocí tohoto e-mailu se již nebudete moci přihlásit.",
+      "cancel": "Zrušit",
+      "confirm": "Trvale smazat"
+    }
+  },
+  "admin": {
+    "home": {
+      "title": "Správa",
+      "impersonate": "Zosobnit se",
+      "competitions": "Soutěže",
+      "clubs": "Kluby",
+      "coach": "Trenéři",
+      "selectionGlobale": "Globální výběry",
+      "mergePlayers": "Sloučit hráče"
+    },
+    "impersonate": {
+      "title": "Režim zosobnění",
+      "hint": "Prohlédněte si statistiky hráče a historii zápasů, jako byste byli tímto hráčem.",
+      "searchLabel": "Hráč",
+      "searchPlaceholder": "Hledat (min. 3 znaky)",
+      "empty": "Vašemu vyhledávání neodpovídá žádný hráč.",
+      "start": "Zobrazit jako tento hráč",
+      "exit": "Ukončete režim zosobnění",
+      "active": "Aktivní režim: {name}",
+      "banner": "Režim zosobnění — {name}",
+      "stop": "Výstup"
+    },
+    "merge": {
+      "title": "Sloučit hráče",
+      "hint": "Vše na duplikátu (zápasy, tréninky, výběry, turnaje) se přesune do přehrávače, kterého si ponecháte. Duplikát je poté smazán.",
+      "keepLabel": "Hráč k udržení",
+      "dropLabel": "Duplikovat ke sloučení",
+      "searchPlaceholder": "Hledat (min. 3 znaky)",
+      "empty": "Vašemu vyhledávání neodpovídá žádný hráč.",
+      "linkedAccount": "Propojený účet: {email}",
+      "noAccount": "Žádný propojený účet",
+      "singleAccount": "Účet {email} zůstane propojen s udržovaným hráčem.",
+      "chooseUser": "Oba hráči mají účet. Který zůstane propojený?",
+      "confirm": "Spojit",
+      "confirmMessage": "Sloučit {drop} do {keep}? Toto nelze vrátit zpět.",
+      "success": "{drop} bylo sloučeno do {keep}.",
+      "errors": {
+        "samePlayer": "Vyberte dva různé hráče.",
+        "previewFailed": "Sloučení se nepodařilo připravit.",
+        "failed": "Sloučení se nezdařilo.",
+        "not_found": "Jeden z hráčů již neexistuje.",
+        "placeholder": "Technické hráče nelze sloučit.",
+        "user_choice_required": "Vyberte, který účet chcete zachovat.",
+        "invalid_user": "Vybraný účet není propojen s žádným hráčem.",
+        "same_match": "Oba hráči jsou ve stejném zápase. Před sloučením tuto shodu opravte.",
+        "same_tournament": "Oba hráči jsou na stejném turnaji v různých týmech.",
+        "unmoved_reference": "Některá data spojená s duplikátem nelze přesunout."
+      }
+    },
+    "competitions": {
+      "title": "Soutěže",
+      "addTitle": "Přidat konkurenci",
+      "editTitle": "Upravit soutěž",
+      "loading": "Načítání…",
+      "empty": "Zatím žádné soutěže.",
+      "confirmDelete": "Smazat \"{name}\"?",
+      "fields": {
+        "name": "Jméno",
+        "eventDate": "Datum",
+        "country": "Země",
+        "context": "Kontext"
+      },
+      "actions": {
+        "add": "Přidat",
+        "save": "Uložit",
+        "edit": "Upravit",
+        "delete": "Vymazat",
+        "cancelEdit": "Zrušit"
+      },
+      "validations": {
+        "required": "Toto pole je povinné."
+      },
+      "errors": {
+        "saveFailed": "Konkurenci nelze zachránit.",
+        "deleteFailed": "Soutěž nelze smazat."
+      }
+    },
+    "clubs": {
+      "title": "Kluby",
+      "addTitle": "Přidat klub",
+      "editTitle": "Upravit klub",
+      "loading": "Načítání…",
+      "empty": "Zatím žádné kluby.",
+      "confirmDelete": "Smazat \"{name}\"?",
+      "placeholders": {
+        "country": "Vyberte zemi"
+      },
+      "fields": {
+        "name": "Jméno",
+        "country": "Země",
+        "description": "Popis"
+      },
+      "actions": {
+        "add": "Přidat",
+        "save": "Uložit",
+        "edit": "Upravit",
+        "delete": "Vymazat",
+        "cancelEdit": "Zrušit"
+      },
+      "validations": {
+        "required": "Toto pole je povinné."
+      },
+      "errors": {
+        "saveFailed": "Klub se nepodařilo zachránit.",
+        "deleteFailed": "Klub nelze smazat."
+      }
+    },
+    "coach": {
+      "title": "Přiřadit trenéra",
+      "hint": "Propojte uživatelský účet s klubem a udělte trenérovi přístup.",
+      "fields": {
+        "email": "E-mail účtu",
+        "club": "Trenérský klub"
+      },
+      "placeholders": {
+        "club": "Vyberte klub"
+      },
+      "clearHint": "Chcete-li odebrat práva trenéra, ponechte prázdné a uložte.",
+      "actions": {
+        "save": "Uložit"
+      },
+      "success": "Práva trenéra aktualizována.",
+      "errors": {
+        "emailRequired": "E-mail je povinný.",
+        "saveFailed": "Nepodařilo se aktualizovat práva trenéra."
+      }
+    },
+    "selectionGlobale": {
+      "title": "Globální výběry",
+      "addTitle": "Nový výběr",
+      "editTitle": "Upravit výběr",
+      "manageTitle": "Spravovat {name}",
+      "coachesTitle": "Trenéři",
+      "playersTitle": "Hráči",
+      "noCoaches": "Nejsou přiděleni žádní trenéři.",
+      "noPlayers": "V tomto výběru nejsou žádní hráči.",
+      "coachEmail": "Trenérský email",
+      "addPlayer": "Přidat hráče",
+      "playerSearch": "Vyhledat hráče (min. 3 znaky)",
+      "loading": "Načítání…",
+      "empty": "Zatím žádné globální výběry.",
+      "fields": {
+        "name": "Název výběru"
+      },
+      "validations": {
+        "required": "Toto pole je povinné."
+      },
+      "actions": {
+        "add": "Vytvořit",
+        "save": "Uložit",
+        "cancelEdit": "Zrušit",
+        "manage": "Spravovat",
+        "delete": "Vymazat",
+        "addCoach": "Přidat trenéra"
+      },
+      "errors": {
+        "saveFailed": "Výběr nelze uložit."
+      }
+    }
+  },
+  "selectionGlobale": {
+    "title": "Globální výběr",
+    "empty": "Není vám přiřazen žádný výběr.",
+    "addPlayer": {
+      "title": "Přidat hráče do výběru",
+      "hint": "Hráč bude přidán do {selection}.",
+      "searchTitle": "Stávající hráč",
+      "searchEmpty": "Žádní odpovídající hráči.",
+      "attach": "Přidat do výběru",
+      "attachSuccess": "Hráč přidán do výběru.",
+      "attachError": "Tohoto hráče se nepodařilo přidat do výběru.",
+      "createSubmit": "Vytvořte a přidejte do výběru",
+      "success": "Přehrávač byl vytvořen a přidán do výběru."
+    }
+  },
+  "coach": {
+    "title": "Prostor pro trenéry",
+    "empty": "S tímto klubem nejsou spojeni žádní hráči.",
+    "list": {
+      "sort": "Seřadit",
+      "sortName": "Jméno",
+      "sortPoint": "Bodový úspěch",
+      "sortTir": "Tir úspěch",
+      "sortShootingAvg": "Střelba prům.",
+      "sortShootingBest": "Nejlépe se střílí",
+      "shootingAverage": "Prům.",
+      "shootingBest": "Nejlepší",
+      "shootingSessions": "{n} relací",
+      "pointingAverage": "Prům. bod",
+      "pointingBest": "Bod nejlépe",
+      "pointingSessions": "{n} bodové relace"
+    },
+    "addPlayer": {
+      "action": "Přidat hráče",
+      "title": "Přidat hráče do klubu",
+      "hint": "Hráč bude spojen s {club}.",
+      "searchTitle": "Stávající hráč bez klubu",
+      "searchLabel": "Vyhledejte hráče",
+      "searchPlaceholder": "Hledat (min. 3 znaky)",
+      "searchEmpty": "Žádný hráč bez klubu neodpovídá.",
+      "attach": "Přidat do klubu",
+      "attachSuccess": "Hráč přidán do klubu.",
+      "attachError": "Tohoto hráče se nepodařilo přidat do klubu.",
+      "orCreate": "nebo vytvořit",
+      "createTitle": "Nový hráč",
+      "createSubmit": "Vytvořit a přidat",
+      "cancel": "Zrušit",
+      "success": "Hráč byl vytvořen a přidán do klubu.",
+      "error": "Přehrávač se nepodařilo vytvořit."
+    },
+    "player": {
+      "title": "Hráč",
+      "subtitle": "Statistiky hráčů",
+      "noStats": "Žádná data pro vybrané období.",
+      "historyLink": "Historie zápasů",
+      "historySubtitle": "Historie zápasů",
+      "trainingComingSoon": "Statistiky tréninků již brzy.",
+      "tabs": {
+        "label": "Hráčské sekce",
+        "exercisesShort": "Cvičení",
+        "precisionShort": "Přesnost",
+        "matchesShort": "Zápasy",
+        "shooting": "Přesná střelba",
+        "training": "Výcvik",
+        "matches": "Zápasy",
+        "stats": "Statistika",
+        "history": "Zápasy"
+      },
+      "subTabs": {
+        "label": "Cvičení nebo přesný vrták",
+        "jumpShot": "Skokový výstřel",
+        "ringsPoint": "Ukazování do kroužků",
+        "ringsShooting": "Střelba do kruhů",
+        "shooting": "Přesná střelba",
+        "pointing": "Přesné ukazování"
+      }
+    }
+  },
+  "players": {
+    "create": {
+      "title": "Přidat hráče",
+      "toast": {
+        "success": "Přehrávač vytvořen."
+      }
+    },
+    "fields": {
+      "firstName": "Křestní jméno",
+      "lastName": "Příjmení",
+      "nickname": "Přezdívka",
+      "club": "Klub"
+    },
+    "placeholders": {
+      "club": "Vyberte si klub (volitelné)"
+    },
+    "actions": {
+      "submit": "Uložit"
+    },
+    "validations": {
+      "required": "Povinné pole"
+    }
+  },
+  "matches": {
+    "create": {
+      "title": "Nový zápas",
+      "subtitle": "Vyberte si týmy a začněte hrát",
+      "typeSection": "Typ zápasu",
+      "versus": "VS",
+      "teamNameHint": "Název týmu (volitelné)",
+      "role": "Role",
+      "trackPlayer": "Sledujte statistiky",
+      "addProvisional": "Přidejte ke shodě „{name}“.",
+      "provisionalBadge": "Pro odkaz na konec",
+      "addSelf": "Mě",
+      "inProgress": {
+        "title": "Připojte se k probíhajícímu zápasu",
+        "hint": "Pokud se připojujete k zápasu, který již začal, zadejte aktuální skóre. Statistiky od této chvíle pokrývají pouze hrané konce.",
+        "invalid": "Startovní skóre není platné."
+      },
+      "defaultPlayer": "Hráč {letter}"
+    },
+    "players": {
+      "title": "Hráči zápasu",
+      "subtitle": "Poslední krok před uložením",
+      "hint": "Někteří hráči byli zapsáni během zápasu. Můžete je propojit, vytvořit nebo uložit bez propojení.",
+      "kinds": {
+        "skip": "Nepropojovat",
+        "new": "Nový hráč",
+        "existing": "Stávající hráč"
+      },
+      "skipHint": "Tento hráč bude uložen bez individuálních statistik.",
+      "searchPlaceholder": "Vyhledat hráče (min. 3 znaky)",
+      "searchEmpty": "Nebyl nalezen žádný hráč.",
+      "incomplete": "Zadejte jméno a příjmení nebo vyberte stávajícího hráče.",
+      "duplicate": "Hráč nemůže získat dvě místa ve stejném zápase.",
+      "save": "Uložit zápas",
+      "saveError": "Ukládání se nezdařilo. Vaše data jsou uložena, zkuste to prosím znovu.",
+      "tooManyPlaceholders": "Příliš mnoho nepropojených hráčů na uložení bez propojení. Propojte nebo vytvořte alespoň jednoho hráče."
+    },
+    "resume": {
+      "title": "Utkání probíhá",
+      "message": "Máte nedohraný zápas. Obnovit nebo začít nový?",
+      "continue": "Resumé",
+      "abandon": "Vyřadit",
+      "abandonTitle": "Zahodit zápas?",
+      "abandonMessage": "Tato shoda je uložena pouze v tomto zařízení. Jeho zahozením se nadobro smaže.",
+      "abandonCancel": "Zadní",
+      "abandonConfirm": "Vyřadit",
+      "score": "Aktuální skóre: {scoreA} – {scoreB}"
+    },
+    "teams": {
+      "a": "Tým A",
+      "b": "Tým B",
+      "aShort": "A",
+      "bShort": "B"
+    },
+    "types": {
+      "teteATete": "Hlava na hlavu",
+      "doublette": "Dubleta",
+      "triplette": "Triplete"
+    },
+    "fields": {
+      "playerN": "Hráč {n}"
+    },
+    "stats": {
+      "sectionTitle": "Statistika",
+      "mode": {
+        "title": "Bodovací režim"
+      },
+      "modes": {
+        "standard": "Norma",
+        "simple": "Jednoduchý",
+        "standardHint": "Každý míček je hodnocen od -2 do +2: podrobná analýza.",
+        "simpleHint": "Každý míč je trefou nebo chybou: rychlejší vstup."
+      },
+      "tracked": {
+        "title": "Sledovaní hráči"
+      }
+    },
+    "roles": {
+      "pointeur": "Ukazatel",
+      "milieu": "Střední",
+      "tireur": "Střelec"
+    },
+    "actions": {
+      "start": "Zahájit zápas"
+    },
+    "validations": {
+      "required": "Povinné pole",
+      "duplicates": "Hráč nemůže být vybrán dvakrát.",
+      "generic": "Nelze vytvořit shodu."
+    },
+    "score": {
+      "title": "Ukončete nahrávání",
+      "content": "Obrazovka již brzy."
+    }
+  },
+  "notationHelp": {
+    "title": "Jak hodnotíte kouli?",
+    "close": "Blízko",
+    "ariaLabel": "Nápověda k bodování",
+    "levels": {
+      "minus2": "Vaše koule situaci zhoršuje",
+      "minus1": "Vaše koule do hry nic nepřináší",
+      "zero": "Neutrální koule — může hrát, nebo je dojemná, ale k ničemu",
+      "plus1": "Práce je hotová",
+      "plus2": "Vaše koule dělá rozdíl"
+    }
+  },
+  "play": {
+    "end": "Konec",
+    "score": "Skóre",
+    "timer": {
+      "start": "Spusťte časovač",
+      "pause": "Pozastavte časovač"
+    },
+    "endScore": {
+      "title": "Konečné skóre",
+      "earlyHint": "Nehrané míče se do statistik nezapočítávají.",
+      "zeroHint": "0 bodů, pokud jack vypadne na posledním míči."
+    },
+    "nav": {
+      "prevEnd": "Předchozí konec",
+      "nextEnd": "Další konec"
+    },
+    "shots": {
+      "point": "Bod",
+      "tir": "Shot",
+      "cochonnet": "Prase výstřel"
+    },
+    "roles": {
+      "title": "Změňte role",
+      "hint": "Role pro tento účel – klepnutím je změníte"
+    },
+    "distancePlaceholder": "Vzdálenost v metrech",
+    "distanceEstimate": "Odhadovaná vzdálenost",
+    "formChart": {
+      "title": "Formulář zápasu",
+      "titleFor": "Formulář — {name}",
+      "empty": "Pro zobrazení grafu ještě není dokončen žádný konec.",
+      "total": "Celkem za konec",
+      "pointAverage": "Bodový průměr",
+      "tirAverage": "Průměr střely",
+      "endLabel": "E{n}"
+    },
+    "actions": {
+      "saveEnd": "Uložit konec",
+      "validateEnd": "Potvrďte konec",
+      "cancelEnd": "Zrušit konec",
+      "finish": "Dokončit zápas",
+      "undoShot": "Vrátit zpět poslední akci"
+    },
+    "options": {
+      "open": "Možnosti"
+    },
+    "substitution": {
+      "action": "Substituce",
+      "title": "Střídání hráče",
+      "hint": "Jedno střídání za tým na zápas. Statistiky zůstávají u každého hráče.",
+      "team": "Tým",
+      "playerOut": "Hráč na výměnu",
+      "playerIn": "Náhradní hráč",
+      "searchPlaceholder": "Vyhledejte nebo zadejte název",
+      "confirm": "Potvrďte náhradu",
+      "abort": "Zrušit",
+      "error": "Toto nahrazení nelze použít.",
+      "replaces": "Nahrazuje {name}",
+      "playedBefore": "Hráno před střídáním"
+    },
+    "cancel": {
+      "title": "Konec zrušen",
+      "message1": "Zvedák je venku.",
+      "message2": "Tento konec bude zrušen.",
+      "question": "Pokračovat?",
+      "confirm": "Potvrdit",
+      "abort": "Zrušit"
+    },
+    "finish": {
+      "title": "Dokončit zápas",
+      "message1": "Dokončit zápas teď?",
+      "message2": "Aktuální skóre bude zachováno.",
+      "pendingParticipants": "Před uložením musí být stále připojeno {count} hráčů.",
+      "error": "Ukládání se nezdařilo. Vaše data jsou uložena, zkuste to prosím znovu.",
+      "confirm": "Dokončit",
+      "abort": "Zadní"
+    },
+    "endCanceled": "Konec zrušen",
+    "advanced": {
+      "open": "Pokročilý vstup",
+      "title": "Pokročilý vstup",
+      "hint": "Zmeškali jste některé konce? Zadejte aktuální skóre zápasu – do statistik se započítávají pouze zaznamenané konce. Poté můžete pokračovat ve vstupu míče.",
+      "confirm": "Nastavte toto skóre",
+      "abort": "Zrušit",
+      "errorBelowRecorded": "Skóre nemůže být nižší než to, co je již zaznamenáno v označených koncích ({scoreA}–{scoreB})."
+    }
+  },
+  "history": {
+    "title": "Historie zápasů",
+    "empty": "Zatím žádné zápasy.",
+    "emptyFiltered": "Těmto filtrům neodpovídají žádné výsledky.",
+    "loadMore": "Načíst více",
+    "victory": "Vítězství",
+    "defeat": "Porazit",
+    "refused": "Nezúčastnil se",
+    "filters": {
+      "showRefused": "Zobrazit odmítnuté zápasy"
+    }
+  },
+  "shooting": {
+    "home": {
+      "title": "Přesná střelba",
+      "subtitle": "Dokončete 5 oficiálních workshopů",
+      "newSession": "Nová relace",
+      "stats": "Statistika",
+      "historyTitle": "Historie relace",
+      "empty": "Zatím bez natáčení.",
+      "scoreOn100": "{score} / 100"
+    },
+    "resume": {
+      "title": "Probíhá relace",
+      "message": "Máte nedokončenou relaci přesné střelby. Chcete jej obnovit?",
+      "continue": "Resumé",
+      "abandon": "Opustit"
+    },
+    "progress": "Workshop {current} / {total}",
+    "workshopHint": "Zaznamenejte výsledek každého míče, abyste dokončili workshop.",
+    "distanceMeters": "{n} m",
+    "score": {
+      "total": "Celkové skóre",
+      "workshop": "Skóre z dílny"
+    },
+    "workshops": {
+      "ballAlone": "Míč sám",
+      "ballBehindJack": "Míč za jackem",
+      "betweenTwoBalls": "Mezi dvěma míčky",
+      "jumpedBall": "Skočený míč",
+      "jack": "Zvedák"
+    },
+    "results": {
+      "missed": "Zmeškaný",
+      "touched": "Dotklo se",
+      "successful": "Úspěšný",
+      "carreau": "Carreau"
+    },
+    "nav": {
+      "prevWorkshop": "Předchozí workshop",
+      "nextWorkshop": "Další workshop"
+    },
+    "actions": {
+      "nextWorkshop": "Další workshop",
+      "finishSession": "Dokončete relaci",
+      "abandon": "Opustit relaci"
+    },
+    "abandon": {
+      "title": "Opustit relaci?",
+      "message": "Již zadané výsledky budou ztraceny. Tuto akci nelze vrátit zpět.",
+      "cancel": "Zrušit",
+      "confirm": "Opustit"
+    },
+    "summary": {
+      "title": "Shrnutí relace",
+      "sessionFinished": "Relace dokončena",
+      "performanceMap": {
+        "title": "Mapa výkonu",
+        "hint": "Každá buňka představuje jeden snímek z této relace."
+      },
+      "actions": {
+        "backHome": "Zpět k přesné střelbě"
+      }
+    },
+    "context": {
+      "titleAdd": "Přidejte název",
+      "titleEdit": "Upravit název",
+      "hint": "Volitelné: Popište kontext této relace.",
+      "fields": {
+        "playedAt": "Datum relace",
+        "nature": "Kontext",
+        "title": "Titul",
+        "description": "Popis"
+      },
+      "nature": {
+        "training": "Výcvik",
+        "competition": "Soutěž"
+      },
+      "actions": {
+        "add": "Přidejte název",
+        "edit": "Upravit název",
+        "save": "Uložit",
+        "skip": "Přeskočit"
+      }
+    },
+    "stats": {
+      "title": "Statistiky střelby",
+      "subtitle": "Výkon podle dílny a vzdálenosti",
+      "filters": {
+        "all": "Vše"
+      },
+      "kpi": {
+        "sessions": "Relace",
+        "best": "Nejlepší",
+        "average": "Průměrný"
+      },
+      "hero": {
+        "averageSession": "Průměrné skóre relace",
+        "shotsTracked": "Analyzováno {n} výstřelů"
+      },
+      "insights": {
+        "strength": "Pevnost",
+        "toWork": "Ke zlepšení"
+      },
+      "sections": {
+        "evolution": "Pokrok",
+        "workshops": "Podle dílny",
+        "distances": "Podle vzdálenosti",
+        "results": "Typy výsledků",
+        "heatmap": "Mapa výkonu"
+      },
+      "evolution": {
+        "hint": "Trend vašeho celkového skóre v posledních relacích."
+      },
+      "workshops": {
+        "hint": "Průměrné skóre na ránu pro každý workshop (max. 5 bodů)."
+      },
+      "distances": {
+        "hint": "Průměrné skóre na ránu podle vzdálenosti.",
+        "best": "Nejlepší: {n} m",
+        "weakest": "Práce na: {n} m"
+      },
+      "results": {
+        "hint": "Rozpis všech výsledků vašich střel."
+      },
+      "heatmap": {
+        "hint": "Intenzita barvy = průměrné skóre na jeden výstřel. Počet = počet výstřelů."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiky se nepodařilo načíst",
+        "retry": "Zkuste to znovu",
+        "noSessionsTitle": "Žádné dokončené relace",
+        "noSessionsHint": "Dokončete první relaci, abyste viděli statistiky střelby.",
+        "startSession": "Zahájit relaci",
+        "noDataInPeriodTitle": "Žádné relace v tomto období",
+        "noDataInPeriodHint": "Chcete-li zobrazit statistiky fotografování, rozšiřte časové období."
+      }
+    }
+  },
+  "jumpShot": {
+    "home": {
+      "title": "Skokový výstřel",
+      "subtitle": "Postup od 6 do 9 metrů",
+      "rules": "Přečtěte si pravidla",
+      "stats": "Statistika",
+      "start": "Začněte cvičit",
+      "historyTitle": "Dokončená cvičení",
+      "empty": "Ještě žádné dokončené cvičení.",
+      "seriesTag": "série {n}",
+      "throwsMeta": "Zaznamenáno {n} hodů"
+    },
+    "settings": {
+      "title": "Nastavení",
+      "open": "Nastavení cvičení",
+      "progressionMode": "Pravidla postupu",
+      "easy": "Snadný",
+      "easyHint": "Nikdy se nepohybujte dolů · 0–1/3: zůstaňte · 2–3/3: nahoru. Vyhrajte s 2/3 nebo 3/3 na 9 m.",
+      "standard": "Norma",
+      "standardHint": "0/3: dolů · 1–2/3: zůstat · 3/3: nahoru. Ukládání carreau (pouze standardní režim).",
+      "hard": "Extrémní",
+      "hardHint": "0–1/3: dolů · 2/3: zůstat · 3/3 s alespoň 1 carreau: nahoru. Výhra: 3/3 s carreau na 9 m.",
+      "close": "Blízko"
+    },
+    "rules": {
+      "title": "Pravidla",
+      "subtitle": "Skokový výstřel",
+      "start": "Začněte cvičit",
+      "sections": {
+        "setup": {
+          "title": "Nastavení",
+          "items": [
+            "Place 3 target balls on the terrain.",
+            "Place a second ball 15 cm behind each target (6 balls total).",
+            "Mark 4 shooting circles at 6, 7, 8 and 9 meters."
+          ]
+        },
+        "distances": {
+          "title": "Vzdálenosti",
+          "intro": "Cvičení využívá pouze 6, 7, 8 nebo 9 metrů. Vždy začínáte na 6 metrech."
+        },
+        "series": {
+          "title": "Série 3 hodů",
+          "intro": "V každém kroku hodíte 3 rány na aktuální vzdálenost. Každý hod se zaznamenává jednotlivě."
+        },
+        "results": {
+          "title": "Možné výsledky"
+        },
+        "progressionModes": {
+          "title": "Postup",
+          "intro": "Než začnete, vyberte v nastavení pravidlo. Po každé sérii 3 hodů:",
+          "easy": {
+            "items": [
+              "0 or 1 success out of 3: stay at the same distance.",
+              "2 or 3 successes out of 3: move up one distance (maximum 9 m).",
+              "You never move down a distance."
+            ]
+          },
+          "standard": {
+            "items": [
+              "0 successes out of 3: move down one distance (minimum 6 m).",
+              "1 or 2 successes out of 3: stay at the same distance.",
+              "3 successes out of 3: move up one distance (maximum 9 m)."
+            ]
+          },
+          "hard": {
+            "items": [
+              "0 or 1 success out of 3: move down one distance (minimum 6 m).",
+              "2 successes out of 3: stay at the same distance.",
+              "3 successes out of 3 with no carreau: stay at the same distance.",
+              "3 successes out of 3 with at least 1 carreau: move up one distance (maximum 9 m)."
+            ]
+          }
+        },
+        "special": {
+          "title": "Ukládání carreau",
+          "intro": "Pouze standardní režim: pokud minuly první dva hody a třetí je carreau, série se počítá jako 1/3 a zůstanete ve stejné vzdálenosti.",
+          "items": [
+            "The first two throws remain recorded as missed.",
+            "The third remains recorded as carreau.",
+            "A chique or hit on the third throw does not trigger this rule."
+          ]
+        },
+        "victory": {
+          "title": "Vítězství",
+          "easy": "2 nebo 3 úspěšné hody v jedné sérii na 9 metrů.",
+          "standard": "3 úspěšné hody (chique, hit nebo carreau) v jedné sérii na 9 metrů.",
+          "hard": "3 úspěšné hody včetně alespoň jednoho carreau, v jedné sérii na 9 metrů."
+        }
+      }
+    },
+    "results": {
+      "missed": "Zmeškaný",
+      "chique": "Chique",
+      "hit": "Hit",
+      "carreau": "Carreau"
+    },
+    "consequence": {
+      "down": "Série {count}/3: posunete se o jednu vzdálenost dolů.",
+      "stay": "Série {count}/3: zůstanete ve stejné vzdálenosti.",
+      "up": "Série {count}/3: posunete se o jednu vzdálenost nahoru."
+    },
+    "play": {
+      "seriesLabel": "Řada #{n}",
+      "currentDistance": "Vzdálenost: {n} m",
+      "successInSeries": "Úspěchy v sérii: {count}/{total}",
+      "throwLabel": "Hodit {n}",
+      "validateSeries": "Odeslat sérii",
+      "undoLastSeries": "Upravit předchozí sérii",
+      "rules": "Pravidla",
+      "abandon": "Opustit",
+      "outcomeTitle": "Výsledek série",
+      "specialApplied": "Bylo použito pravidlo ukládání carreau.",
+      "nextDistance": "Další série v {n} m.",
+      "continue": "Pokračovat"
+    },
+    "victory": {
+      "title": "Cvičení dokončeno!",
+      "subtitle": "Výborně — perfektní série na 9 metrů.",
+      "seriesCount": "Odehraná série {n}",
+      "recapTitle": "Shrnutí",
+      "seriesLine": "Řada {n} · {distance} m",
+      "successTag": "{count}/3",
+      "backHome": "Zpátky domů"
+    },
+    "resume": {
+      "title": "Probíhá relace",
+      "message": "Relace již probíhá. Obnovit nebo opustit?",
+      "continue": "Resumé",
+      "abandon": "Opustit"
+    },
+    "abandon": {
+      "title": "Opustit relaci?",
+      "message": "Aktuální postup bude ztracen.",
+      "cancel": "Zrušit",
+      "confirm": "Opustit"
+    },
+    "summary": {
+      "title": "Detail cvičení",
+      "subtitleWon": "Cvičení vyhrálo",
+      "won": "Vítězství",
+      "seriesCount": "Odehraná série {n}",
+      "seriesTitle": "Řada {n} · {distance} m",
+      "specialBadge": "Ukládání carreau",
+      "backHome": "Zpátky domů"
+    },
+    "stats": {
+      "title": "Statistika",
+      "subtitle": "Skokový výstřel",
+      "distanceMeters": "{n} m",
+      "kpi": {
+        "sessions": "Cvičení",
+        "fewestSeries": "Nejlepší (série)",
+        "avgSeries": "Prům. série"
+      },
+      "hero": {
+        "successRate": "Úspěšnost",
+        "throwsTracked": "Analyzováno {n} hodů"
+      },
+      "insights": {
+        "strength": "Nejsilnější vzdálenost",
+        "toWork": "Ke zlepšení"
+      },
+      "sections": {
+        "evolution": "Trend",
+        "distances": "Podle vzdálenosti",
+        "results": "Typy házení"
+      },
+      "evolution": {
+        "hint": "Počet sérií na dokončený cvik."
+      },
+      "distances": {
+        "hint": "Úspěšnost (nechyběná) na sériovou vzdálenost."
+      },
+      "results": {
+        "hint": "Rozpis všech zaznamenaných hodů."
+      },
+      "special": {
+        "title": "Ukládání carreau",
+        "hint": "{n} série se zvláštním pravidlem."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiky se nepodařilo načíst",
+        "retry": "Zkuste to znovu",
+        "noSessionsTitle": "Žádné dokončené cvičení",
+        "noSessionsHint": "Vyhrajte cvičení, abyste viděli své statistiky.",
+        "startSession": "Začněte cvičit",
+        "noDataInPeriodTitle": "V tomto období nejsou žádná data",
+        "noDataInPeriodHint": "Rozšiřte časové období nebo deaktivujte filtr."
+      }
+    }
+  },
+  "rings": {
+    "distanceMeters": "{n} m",
+    "points": {
+      "one": "{n} b",
+      "other": "{n} bodů"
+    },
+    "home": {
+      "title": "Ukazování do kroužků",
+      "subtitle": "15 kuliček, 3 kroužky",
+      "newSession": "Nová relace",
+      "rules": "Pravidla",
+      "stats": "Statistika",
+      "historyTitle": "Historie relace",
+      "empty": "Zatím žádné relace.",
+      "scoreOnMax": "{score} / {max}"
+    },
+    "resume": {
+      "title": "Probíhá relace",
+      "message": "Máte nedokončenou relaci. Obnovit?",
+      "continue": "Resumé",
+      "abandon": "Vyřadit"
+    },
+    "rules": {
+      "title": "Pravidla",
+      "subtitle": "Ukazování do kroužků",
+      "start": "Zahájit relaci",
+      "close": "Blízko",
+      "figureAlt": "Schéma pole: vrhací kruh a tři kruhy",
+      "throwingCircle": "Vrhací kruh",
+      "sections": {
+        "setup": {
+          "title": "Nastavení",
+          "items": [
+            "The player always plays from the same throwing circle, which never moves.",
+            "Three rings of {diameter} cm diameter are drawn at {near}, {middle} and {far}, with a jack in the centre of each.",
+            "Balls are laid as obstacles: one in front of the {middle} ring, two in front of the {far} ring. The {near} ring is clear."
+          ]
+        },
+        "play": {
+          "title": "Jak to funguje",
+          "items": [
+            "The player has {balls} balls to score as many points as possible.",
+            "Before each ball, the player freely chooses which ring to aim at.",
+            "A ball succeeds if it stops inside the aimed ring: it scores that ring's points. Otherwise it scores nothing.",
+            "Touching an obstacle ball is not a fault: only the ball's final position counts."
+          ]
+        },
+        "scale": {
+          "title": "Bodování",
+          "ring": "Kulička uvnitř kroužku {distance}",
+          "missed": "Míč mimo zamířený kruh",
+          "max": "Maximální skóre: {n} bodů."
+        }
+      }
+    },
+    "play": {
+      "ball": "Míč {current} / {total}",
+      "allPlayed": "Všechny míče odehrány",
+      "successCount": "{count} / {total} úspěšné",
+      "success": "Úspěch",
+      "missed": "Zmeškaný",
+      "undo": "Vrátit zpět poslední",
+      "finish": "Dokončete relaci",
+      "abandon": "Vyřadit",
+      "rules": "Pravidla",
+      "trackLabel": "Hrály se míče"
+    },
+    "abandon": {
+      "title": "Zahodit relaci?",
+      "message": "Již zaznamenané míče budou ztraceny. Toto nelze vrátit zpět.",
+      "cancel": "Zrušit",
+      "confirm": "Vyřadit"
+    },
+    "stats": {
+      "title": "Statistika",
+      "subtitle": "Ukazování do kroužků",
+      "kpi": {
+        "sessions": "Relace",
+        "best": "Nejlepší skóre",
+        "average": "Průměrný"
+      },
+      "hero": {
+        "averageSession": "Průměrné skóre na relaci",
+        "successRate": "Celková úspěšnost: {rate}%",
+        "throwsTracked": "Analyzováno {n} míčků"
+      },
+      "insights": {
+        "strength": "Nejsilnější prsten",
+        "toWork": "Pracovat dál"
+      },
+      "sections": {
+        "deciles": "Rozdělení skóre",
+        "evolution": "Pokrok",
+        "targets": "Úspěch prstenem",
+        "averageByTarget": "Průměr bodů na pokus"
+      },
+      "deciles": {
+        "hint": "Počet relací, jejichž celkové skóre spadá do každého pásma (z max. {max}).",
+        "range": "{min}–{max}"
+      },
+      "evolution": {
+        "hint": "Jak se vaše celkové skóre vyvíjí během dokončených relací."
+      },
+      "targets": {
+        "hint": "Úspěšnost při míření na každý kroužek.",
+        "attempts": "{successes} / {attempts} úspěšné",
+        "avgPoints": "Ø {n} bodů / pokus"
+      },
+      "averageByTarget": {
+        "hint": "Průměrný počet bodů za míček, na který mířil kroužek."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiky se nepodařilo načíst",
+        "retry": "Zkuste to znovu",
+        "noSessionsTitle": "Žádné dokončené relace",
+        "noSessionsHint": "Dokončete relaci, abyste viděli své statistiky.",
+        "startSession": "Zahájit relaci",
+        "noDataInPeriodTitle": "Žádné relace v tomto období",
+        "noDataInPeriodHint": "Chcete-li zobrazit statistiky, rozšiřte časové období."
+      }
+    },
+    "summary": {
+      "title": "Rekapitulace relace",
+      "sessionFinished": "Relace dokončena",
+      "byRing": "Prstenem",
+      "attempts": "{successes} / {attempts} úspěšné",
+      "throws": "Detaily míče",
+      "backHome": "Zpátky domů"
+    }
+  },
+  "ringsShooting": {
+    "home": {
+      "title": "Střelba do kruhů",
+      "subtitle": "15 ran, 3 cílové koule"
+    },
+    "play": {
+      "hit": "Hit",
+      "carreau": "Carreau",
+      "carreauCount": "Carreaux: {count}",
+      "carreauPoints": "Carreau {points}"
+    },
+    "stats": {
+      "carreauRate": "Carreaux: {count} ({rate}% střel)",
+      "carreauSection": "Carreaux prstenem",
+      "carreauHint": "Podíl střel končících carreau, kroužkem mířeným na."
+    },
+    "rules": {
+      "title": "Pravidla",
+      "subtitle": "Střelba do kruhů",
+      "start": "Zahájit relaci",
+      "figureAlt": "Diagram pole: vrhací kruh a tři kruhy s cílovými koulemi",
+      "detailAlt": "Detail tří kroužků: osamělý míč, míč s jackem vpředu, míč mezi dvěma míčky",
+      "detailCaption": "Pohled shora, střelec je dole.",
+      "throwingCircle": "Vrhací kruh",
+      "cm": "{n} cm",
+      "legend": {
+        "target": "Cílový míč",
+        "neighbour": "Postranní míč",
+        "jack": "Zvedák"
+      },
+      "sections": {
+        "setup": {
+          "title": "Nastavení",
+          "items": [
+            "The shooter always plays from the same throwing circle, which does not move.",
+            "Three {diameter} cm rings are drawn at {near}, {middle} and {far}, with a target ball in the centre of each.",
+            "At {near}: the target ball is alone in the ring.",
+            "At {middle}: a jack is placed {jackGap} cm in front of the target ball, on the shooter's side.",
+            "At {far}: the target ball sits between two balls, {sideGap} cm away on each side."
+          ]
+        },
+        "play": {
+          "title": "Jak hrát",
+          "items": [
+            "The shooter has {balls} balls to score as many points as possible.",
+            "Before each ball, they freely choose which ring to aim at.",
+            "A shot succeeds if it hits the target ball, directly or after landing inside the ring: it scores that ring's points."
+          ]
+        },
+        "carreau": {
+          "title": "Carreau",
+          "lead": "Kromě jednoduchého zásahu může být střela i carreau: vystřelená koule odežene cílovou kouli a zaujme její místo v ringu.",
+          "items": [
+            "Hit: the shot ball strikes the target ball without driving it away and staying in its place. You score the « Hit » points in the table.",
+            "Carreau: the shot ball drives the target ball away and stays in its place in the ring. You score double: 2 points at {near}, 6 at {middle}, 10 at {far}.",
+            "A carreau only counts if the shot is valid (see « Invalid shot »): e.g. landing before the ring, touching the jack at {middle}, or a side ball at {far} cancels the shot, carreau included.",
+            "During a session, record « Carreau » only when the shot ball has clearly taken the target ball's place."
+          ]
+        },
+        "invalid": {
+          "title": "Neplatný výstřel",
+          "items": [
+            "The shot lands before the ring, even if it then hits the target ball.",
+            "At {middle}, the shot touches the jack.",
+            "At {far}, the shot touches a side ball before the target ball."
+          ]
+        },
+        "scale": {
+          "title": "Bodování",
+          "intro": "U každého zazvonění se jednoduchý zásah zapíše do sloupce «Hit»; carreau má dvojnásobné skóre (sloupec «Carreau»).",
+          "hit": "Hit",
+          "carreau": "Carreau",
+          "ring": "Cílový míč na {distance}",
+          "missed": "Chybějící nebo neplatný výstřel"
+        }
+      }
+    }
+  },
+  "pointing": {
+    "home": {
+      "title": "Přesné ukazování",
+      "subtitle": "Dokončete 5 oficiálních workshopů",
+      "newSession": "Nová relace",
+      "rules": "Pravidla",
+      "stats": "Statistika",
+      "historyTitle": "Historie relace",
+      "empty": "Zatím žádné ukazovací relace.",
+      "scoreOn300": "{score} / 300"
+    },
+    "rules": {
+      "title": "Pravidla",
+      "subtitle": "Přesné ukazování",
+      "open": "Pravidla dílny",
+      "allRules": "Všechna pravidla",
+      "close": "Blízko",
+      "start": "Zahájit relaci",
+      "workshopNumber": "Workshop {n}",
+      "figureAlt": "Schéma dílny {n}",
+      "points": "{n} bodů",
+      "labels": {
+        "setup": "Nastavení",
+        "objective": "Objektivní",
+        "scale": "Bodování"
+      },
+      "sections": {
+        "setup": {
+          "title": "Přehled",
+          "items": [
+            "A session chains 5 workshops. In each workshop, you play one ball from 6, 7, 8 and 9 metres.",
+            "A 4×4 piece of timber is laid in front of the circle: 2 m in front of it for 6 and 7 m, 3 m in front of it for 8 and 9 m.",
+            "Each ball scores 0, 3, 9 or 15 points according to the workshop's scale.",
+            "Maximum: 60 points per workshop, 300 points per session."
+          ]
+        }
+      },
+      "workshops": {
+        "w1": {
+          "setup": "Kruh o průměru 80 cm, zvedák umístěný uprostřed.",
+          "objective": "Přibližte se co nejblíže ke zvedáku, aniž byste ho srazili z kruhu.",
+          "scale": {
+            "missed": "Míč mimo kruh",
+            "p3": "Do 40 cm od zvedáku",
+            "p9": "Do 30 cm od zvedáku",
+            "p15": "Do 20 cm od zvedáku"
+          }
+        },
+        "w2": {
+          "setup": "Kruh o průměru 80 cm, uprostřed zvedák. (Černý) míček je umístěn vpředu, 50 cm od jacku.",
+          "objective": "Dostaňte se co nejblíže ke jacku, aniž byste se dotkli černé koule nebo srazil jack z kruhu.",
+          "scale": {
+            "missed": "Míč mimo kruh",
+            "p3": "Do 40 cm od zvedáku",
+            "p9": "Do 30 cm od zvedáku",
+            "p15": "Do 20 cm od zvedáku"
+          }
+        },
+        "w3": {
+          "setup": "Kruh o průměru 80 cm, uprostřed zvedák. Míč ① 35 cm od zvedáku, 10 cm vlevo. Míč ② 50 cm od zvedáku, 10 cm vpravo.",
+          "objective": "Dostaňte se blíže ke jacku, než jsou dvě koule na místě, aniž byste jacka srazili z kruhu.",
+          "scale": {
+            "missed": "Míč mimo kruh",
+            "p3": "Do 40 cm od zvedáku",
+            "p9": "Držení bodu",
+            "p15": "Držet pointu bez narušení konce"
+          }
+        },
+        "w4": {
+          "setup": "Kruh o průměru 80 cm, uprostřed zvedák. Dvě černé koule na okraji kruhu, 15 cm od sebe. Bílá cílová koule se umístí 15 cm před kruh, 7,5 cm od každé černé koule.",
+          "objective": "Zatlačte bílou cílovou kouli do kruhu, co nejblíže k jacku, aniž byste jacka srazili z kruhu.",
+          "scale": {
+            "missed": "Cílový míč minul",
+            "p3": "Cílový míč se dotkl",
+            "p9": "Cílový míč v kruhu, hozený míček mimo",
+            "p15": "Cílový míč a hozený míč v kruhu"
+          }
+        },
+        "w5": {
+          "setup": "Kruh o průměru 1 m, zvedák umístěn 15 cm před kruhem.",
+          "objective": "Zatlačte zvedák do kruhu. Odhozený míček nesmí přesahovat kruh více než 30 cm.",
+          "scale": {
+            "missed": "Jack minul",
+            "p3": "Jack se dotkl, ale ne v kruhu",
+            "p9": "Jack v kruhu, hozený míček venku",
+            "p15": "Jack a hozený míč v kruhu"
+          }
+        }
+      }
+    },
+    "resume": {
+      "title": "Probíhá relace",
+      "message": "Máte nedokončenou relaci přesného ukazování. Obnovit?",
+      "continue": "Resumé",
+      "abandon": "Vyřadit"
+    },
+    "progress": "Workshop {current} / {total}",
+    "workshopHint": "Pro dokončení workshopu zaznamenejte výsledek každého výstřelu.",
+    "distanceMeters": "{n} m",
+    "score": {
+      "total": "Celkové skóre",
+      "workshop": "Skóre z dílny"
+    },
+    "workshops": {
+      "jackAlone": "Jack sám",
+      "ballInFrontOfJack": "Míč před jackem",
+      "twoBallsInFrontOfJack": "Dva míčky před jackem",
+      "pushBall": "Zatlačte míč",
+      "pushJack": "Zatlačte na zvedák"
+    },
+    "results": {
+      "w1": {
+        "missed": "Miss",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w2": {
+        "missed": "Miss",
+        "p3": "< 40 cm",
+        "p9": "< 30 cm",
+        "p15": "< 20 cm"
+      },
+      "w3": {
+        "missed": "Miss",
+        "p3": "< 40 cm",
+        "p9": "Zabírá bod",
+        "p15": "Žádná překážka"
+      },
+      "w4": {
+        "missed": "Miss cíl",
+        "p3": "Dotkněte se cíle",
+        "p9": "Cíl v kruhu",
+        "p15": "Cíl + míč"
+      },
+      "w5": {
+        "missed": "Miss",
+        "p3": "Jack se dotkl",
+        "p9": "Jack v ringu",
+        "p15": "Jack + míč"
+      }
+    },
+    "nav": {
+      "prevWorkshop": "Předchozí workshop",
+      "nextWorkshop": "Další workshop"
+    },
+    "actions": {
+      "nextWorkshop": "Další workshop",
+      "finishSession": "Dokončete relaci",
+      "abandon": "Opustit relaci"
+    },
+    "abandon": {
+      "title": "Opustit relaci?",
+      "message": "Zadané výsledky budou ztraceny. Toto nelze vrátit zpět.",
+      "cancel": "Zrušit",
+      "confirm": "Opustit"
+    },
+    "context": {
+      "titleAdd": "Přidejte název",
+      "titleEdit": "Upravit název",
+      "hint": "Volitelné: přidejte kontext pro tuto relaci.",
+      "fields": {
+        "playedAt": "Datum relace",
+        "nature": "Kontext",
+        "title": "Titul",
+        "description": "Popis"
+      },
+      "nature": {
+        "training": "Výcvik",
+        "competition": "Soutěž"
+      },
+      "actions": {
+        "add": "Přidejte název",
+        "edit": "Upravit název",
+        "save": "Uložit",
+        "skip": "Přeskočit"
+      }
+    },
+    "stats": {
+      "title": "Ukazovací statistiky",
+      "subtitle": "Výkon podle dílny a vzdálenosti",
+      "filters": {
+        "all": "Vše"
+      },
+      "resultTiers": {
+        "missed": "Miss",
+        "p3": "3 body",
+        "p9": "9 bodů",
+        "p15": "15 bodů"
+      },
+      "kpi": {
+        "sessions": "Relace",
+        "best": "Nejlepší",
+        "average": "Průměrný"
+      },
+      "hero": {
+        "averageSession": "Průměrné skóre relace",
+        "shotsTracked": "Sledováno {n} výstřelů"
+      },
+      "insights": {
+        "strength": "Pevnost",
+        "toWork": "Ke zlepšení"
+      },
+      "sections": {
+        "evolution": "Pokrok",
+        "workshops": "Podle dílny",
+        "distances": "Podle vzdálenosti",
+        "results": "Typy výsledků",
+        "heatmap": "Mapa výkonu"
+      },
+      "evolution": {
+        "hint": "Trend celkového skóre ve vašich nedávných relacích."
+      },
+      "workshops": {
+        "hint": "Průměrné skóre na ránu podle workshopu (max 15 bodů)."
+      },
+      "distances": {
+        "hint": "Průměrné skóre na ránu podle vzdálenosti.",
+        "best": "Nejlepší: {n} m",
+        "weakest": "Nejslabší: {n} m"
+      },
+      "results": {
+        "hint": "Rozpis všech výsledků střelby."
+      },
+      "heatmap": {
+        "hint": "Intenzita barvy = průměrné skóre. Počet = počet výstřelů."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiky se nepodařilo načíst",
+        "retry": "Zkuste to znovu",
+        "noSessionsTitle": "Žádné dokončené relace",
+        "noSessionsHint": "Dokončete první relaci, abyste viděli statistiky ukazování.",
+        "startSession": "Zahájit relaci",
+        "noDataInPeriodTitle": "Žádné relace v tomto období",
+        "noDataInPeriodHint": "Chcete-li zobrazit statistiky, rozšiřte časové období."
+      }
+    },
+    "summary": {
+      "title": "Shrnutí relace",
+      "sessionFinished": "Relace dokončena",
+      "performanceMap": {
+        "title": "Mapa výkonu",
+        "hint": "Každá buňka je jeden výstřel z této relace."
+      },
+      "actions": {
+        "backHome": "Zpět k přesnému ukazování"
+      }
+    }
+  },
+  "stats": {
+    "title": "Moje statistika",
+    "actions": {
+      "back": "Zadní"
+    },
+    "filters": {
+      "all": "Vše",
+      "title": "Filtry",
+      "nature": "Příroda",
+      "format": "Formát",
+      "competition": "Soutěž",
+      "distance": "Vzdálenost"
+    },
+    "tabs": {
+      "label": "Zobrazení statistik",
+      "overview": "Statistika",
+      "tactics": "Taktická analýza"
+    },
+    "tactical": {
+      "title": "Taktická analýza",
+      "subtitle": "Vaše označení a extra koule agregované napříč filtrovanými zápasy.",
+      "coverage": "{matches}/{eligible} analyzovaných shod · {ends} konce · {rate}% se vzdáleností",
+      "noDistanceData": "V tomto výběru není žádné značení nebo koule navíc se vzdáleností.",
+      "loadErrorTitle": "Nepodařilo se načíst taktickou analýzu",
+      "loadErrorHint": "Zkuste to prosím znovu za chvíli.",
+      "noEligibleTitle": "Žádné analyzovatelné shody",
+      "noEligibleHint": "Zápasy vyžadují sledování každého hráče a kompletní chronologické pořadí záběrů.",
+      "point": {
+        "hint": "Končí tam, kde jste zahráli první míč. End je dobře zahájen, když je první míč skórován +1 nebo +2.",
+        "empty": "Při držení zvedáku jste neotevřeli žádný konec"
+      }
+    },
+    "kpi": {
+      "matches": "Zápasy",
+      "victories": "Vyhrává",
+      "defeats": "Ztráty",
+      "winRate": "Míra výhry"
+    },
+    "overallAverage": "Celkový průměr",
+    "ballsTracked": "Sledováno {n} koulí",
+    "successRate": {
+      "label": "Úspěšnost",
+      "value": "{rate}%",
+      "empty": "Žádná data"
+    },
+    "details": {
+      "title": "Podrobnosti",
+      "balls": "{n} míčků"
+    },
+    "sections": {
+      "evolution": "Trend",
+      "distribution": "Rozdělení hodnocení",
+      "shots": "Point & Shoot",
+      "byNature": "Zápasovou povahou",
+      "byFormat": "Podle formátu",
+      "byDistance": "Podle vzdálenosti"
+    },
+    "notes": {
+      "m2": "-2",
+      "m1": "-1",
+      "p0": "0",
+      "p1": "+1",
+      "p2": "+2"
+    },
+    "evolution": {
+      "average": "Průměrný",
+      "matchLabel": "M{n}",
+      "hint": "Zelené body = výhra, červené = prohra. Posledních 10 sledovaných zápasů."
+    },
+    "byNature": {
+      "hint": "Shoduje se pouze s vyplněným kontextem.",
+      "meta": "{matches} zápasů · {balls} míčů"
+    },
+    "byFormat": {
+      "hint": "Výkon podle formátu hry.",
+      "meta": "{matches} zápasů · {victories} výher · {balls} míčů"
+    },
+    "byDistance": {
+      "hint": "Pouze míče se zaznamenanou vzdáleností.",
+      "meta": "{balls} míčků",
+      "buckets": {
+        "under_6": "< 6 m",
+        "6_7": "6-7 m",
+        "7_8": "7-8 m",
+        "8_9": "8-9 m",
+        "9_10": "9-10 m",
+        "10_plus": "10+ m"
+      }
+    },
+    "empty": {
+      "noPlayerTitle": "Žádný propojený přehrávač",
+      "noPlayerHint": "Váš účet ještě není propojen s hráčem. Jakmile bude odkaz existovat, zobrazí se statistiky.",
+      "noMatchesTitle": "Zatím žádné zápasy",
+      "noMatchesHint": "Odehrajte svůj první zápas a začněte sledovat svůj výkon.",
+      "noDataInPeriodTitle": "Žádné zápasy v tomto období",
+      "noDataInPeriodHint": "Chcete-li zobrazit statistiky, rozšiřte časové období.",
+      "noDataTitle": "Nedostatek dat",
+      "noDataHint": "Pokračujte v hraní a vytvořte si statistiky.",
+      "noTrackedDataTitle": "Žádná statistika míče",
+      "noTrackedData": "Zaznamenali jste zápasy, ale nebyly pro vás sledovány žádné míče.",
+      "noPointData": "Žádné bodové údaje.",
+      "noTirData": "Žádné údaje o střelbě.",
+      "noShotBreakdown": "K rozdělení bodu a vystřelení není dostatek dat.",
+      "startMatch": "Nový zápas",
+      "goHome": "Zpátky domů",
+      "loadErrorTitle": "Statistiku nelze načíst",
+      "loadErrorHint": "Zkontrolujte připojení nebo to zkuste znovu za chvíli.",
+      "retry": "Zkuste to znovu"
+    }
+  },
+  "doc": {
+    "title": "Průvodce bodováním",
+    "introduction": "Tato příručka vysvětluje bodovací stupnici používanou k hodnocení každé koule. Cílem je vytvářet konzistentní a srovnatelné statistiky napříč všemi hráči.",
+    "why": {
+      "title": "Proč hodnotit koule?",
+      "text": "Aplikace neposuzuje technické schopnosti hráče. Měří skutečný dopad každé koule na konec za účelem generování smysluplných statistik."
+    },
+    "commonScale": {
+      "title": "Sdílená bodovací stupnice",
+      "text": "Aby statistiky měly smysl, měl by každý hráč používat stejnou stupnici. S trochou cviku se hodnocení koulí stane rychlým a přirozeným."
+    },
+    "scale": {
+      "title": "Bodovací stupnice",
+      "minus2": {
+        "title": "🥥 -2 · Škodlivá boule",
+        "description": "Koule jednoznačně zhoršuje situaci pro váš tým.",
+        "example1": "Bod, který odsune jednu z vašich vlastních koulí pryč.",
+        "example2": "Chybějící střela, která zcela otevírá hru pro soupeře.",
+        "example3": "Jakákoli koule, která způsobí, že váš tým ztratí významnou výhodu.",
+        "summary": "Koule -2 jednoznačně poškozuje váš tým."
+      },
+      "minus1": {
+        "title": "🧧 -1 · Zbytečná koule",
+        "description": "Koule nepřináší vašemu týmu žádnou výhodu.",
+        "example1": "Úplná chyba.",
+        "example2": "Příliš dlouhý nebo příliš krátký bod.",
+        "example3": "Koule, která je zcela mimo hru.",
+        "example4": "Chybějící střela bez skutečných následků.",
+        "summary": "Koule neposkytuje žádný užitečný příspěvek."
+      },
+      "zero": {
+        "title": "⚪ 0 · Průměrná koule",
+        "description": "Koule má pouze omezený dopad na konec.",
+        "example1": "Bod, který je poměrně blízko, ale není dost dobrý.",
+        "example2": "Střela, která těsně minula.",
+        "example3": "Koule, která vyvíjí určitý tlak, aniž by skutečně změnila hru.",
+        "summary": "Koule má jen malý vliv."
+      },
+      "plus1": {
+        "title": "🩩 +1 · Dobrá koule",
+        "description": "Koule dosáhne svého cíle.",
+        "example1": "Dobrý bod.",
+        "example2": "Úspěšná střela.",
+        "example3": "Získat bod zpět.",
+        "example4": "Účinný blokátor.",
+        "summary": "Solidní koule, která dělá přesně to, co se očekávalo."
+      },
+      "plus2": {
+        "title": "🦠 +2 · Vynikající koule",
+        "description": "Koule dává vašemu týmu velkou výhodu.",
+        "example1": "Carreau.",
+        "example2": "Téměř nepřekonatelný bod.",
+        "example3": "Blokátor, který zcela uzamkne hru.",
+        "example4": "Jakákoli koule, která dramaticky změní výsledek konce.",
+        "summary": "Koule +2 má mnohem větší dopad než obyčejná dobrá koule."
+      }
+    },
+    "faq": {
+      "title": "Často kladené otázky",
+      "carreau": {
+        "title": "Má carreau vždy hodnotu +2?",
+        "answer": "Ne. Hodnocení vždy závisí na skutečném dopadu koule. Většina carreauxů si zaslouží +2, ale velmi snadná střela nebo střela s nízkým dopadem může být jednoduše hodnocena +1."
+      },
+      "palet": {
+        "title": "Má paleta hodnotu +2?",
+        "answer": "Ne. Paleta je obvykle hodnocena +1, protože dokonale plní svůj účel. Zaslouží si +2 pouze tehdy, když poskytuje výjimečnou výhodu."
+      },
+      "firstPoint": {
+        "title": "Může mít první bod konce hodnotu +2?",
+        "answer": "Ano. První bod, který je téměř nemožné překonat nebo který okamžitě uzamkne konec, si může zasloužit +2. Jednoduše dobrý první bod zůstává +1."
+      },
+      "difficulty": {
+        "title": "Zohledňuje se obtížnost hodu?",
+        "answer": "Ne. Hodnocení neměří technickou obtížnost. Měří pouze hodnotu, kterou koule přináší týmu, když je odehrána."
+      },
+      "beautiful": {
+        "title": "Může technicky krásná koule získat nízké hodnocení?",
+        "answer": "Ano. Technicky působivá koule s malým skutečným dopadem může získat průměrné hodnocení. Na druhou stranu, méně efektní koule si může zasloužit +2, pokud je její dopad výjimečný."
+      }
+    },
+    "philosophy": {
+      "title": "Filozofie systému",
+      "text1": "Hodnocení neodměňuje krásný hod. Měří pouze hodnotu, kterou koule přináší týmu.",
+      "text2": "Když všichni používají stejnou stupnici, statistiky se stanou srovnatelnými mezi hráči a napříč zápasy.",
+      "quote": "Neptejte se sami sebe, zda byla boule krásná. Zeptejte se sami sebe, kolik to přineslo vašemu týmu."
+    }
+  },
+  "training": {
+    "menu": {
+      "title": "Výcvik",
+      "subtitle": "Vyberte si cvičení",
+      "comingSoon": "Toto cvičení bude již brzy.",
+      "boules": {
+        "title": "Bod nebo střela",
+        "description": "Sezení na dálku, historie a statistiky."
+      },
+      "precisionShooting": {
+        "title": "Přesná střelba",
+        "description": "Pět seminářů, historie a statistiky."
+      },
+      "pointPrecision": {
+        "title": "Přesné ukazování",
+        "description": "Pět PLAS workshopů, bodováno z 300."
+      },
+      "tirSautee": {
+        "title": "Skokový výstřel",
+        "description": "Postup z 6 na 9 m v sérii 3 hodů."
+      },
+      "rings": {
+        "title": "Ukazování do kroužků",
+        "description": "15 míčků, abyste získali co nejvíce bodů ve 3 kroužcích."
+      },
+      "ringsShooting": {
+        "title": "Střelba do kruhů",
+        "description": "15 ran na 3 cílové koule se vzrůstající obtížností, carreau zdvojnásobuje body."
+      }
+    },
+    "home": {
+      "title": "Výcvik",
+      "subtitle": "Zamiřte nebo vystřelte během několika sekund",
+      "stats": "Statistika",
+      "historyTitle": "Historie relace",
+      "empty": "Zatím žádné tréninky.",
+      "successRate": "{rate}%"
+    },
+    "config": {
+      "type": "Typ",
+      "distance": "Vzdálenost",
+      "balls": "Počet koulí",
+      "start": "Start"
+    },
+    "types": {
+      "point": "Bod",
+      "tir": "Střílet"
+    },
+    "distanceMeters": "{n} m",
+    "scoreLabel": "Skóre: {score}",
+    "resume": {
+      "title": "Probíhá relace",
+      "message": "Máte nedokončený trénink. Chcete jej obnovit?",
+      "continue": "Resumé",
+      "abandon": "Opustit"
+    },
+    "play": {
+      "ballProgress": "Boule {current} / {total}",
+      "hint": "Zaznamenejte výsledek této koule."
+    },
+    "results": {
+      "perfect": "Perfektní",
+      "very_good": "Velmi dobré",
+      "good": "Dobrý",
+      "acceptable": "Přijatelný",
+      "bad": "Špatný",
+      "useless": "K ničemu",
+      "missed": "Zmeškaný",
+      "touched": "Dotklo se",
+      "successful": "Hit",
+      "palet": "Paleta",
+      "carreau": "Carreau"
+    },
+    "actions": {
+      "abandon": "Opustit relaci"
+    },
+    "abandon": {
+      "title": "Opustit relaci?",
+      "message": "Zaznamenané pokusy budou ztraceny, pokud se vzdáte.",
+      "cancel": "Zrušit",
+      "confirm": "Opustit"
+    },
+    "summary": {
+      "title": "Shrnutí relace",
+      "sessionFinished": "Relace dokončena",
+      "attempts": "Podrobnosti o kouli",
+      "actions": {
+        "stats": "Zobrazit mé statistiky",
+        "newSession": "Nová relace"
+      }
+    },
+    "stats": {
+      "title": "Tréninkové statistiky",
+      "subtitle": "Váš výkon podle typu a vzdálenosti",
+      "filters": {
+        "all": "Vše"
+      },
+      "kpi": {
+        "sessions": "Relace",
+        "balls": "Koule",
+        "success": "Úspěch",
+        "best": "Nejlepší skóre"
+      },
+      "hero": {
+        "averageScore": "Průměrné skóre"
+      },
+      "sections": {
+        "evolution": "Pokrok",
+        "byType": "Bod vs střelba",
+        "distances": "Podle vzdálenosti"
+      },
+      "evolution": {
+        "hint": "Trend úspěšnosti vašich nedávných relací."
+      },
+      "byType": {
+        "hint": "Úspěšnost podle typu tréninku."
+      },
+      "distances": {
+        "hint": "Úspěšnost podle vzdálenosti."
+      },
+      "empty": {
+        "loadErrorTitle": "Statistiky se nepodařilo načíst",
+        "retry": "Zkuste to znovu",
+        "noSessionsTitle": "Žádné tréninky",
+        "noSessionsHint": "Zahajte relaci, abyste viděli své statistiky.",
+        "startSession": "Zahájit relaci",
+        "noDataInPeriodTitle": "V tomto období nejsou žádná data",
+        "noDataInPeriodHint": "Prodlužte období nebo zahajte novou relaci."
+      }
+    }
+  },
+  "live": {
+    "action": "Pusťte se do živého vysílání",
+    "share": {
+      "title": "Sdílejte živý zápas",
+      "hint": "Pošlete tento odkaz, aby diváci mohli sledovat zápas v reálném čase.",
+      "copy": "Zkopírujte odkaz",
+      "copied": "Odkaz zkopírován",
+      "native": "Podíl",
+      "overlayTitle": "Překryvné streamování",
+      "overlayHint": "Použijte v OBS → Zdroj prohlížeče",
+      "overlayCopy": "Zkopírovat adresu URL překryvné vrstvy",
+      "overlayCopied": "Adresa URL byla zkopírována"
+    },
+    "overlay": {
+      "statsPromo": "Podrobné statistiky zápasů o analýze petanque",
+      "end": "Konec {n}",
+      "balls": "Kuličky",
+      "finished": "Hotovo",
+      "winner": "{team} vyhrává"
+    },
+    "view": {
+      "title": "Živý zápas",
+      "recapTitle": "Rekapitulace zápasu",
+      "loading": "Načítání…",
+      "notFound": "Tento živý zápas neexistuje nebo již není k dispozici.",
+      "finished": "Zápas ukončen",
+      "winner": "{team} vyhrává",
+      "lastUpdate": "Aktualizováno v {time}",
+      "endsRecap": "Shrnutí od konce",
+      "endResult": "{winner} +{points}",
+      "teamA": "Tým A",
+      "teamB": "Tým B",
+      "feed": {
+        "title": "Ukončete hru po hře",
+        "point": {
+          "plus2": "{name} zahrál magický bod",
+          "plus1": "{name} zahrál dobrý bod",
+          "zero": "{name} zahrálo průměrný bod",
+          "minus1": "{name} úplně minul",
+          "minus2": "{name} zahrálo trestný bod"
+        },
+        "tir": {
+          "plus2": "{name} narazil do auta",
+          "plus1": "{name} zasáhnout cíl",
+          "zero": "{name} těsně minul střelu",
+          "minus1": "{name} úplně minul",
+          "minus2": "{name} zahrál trestný úder"
+        },
+        "cochonnet": {
+          "plus2": "{name} trefte do zvedáku carreau",
+          "plus1": "{name} hit jack",
+          "zero": "{name} těsně minul jackový výstřel",
+          "minus1": "{name} minul výstřel jacka",
+          "minus2": "{name} zahrál špatný jack shot"
+        }
+      },
+      "installApp": {
+        "title": "Sledujte své zápasy a statistiky",
+        "subtitle": "Nainstalujte si aplikaci, abyste mohli bodovat hry, kontrolovat své statistiky a sdílet živé rekapitulace.",
+        "action": "Získejte ji na Google Play",
+        "qrCaption": "Skenovat",
+        "qrAria": "QR kód do Google Play"
+      }
+    }
+  },
+  "tournaments": {
+    "title": "Turnaje",
+    "subtitle": "Turnaje, do kterých patříte",
+    "create": "Vytvořte turnaj",
+    "empty": "Zatím nejste členem žádného turnaje.",
+    "loading": "Načítání…",
+    "formatLabel": "Mistrovství jedné nohy. 8 nejlepších se kvalifikuje do play-off.",
+    "status": {
+      "upcoming": "Nadcházející",
+      "in_progress": "Probíhá",
+      "finished": "Hotovo"
+    },
+    "tabs": {
+      "matches": "Zápasy",
+      "ranking": "Pořadí",
+      "admin": "Admin"
+    },
+    "fields": {
+      "name": "Jméno",
+      "description": "Popis",
+      "admins": "Správci",
+      "adminSearch": "Vyhledejte e-mail",
+      "minPlayers": "Minimální počet hráčů",
+      "maxPlayers": "Maximum hráčů",
+      "pointsWin": "Body za výhru",
+      "pointsDraw": "Body za remízu",
+      "draws": "Losování povoleno",
+      "lanes": "Počet jízdních pruhů",
+      "excludedLanes": "Vyloučené pruhy (např. 5, 8)",
+      "startsAt": "Datum zahájení",
+      "endsAt": "Datum ukončení",
+      "teamName": "Název týmu",
+      "fakeTeam": "Fiktivní tým"
+    },
+    "actions": {
+      "search": "Vyhledávání",
+      "save": "Uložit",
+      "add": "Přidat",
+      "remove": "Odstranit",
+      "generate": "Vygenerujte den",
+      "closeDay": "Zavřete den",
+      "deleteDay": "Smazat den",
+      "editScore": "Upravit skóre",
+      "clearScore": "Jasné skóre",
+      "exportDayPdf": "Exportovat jako PDF",
+      "validate": "Potvrdit",
+      "saved": "Uloženo",
+      "saveScore": "Skóre",
+      "saveLane": "Pruh",
+      "saveTeams": "Týmy",
+      "generatePlayoffs": "Generovat play-off",
+      "createCatchUpMatch": "Vytvořit shodu",
+      "deleteCatchUpMatch": "Smazat zápas",
+      "cancel": "Zrušit"
+    },
+    "pdf": {
+      "lane": "Pruh",
+      "team1": "tým 1",
+      "team2": "tým 2",
+      "score": "Skóre"
+    },
+    "matches": {
+      "empty": "Ještě žádný den.",
+      "championship": "Mistrovství",
+      "playoffs": "Play-off",
+      "catchUp": "Doháněcí zápasy",
+      "catchUpDay": "Den dohánění",
+      "phaseNav": "Fáze turnaje",
+      "day": "Den {number}",
+      "lane": "Pruh {lane}",
+      "scheduled": "hrát",
+      "finished": "Hotovo",
+      "generated": "Vygenerováno",
+      "in_progress": "Probíhá",
+      "closed": "ZAVŘENO",
+      "fictional": "Smyšlený",
+      "pending": "Vítěz {round} {slot}",
+      "rounds": {
+        "quarter": "Čtvrtfinálový",
+        "semi": "Semifinále",
+        "final": "Finále"
+      }
+    },
+    "ranking": {
+      "empty": "Žádný tým v pořadí.",
+      "tie": "Remízu nebylo možné rozdělit podle definovaných pravidel.",
+      "position": "#",
+      "team": "Tým",
+      "played": "P",
+      "wins": "W",
+      "draws": "D",
+      "losses": "L",
+      "points": "Pts",
+      "for": "PF",
+      "against": "PA",
+      "diff": "Dif",
+      "qualified": "Kvalifikovaný"
+    },
+    "public": {
+      "title": "Turnaj",
+      "loading": "Načítání…",
+      "notFound": "Tento turnaj neexistuje nebo již není k dispozici.",
+      "hint": "Veřejné zobrazení: skóre se obnovuje každé 2 minuty.",
+      "share": {
+        "title": "Následuje veřejný turnaj",
+        "hint": "Sdílejte tento odkaz nebo QR kód, aby si každý mohl prohlížet zápasy a umístění bez účtu.",
+        "copy": "Zkopírujte odkaz",
+        "copied": "Odkaz zkopírován",
+        "native": "Podíl",
+        "qrCaption": "Skenovat",
+        "qrAria": "QR kód na stránku veřejného turnaje"
+      }
+    },
+    "admin": {
+      "shareTab": "Veřejnost sledovat",
+      "schedule": "Vygenerujte den",
+      "scheduleHint": "Každý skutečný tým hraje standardně. Zrušte zaškrtnutí nepřítomných.",
+      "present": "Přítomné týmy",
+      "lanes": "Dostupné jízdní pruhy",
+      "teams": "Týmy",
+      "playerHint": "Účet spojený s hráčem se automaticky stává členem turnaje.",
+      "players": "Přidat hráče",
+      "noTeams": "Žádný tým.",
+      "addTeam": "Přidat tým",
+      "playerCount": "{count} hráčů",
+      "noPlayersInTeam": "V tomto týmu zatím nejsou žádní hráči.",
+      "addPlayer": "Přidat hráče",
+      "createPlayer": "Vytvořit a přidat",
+      "removeTeam": "Smazat tým",
+      "teamSizeHint": "Pro vytvoření týmu si vyberte mezi {min} a {max} hráčů.",
+      "members": "členové",
+      "makeAdmin": "Správce",
+      "playoffs": "Play-off",
+      "playoffsHint": "Play-off pro 8 nejlepších (nebo každý tým, když je jich méně). Závorka 1-8, 4-5, 2-7, 3-6 s byes, když je potřeba. Chybějící mistrovské zápasy neblokují generování.",
+      "playoffsDone": "Závorka je již vygenerována.",
+      "playoffsReady": "Každý den mistrovství je uzavřen.",
+      "playoffsWaiting": "Před vygenerováním závorky zavřete každý den mistrovství.",
+      "settings": "Nastavení",
+      "catchUp": "Dohonění",
+      "catchUpHint": "Za vynechané zápasy (absence). Počítá se jako mistrovský zápas.",
+      "catchUpBlocked": "Není k dispozici po vygenerování play-off.",
+      "catchUpTeam1": "tým 1",
+      "catchUpTeam2": "tým 2",
+      "catchUpPickTeam": "Vyberte si tým"
+    },
+    "errors": {
+      "generic": "Operaci nebylo možné dokončit.",
+      "not_found": "Tento turnaj není k dispozici.",
+      "forbidden": "Toto není dovoleno.",
+      "conflict": "Tato operace by znovu vytvořila konfrontaci, která je již plánována. Nic se nezachránilo.",
+      "day_already_closed": "Tento den je již uzavřen.",
+      "day_already_started": "Tento den již začal a nelze jej odstranit.",
+      "day_not_deletable": "Odebrat lze pouze den mistrovství, který nezačal.",
+      "day_closed": "Tento den je zavřeno. Změnit skóre může pouze administrátor.",
+      "day_not_closable": "Každý skutečný zápas potřebuje výsledek, než bude den uzavřen.",
+      "lane_unavailable": "Tento pruh není k dispozici.",
+      "lane_taken": "Tento jízdní pruh je v tento den již využíván.",
+      "playoff_already_generated": "Play-off je již vygenerováno.",
+      "unknown_team": "Tento tým do turnaje nepatří.",
+      "invalid_settings": "Nastavení turnaje není platné.",
+      "not_enough_teams": "Pro tuto operaci není dostatek týmů.",
+      "no_valid_pairing": "S vybranými týmy a již naplánovanými konfrontacemi nelze vygenerovat žádný platný den.",
+      "not_enough_lanes": "Není dostatek volných jízdních pruhů.",
+      "playoff_not_ready": "Uzavřete každý den šampionátu před generováním play-off.",
+      "playoff_sides_fixed": "Týmy play-off se řídí závorkou a nelze je měnit.",
+      "fictional_sides_fixed": "Týmy fiktivního zápasu zůstanou tak, jak byly vybrány, když byl den vygenerován.",
+      "duplicate_pairing": "Tyto dva týmy jsou již na šampionátu na programu.",
+      "catch_up_not_allowed": "Po vygenerování play-off nejsou dotahovací zápasy k dispozici.",
+      "match_not_removable": "Odstranit lze pouze nebodovaný dotahovací zápas.",
+      "team_already_playing": "Skutečný tým nemůže hrát dva zápasy ve stejný den.",
+      "match_not_ready": "Před uložením skóre musí být známy oba týmy.",
+      "score_required": "Obě skóre jsou povinná.",
+      "score_out_of_range": "Skóre musí být mezi 0 a 13.",
+      "playoff_draw": "Zápas play-off nemůže skončit remízou.",
+      "draws_not_allowed": "V tomto turnaji nejsou povoleny remízy.",
+      "match_locked": "Pozdější zápas play-off už má výsledek.",
+      "user_not_found": "Tento uživatel nebyl nalezen.",
+      "member_exists": "Tento uživatel je již členem.",
+      "last_admin": "Turnaj musí mít alespoň jednoho administrátora.",
+      "team_has_matches": "Tento tým již má zápasy a nelze jej smazat.",
+      "team_size": "Počet hráčů nerespektuje limity turnaje.",
+      "player_not_found": "Tento hráč nebyl nalezen.",
+      "player_already_assigned": "Tento hráč již patří do týmu v tomto turnaji.",
+      "player_still_in_team": "Tento člen hraje v týmu a zůstává v turnaji.",
+      "member_not_found": "Tento uživatel není členem turnaje.",
+      "unknown_day": "Tento den se nepodařilo najít.",
+      "unknown_match": "Tato shoda nebyla nalezena."
+    }
+  }
+}

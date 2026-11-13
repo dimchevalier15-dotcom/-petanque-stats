@@ -2,8 +2,10 @@ import { createI18n } from 'vue-i18n'
 import fr from './locales/fr.json'
 import en from './locales/en.json'
 import sk from './locales/sk.json'
+import cs from './locales/cs.json'
+import de from './locales/de.json'
 
-const SUPPORTED_LOCALES = ['fr', 'en', 'sk'] as const
+const SUPPORTED_LOCALES = ['fr', 'en', 'sk', 'cs', 'de'] as const
 
 function resolveInitialLocale(): string {
   try {
@@ -21,5 +23,5 @@ export const i18n = createI18n({
   legacy: false,
   locale: resolveInitialLocale(),
   fallbackLocale: 'en',
-  messages: { fr, en, sk },
+  messages: { fr, en, sk, cs, de },
 })
