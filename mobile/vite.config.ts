@@ -9,6 +9,9 @@ const packageJson = JSON.parse(
 
 export default defineConfig({
   plugins: [vue()],
+  optimizeDeps: {
+    include: ['jspdf', 'jspdf-autotable'],
+  },
   define: {
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(packageJson.version),
   },

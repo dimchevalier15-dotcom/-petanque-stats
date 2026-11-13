@@ -30,6 +30,15 @@
           :save-lane="props.saveLane"
           :save-teams="props.saveTeams"
         />
+        <div v-if="admin" class="day-actions">
+          <Button
+            type="button"
+            outlined
+            icon="pi pi-file-pdf"
+            :label="t('tournaments.actions.exportDayPdf')"
+            @click="exportDayPdf(selectedPlayoffDay)"
+          />
+        </div>
       </div>
     </template>
 
@@ -63,6 +72,13 @@
         />
         <div v-if="admin" class="day-actions">
           <Button
+            type="button"
+            outlined
+            icon="pi pi-file-pdf"
+            :label="t('tournaments.actions.exportDayPdf')"
+            @click="exportDayPdf(selectedChampionshipDay)"
+          />
+          <Button
             v-if="selectedChampionshipDay.deletable"
             class="delete-day"
             severity="danger"
@@ -89,6 +105,8 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { TournamentDay } from "../../models/TournamentDay";
 import type { TournamentTeam } from "../../models/TournamentTeam";
+import { downloadTournamentDayPdf } from "../../utils/exportTournamentDayPdf";
+import { formatTournamentMatchSideName } from "../../utils/tournamentMatchSideName";
 import {
 	currentChampionshipDayId,
 	currentPlayoffDayId,
@@ -96,6 +114,7 @@ import {
 import DayMatches from "./TournamentDayMatches.vue";
 
 const props = defineProps<{
+	tournamentName: string;
 	days: TournamentDay[];
 	teams: TournamentTeam[];
 	admin: boolean;
@@ -240,6 +259,32 @@ function playoffTitle(day: TournamentDay): string {
 		return t("tournaments.matches.playoffs");
 	}
 	return t(`tournaments.matches.rounds.${day.playoffRound}`);
+}
+
+function dayPdfTitle(day: TournamentDay): string {
+	if (day.phase === "playoff") {
+		return playoffTitle(day);
+	}
+	return t("tournaments.matches.day", { number: day.number });
+}
+
+async function exportDayPdf(day: TournamentDay): Promise<void> {
+	await downloadTournamentDayPdf(
+		`${props.tournamentName}-${dayPdfTitle(day)}`,
+		props.tournamentName,
+		dayPdfTitle(day),
+		{
+			lane: t("tournaments.pdf.lane"),
+			team1: t("tournaments.pdf.team1"),
+			team2: t("tournaments.pdf.team2"),
+			score: t("tournaments.pdf.score"),
+		},
+		day.matches.map((match) => ({
+			lane: match.laneNumber,
+			team1: formatTournamentMatchSideName(match.team1, t),
+			team2: formatTournamentMatchSideName(match.team2, t),
+		})),
+	);
 }
 </script>
 

@@ -17,12 +17,14 @@
 
       <TournamentMatchesPanel
         v-if="tab === 'matches'"
+        :tournament-name="detail.name"
         :days="detail.days"
         :teams="detail.teams"
         :admin="false"
         :save-score="noopSave"
         :save-lane="noopSave"
         :save-teams="noopSave"
+        :delete-day="noopDeleteDay"
       />
       <TournamentRankingPanel v-else :ranking="detail.ranking" />
     </template>
@@ -56,6 +58,8 @@ const tabs = computed(() => [
 async function noopSave(): Promise<boolean> {
   return false
 }
+
+async function noopDeleteDay(): Promise<void> {}
 </script>
 
 <style scoped>

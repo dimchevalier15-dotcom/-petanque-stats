@@ -2338,6 +2338,7 @@
       "deleteDay": "Supprimer la journée",
       "editScore": "Modifier le score",
       "clearScore": "Effacer le score",
+      "exportDayPdf": "Exporter en PDF",
       "validate": "Valider",
       "saved": "Enregistré",
       "saveScore": "Score",
@@ -2345,6 +2346,12 @@
       "saveTeams": "Équipes",
       "generatePlayoffs": "Générer les play-offs",
       "cancel": "Annuler"
+    },
+    "pdf": {
+      "lane": "Terrain",
+      "team1": "Équipe 1",
+      "team2": "Équipe 2",
+      "score": "Score"
     },
     "matches": {
       "empty": "Aucune journée pour le moment.",

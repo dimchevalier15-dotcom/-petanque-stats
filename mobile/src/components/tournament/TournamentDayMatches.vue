@@ -164,6 +164,7 @@ import type {
 	TournamentMatchSide,
 } from "../../models/TournamentDay";
 import type { TournamentTeam } from "../../models/TournamentTeam";
+import { formatTournamentMatchSideName } from "../../utils/tournamentMatchSideName";
 
 type EditKind = "score" | "teams" | "lane";
 type SavePhase = "idle" | "loading" | "success";
@@ -381,16 +382,7 @@ async function submitLane(matchId: number): Promise<void> {
 }
 
 function sideName(side: TournamentMatchSide): string {
-	if (side.name) {
-		return side.name;
-	}
-	if (side.pendingWinnerOfRound) {
-		return t("tournaments.matches.pending", {
-			round: t(`tournaments.matches.rounds.${side.pendingWinnerOfRound}`),
-			slot: side.pendingWinnerOfSlot ?? "",
-		});
-	}
-	return "—";
+	return formatTournamentMatchSideName(side, t);
 }
 
 function hasScore(match: TournamentMatch): boolean {

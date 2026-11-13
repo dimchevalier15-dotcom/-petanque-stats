@@ -2313,6 +2313,7 @@
       "deleteDay": "Delete the day",
       "editScore": "Edit score",
       "clearScore": "Clear score",
+      "exportDayPdf": "Export as PDF",
       "validate": "Confirm",
       "saved": "Saved",
       "saveScore": "Score",
@@ -2320,6 +2321,12 @@
       "saveTeams": "Teams",
       "generatePlayoffs": "Generate play-offs",
       "cancel": "Cancel"
+    },
+    "pdf": {
+      "lane": "Lane",
+      "team1": "Team 1",
+      "team2": "Team 2",
+      "score": "Score"
     },
     "matches": {
       "empty": "No day yet.",

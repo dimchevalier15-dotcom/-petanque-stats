@@ -2279,6 +2279,7 @@
       "deleteDay": "Zmazať deň",
       "editScore": "Upraviť skóre",
       "clearScore": "Vymazať skóre",
+      "exportDayPdf": "Exportovať do PDF",
       "validate": "Potvrdiť",
       "saved": "Uložené",
       "saveScore": "Skóre",
@@ -2286,6 +2287,12 @@
       "saveTeams": "Tímy",
       "generatePlayoffs": "Vygenerovať play-off",
       "cancel": "Zrušiť"
+    },
+    "pdf": {
+      "lane": "Ihrisko",
+      "team1": "Tím 1",
+      "team2": "Tím 2",
+      "score": "Skóre"
     },
     "matches": {
       "empty": "Zatiaľ žiadny deň.",

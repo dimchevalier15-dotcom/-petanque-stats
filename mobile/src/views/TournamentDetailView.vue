@@ -13,6 +13,7 @@
       <TournamentMatchesPanel
         v-if="tab === 'matches'"
         :key="revision"
+        :tournament-name="detail.name"
         :days="detail.days"
         :teams="detail.teams"
         :admin="detail.viewerIsAdmin"
