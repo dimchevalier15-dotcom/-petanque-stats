@@ -17,6 +17,14 @@
       </div>
     </nav>
 
+    <section v-show="activeSection === 'share'" class="block app-card">
+      <MatchSharePromo
+        copy-key="tournaments.public.share"
+        :share-uuid="detail.publicUuid"
+        :share-url="publicUrl"
+      />
+    </section>
+
     <section v-show="activeSection === 'schedule'" class="block app-card">
       <p class="hint">{{ t('tournaments.admin.scheduleHint') }}</p>
       <p class="label">{{ t('tournaments.admin.present') }}</p>
@@ -230,9 +238,11 @@ import {
 	parseLaneNumbers,
 	usableLaneNumbers,
 } from "../../utils/tournamentLanes";
+import MatchSharePromo from "../match/MatchSharePromo.vue";
+import { buildTournamentPublicUrl } from "../../utils/buildTournamentPublicUrl";
 import TournamentPlayerAdd from "./TournamentPlayerAdd.vue";
 
-type AdminSection = "schedule" | "teams" | "members" | "playoffs" | "settings";
+type AdminSection = "share" | "schedule" | "teams" | "members" | "playoffs" | "settings";
 
 const props = defineProps<{ detail: TournamentDetail }>();
 const emit = defineEmits<{
@@ -243,7 +253,8 @@ const emit = defineEmits<{
 const { t, te } = useI18n();
 const isMaster = useIsAdmin();
 const sectionTrack = ref<HTMLElement | null>(null);
-const activeSection = ref<AdminSection>("schedule");
+const activeSection = ref<AdminSection>("share");
+const publicUrl = computed(() => buildTournamentPublicUrl(props.detail.publicUuid));
 const busy = ref(false);
 const showCreateTeam = ref(false);
 const present = reactive<Record<number, boolean>>({});
@@ -270,6 +281,7 @@ const settings = reactive({
 });
 
 const sections = computed(() => [
+	{ id: "share" as const, label: t("tournaments.admin.shareTab") },
 	{ id: "schedule" as const, label: t("tournaments.admin.schedule") },
 	{ id: "teams" as const, label: t("tournaments.admin.teams") },
 	{ id: "members" as const, label: t("tournaments.admin.members") },

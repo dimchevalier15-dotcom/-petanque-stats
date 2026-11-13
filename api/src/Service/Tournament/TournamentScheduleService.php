@@ -87,6 +87,29 @@ final class TournamentScheduleService
         return $this->views->day($day, $this->context->viewerTeamId($user, $tournament), true);
     }
 
+    public function deleteDay(User $user, int $tournamentId, int $dayId): TournamentDetailResponse
+    {
+        try {
+            return $this->entityManager->wrapInTransaction(function () use ($user, $tournamentId, $dayId): TournamentDetailResponse {
+                $tournament = $this->context->requireAdmin($user, $tournamentId);
+                $this->tournaments->lockById((int) $tournament->getId());
+                $day = $this->context->requireDay($tournament, $dayId);
+                $this->assertDayDeletable($tournament, $day);
+                foreach ($this->matches->findForDay($day) as $match) {
+                    $this->slots->deleteForMatch($match);
+                    $this->entityManager->remove($match);
+                }
+                $this->entityManager->remove($day);
+                $this->refreshTournamentStatus($tournament);
+                $this->entityManager->flush();
+
+                return $this->views->detail($user, $tournament);
+            });
+        } catch (UniqueConstraintViolationException) {
+            throw new TournamentRuleException('conflict', 'This day could not be removed because other matches depend on it.', 409);
+        }
+    }
+
     public function updateLane(User $user, int $tournamentId, int $matchId, UpdateTournamentMatchLaneRequest $input): TournamentMatchResponse
     {
         $tournament = $this->context->requireAdmin($user, $tournamentId);
@@ -497,6 +520,27 @@ final class TournamentScheduleService
         foreach ([$match->getTeam1(), $match->getTeam2()] as $team) {
             if ($team instanceof TournamentTeam) {
                 $this->entityManager->persist(new TournamentDayTeamSlot($match->getDay(), $team, $match));
+            }
+        }
+    }
+
+    private function assertDayDeletable(Tournament $tournament, TournamentDay $day): void
+    {
+        if ($day->getPhase() !== TournamentDayPhase::CHAMPIONSHIP) {
+            throw new TournamentRuleException('day_not_deletable', 'Only a championship day that has not started can be removed.', 409);
+        }
+        if ($day->getStatus() === TournamentDayStatus::CLOSED) {
+            throw new TournamentRuleException('day_already_closed', 'This day is already closed.');
+        }
+        if ($day->getStatus() !== TournamentDayStatus::GENERATED) {
+            throw new TournamentRuleException('day_already_started', 'This day has already started and cannot be removed.', 409);
+        }
+        if ($this->matches->hasPlayoffMatches($tournament)) {
+            throw new TournamentRuleException('playoffs_generated', 'Play-offs are generated. Championship days cannot be removed.', 409);
+        }
+        foreach ($this->matches->findForDay($day) as $match) {
+            if ($match->hasScore()) {
+                throw new TournamentRuleException('day_already_started', 'This day has already started and cannot be removed.', 409);
             }
         }
     }

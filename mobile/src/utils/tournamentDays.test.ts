@@ -13,6 +13,7 @@ function day(id: number, status: TournamentDay['status'], phase: TournamentDay['
     excludedLaneNumbers: [],
     usableLaneNumbers: [],
     readyToClose: false,
+    deletable: false,
     matches: [],
   }
 }

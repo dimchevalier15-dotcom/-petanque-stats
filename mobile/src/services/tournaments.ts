@@ -4,7 +4,13 @@ import type { TournamentSummaryResponse } from "../dto/tournament/TournamentSumm
 import type { TournamentUserSearchResponse } from "../dto/tournament/TournamentUserSearchResponse";
 import type { TournamentDetail } from "../models/TournamentDetail";
 import type { TournamentSummary } from "../models/TournamentSummary";
+import axios from "axios";
 import api from "./http";
+import { getApiBaseUrl } from "../utils/apiBaseUrl";
+
+const publicApi = axios.create({
+	baseURL: getApiBaseUrl(),
+});
 
 function toSummary(dto: TournamentSummaryResponse): TournamentSummary {
 	return {
@@ -21,6 +27,7 @@ function toSummary(dto: TournamentSummaryResponse): TournamentSummary {
 function toDetail(dto: TournamentDetailResponse): TournamentDetail {
 	return {
 		...toSummary(dto),
+		publicUuid: dto.publicUuid,
 		minPlayersPerTeam: dto.minPlayersPerTeam,
 		maxPlayersPerTeam: dto.maxPlayersPerTeam,
 		pointsForWin: dto.pointsForWin,
@@ -62,6 +69,12 @@ export const tournamentsService = {
 	async get(id: number): Promise<TournamentDetail> {
 		const { data } = await api.get<TournamentDetailResponse>(
 			`/tournaments/${id}`,
+		);
+		return toDetail(data);
+	},
+	async getPublic(publicUuid: string): Promise<TournamentDetail> {
+		const { data } = await publicApi.get<TournamentDetailResponse>(
+			`/public/tournaments/${publicUuid}`,
 		);
 		return toDetail(data);
 	},
@@ -189,6 +202,12 @@ export const tournamentsService = {
 	): Promise<TournamentDetail> {
 		await api.post(`/tournaments/${tournamentId}/days/${dayId}/close`);
 		return this.get(tournamentId);
+	},
+	async deleteDay(tournamentId: number, dayId: number): Promise<TournamentDetail> {
+		const { data } = await api.delete<TournamentDetailResponse>(
+			`/tournaments/${tournamentId}/days/${dayId}`,
+		);
+		return toDetail(data);
 	},
 	async updateTeams(
 		tournamentId: number,

@@ -292,6 +292,12 @@ const routes: RouteRecordRaw[] = [
 		meta: { layout: "main" },
 	},
 	{
+		path: "/tournaments/p/:uuid",
+		name: "publicTournament",
+		component: () => import("../views/TournamentPublicView.vue"),
+		meta: { layout: "focus" },
+	},
+	{
 		path: "/tournaments/:id",
 		name: "tournamentDetail",
 		component: () => import("../views/TournamentDetailView.vue"),

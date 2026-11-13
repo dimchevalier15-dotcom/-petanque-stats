@@ -2335,7 +2335,9 @@
       "remove": "Retirer",
       "generate": "Générer la journée",
       "closeDay": "Clôturer la journée",
+      "deleteDay": "Supprimer la journée",
       "editScore": "Modifier le score",
+      "clearScore": "Effacer le score",
       "validate": "Valider",
       "saved": "Enregistré",
       "saveScore": "Score",
@@ -2378,7 +2380,23 @@
       "diff": "Diff",
       "qualified": "Qualifiée"
     },
+    "public": {
+      "title": "Tournoi",
+      "loading": "Chargement…",
+      "notFound": "Ce tournoi n'existe pas ou n'est plus disponible.",
+      "hint": "Consultation publique : les scores se rafraîchissent toutes les 2 minutes.",
+      "share": {
+        "title": "Suivi public du tournoi",
+        "hint": "Partagez ce lien ou le QR code : tout le monde peut consulter matchs et classement sans compte.",
+        "copy": "Copier le lien",
+        "copied": "Lien copié",
+        "native": "Partager",
+        "qrCaption": "Scanner",
+        "qrAria": "QR code vers le suivi public du tournoi"
+      }
+    },
     "admin": {
+      "shareTab": "Suivi public",
       "schedule": "Générer une journée",
       "scheduleHint": "Toutes les équipes réelles participent par défaut. Décochez les absentes.",
       "present": "Équipes présentes",
@@ -2409,6 +2427,8 @@
       "forbidden": "Vous n'avez pas le droit d'effectuer cette action.",
       "conflict": "Cette opération recréerait une confrontation déjà planifiée. Rien n'a été enregistré.",
       "day_already_closed": "Cette journée est déjà clôturée.",
+      "day_already_started": "Cette journée a commencé : elle ne peut plus être supprimée.",
+      "day_not_deletable": "Seule une journée de championnat non démarrée peut être supprimée.",
       "day_closed": "Cette journée est clôturée. Seul un administrateur peut modifier le score.",
       "day_not_closable": "Tous les matchs réels doivent avoir un résultat avant la clôture.",
       "lane_unavailable": "Ce terrain n'est pas disponible.",

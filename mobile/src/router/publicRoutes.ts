@@ -13,6 +13,7 @@ export const PUBLIC_ROUTE_NAMES = [
   'newMatch',
   'matchScore',
   'guestMatchSummary',
+  'publicTournament',
 ] as const
 
 export const GUEST_ONLY_ROUTE_NAMES = ['login', 'register'] as const

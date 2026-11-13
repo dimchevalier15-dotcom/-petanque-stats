@@ -132,6 +132,35 @@ final class TournamentHttpTest extends WebDatabaseTestCase
         self::assertCount(1, $this->payload($client)['teams'][0]['players']);
     }
 
+    public function testPublicTournamentDetailIsReadableWithoutAccount(): void
+    {
+        $client = $this->createDatabaseClient();
+        $suffix = $this->suffix();
+        $master = $this->user('master-public-'.$suffix, UserRole::MASTER);
+        $admin = $this->user('admin-public-'.$suffix, UserRole::SIMPLE_PLAYER);
+        $this->em()->flush();
+
+        $tournamentId = $this->createTournament($client, $master, [$admin->getId()], 1, 2);
+        $client->request('GET', '/api/tournaments/'.$tournamentId, server: ['HTTP_AUTHORIZATION' => 'Bearer '.$this->token($admin)]);
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        $publicUuid = $this->payload($client)['publicUuid'];
+        self::assertMatchesRegularExpression(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/',
+            $publicUuid,
+        );
+
+        $client->request('GET', '/api/public/tournaments/'.$publicUuid);
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        $public = $this->payload($client);
+        self::assertSame($tournamentId, $public['id']);
+        self::assertFalse($public['viewerIsAdmin']);
+        self::assertNull($public['viewerTeamId']);
+        self::assertNull($public['members']);
+
+        $client->request('GET', '/api/public/tournaments/00000000-0000-4000-8000-000000000000');
+        self::assertSame(404, $client->getResponse()->getStatusCode());
+    }
+
     public function testRosterPlayerGainsTournamentAccessAfterLinkingAccount(): void
     {
         $client = $this->createDatabaseClient();
@@ -320,6 +349,89 @@ final class TournamentHttpTest extends WebDatabaseTestCase
         ]);
         self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
         self::assertSame($freeLane, $this->payload($client)['laneNumber']);
+    }
+
+    public function testScoreCanBeClearedOnAChampionshipMatch(): void
+    {
+        $client = $this->createDatabaseClient();
+        $suffix = $this->suffix();
+        $master = $this->user('master-clear-score-'.$suffix, UserRole::MASTER);
+        $admin = $this->user('admin-clear-score-'.$suffix, UserRole::SIMPLE_PLAYER);
+        $players = [];
+        for ($index = 0; $index < 2; ++$index) {
+            $players[] = new Player('C'.$index, 'Nom', 'C'.$index.$suffix);
+            $this->em()->persist($players[$index]);
+        }
+        $this->em()->flush();
+        $tournamentId = $this->createTournament($client, $master, [$admin->getId()], 1, 2, ['numberOfLanes' => 2]);
+        foreach ($players as $index => $player) {
+            $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/teams', $this->token($admin), [
+                'name' => 'Equipe '.$index,
+                'playerIds' => [$player->getId()],
+            ]);
+        }
+        $day = $this->generate($client, $admin, $tournamentId, []);
+        $match = $day['matches'][0];
+        $this->json($client, 'PATCH', '/api/tournaments/'.$tournamentId.'/matches/'.$match['id'].'/score', $this->token($admin), [
+            'score1' => 13,
+            'score2' => 7,
+        ]);
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        self::assertSame('finished', $this->payload($client)['status']);
+
+        $this->json($client, 'PATCH', '/api/tournaments/'.$tournamentId.'/matches/'.$match['id'].'/score', $this->token($admin), [
+            'clear' => true,
+        ]);
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        $cleared = $this->payload($client);
+        self::assertNull($cleared['score1']);
+        self::assertNull($cleared['score2']);
+        self::assertSame('scheduled', $cleared['status']);
+        self::assertSame('generated', $this->show($client, $admin, $tournamentId)['days'][0]['status']);
+    }
+
+    public function testAdminCanDeleteAnUnstartedChampionshipDay(): void
+    {
+        $client = $this->createDatabaseClient();
+        $suffix = $this->suffix();
+        $master = $this->user('master-delete-day-'.$suffix, UserRole::MASTER);
+        $admin = $this->user('admin-delete-day-'.$suffix, UserRole::SIMPLE_PLAYER);
+        $players = [];
+        for ($index = 0; $index < 2; ++$index) {
+            $players[] = new Player('D'.$index, 'Nom', 'D'.$index.$suffix);
+            $this->em()->persist($players[$index]);
+        }
+        $this->em()->flush();
+        $tournamentId = $this->createTournament($client, $master, [$admin->getId()], 1, 2, ['numberOfLanes' => 2]);
+        foreach ($players as $index => $player) {
+            $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/teams', $this->token($admin), [
+                'name' => 'Equipe '.$index,
+                'playerIds' => [$player->getId()],
+            ]);
+        }
+        $day = $this->generate($client, $admin, $tournamentId, []);
+        self::assertTrue($day['deletable']);
+
+        $this->json($client, 'DELETE', '/api/tournaments/'.$tournamentId.'/days/'.$day['id'], $this->token($admin));
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        self::assertSame([], array_values(array_filter(
+            $this->payload($client)['days'],
+            static fn (array $entry): bool => $entry['phase'] === 'championship',
+        )));
+
+        $regenerated = $this->generate($client, $admin, $tournamentId, []);
+        self::assertSame(201, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        self::assertSame(1, $regenerated['number']);
+
+        $this->json($client, 'PATCH', '/api/tournaments/'.$tournamentId.'/matches/'.$regenerated['matches'][0]['id'].'/score', $this->token($admin), [
+            'score1' => 13,
+            'score2' => 5,
+        ]);
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+
+        $this->json($client, 'DELETE', '/api/tournaments/'.$tournamentId.'/days/'.$regenerated['id'], $this->token($admin));
+        self::assertSame(409, $client->getResponse()->getStatusCode());
+        self::assertSame('day_already_started', $this->payload($client)['error']);
     }
 
     public function testFictionalMatchesDoNotAffectTheRankingAndADayCanCloseWithoutThem(): void

@@ -47,6 +47,14 @@ final class TournamentScheduleController extends AbstractController
         );
     }
 
+    #[Route('/api/tournaments/{tournamentId}/days/{dayId}', name: 'api_tournaments_delete_day', methods: ['DELETE'], requirements: ['tournamentId' => '\d+', 'dayId' => '\d+'])]
+    public function deleteDay(int $tournamentId, int $dayId): Response
+    {
+        return $this->http->respond(
+            fn () => $this->schedule->deleteDay($this->http->user($this->getUser()), $tournamentId, $dayId),
+        );
+    }
+
     #[Route('/api/tournaments/{tournamentId}/matches/{matchId}/lane', name: 'api_tournaments_update_lane', methods: ['PATCH'], requirements: ['tournamentId' => '\d+', 'matchId' => '\d+'])]
     public function updateLane(int $tournamentId, int $matchId, Request $request): Response
     {

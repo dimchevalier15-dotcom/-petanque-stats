@@ -33,5 +33,6 @@ export interface TournamentDay {
 	excludedLaneNumbers: number[];
 	usableLaneNumbers: number[];
 	readyToClose: boolean;
+	deletable: boolean;
 	matches: TournamentMatch[];
 }

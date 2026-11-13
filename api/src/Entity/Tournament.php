@@ -19,6 +19,9 @@ class Tournament
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(name: 'public_uuid', type: 'string', length: 36, unique: true)]
+    private string $publicUuid;
+
     #[ORM\Column(type: 'string', length: 120)]
     private string $name;
 
@@ -85,6 +88,7 @@ class Tournament
         ?DateTimeImmutable $endsAt,
         User $createdBy,
     ) {
+        $this->publicUuid = self::generatePublicUuid();
         $this->name = $name;
         $this->description = $description;
         $this->format = TournamentFormat::CHAMPIONSHIP_SINGLE_PLAYOFFS_8;
@@ -105,6 +109,11 @@ class Tournament
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicUuid(): string
+    {
+        return $this->publicUuid;
     }
 
     public function getName(): string
@@ -231,5 +240,14 @@ class Tournament
         $this->excludedLaneNumbers = $excludedLaneNumbers;
         $this->startsAt = $startsAt;
         $this->endsAt = $endsAt;
+    }
+
+    private static function generatePublicUuid(): string
+    {
+        $data = random_bytes(16);
+        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
+        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 }

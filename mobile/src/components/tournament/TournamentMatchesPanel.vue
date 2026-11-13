@@ -61,12 +61,23 @@
           :save-lane="props.saveLane"
           :save-teams="props.saveTeams"
         />
-        <Button
-          v-if="admin && selectedChampionshipDay.readyToClose"
-          class="close"
-          :label="t('tournaments.actions.closeDay')"
-          @click="emit('close', selectedChampionshipDay.id)"
-        />
+        <div v-if="admin" class="day-actions">
+          <Button
+            v-if="selectedChampionshipDay.deletable"
+            class="delete-day"
+            severity="danger"
+            outlined
+            :label="t('tournaments.actions.deleteDay')"
+            :loading="deletingDay"
+            @click="removeDay(selectedChampionshipDay.id)"
+          />
+          <Button
+            v-if="selectedChampionshipDay.readyToClose"
+            class="close"
+            :label="t('tournaments.actions.closeDay')"
+            @click="emit('close', selectedChampionshipDay.id)"
+          />
+        </div>
       </div>
     </template>
   </section>
@@ -88,11 +99,11 @@ const props = defineProps<{
 	days: TournamentDay[];
 	teams: TournamentTeam[];
 	admin: boolean;
-	saveScore: (payload: {
-		matchId: number;
-		score1: number;
-		score2: number;
-	}) => Promise<boolean>;
+	saveScore: (
+		payload:
+			| { matchId: number; score1: number; score2: number }
+			| { matchId: number; clear: true },
+	) => Promise<boolean>;
 	saveLane: (payload: {
 		matchId: number;
 		laneNumber: number;
@@ -102,11 +113,14 @@ const props = defineProps<{
 		team1Id: number;
 		team2Id: number;
 	}) => Promise<boolean>;
+	deleteDay: (dayId: number) => Promise<void>;
 }>();
 
 const emit = defineEmits<{
 	close: [dayId: number];
 }>();
+
+const deletingDay = ref(false);
 
 const { t } = useI18n();
 const championshipTrack = ref<HTMLElement | null>(null);
@@ -124,6 +138,15 @@ const currentChampionshipId = computed(() =>
 	currentChampionshipDayId(props.days),
 );
 const currentPlayoffId = computed(() => currentPlayoffDayId(props.days));
+
+async function removeDay(dayId: number): Promise<void> {
+	deletingDay.value = true;
+	try {
+		await props.deleteDay(dayId);
+	} finally {
+		deletingDay.value = false;
+	}
+}
 
 const selectedChampionshipDay = computed(() =>
 	championshipDays.value.find(
@@ -287,6 +310,13 @@ function playoffTitle(day: TournamentDay): string {
   margin: 0;
 }
 
+.day-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.delete-day,
 .close {
   justify-self: start;
 }

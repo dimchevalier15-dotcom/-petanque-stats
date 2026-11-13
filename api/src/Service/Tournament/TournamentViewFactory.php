@@ -20,6 +20,7 @@ use App\Entity\TournamentDayFakeTeam;
 use App\Entity\TournamentMatch;
 use App\Entity\TournamentTeam;
 use App\Entity\User;
+use App\Enum\TournamentDayPhase;
 use App\Enum\TournamentDayStatus;
 use App\Enum\TournamentMatchPhase;
 use App\Repository\TournamentDayRepository;
@@ -61,8 +62,35 @@ final class TournamentViewFactory
         $viewerTeamId = $this->context->viewerTeamId($user, $tournament);
         $summary = $this->summary($tournament);
 
+        return $this->buildDetailResponse(
+            $tournament,
+            $summary,
+            $viewerIsAdmin,
+            $viewerTeamId,
+            $viewerIsAdmin ? $this->memberResponses($tournament) : null,
+        );
+    }
+
+    public function publicDetail(Tournament $tournament): TournamentDetailResponse
+    {
+        $summary = $this->summary($tournament);
+
+        return $this->buildDetailResponse($tournament, $summary, false, null, null);
+    }
+
+    /**
+     * @param list<TournamentMemberResponse>|null $members
+     */
+    private function buildDetailResponse(
+        Tournament $tournament,
+        TournamentSummaryResponse $summary,
+        bool $viewerIsAdmin,
+        ?int $viewerTeamId,
+        ?array $members,
+    ): TournamentDetailResponse {
         return new TournamentDetailResponse(
             $summary->id,
+            $tournament->getPublicUuid(),
             $summary->name,
             $summary->description,
             $summary->status,
@@ -80,7 +108,7 @@ final class TournamentViewFactory
             $viewerTeamId,
             $this->matches->hasPlayoffMatches($tournament),
             $this->teamResponses($tournament),
-            $viewerIsAdmin ? $this->memberResponses($tournament) : null,
+            $members,
             $this->dayResponses($tournament, $viewerTeamId, $viewerIsAdmin),
             $this->ranking($tournament),
         );
@@ -235,11 +263,32 @@ final class TournamentViewFactory
                 $day->getExcludedLaneNumbers(),
                 $this->lanes->usableLaneNumbers($tournament->getNumberOfLanes(), $day->getExcludedLaneNumbers()),
                 $readyToClose && $matches !== [],
+                $this->dayIsDeletable($tournament, $day),
                 $matches,
             );
         }
 
         return $responses;
+    }
+
+    private function dayIsDeletable(Tournament $tournament, TournamentDay $day): bool
+    {
+        if ($day->getPhase() !== TournamentDayPhase::CHAMPIONSHIP) {
+            return false;
+        }
+        if ($day->getStatus() !== TournamentDayStatus::GENERATED) {
+            return false;
+        }
+        if ($this->matches->hasPlayoffMatches($tournament)) {
+            return false;
+        }
+        foreach ($this->matches->findForDay($day) as $match) {
+            if ($match->hasScore()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function matchResponse(TournamentMatch $match, ?int $viewerTeamId, bool $viewerIsAdmin): TournamentMatchResponse

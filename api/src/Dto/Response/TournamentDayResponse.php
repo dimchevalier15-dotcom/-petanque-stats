@@ -21,6 +21,7 @@ final class TournamentDayResponse
         public array $excludedLaneNumbers,
         public array $usableLaneNumbers,
         public bool $readyToClose,
+        public bool $deletable,
         public array $matches,
     ) {
     }

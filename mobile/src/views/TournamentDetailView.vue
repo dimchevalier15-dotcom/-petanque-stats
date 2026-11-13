@@ -19,6 +19,7 @@
         :save-score="saveScore"
         :save-lane="saveLane"
         :save-teams="saveTeams"
+        :delete-day="deleteDay"
         @close="closeDay"
       />
       <TournamentRankingPanel v-else-if="tab === 'ranking'" :ranking="detail.ranking" />
@@ -88,20 +89,25 @@ function apply(next: TournamentDetail, options?: { remount?: boolean }): void {
 	error.value = "";
 }
 
-async function saveScore(payload: {
-	matchId: number;
-	score1: number;
-	score2: number;
-}): Promise<boolean> {
+async function saveScore(
+	payload:
+		| { matchId: number; score1: number; score2: number }
+		| { matchId: number; clear: true },
+): Promise<boolean> {
 	if (!detail.value) {
 		return false;
 	}
 	try {
+		const body =
+			"clear" in payload
+				? { clear: true as const }
+				: { score1: payload.score1, score2: payload.score2 };
 		apply(
-			await tournamentsService.updateScore(detail.value.id, payload.matchId, {
-				score1: payload.score1,
-				score2: payload.score2,
-			}),
+			await tournamentsService.updateScore(
+				detail.value.id,
+				payload.matchId,
+				body,
+			),
 			{ remount: false },
 		);
 		return true;
@@ -165,6 +171,17 @@ async function closeDay(dayId: number): Promise<void> {
 	}
 	try {
 		apply(await tournamentsService.closeDay(detail.value.id, dayId));
+	} catch (caught) {
+		error.value = tournamentErrorMessage(caught, t, te);
+	}
+}
+
+async function deleteDay(dayId: number): Promise<void> {
+	if (!detail.value) {
+		return;
+	}
+	try {
+		apply(await tournamentsService.deleteDay(detail.value.id, dayId));
 	} catch (caught) {
 		error.value = tournamentErrorMessage(caught, t, te);
 	}

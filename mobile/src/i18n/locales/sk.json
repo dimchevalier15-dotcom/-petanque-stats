@@ -2276,7 +2276,9 @@
       "remove": "Odobrať",
       "generate": "Vygenerovať deň",
       "closeDay": "Uzavrieť deň",
+      "deleteDay": "Zmazať deň",
       "editScore": "Upraviť skóre",
+      "clearScore": "Vymazať skóre",
       "validate": "Potvrdiť",
       "saved": "Uložené",
       "saveScore": "Skóre",
@@ -2319,7 +2321,23 @@
       "diff": "Roz",
       "qualified": "Postup"
     },
+    "public": {
+      "title": "Turnaj",
+      "loading": "Načítava sa…",
+      "notFound": "Tento turnaj neexistuje alebo už nie je dostupný.",
+      "hint": "Verejný náhľad: skóre sa obnovuje každé 2 minúty.",
+      "share": {
+        "title": "Verejné sledovanie turnaja",
+        "hint": "Zdieľajte odkaz alebo QR kód — každý môže bez účtu sledovať zápasy a tabuľku.",
+        "copy": "Kopírovať odkaz",
+        "copied": "Odkaz skopírovaný",
+        "native": "Zdieľať",
+        "qrCaption": "Skenovať",
+        "qrAria": "QR kód na verejnú stránku turnaja"
+      }
+    },
     "admin": {
+      "shareTab": "Verejné sledovanie",
       "schedule": "Vygenerovať deň",
       "scheduleHint": "Všetky skutočné tímy hrajú predvolene. Odškrtnite neprítomné.",
       "present": "Prítomné tímy",
@@ -2350,6 +2368,8 @@
       "forbidden": "Na túto akciu nemáte oprávnenie.",
       "conflict": "Táto operácia by zopakovala už naplánovanú konfrontáciu. Nič sa neuložilo.",
       "day_already_closed": "Tento deň je už uzavretý.",
+      "day_already_started": "Tento deň už začal a nedá sa odstrániť.",
+      "day_not_deletable": "Odstrániť sa dá len nerozbehnutý deň šampionátu.",
       "day_closed": "Tento deň je uzavretý. Skóre môže zmeniť len správca.",
       "day_not_closable": "Pred uzavretím dňa musia mať všetky skutočné zápasy výsledok.",
       "lane_unavailable": "Toto ihrisko nie je dostupné.",

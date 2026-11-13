@@ -49,6 +49,16 @@ final class TournamentCatalogService
         return $this->views->detail($user, $this->context->requireMember($user, $tournamentId));
     }
 
+    public function publicDetail(string $publicUuid): TournamentDetailResponse
+    {
+        $tournament = $this->tournaments->findOneByPublicUuid($publicUuid);
+        if (!$tournament instanceof Tournament) {
+            throw new TournamentNotFoundException();
+        }
+
+        return $this->views->publicDetail($tournament);
+    }
+
     public function create(User $user, CreateTournamentRequest $input): TournamentDetailResponse
     {
         if (!$user->isMaster()) {

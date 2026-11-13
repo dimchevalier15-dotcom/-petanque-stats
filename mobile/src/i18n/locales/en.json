@@ -2310,7 +2310,9 @@
       "remove": "Remove",
       "generate": "Generate the day",
       "closeDay": "Close the day",
+      "deleteDay": "Delete the day",
       "editScore": "Edit score",
+      "clearScore": "Clear score",
       "validate": "Confirm",
       "saved": "Saved",
       "saveScore": "Score",
@@ -2353,7 +2355,23 @@
       "diff": "Diff",
       "qualified": "Qualified"
     },
+    "public": {
+      "title": "Tournament",
+      "loading": "Loading…",
+      "notFound": "This tournament does not exist or is no longer available.",
+      "hint": "Public view: scores refresh every 2 minutes.",
+      "share": {
+        "title": "Public tournament follow",
+        "hint": "Share this link or QR code so anyone can view matches and standings without an account.",
+        "copy": "Copy link",
+        "copied": "Link copied",
+        "native": "Share",
+        "qrCaption": "Scan",
+        "qrAria": "QR code to the public tournament page"
+      }
+    },
     "admin": {
+      "shareTab": "Public follow",
       "schedule": "Generate a day",
       "scheduleHint": "Every real team plays by default. Uncheck the absent ones.",
       "present": "Teams present",
@@ -2384,6 +2402,8 @@
       "forbidden": "You are not allowed to do this.",
       "conflict": "This operation would recreate a confrontation that is already planned. Nothing was saved.",
       "day_already_closed": "This day is already closed.",
+      "day_already_started": "This day has already started and cannot be removed.",
+      "day_not_deletable": "Only a championship day that has not started can be removed.",
       "day_closed": "This day is closed. Only an administrator can change the score.",
       "day_not_closable": "Every real match needs a result before the day can be closed.",
       "lane_unavailable": "This lane is not available.",

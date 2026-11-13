@@ -21,6 +21,11 @@ final class TournamentRepository extends ServiceEntityRepository
         parent::__construct($registry, Tournament::class);
     }
 
+    public function findOneByPublicUuid(string $publicUuid): ?Tournament
+    {
+        return $this->findOneBy(['publicUuid' => $publicUuid]);
+    }
+
     public function lockById(int $id): void
     {
         $this->getEntityManager()->getConnection()->executeStatement(

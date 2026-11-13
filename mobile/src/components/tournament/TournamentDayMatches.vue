@@ -22,6 +22,18 @@
               :disabled="isSaving(match.id, 'score')"
               @click="openScoreEdit(match.id)"
             />
+            <Button
+              type="button"
+              icon="pi pi-eraser"
+              text
+              rounded
+              size="small"
+              severity="danger"
+              class="score-edit-btn"
+              :aria-label="t('tournaments.actions.clearScore')"
+              :disabled="isSaving(match.id, 'score')"
+              @click="clearScore(match.id)"
+            />
           </div>
           <template v-else-if="match.viewerCanEditScore">
             <div class="score-inputs">
@@ -58,14 +70,25 @@
                 :label="validateLabel(match.id, 'score')"
                 @click="submitScore(match.id)"
               />
-              <button
-                v-else-if="scoreEditMode[match.id] && hasScore(match)"
-                type="button"
-                class="score-cancel"
-                @click="closeScoreEdit(match.id)"
-              >
-                {{ t('tournaments.actions.cancel') }}
-              </button>
+              <template v-else-if="scoreEditMode[match.id] && hasScore(match) && !scoreDirty(match)">
+                <Button
+                  type="button"
+                  size="small"
+                  severity="danger"
+                  outlined
+                  :label="t('tournaments.actions.clearScore')"
+                  :loading="savePhase(match.id, 'score') === 'loading'"
+                  :disabled="isSaving(match.id, 'score')"
+                  @click="clearScore(match.id)"
+                />
+                <button
+                  type="button"
+                  class="score-cancel"
+                  @click="closeScoreEdit(match.id)"
+                >
+                  {{ t('tournaments.actions.cancel') }}
+                </button>
+              </template>
             </div>
           </template>
           <span v-else class="score">{{ scoreText(match) }}</span>
@@ -151,11 +174,11 @@ const props = defineProps<{
 	day: TournamentDay;
 	teams: TournamentTeam[];
 	admin: boolean;
-	saveScore: (payload: {
-		matchId: number;
-		score1: number;
-		score2: number;
-	}) => Promise<boolean>;
+	saveScore: (
+		payload:
+			| { matchId: number; score1: number; score2: number }
+			| { matchId: number; clear: true },
+	) => Promise<boolean>;
 	saveLane: (payload: {
 		matchId: number;
 		laneNumber: number;
@@ -323,6 +346,15 @@ async function submitScore(matchId: number): Promise<void> {
 			matchId,
 			score1: Number(draft.score1),
 			score2: Number(draft.score2),
+		}),
+	);
+}
+
+async function clearScore(matchId: number): Promise<void> {
+	await runSave(matchId, "score", () =>
+		props.saveScore({
+			matchId,
+			clear: true,
 		}),
 	);
 }

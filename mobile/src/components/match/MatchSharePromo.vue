@@ -3,21 +3,21 @@
     <div class="share-promo-body">
       <div class="share-promo-text">
         <h2 id="match-share-promo-title" class="share-promo-title">
-          {{ t('summary.share.title') }}
+          {{ t(`${shareCopyKey}.title`) }}
         </h2>
-        <p class="share-promo-subtitle">{{ t('summary.share.hint') }}</p>
+        <p class="share-promo-subtitle">{{ t(`${shareCopyKey}.hint`) }}</p>
         <InputText :model-value="shareUrl" readonly class="share-promo-url" />
         <div class="share-promo-actions">
           <Button
             v-if="canNativeShare"
             size="small"
-            :label="t('summary.share.native')"
+            :label="t(`${shareCopyKey}.native`)"
             icon="pi pi-share-alt"
             @click="shareLink"
           />
           <Button
             size="small"
-            :label="linkCopied ? t('summary.share.copied') : t('summary.share.copy')"
+            :label="linkCopied ? t(`${shareCopyKey}.copied`) : t(`${shareCopyKey}.copy`)"
             icon="pi pi-copy"
             severity="secondary"
             outlined
@@ -31,7 +31,7 @@
         :href="shareUrl"
         target="_blank"
         rel="noopener noreferrer"
-        :aria-label="t('summary.share.qrAria')"
+        :aria-label="t(`${shareCopyKey}.qrAria`)"
       >
         <img
           class="share-promo-qr"
@@ -41,7 +41,7 @@
           alt=""
           aria-hidden="true"
         />
-        <span class="share-promo-qr-caption">{{ t('summary.share.qrCaption') }}</span>
+        <span class="share-promo-qr-caption">{{ t(`${shareCopyKey}.qrCaption`) }}</span>
       </a>
     </div>
   </section>
@@ -55,12 +55,18 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import { buildSharedMatchUrl } from '../../utils/buildSharedMatchUrl'
 
-const props = defineProps<{
-  shareUuid: string
-  shareUrl?: string | null
-}>()
+const props = withDefaults(
+  defineProps<{
+    shareUuid: string
+    shareUrl?: string | null
+    copyKey?: 'summary.share' | 'tournaments.public.share'
+  }>(),
+  { copyKey: 'summary.share' },
+)
 
 const { t } = useI18n()
+
+const shareCopyKey = computed(() => props.copyKey)
 
 const shareUrl = computed(
   () => props.shareUrl?.trim() || buildSharedMatchUrl(props.shareUuid),
@@ -103,7 +109,7 @@ async function shareLink(): Promise<void> {
   if (!canNativeShare.value) return
   try {
     await navigator.share({
-      title: t('summary.share.title'),
+      title: t(`${shareCopyKey.value}.title`),
       url: shareUrl.value,
     })
   } catch {

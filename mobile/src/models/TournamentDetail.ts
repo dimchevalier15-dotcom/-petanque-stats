@@ -5,6 +5,7 @@ import type { TournamentSummary } from "./TournamentSummary";
 import type { TournamentTeam } from "./TournamentTeam";
 
 export interface TournamentDetail extends TournamentSummary {
+	publicUuid: string;
 	minPlayersPerTeam: number;
 	maxPlayersPerTeam: number;
 	pointsForWin: number;
