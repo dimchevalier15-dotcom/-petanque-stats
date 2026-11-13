@@ -99,6 +99,38 @@ final class TournamentRankingCalculatorTest extends TestCase
         self::assertFalse($rows[0]->tieUnresolved);
     }
 
+    public function testADrawnHeadToHeadDoesNotTriggerAnUnresolvedTieWarning(): void
+    {
+        $rows = $this->calculator->rank(
+            [new RankingTeamInput(1, 'A'), new RankingTeamInput(2, 'B')],
+            [new RankingMatchInput(1, 2, 10, 10)],
+            1,
+            1,
+        );
+
+        self::assertFalse($rows[0]->tieUnresolved);
+        self::assertFalse($rows[1]->tieUnresolved);
+    }
+
+    public function testTeamsWithoutMatchesAreNotMarkedAsUnresolvedTies(): void
+    {
+        $rows = $this->calculator->rank(
+            [
+                new RankingTeamInput(1, 'A'),
+                new RankingTeamInput(2, 'B'),
+                new RankingTeamInput(3, 'C'),
+            ],
+            [],
+            1,
+            0,
+        );
+
+        self::assertSame([1, 2, 3], array_map(static fn ($row) => $row->teamId, $rows));
+        foreach ($rows as $row) {
+            self::assertFalse($row->tieUnresolved);
+        }
+    }
+
     public function testAnUnresolvedTieKeepsADeterministicOrder(): void
     {
         $rows = $this->calculator->rank(

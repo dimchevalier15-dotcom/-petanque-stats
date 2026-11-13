@@ -2338,6 +2338,7 @@
       "playerCount": "{count} player(s)",
       "noPlayersInTeam": "No players in this team yet.",
       "addPlayer": "Add a player",
+      "createPlayer": "Create and add",
       "removeTeam": "Delete team",
       "teamSizeHint": "Pick between {min} and {max} players to create the team.",
       "members": "Members",

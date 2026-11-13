@@ -129,6 +129,19 @@ final class TournamentRankingCalculator
             return $this->orderPair($teamIds[0], $teamIds[1], $rows, $headToHeadWinner);
         }
 
+        $hasPlayed = false;
+        foreach ($teamIds as $teamId) {
+            if ($rows[$teamId]['played'] > 0) {
+                $hasPlayed = true;
+                break;
+            }
+        }
+        if (!$hasPlayed) {
+            sort($teamIds);
+
+            return $teamIds;
+        }
+
         usort($teamIds, function (int $leftId, int $rightId) use ($rows): int {
             $leftDiff = $rows[$leftId]['pointsFor'] - $rows[$leftId]['pointsAgainst'];
             $rightDiff = $rows[$rightId]['pointsFor'] - $rows[$rightId]['pointsAgainst'];
@@ -161,15 +174,32 @@ final class TournamentRankingCalculator
      */
     private function orderPair(int $leftId, int $rightId, array &$rows, array $headToHeadWinner): array
     {
-        $winnerId = $headToHeadWinner[TournamentPairKey::of($leftId, $rightId)] ?? null;
+        $pairKey = TournamentPairKey::of($leftId, $rightId);
+        if (!\array_key_exists($pairKey, $headToHeadWinner)) {
+            return $this->orderByDiffThenId($leftId, $rightId, $rows);
+        }
+        $winnerId = $headToHeadWinner[$pairKey];
         if ($winnerId === $leftId) {
             return [$leftId, $rightId];
         }
         if ($winnerId === $rightId) {
             return [$rightId, $leftId];
         }
-        $rows[$leftId]['tieUnresolved'] = true;
-        $rows[$rightId]['tieUnresolved'] = true;
+
+        return $this->orderByDiffThenId($leftId, $rightId, $rows);
+    }
+
+    /**
+     * @param array<int, array{name: string, played: int, wins: int, draws: int, losses: int, points: int, pointsFor: int, pointsAgainst: int}> $rows
+     * @return list<int>
+     */
+    private function orderByDiffThenId(int $leftId, int $rightId, array $rows): array
+    {
+        $leftDiff = $rows[$leftId]['pointsFor'] - $rows[$leftId]['pointsAgainst'];
+        $rightDiff = $rows[$rightId]['pointsFor'] - $rows[$rightId]['pointsAgainst'];
+        if ($leftDiff !== $rightDiff) {
+            return $leftDiff > $rightDiff ? [$leftId, $rightId] : [$rightId, $leftId];
+        }
 
         return $leftId < $rightId ? [$leftId, $rightId] : [$rightId, $leftId];
     }

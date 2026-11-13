@@ -14,6 +14,7 @@ use App\Repository\TournamentMatchRepository;
 use App\Repository\TournamentMemberRepository;
 use App\Repository\TournamentTeamPlayerRepository;
 use App\Repository\TournamentTeamRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 final class TournamentContext
 {
@@ -24,6 +25,8 @@ final class TournamentContext
         private TournamentDayRepository $days,
         private TournamentMatchRepository $matches,
         private TournamentTeamPlayerRepository $teamPlayers,
+        private TournamentMembershipSyncService $membershipSync,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -41,7 +44,11 @@ final class TournamentContext
     {
         $tournament = $this->requireTournament($tournamentId);
         if ($this->members->findOneByTournamentAndUser($tournament, $user) === null) {
-            throw new TournamentNotFoundException();
+            if (!$this->membershipSync->userPlaysInTournament($user, $tournament)) {
+                throw new TournamentNotFoundException();
+            }
+            $this->membershipSync->ensureMember($tournament, $user);
+            $this->entityManager->flush();
         }
 
         return $tournament;

@@ -132,6 +132,50 @@ final class TournamentHttpTest extends WebDatabaseTestCase
         self::assertCount(1, $this->payload($client)['teams'][0]['players']);
     }
 
+    public function testRosterPlayerGainsTournamentAccessAfterLinkingAccount(): void
+    {
+        $client = $this->createDatabaseClient();
+        $suffix = $this->suffix();
+        $master = $this->user('master-link-'.$suffix, UserRole::MASTER);
+        $admin = $this->user('admin-link-'.$suffix, UserRole::SIMPLE_PLAYER);
+        $latecomer = $this->user('late-link-'.$suffix, UserRole::SIMPLE_PLAYER);
+        $placeholder = new Player('Tom', 'Durand', 'Tom'.$suffix);
+        $teammate = new Player('Eva', 'Petit', 'Eva'.$suffix);
+        $this->em()->persist($placeholder);
+        $this->em()->persist($teammate);
+        $this->em()->flush();
+
+        $tournamentId = $this->createTournament($client, $master, [$admin->getId()], 1, 2);
+
+        $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/teams', $this->token($admin), [
+            'name' => 'Doubles',
+            'playerIds' => [$placeholder->getId(), $teammate->getId()],
+        ]);
+        self::assertSame(201, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        $members = $this->payload($client)['members'];
+        self::assertIsArray($members);
+        self::assertEmpty(array_filter(
+            $members,
+            static fn (mixed $member): bool => is_array($member) && $member['userId'] === $latecomer->getId(),
+        ));
+
+        $client->request('GET', '/api/tournaments', server: ['HTTP_AUTHORIZATION' => 'Bearer '.$this->token($latecomer)]);
+        self::assertSame([], $this->payload($client));
+
+        $this->json($client, 'POST', '/api/account/player/link', $this->token($latecomer), [
+            'playerId' => $placeholder->getId(),
+        ]);
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+
+        $client->request('GET', '/api/tournaments', server: ['HTTP_AUTHORIZATION' => 'Bearer '.$this->token($latecomer)]);
+        $listed = $this->payload($client);
+        self::assertCount(1, $listed);
+        self::assertSame($tournamentId, $listed[0]['id']);
+
+        $client->request('GET', '/api/tournaments/'.$tournamentId, server: ['HTTP_AUTHORIZATION' => 'Bearer '.$this->token($latecomer)]);
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+    }
+
     public function testChampionshipGenerationIsUniqueAndIdempotent(): void
     {
         $client = $this->createDatabaseClient();

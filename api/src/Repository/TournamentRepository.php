@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Tournament;
 use App\Entity\TournamentMember;
+use App\Entity\TournamentTeamPlayer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -35,9 +36,12 @@ final class TournamentRepository extends ServiceEntityRepository
     {
         /** @var list<Tournament> $tournaments */
         $tournaments = $this->createQueryBuilder('t')
-            ->innerJoin(TournamentMember::class, 'membership', 'WITH', 'membership.tournament = t')
-            ->andWhere('membership.user = :user')
+            ->leftJoin(TournamentMember::class, 'membership', 'WITH', 'membership.tournament = t AND membership.user = :user')
+            ->leftJoin(TournamentTeamPlayer::class, 'roster', 'WITH', 'roster.tournament = t')
+            ->leftJoin('roster.player', 'player', 'WITH', 'player.user = :user')
+            ->andWhere('membership.id IS NOT NULL OR player.id IS NOT NULL')
             ->setParameter('user', $user)
+            ->distinct()
             ->orderBy('t.createdAt', 'DESC')
             ->getQuery()
             ->getResult();

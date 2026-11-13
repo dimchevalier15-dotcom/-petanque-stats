@@ -64,13 +64,14 @@
             <span>{{ t('tournaments.fields.teamName') }}</span>
             <InputText v-model="teamName" fluid />
           </label>
-          <PlayerSearchSelect
-            v-model="playerToAdd"
+          <TournamentPlayerAdd
             :placeholder="t('tournaments.admin.players')"
-            @update:model-value="pushPlayer"
+            :exclude-ids="excludePlayerIdsForCreate"
+            @select="pushPlayer"
+            @error="fail"
           />
           <div v-for="player in selectedPlayers" :key="player.id" class="chip">
-            <span>{{ player.nickname }}</span>
+            <span>{{ player.firstName }} {{ player.lastName }}</span>
             <Button
               type="button"
               icon="pi pi-times"
@@ -120,10 +121,11 @@
           </ul>
           <div class="add-player">
             <span class="label">{{ t('tournaments.admin.addPlayer') }}</span>
-            <PlayerSearchSelect
-              :model-value="null"
+            <TournamentPlayerAdd
               :placeholder="t('tournaments.admin.players')"
-              @update:model-value="(player) => player && addPlayer(team.id, player.id)"
+              :exclude-ids="rosterPlayerIds"
+              @select="(player) => addPlayer(team.id, player.id)"
+              @error="fail"
             />
           </div>
           <Button
@@ -228,7 +230,7 @@ import {
 	parseLaneNumbers,
 	usableLaneNumbers,
 } from "../../utils/tournamentLanes";
-import PlayerSearchSelect from "../players/PlayerSearchSelect.vue";
+import TournamentPlayerAdd from "./TournamentPlayerAdd.vue";
 
 type AdminSection = "schedule" | "teams" | "members" | "playoffs" | "settings";
 
@@ -251,7 +253,6 @@ const fakes = ref<string[]>([]);
 const excluded = ref<number[]>([]);
 const teamName = ref("");
 const selectedPlayers = ref<Player[]>([]);
-const playerToAdd = ref<Player | null>(null);
 const memberQuery = ref("");
 const memberResults = ref<{ id: number; email: string }[]>([]);
 const settings = reactive({
@@ -402,18 +403,28 @@ async function generate(): Promise<void> {
 	}
 }
 
-function pushPlayer(player: Player | null): void {
-	if (player && !selectedPlayers.value.some((item) => item.id === player.id)) {
+const rosterPlayerIds = computed(() =>
+	props.detail.teams.flatMap((team) => team.players.map((player) => player.id)),
+);
+
+const excludePlayerIdsForCreate = computed(() => [
+	...rosterPlayerIds.value,
+	...selectedPlayers.value.map((player) => player.id),
+]);
+
+function pushPlayer(player: Player): void {
+	if (
+		!selectedPlayers.value.some((item) => item.id === player.id) &&
+		!rosterPlayerIds.value.includes(player.id)
+	) {
 		selectedPlayers.value.push(player);
 	}
-	playerToAdd.value = null;
 }
 
 function cancelCreateTeam(): void {
 	showCreateTeam.value = false;
 	teamName.value = "";
 	selectedPlayers.value = [];
-	playerToAdd.value = null;
 }
 
 async function createTeam(): Promise<void> {

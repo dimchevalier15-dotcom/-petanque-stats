@@ -33,6 +33,7 @@ final class TournamentRosterService
         private TournamentMemberRepository $members,
         private TournamentTeamPlayerRepository $teamPlayers,
         private TournamentMatchRepository $matches,
+        private TournamentMembershipSyncService $membershipSync,
     ) {
     }
 
@@ -182,10 +183,7 @@ final class TournamentRosterService
         if (!$user instanceof User) {
             return;
         }
-        if ($this->members->findOneByTournamentAndUser($tournament, $user) !== null) {
-            return;
-        }
-        $this->entityManager->persist(new TournamentMember($tournament, $user, false));
+        $this->membershipSync->ensureMember($tournament, $user);
     }
 
     private function requirePlayer(int $playerId): Player

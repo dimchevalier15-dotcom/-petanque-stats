@@ -74,4 +74,21 @@ final class TournamentTeamPlayerRepository extends ServiceEntityRepository
 
         return array_map(static fn (array $row): int => (int) $row['teamId'], $rows);
     }
+
+    /**
+     * @return list<int>
+     */
+    public function findTournamentIdsForUser(User $user): array
+    {
+        /** @var list<array{tournamentId: int}> $rows */
+        $rows = $this->createQueryBuilder('membership')
+            ->select('DISTINCT IDENTITY(membership.tournament) AS tournamentId')
+            ->innerJoin('membership.player', 'player')
+            ->andWhere('player.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn (array $row): int => (int) $row['tournamentId'], $rows);
+    }
 }

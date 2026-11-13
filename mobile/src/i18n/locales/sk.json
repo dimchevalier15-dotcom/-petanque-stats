@@ -2304,6 +2304,7 @@
       "playerCount": "{count} hráč(ov)",
       "noPlayersInTeam": "V tomto tíme zatiaľ nie sú hráči.",
       "addPlayer": "Pridať hráča",
+      "createPlayer": "Vytvoriť a pridať",
       "removeTeam": "Odstrániť tím",
       "teamSizeHint": "Na vytvorenie tímu vyberte {min} až {max} hráčov.",
       "members": "Členovia",
