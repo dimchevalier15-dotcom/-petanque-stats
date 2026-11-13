@@ -2286,6 +2286,8 @@
       "saveLane": "Ihrisko",
       "saveTeams": "Tímy",
       "generatePlayoffs": "Vygenerovať play-off",
+      "createCatchUpMatch": "Vytvoriť zápas",
+      "deleteCatchUpMatch": "Zmazať zápas",
       "cancel": "Zrušiť"
     },
     "pdf": {
@@ -2298,6 +2300,8 @@
       "empty": "Zatiaľ žiadny deň.",
       "championship": "Šampionát",
       "playoffs": "Play-off",
+      "catchUp": "Dohrávky",
+      "catchUpDay": "Deň dohrávok",
       "phaseNav": "Fáza turnaja",
       "day": "Deň {number}",
       "lane": "Ihrisko {lane}",
@@ -2368,7 +2372,13 @@
       "playoffsDone": "Pavúk je už vygenerovaný.",
       "playoffsReady": "Všetky dni šampionátu sú uzavreté.",
       "playoffsWaiting": "Pred generovaním pavúka uzavrite všetky dni šampionátu.",
-      "settings": "Nastavenia"
+      "settings": "Nastavenia",
+      "catchUp": "Dohrávky",
+      "catchUpHint": "Pre neodohrané zápasy (neprítomnosti). Počítajú sa do šampionátu.",
+      "catchUpBlocked": "Po vygenerovaní play-off už nie je možné.",
+      "catchUpTeam1": "Tím 1",
+      "catchUpTeam2": "Tím 2",
+      "catchUpPickTeam": "Vyberte tím"
     },
     "errors": {
       "generic": "Operáciu sa nepodarilo dokončiť.",
@@ -2392,6 +2402,8 @@
       "playoff_sides_fixed": "Tímy play-off sa riadia pavúkom a nedajú sa meniť.",
       "fictional_sides_fixed": "Tímy fiktívneho zápasu zostávajú také, aké boli pri generovaní.",
       "duplicate_pairing": "Tieto dva tímy sú v šampionáte už naplánované.",
+      "catch_up_not_allowed": "Dohrávky už nie sú možné po vygenerovaní play-off.",
+      "match_not_removable": "Odstrániť sa dá len dohrávka bez skóre.",
       "team_already_playing": "Skutočný tím nemôže v jeden deň hrať dva zápasy.",
       "match_not_ready": "Pred uložením skóre musia byť známe oba tímy.",
       "score_required": "Obe skóre sú povinné.",

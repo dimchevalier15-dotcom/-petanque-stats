@@ -26,7 +26,7 @@ export interface TournamentMatch {
 export interface TournamentDay {
 	id: number;
 	number: number;
-	phase: "championship" | "playoff";
+	phase: "championship" | "catch_up" | "playoff";
 	status: "generated" | "in_progress" | "closed";
 	playoffRound: string | null;
 	closedAt: string | null;

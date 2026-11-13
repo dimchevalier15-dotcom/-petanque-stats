@@ -149,6 +149,17 @@
           @click="submitLane(match.id)"
         />
       </div>
+      <div v-if="canDeleteCatchUp(match)" class="edit-row">
+        <Button
+          type="button"
+          severity="danger"
+          text
+          :label="t('tournaments.actions.deleteCatchUpMatch')"
+          :loading="deletingMatchId === match.id"
+          :disabled="deletingMatchId !== null"
+          @click="removeCatchUp(match.id)"
+        />
+      </div>
     </article>
   </div>
 </template>
@@ -156,7 +167,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
-import { reactive, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type {
 	TournamentDay,
@@ -189,9 +200,11 @@ const props = defineProps<{
 		team1Id: number;
 		team2Id: number;
 	}) => Promise<boolean>;
+	deleteMatch?: (matchId: number) => Promise<boolean>;
 }>();
 
 const { t } = useI18n();
+const deletingMatchId = ref<number | null>(null);
 const drafts = reactive<
 	Record<
 		number,
@@ -251,6 +264,28 @@ watch(
 
 function canEditTeams(match: TournamentMatch): boolean {
 	return props.admin && match.phase === "championship" && !match.fictional;
+}
+
+function canDeleteCatchUp(match: TournamentMatch): boolean {
+	return (
+		props.admin &&
+		props.day.phase === "catch_up" &&
+		props.deleteMatch !== undefined &&
+		match.score1 === null &&
+		match.score2 === null
+	);
+}
+
+async function removeCatchUp(matchId: number): Promise<void> {
+	if (!props.deleteMatch) {
+		return;
+	}
+	deletingMatchId.value = matchId;
+	try {
+		await props.deleteMatch(matchId);
+	} finally {
+		deletingMatchId.value = null;
+	}
 }
 
 function draftScore(value: string): number | null {

@@ -434,6 +434,108 @@ final class TournamentHttpTest extends WebDatabaseTestCase
         self::assertSame('day_already_started', $this->payload($client)['error']);
     }
 
+    public function testAdminCanCreateCatchUpMatchCountedInChampionship(): void
+    {
+        $client = $this->createDatabaseClient();
+        $suffix = $this->suffix();
+        $master = $this->user('master-catch-up-'.$suffix, UserRole::MASTER);
+        $admin = $this->user('admin-catch-up-'.$suffix, UserRole::SIMPLE_PLAYER);
+        $players = [];
+        for ($index = 0; $index < 4; ++$index) {
+            $players[] = new Player('U'.$index, 'Nom', 'U'.$index.$suffix);
+            $this->em()->persist($players[$index]);
+        }
+        $this->em()->flush();
+        $tournamentId = $this->createTournament($client, $master, [$admin->getId()], 1, 2, ['numberOfLanes' => 4]);
+        foreach ($players as $index => $player) {
+            $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/teams', $this->token($admin), [
+                'name' => 'Equipe '.$index,
+                'playerIds' => [$player->getId()],
+            ]);
+        }
+        $teams = $this->show($client, $admin, $tournamentId)['teams'];
+
+        $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/catch-up-matches', $this->token($admin), [
+            'team1Id' => $teams[0]['id'],
+            'team2Id' => $teams[1]['id'],
+            'laneNumber' => 1,
+        ]);
+        self::assertSame(201, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        $detail = $this->payload($client);
+        $catchUp = array_values(array_filter(
+            $detail['days'],
+            static fn (array $day): bool => $day['phase'] === 'catch_up',
+        ));
+        self::assertCount(1, $catchUp);
+        self::assertCount(1, $catchUp[0]['matches']);
+        self::assertSame('championship', $catchUp[0]['matches'][0]['phase']);
+        self::assertFalse($catchUp[0]['readyToClose']);
+
+        $matchId = $catchUp[0]['matches'][0]['id'];
+        $this->json($client, 'PATCH', '/api/tournaments/'.$tournamentId.'/matches/'.$matchId.'/score', $this->token($admin), [
+            'score1' => 13,
+            'score2' => 9,
+        ]);
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+
+        $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/catch-up-matches', $this->token($admin), [
+            'team1Id' => $teams[0]['id'],
+            'team2Id' => $teams[1]['id'],
+            'laneNumber' => 2,
+        ]);
+        self::assertSame(409, $client->getResponse()->getStatusCode());
+        self::assertSame('duplicate_pairing', $this->payload($client)['error']);
+
+        $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/catch-up-matches', $this->token($admin), [
+            'team1Id' => $teams[2]['id'],
+            'team2Id' => $teams[3]['id'],
+            'laneNumber' => 2,
+        ]);
+        self::assertSame(201, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        self::assertCount(2, array_values(array_filter(
+            $this->payload($client)['days'],
+            static fn (array $day): bool => $day['phase'] === 'catch_up',
+        ))[0]['matches']);
+    }
+
+    public function testAdminCanDeleteAnUnscoredCatchUpMatch(): void
+    {
+        $client = $this->createDatabaseClient();
+        $suffix = $this->suffix();
+        $master = $this->user('master-catch-up-del-'.$suffix, UserRole::MASTER);
+        $admin = $this->user('admin-catch-up-del-'.$suffix, UserRole::SIMPLE_PLAYER);
+        $players = [];
+        for ($index = 0; $index < 2; ++$index) {
+            $players[] = new Player('V'.$index, 'Nom', 'V'.$index.$suffix);
+            $this->em()->persist($players[$index]);
+        }
+        $this->em()->flush();
+        $tournamentId = $this->createTournament($client, $master, [$admin->getId()], 1, 2, ['numberOfLanes' => 2]);
+        foreach ($players as $index => $player) {
+            $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/teams', $this->token($admin), [
+                'name' => 'Equipe '.$index,
+                'playerIds' => [$player->getId()],
+            ]);
+        }
+        $teams = $this->show($client, $admin, $tournamentId)['teams'];
+        $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/catch-up-matches', $this->token($admin), [
+            'team1Id' => $teams[0]['id'],
+            'team2Id' => $teams[1]['id'],
+            'laneNumber' => 1,
+        ]);
+        $matchId = array_values(array_filter(
+            $this->payload($client)['days'],
+            static fn (array $day): bool => $day['phase'] === 'catch_up',
+        ))[0]['matches'][0]['id'];
+
+        $this->json($client, 'DELETE', '/api/tournaments/'.$tournamentId.'/matches/'.$matchId, $this->token($admin));
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        self::assertSame([], array_values(array_filter(
+            $this->payload($client)['days'],
+            static fn (array $day): bool => $day['phase'] === 'catch_up',
+        )));
+    }
+
     public function testFictionalMatchesDoNotAffectTheRankingAndADayCanCloseWithoutThem(): void
     {
         $client = $this->createDatabaseClient();

@@ -196,12 +196,28 @@ export const tournamentsService = {
 		await api.post(`/tournaments/${tournamentId}/days`, payload);
 		return this.get(tournamentId);
 	},
+	async createCatchUpMatch(
+		tournamentId: number,
+		payload: { team1Id: number; team2Id: number; laneNumber: number },
+	): Promise<TournamentDetail> {
+		const { data } = await api.post<TournamentDetailResponse>(
+			`/tournaments/${tournamentId}/catch-up-matches`,
+			payload,
+		);
+		return toDetail(data);
+	},
 	async closeDay(
 		tournamentId: number,
 		dayId: number,
 	): Promise<TournamentDetail> {
 		await api.post(`/tournaments/${tournamentId}/days/${dayId}/close`);
 		return this.get(tournamentId);
+	},
+	async deleteMatch(tournamentId: number, matchId: number): Promise<TournamentDetail> {
+		const { data } = await api.delete<TournamentDetailResponse>(
+			`/tournaments/${tournamentId}/matches/${matchId}`,
+		);
+		return toDetail(data);
 	},
 	async deleteDay(tournamentId: number, dayId: number): Promise<TournamentDetail> {
 		const { data } = await api.delete<TournamentDetailResponse>(

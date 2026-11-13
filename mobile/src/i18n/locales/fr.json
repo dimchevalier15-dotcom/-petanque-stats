@@ -2345,6 +2345,8 @@
       "saveLane": "Terrain",
       "saveTeams": "Équipes",
       "generatePlayoffs": "Générer les play-offs",
+      "createCatchUpMatch": "Lancer le match",
+      "deleteCatchUpMatch": "Supprimer le match",
       "cancel": "Annuler"
     },
     "pdf": {
@@ -2357,6 +2359,8 @@
       "empty": "Aucune journée pour le moment.",
       "championship": "Championnat",
       "playoffs": "Play-offs",
+      "catchUp": "Matchs de rattrapage",
+      "catchUpDay": "Journée de rattrapage",
       "phaseNav": "Phase du tournoi",
       "day": "Journée {number}",
       "lane": "Terrain {lane}",
@@ -2427,7 +2431,13 @@
       "playoffsDone": "Le tableau est déjà généré.",
       "playoffsReady": "Toutes les journées de championnat sont clôturées.",
       "playoffsWaiting": "Clôturez toutes les journées de championnat avant de générer le tableau.",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "catchUp": "Rattrapage",
+      "catchUpHint": "Pour les confrontations non jouées (absences). Comptent comme un match de championnat.",
+      "catchUpBlocked": "Impossible après la génération des play-offs.",
+      "catchUpTeam1": "Équipe 1",
+      "catchUpTeam2": "Équipe 2",
+      "catchUpPickTeam": "Choisir une équipe"
     },
     "errors": {
       "generic": "L'opération n'a pas abouti.",
@@ -2451,6 +2461,8 @@
       "playoff_sides_fixed": "Les équipes d'un match de play-off suivent le tableau et ne peuvent pas être modifiées.",
       "fictional_sides_fixed": "Les équipes d'un match fictif restent celles choisies à la génération.",
       "duplicate_pairing": "Ces deux équipes sont déjà programmées dans le championnat.",
+      "catch_up_not_allowed": "Les matchs de rattrapage ne sont plus possibles après la génération des play-offs.",
+      "match_not_removable": "Seul un match de rattrapage sans score peut être supprimé.",
       "team_already_playing": "Une équipe réelle ne peut pas jouer deux matchs dans la même journée.",
       "match_not_ready": "Les deux équipes doivent être connues avant d'enregistrer un score.",
       "score_required": "Les deux scores sont requis.",

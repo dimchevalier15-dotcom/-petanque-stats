@@ -7,6 +7,7 @@
       :save-score="saveScore"
       :save-lane="saveLane"
       :save-teams="saveTeams"
+      :delete-match="day.phase === 'catch_up' ? deleteMatch : undefined"
     />
     <div v-if="showPdf || showAdminDayActions" class="day-actions">
       <Button
@@ -64,6 +65,7 @@ defineProps<{
 		team1Id: number;
 		team2Id: number;
 	}) => Promise<boolean>;
+	deleteMatch?: (matchId: number) => Promise<boolean>;
 }>();
 
 const emit = defineEmits<{

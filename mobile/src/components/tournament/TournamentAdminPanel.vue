@@ -178,6 +178,37 @@
       />
     </section>
 
+    <section v-show="activeSection === 'catchUp'" class="block app-card">
+      <p class="hint">{{ t('tournaments.admin.catchUpHint') }}</p>
+      <p v-if="detail.playoffsGenerated" class="hint">{{ t('tournaments.admin.catchUpBlocked') }}</p>
+      <label class="app-field">
+        <span>{{ t('tournaments.admin.catchUpTeam1') }}</span>
+        <select v-model.number="catchUpTeam1Id" class="native-select" :disabled="detail.playoffsGenerated">
+          <option :value="0">{{ t('tournaments.admin.catchUpPickTeam') }}</option>
+          <option v-for="team in detail.teams" :key="team.id" :value="team.id">{{ team.name }}</option>
+        </select>
+      </label>
+      <label class="app-field">
+        <span>{{ t('tournaments.admin.catchUpTeam2') }}</span>
+        <select v-model.number="catchUpTeam2Id" class="native-select" :disabled="detail.playoffsGenerated">
+          <option :value="0">{{ t('tournaments.admin.catchUpPickTeam') }}</option>
+          <option v-for="team in detail.teams" :key="team.id" :value="team.id">{{ team.name }}</option>
+        </select>
+      </label>
+      <label class="app-field">
+        <span>{{ t('tournaments.pdf.lane') }}</span>
+        <select v-model.number="catchUpLane" class="native-select" :disabled="detail.playoffsGenerated">
+          <option v-for="lane in catchUpLanes" :key="lane" :value="lane">{{ lane }}</option>
+        </select>
+      </label>
+      <Button
+        :label="t('tournaments.actions.createCatchUpMatch')"
+        :loading="catchUpBusy"
+        :disabled="!canCreateCatchUp"
+        @click="createCatchUpMatch"
+      />
+    </section>
+
     <form v-show="activeSection === 'settings'" class="block app-card" @submit.prevent="saveSettings">
       <label class="app-field">
         <span>{{ t('tournaments.fields.name') }}</span>
@@ -242,7 +273,14 @@ import MatchSharePromo from "../match/MatchSharePromo.vue";
 import { buildTournamentPublicUrl } from "../../utils/buildTournamentPublicUrl";
 import TournamentPlayerAdd from "./TournamentPlayerAdd.vue";
 
-type AdminSection = "share" | "schedule" | "teams" | "members" | "playoffs" | "settings";
+type AdminSection =
+	| "share"
+	| "schedule"
+	| "teams"
+	| "members"
+	| "playoffs"
+	| "settings"
+	| "catchUp";
 
 const props = defineProps<{ detail: TournamentDetail }>();
 const emit = defineEmits<{
@@ -256,6 +294,10 @@ const sectionTrack = ref<HTMLElement | null>(null);
 const activeSection = ref<AdminSection>("share");
 const publicUrl = computed(() => buildTournamentPublicUrl(props.detail.publicUuid));
 const busy = ref(false);
+const catchUpBusy = ref(false);
+const catchUpTeam1Id = ref(0);
+const catchUpTeam2Id = ref(0);
+const catchUpLane = ref(1);
 const showCreateTeam = ref(false);
 const present = reactive<Record<number, boolean>>({});
 const teamNames = reactive<Record<number, string>>({});
@@ -287,6 +329,7 @@ const sections = computed(() => [
 	{ id: "members" as const, label: t("tournaments.admin.members") },
 	{ id: "playoffs" as const, label: t("tournaments.admin.playoffs") },
 	{ id: "settings" as const, label: t("tournaments.admin.settings") },
+	{ id: "catchUp" as const, label: t("tournaments.admin.catchUp") },
 ]);
 
 watch(
@@ -329,6 +372,31 @@ const laneChoices = computed(() => {
 const usable = computed(() =>
 	usableLaneNumbers(props.detail.numberOfLanes, excluded.value),
 );
+const catchUpLanes = computed(() =>
+	usableLaneNumbers(
+		props.detail.numberOfLanes,
+		props.detail.excludedLaneNumbers,
+	),
+);
+const canCreateCatchUp = computed(
+	() =>
+		!props.detail.playoffsGenerated &&
+		catchUpTeam1Id.value > 0 &&
+		catchUpTeam2Id.value > 0 &&
+		catchUpTeam1Id.value !== catchUpTeam2Id.value &&
+		catchUpLanes.value.includes(catchUpLane.value),
+);
+
+watch(
+	catchUpLanes,
+	(lanes) => {
+		if (lanes.length > 0 && !lanes.includes(catchUpLane.value)) {
+			catchUpLane.value = lanes[0];
+		}
+	},
+	{ immediate: true },
+);
+
 const canCreateTeam = computed(() => {
 	const count = selectedPlayers.value.length;
 	return (
@@ -392,6 +460,27 @@ function toggleLane(lane: number): void {
 	excluded.value = excluded.value.includes(lane)
 		? excluded.value.filter((item) => item !== lane)
 		: [...excluded.value, lane].sort((left, right) => left - right);
+}
+
+async function createCatchUpMatch(): Promise<void> {
+	if (!canCreateCatchUp.value) {
+		return;
+	}
+	catchUpBusy.value = true;
+	try {
+		emit(
+			"updated",
+			await tournamentsService.createCatchUpMatch(props.detail.id, {
+				team1Id: catchUpTeam1Id.value,
+				team2Id: catchUpTeam2Id.value,
+				laneNumber: catchUpLane.value,
+			}),
+		);
+	} catch (error) {
+		fail(error);
+	} finally {
+		catchUpBusy.value = false;
+	}
 }
 
 async function generate(): Promise<void> {
@@ -628,6 +717,17 @@ async function saveSettings(): Promise<void> {
   display: grid;
   gap: var(--app-space-sm);
   padding: var(--app-space-md);
+}
+
+.native-select {
+  width: 100%;
+  min-height: var(--app-touch-min);
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-sm);
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 1rem;
 }
 
 .hint,

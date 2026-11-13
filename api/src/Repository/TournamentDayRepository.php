@@ -78,6 +78,14 @@ final class TournamentDayRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function findCatchUpDay(Tournament $tournament): ?TournamentDay
+    {
+        return $this->findOneBy([
+            'tournament' => $tournament,
+            'phase' => TournamentDayPhase::CATCH_UP,
+        ]);
+    }
+
     /**
      * @return list<TournamentDay>
      */

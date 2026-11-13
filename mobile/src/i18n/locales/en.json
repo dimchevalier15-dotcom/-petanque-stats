@@ -2320,6 +2320,8 @@
       "saveLane": "Lane",
       "saveTeams": "Teams",
       "generatePlayoffs": "Generate play-offs",
+      "createCatchUpMatch": "Create match",
+      "deleteCatchUpMatch": "Delete match",
       "cancel": "Cancel"
     },
     "pdf": {
@@ -2332,6 +2334,8 @@
       "empty": "No day yet.",
       "championship": "Championship",
       "playoffs": "Play-offs",
+      "catchUp": "Catch-up matches",
+      "catchUpDay": "Catch-up day",
       "phaseNav": "Tournament phase",
       "day": "Day {number}",
       "lane": "Lane {lane}",
@@ -2402,7 +2406,13 @@
       "playoffsDone": "The bracket is already generated.",
       "playoffsReady": "Every championship day is closed.",
       "playoffsWaiting": "Close every championship day before generating the bracket.",
-      "settings": "Settings"
+      "settings": "Settings",
+      "catchUp": "Catch-up",
+      "catchUpHint": "For matchups that were missed (absences). Counts as a championship match.",
+      "catchUpBlocked": "Not available after play-offs have been generated.",
+      "catchUpTeam1": "Team 1",
+      "catchUpTeam2": "Team 2",
+      "catchUpPickTeam": "Pick a team"
     },
     "errors": {
       "generic": "The operation could not be completed.",
@@ -2426,6 +2436,8 @@
       "playoff_sides_fixed": "Play-off teams follow the bracket and cannot be changed.",
       "fictional_sides_fixed": "The teams of a fictional match stay as chosen when the day was generated.",
       "duplicate_pairing": "These two teams are already scheduled in the championship.",
+      "catch_up_not_allowed": "Catch-up matches are not available after play-offs have been generated.",
+      "match_not_removable": "Only an unscored catch-up match can be removed.",
       "team_already_playing": "A real team cannot play two matches on the same day.",
       "match_not_ready": "Both teams must be known before a score is saved.",
       "score_required": "Both scores are required.",

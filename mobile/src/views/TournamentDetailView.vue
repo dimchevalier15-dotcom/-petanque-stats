@@ -22,6 +22,7 @@
         :save-lane="saveLane"
         :save-teams="saveTeams"
         :delete-day="deleteDay"
+        :delete-match="deleteMatch"
         @close="closeDay"
       />
       <TournamentRankingPanel v-else-if="tab === 'ranking'" :ranking="detail.ranking" />
@@ -186,6 +187,19 @@ async function deleteDay(dayId: number): Promise<void> {
 		apply(await tournamentsService.deleteDay(detail.value.id, dayId));
 	} catch (caught) {
 		error.value = tournamentErrorMessage(caught, t, te);
+	}
+}
+
+async function deleteMatch(matchId: number): Promise<boolean> {
+	if (!detail.value) {
+		return false;
+	}
+	try {
+		apply(await tournamentsService.deleteMatch(detail.value.id, matchId));
+		return true;
+	} catch (caught) {
+		error.value = tournamentErrorMessage(caught, t, te);
+		return false;
 	}
 }
 </script>

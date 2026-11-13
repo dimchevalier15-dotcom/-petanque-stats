@@ -1,6 +1,6 @@
 <template>
   <section class="matches">
-    <p v-if="championshipDays.length === 0 && playoffDays.length === 0" class="empty">{{ t('tournaments.matches.empty') }}</p>
+    <p v-if="championshipTabDays.length === 0 && playoffDays.length === 0" class="empty">{{ t('tournaments.matches.empty') }}</p>
 
     <!-- Avant tirage des play-offs : championnat (et play-offs vides) comme aujourd’hui -->
     <template v-if="!splitByPhase">
@@ -31,17 +31,18 @@
           :save-score="saveScore"
           :save-lane="saveLane"
           :save-teams="saveTeams"
+          :delete-match="deleteMatch"
           :show-pdf="true"
           @export-pdf="exportDayPdf"
         />
       </template>
 
-      <template v-if="championshipDays.length">
+      <template v-if="championshipTabDays.length">
         <p v-if="playoffDays.length" class="section-label championship-label">{{ t('tournaments.matches.championship') }}</p>
         <nav class="coach-subsegments" role="tablist" :aria-label="t('tournaments.matches.championship')">
           <div ref="championshipTrack" class="coach-subsegments-track">
             <button
-              v-for="day in championshipDays"
+              v-for="day in championshipTabDays"
               :key="day.id"
               type="button"
               role="tab"
@@ -50,7 +51,7 @@
               :aria-selected="day.id === selectedChampionshipDayId"
               @click="selectChampionshipDay(day.id)"
             >
-              {{ t('tournaments.matches.day', { number: day.number }) }}
+              {{ dayTabTitle(day) }}
             </button>
           </div>
         </nav>
@@ -64,7 +65,8 @@
           :save-lane="saveLane"
           :save-teams="saveTeams"
           :show-pdf="true"
-          :show-admin-day-actions="true"
+          :delete-match="deleteMatch"
+          :show-admin-day-actions="selectedChampionshipDay.phase === 'championship'"
           @export-pdf="exportDayPdf"
           @close-day="emit('close', $event)"
           @delete-day="removeDay"
@@ -125,16 +127,17 @@
           :save-score="saveScore"
           :save-lane="saveLane"
           :save-teams="saveTeams"
+          :delete-match="deleteMatch"
           :show-pdf="true"
           @export-pdf="exportDayPdf"
         />
       </template>
 
-      <template v-else>
+      <template v-else-if="championshipTabDays.length">
         <nav class="coach-subsegments" role="tablist" :aria-label="t('tournaments.matches.championship')">
           <div ref="championshipTrack" class="coach-subsegments-track">
             <button
-              v-for="day in championshipDays"
+              v-for="day in championshipTabDays"
               :key="day.id"
               type="button"
               role="tab"
@@ -143,7 +146,7 @@
               :aria-selected="day.id === selectedChampionshipDayId"
               @click="selectChampionshipDay(day.id)"
             >
-              {{ t('tournaments.matches.day', { number: day.number }) }}
+              {{ dayTabTitle(day) }}
             </button>
           </div>
         </nav>
@@ -157,7 +160,8 @@
           :save-lane="saveLane"
           :save-teams="saveTeams"
           :show-pdf="true"
-          :show-admin-day-actions="true"
+          :delete-match="deleteMatch"
+          :show-admin-day-actions="selectedChampionshipDay.phase === 'championship'"
           @export-pdf="exportDayPdf"
           @close-day="emit('close', $event)"
           @delete-day="removeDay"
@@ -204,6 +208,7 @@ const props = defineProps<{
 		team2Id: number;
 	}) => Promise<boolean>;
 	deleteDay: (dayId: number) => Promise<void>;
+	deleteMatch?: (matchId: number) => Promise<boolean>;
 }>();
 
 const emit = defineEmits<{
@@ -225,6 +230,19 @@ const championshipDays = computed(() =>
 const playoffDays = computed(() =>
 	props.days.filter((day) => day.phase === "playoff"),
 );
+const catchUpDay = computed(() =>
+	props.days.find((day) => day.phase === "catch_up") ?? null,
+);
+const hasCatchUpMatches = computed(
+	() => (catchUpDay.value?.matches.length ?? 0) > 0,
+);
+const championshipTabDays = computed(() => {
+	const days = [...championshipDays.value];
+	if (hasCatchUpMatches.value && catchUpDay.value) {
+		days.push(catchUpDay.value);
+	}
+	return days;
+});
 const visiblePlayoffDays = computed(() =>
 	playoffDays.value.filter((day) => day.matches.length > 0),
 );
@@ -249,7 +267,7 @@ async function removeDay(dayId: number): Promise<void> {
 }
 
 const selectedChampionshipDay = computed(() =>
-	championshipDays.value.find(
+	championshipTabDays.value.find(
 		(day) => day.id === selectedChampionshipDayId.value,
 	),
 );
@@ -269,9 +287,9 @@ watch(
 );
 
 watch(
-	[championshipDays, currentChampionshipId],
+	[championshipTabDays, currentChampionshipId],
 	() => {
-		const ids = championshipDays.value.map((day) => day.id);
+		const ids = championshipTabDays.value.map((day) => day.id);
 		if (ids.length === 0) {
 			selectedChampionshipDayId.value = null;
 			return;
@@ -369,9 +387,19 @@ function playoffTitle(day: TournamentDay): string {
 	return t(`tournaments.matches.rounds.${day.playoffRound}`);
 }
 
+function dayTabTitle(day: TournamentDay): string {
+	if (day.phase === "catch_up") {
+		return t("tournaments.matches.catchUpDay");
+	}
+	return t("tournaments.matches.day", { number: day.number });
+}
+
 function dayPdfTitle(day: TournamentDay): string {
 	if (day.phase === "playoff") {
 		return playoffTitle(day);
+	}
+	if (day.phase === "catch_up") {
+		return t("tournaments.matches.catchUpDay");
 	}
 	return t("tournaments.matches.day", { number: day.number });
 }

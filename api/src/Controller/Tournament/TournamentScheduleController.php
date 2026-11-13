@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Tournament;
 
+use App\Dto\Request\CreateCatchUpMatchRequest;
 use App\Dto\Request\GenerateTournamentDayRequest;
 use App\Dto\Request\UpdateTournamentMatchLaneRequest;
 use App\Dto\Request\UpdateTournamentMatchScoreRequest;
@@ -77,6 +78,14 @@ final class TournamentScheduleController extends AbstractController
         });
     }
 
+    #[Route('/api/tournaments/{tournamentId}/matches/{matchId}', name: 'api_tournaments_delete_match', methods: ['DELETE'], requirements: ['tournamentId' => '\d+', 'matchId' => '\d+'])]
+    public function deleteMatch(int $tournamentId, int $matchId): Response
+    {
+        return $this->http->respond(
+            fn () => $this->schedule->deleteMatch($this->http->user($this->getUser()), $tournamentId, $matchId),
+        );
+    }
+
     #[Route('/api/tournaments/{tournamentId}/matches/{matchId}/teams', name: 'api_tournaments_update_teams', methods: ['PATCH'], requirements: ['tournamentId' => '\d+', 'matchId' => '\d+'])]
     public function updateTeams(int $tournamentId, int $matchId, Request $request): Response
     {
@@ -95,5 +104,16 @@ final class TournamentScheduleController extends AbstractController
             fn () => $this->schedule->generatePlayoffs($this->http->user($this->getUser()), $tournamentId),
             201,
         );
+    }
+
+    #[Route('/api/tournaments/{tournamentId}/catch-up-matches', name: 'api_tournaments_create_catch_up_match', methods: ['POST'], requirements: ['tournamentId' => '\d+'])]
+    public function createCatchUpMatch(int $tournamentId, Request $request): Response
+    {
+        return $this->http->respond(function () use ($tournamentId, $request) {
+            /** @var CreateCatchUpMatchRequest $input */
+            $input = $this->http->body($request, CreateCatchUpMatchRequest::class);
+
+            return $this->schedule->createCatchUpMatch($this->http->user($this->getUser()), $tournamentId, $input);
+        }, 201);
     }
 }

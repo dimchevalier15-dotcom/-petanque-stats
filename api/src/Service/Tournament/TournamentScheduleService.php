@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\Tournament;
 
+use App\Dto\Request\CreateCatchUpMatchRequest;
 use App\Dto\Request\GenerateTournamentDayRequest;
 use App\Dto\Request\UpdateTournamentMatchLaneRequest;
 use App\Dto\Request\UpdateTournamentMatchScoreRequest;
@@ -110,6 +111,41 @@ final class TournamentScheduleService
         }
     }
 
+    public function deleteMatch(User $user, int $tournamentId, int $matchId): TournamentDetailResponse
+    {
+        try {
+            return $this->entityManager->wrapInTransaction(function () use ($user, $tournamentId, $matchId): TournamentDetailResponse {
+                $tournament = $this->context->requireAdmin($user, $tournamentId);
+                $this->tournaments->lockById((int) $tournament->getId());
+                $match = $this->context->requireMatch($tournament, $matchId);
+                $day = $match->getDay();
+                if ($day->getPhase() !== TournamentDayPhase::CATCH_UP) {
+                    throw new TournamentRuleException('match_not_removable', 'Only an unscored catch-up match can be removed.', 409);
+                }
+                if ($match->hasScore()) {
+                    throw new TournamentRuleException('match_not_removable', 'Only an unscored catch-up match can be removed.', 409);
+                }
+                $this->slots->deleteForMatch($match);
+                $pairing = $this->pairings->findOneByMatch($match);
+                if ($pairing !== null) {
+                    $this->entityManager->remove($pairing);
+                }
+                $this->entityManager->remove($match);
+                $this->entityManager->flush();
+                if ($this->matches->findForDay($day) === []) {
+                    $this->entityManager->remove($day);
+                    $this->entityManager->flush();
+                }
+                $this->refreshTournamentStatus($tournament);
+                $this->entityManager->flush();
+
+                return $this->views->detail($user, $tournament);
+            });
+        } catch (UniqueConstraintViolationException) {
+            throw new TournamentRuleException('conflict', 'This match could not be removed.', 409);
+        }
+    }
+
     public function updateLane(User $user, int $tournamentId, int $matchId, UpdateTournamentMatchLaneRequest $input): TournamentMatchResponse
     {
         $tournament = $this->context->requireAdmin($user, $tournamentId);
@@ -179,6 +215,71 @@ final class TournamentScheduleService
         } catch (UniqueConstraintViolationException) {
             throw new TournamentRuleException('playoff_already_generated', 'The play-offs are already generated. Nothing was saved.');
         }
+    }
+
+    public function createCatchUpMatch(User $user, int $tournamentId, CreateCatchUpMatchRequest $input): TournamentDetailResponse
+    {
+        try {
+            return $this->entityManager->wrapInTransaction(function () use ($user, $tournamentId, $input): TournamentDetailResponse {
+                $tournament = $this->context->requireAdmin($user, $tournamentId);
+                $this->tournaments->lockById((int) $tournament->getId());
+                if ($this->matches->hasPlayoffMatches($tournament)) {
+                    throw new TournamentRuleException('catch_up_not_allowed', 'Catch-up matches cannot be added after the play-offs have been generated.', 409);
+                }
+                if ($input->team1Id === $input->team2Id) {
+                    throw new TournamentRuleException('invalid_settings', 'A match needs two different teams.', 422);
+                }
+                $team1 = $this->context->requireTeam($tournament, $input->team1Id);
+                $team2 = $this->context->requireTeam($tournament, $input->team2Id);
+                $low = min($input->team1Id, $input->team2Id);
+                $high = max($input->team1Id, $input->team2Id);
+                if ($this->pairings->exists($tournament, $low, $high, null)) {
+                    throw new TournamentRuleException('duplicate_pairing', 'These two teams are already scheduled to play in the championship.');
+                }
+                $day = $this->findOrCreateCatchUpDay($tournament);
+                $usable = $this->lanes->usableLaneNumbers($tournament->getNumberOfLanes(), $day->getExcludedLaneNumbers());
+                if (!in_array($input->laneNumber, $usable, true)) {
+                    throw new TournamentRuleException('lane_unavailable', 'This lane is not available for the day.', 422);
+                }
+                if ($this->matches->laneUsedOnDay($day, $input->laneNumber, null)) {
+                    throw new TournamentRuleException('lane_taken', 'This lane is already used by another match of the day.');
+                }
+                $match = new TournamentMatch(
+                    $day,
+                    $input->laneNumber,
+                    TournamentMatchPhase::CHAMPIONSHIP,
+                    false,
+                );
+                $match->assignSides($team1, $team2, null, null);
+                $this->entityManager->persist($match);
+                $this->syncPairing($match);
+                $this->markInProgress($tournament);
+                $this->refreshDayStatus($day);
+                $this->entityManager->flush();
+
+                return $this->views->detail($user, $tournament);
+            });
+        } catch (UniqueConstraintViolationException) {
+            throw new TournamentRuleException('conflict', 'This confrontation could not be created. Nothing was saved.');
+        }
+    }
+
+    private function findOrCreateCatchUpDay(Tournament $tournament): TournamentDay
+    {
+        $existing = $this->days->findCatchUpDay($tournament);
+        if ($existing !== null) {
+            return $existing;
+        }
+        $day = new TournamentDay(
+            $tournament,
+            1,
+            TournamentDayPhase::CATCH_UP,
+            $tournament->getExcludedLaneNumbers(),
+        );
+        $this->entityManager->persist($day);
+        $this->entityManager->flush();
+
+        return $day;
     }
 
     private function buildChampionshipDay(Tournament $tournament, GenerateTournamentDayRequest $input): TournamentDay
@@ -393,12 +494,14 @@ final class TournamentScheduleService
         if ($this->pairings->exists($tournament, $low, $high, (int) $match->getId())) {
             throw new TournamentRuleException('duplicate_pairing', 'These two teams are already scheduled to play in the championship.');
         }
-        if ($this->slots->teamPlaysOnDay($match->getDay(), $team1, (int) $match->getId())
-            || $this->slots->teamPlaysOnDay($match->getDay(), $team2, (int) $match->getId())) {
-            throw new TournamentRuleException('team_already_playing', 'A real team cannot play two matches on the same day.');
+        if ($match->getDay()->getPhase() !== TournamentDayPhase::CATCH_UP) {
+            if ($this->slots->teamPlaysOnDay($match->getDay(), $team1, (int) $match->getId())
+                || $this->slots->teamPlaysOnDay($match->getDay(), $team2, (int) $match->getId())) {
+                throw new TournamentRuleException('team_already_playing', 'A real team cannot play two matches on the same day.');
+            }
+            $this->slots->deleteForMatch($match);
+            $this->entityManager->flush();
         }
-        $this->slots->deleteForMatch($match);
-        $this->entityManager->flush();
         $match->assignSides($team1, $team2, null, null);
         $this->syncPairing($match);
         $this->occupy($match);
@@ -517,6 +620,9 @@ final class TournamentScheduleService
 
     private function occupy(TournamentMatch $match): void
     {
+        if ($match->getDay()->getPhase() === TournamentDayPhase::CATCH_UP) {
+            return;
+        }
         foreach ([$match->getTeam1(), $match->getTeam2()] as $team) {
             if ($team instanceof TournamentTeam) {
                 $this->entityManager->persist(new TournamentDayTeamSlot($match->getDay(), $team, $match));

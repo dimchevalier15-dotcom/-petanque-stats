@@ -242,7 +242,8 @@ final class TournamentViewFactory
         $responses = [];
         foreach ($this->days->findForTournament($tournament) as $day) {
             $matches = [];
-            $readyToClose = $day->getStatus()->value !== 'closed';
+            $readyToClose = $day->getPhase() !== TournamentDayPhase::CATCH_UP
+                && $day->getStatus()->value !== 'closed';
             foreach ($this->matches->findForDay($day) as $match) {
                 $matches[] = $this->matchResponse($match, $viewerTeamId, $viewerIsAdmin);
             }
