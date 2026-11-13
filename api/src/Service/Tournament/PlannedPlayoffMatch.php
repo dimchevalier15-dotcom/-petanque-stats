@@ -15,6 +15,7 @@ final class PlannedPlayoffMatch
         public ?int $team2Id,
         public ?int $homeSourceSlot,
         public ?int $awaySourceSlot,
+        public ?int $byeTeamId = null,
     ) {
     }
 }

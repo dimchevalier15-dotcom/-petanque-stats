@@ -235,20 +235,6 @@ final class TournamentHttpTest extends WebDatabaseTestCase
         self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
 
         $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/days/'.$dayIds[0].'/close', $this->token($admin));
-        self::assertSame(409, $client->getResponse()->getStatusCode());
-        self::assertSame('day_not_closable', $this->payload($client)['error']);
-
-        $openDay = $this->show($client, $admin, $tournamentId)['days'][0];
-        foreach ($openDay['matches'] as $match) {
-            if ($match['score1'] === null) {
-                $this->json($client, 'PATCH', '/api/tournaments/'.$tournamentId.'/matches/'.$match['id'].'/score', $this->token($admin), [
-                    'score1' => 13,
-                    'score2' => 4,
-                ]);
-                self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
-            }
-        }
-        $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/days/'.$dayIds[0].'/close', $this->token($admin));
         self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
         self::assertSame('closed', $this->payload($client)['status']);
         $closedView = $this->show($client, $playerUser, $tournamentId);
@@ -420,6 +406,90 @@ final class TournamentHttpTest extends WebDatabaseTestCase
         self::assertNotNull($finalDay['matches'][0]['team1']['teamId']);
         self::assertNotNull($finalDay['matches'][0]['team2']['teamId']);
         self::assertSame($ranking, $this->show($client, $admin, $tournamentId)['ranking']);
+    }
+
+    public function testPlayoffsCanStartWithFewerThanEightTeamsAndIncompleteChampionshipDays(): void
+    {
+        $client = $this->createDatabaseClient();
+        $suffix = $this->suffix();
+        $master = $this->user('master-six-'.$suffix, UserRole::MASTER);
+        $admin = $this->user('admin-six-'.$suffix, UserRole::SIMPLE_PLAYER);
+        $players = [];
+        for ($index = 0; $index < 6; ++$index) {
+            $players[] = new Player('S'.$index, 'Nom', 'S'.$index.$suffix);
+            $this->em()->persist($players[$index]);
+        }
+        $this->em()->flush();
+        $tournamentId = $this->createTournament($client, $master, [$admin->getId()], 1, 1, ['numberOfLanes' => 2]);
+        $teamIds = [];
+        foreach ($players as $index => $player) {
+            $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/teams', $this->token($admin), [
+                'name' => 'Six '.$index,
+                'playerIds' => [$player->getId()],
+            ]);
+            $teamIds[] = $this->payload($client)['teams'][$index]['id'];
+        }
+        $day = $this->generate($client, $admin, $tournamentId, []);
+        self::assertSame(201, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        $scored = $day['matches'][0];
+        $this->json($client, 'PATCH', '/api/tournaments/'.$tournamentId.'/matches/'.$scored['id'].'/score', $this->token($admin), [
+            'score1' => 13,
+            'score2' => 5,
+        ]);
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        self::assertTrue($day['readyToClose']);
+        $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/days/'.$day['id'].'/close', $this->token($admin));
+        self::assertSame(200, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+
+        $detail = $this->show($client, $admin, $tournamentId);
+        self::assertCount(6, array_filter(
+            $detail['ranking']['rows'],
+            static fn (array $row): bool => $row['qualifiedForPlayoffs'],
+        ));
+
+        $this->json($client, 'POST', '/api/tournaments/'.$tournamentId.'/playoffs', $this->token($admin));
+        self::assertSame(201, $client->getResponse()->getStatusCode(), (string) $client->getResponse()->getContent());
+        $payload = $this->payload($client);
+        $quarters = array_values(array_filter(
+            $payload['days'],
+            static fn (array $item): bool => ($item['playoffRound'] ?? null) === 'quarter',
+        ));
+        self::assertCount(1, $quarters);
+        self::assertCount(2, $quarters[0]['matches']);
+        $pairs = [];
+        foreach ($quarters[0]['matches'] as $match) {
+            $ids = [$match['team1']['teamId'], $match['team2']['teamId']];
+            sort($ids);
+            $pairs[] = $ids[0].'-'.$ids[1];
+        }
+        sort($pairs);
+        $rankedTeamIds = array_map(
+            static fn (array $row): int => $row['teamId'],
+            $detail['ranking']['rows'],
+        );
+        $expected = [
+            $rankedTeamIds[2].'-'.$rankedTeamIds[5],
+            $rankedTeamIds[3].'-'.$rankedTeamIds[4],
+        ];
+        sort($expected);
+        self::assertSame($expected, $pairs);
+
+        $semis = array_values(array_filter(
+            $payload['days'],
+            static fn (array $item): bool => ($item['playoffRound'] ?? null) === 'semi',
+        ));
+        self::assertCount(1, $semis);
+        $semiTeams = [];
+        foreach ($semis[0]['matches'] as $match) {
+            if ($match['team1']['teamId'] !== null) {
+                $semiTeams[] = $match['team1']['teamId'];
+            }
+            if ($match['team2']['teamId'] !== null) {
+                $semiTeams[] = $match['team2']['teamId'];
+            }
+        }
+        sort($semiTeams);
+        self::assertSame([$rankedTeamIds[0], $rankedTeamIds[1]], $semiTeams);
     }
 
     /**

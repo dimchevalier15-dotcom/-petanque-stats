@@ -16,9 +16,9 @@
         :days="detail.days"
         :teams="detail.teams"
         :admin="detail.viewerIsAdmin"
-        @score="saveScore"
-        @lane="saveLane"
-        @teams="saveTeams"
+        :save-score="saveScore"
+        :save-lane="saveLane"
+        :save-teams="saveTeams"
         @close="closeDay"
       />
       <TournamentRankingPanel v-else-if="tab === 'ranking'" :ranking="detail.ranking" />
@@ -80,9 +80,11 @@ async function load(): Promise<void> {
 	}
 }
 
-function apply(next: TournamentDetail): void {
+function apply(next: TournamentDetail, options?: { remount?: boolean }): void {
 	detail.value = next;
-	revision.value += 1;
+	if (options?.remount !== false) {
+		revision.value += 1;
+	}
 	error.value = "";
 }
 
@@ -90,9 +92,9 @@ async function saveScore(payload: {
 	matchId: number;
 	score1: number;
 	score2: number;
-}): Promise<void> {
+}): Promise<boolean> {
 	if (!detail.value) {
-		return;
+		return false;
 	}
 	try {
 		apply(
@@ -100,9 +102,12 @@ async function saveScore(payload: {
 				score1: payload.score1,
 				score2: payload.score2,
 			}),
+			{ remount: false },
 		);
+		return true;
 	} catch (caught) {
 		error.value = tournamentErrorMessage(caught, t, te);
+		return false;
 	}
 }
 
@@ -110,9 +115,9 @@ async function saveTeams(payload: {
 	matchId: number;
 	team1Id: number;
 	team2Id: number;
-}): Promise<void> {
+}): Promise<boolean> {
 	if (!detail.value) {
-		return;
+		return false;
 	}
 	try {
 		apply(
@@ -122,18 +127,21 @@ async function saveTeams(payload: {
 				payload.team1Id,
 				payload.team2Id,
 			),
+			{ remount: false },
 		);
+		return true;
 	} catch (caught) {
 		error.value = tournamentErrorMessage(caught, t, te);
+		return false;
 	}
 }
 
 async function saveLane(payload: {
 	matchId: number;
 	laneNumber: number;
-}): Promise<void> {
+}): Promise<boolean> {
 	if (!detail.value) {
-		return;
+		return false;
 	}
 	try {
 		apply(
@@ -142,9 +150,12 @@ async function saveLane(payload: {
 				payload.matchId,
 				payload.laneNumber,
 			),
+			{ remount: false },
 		);
+		return true;
 	} catch (caught) {
 		error.value = tournamentErrorMessage(caught, t, te);
+		return false;
 	}
 }
 

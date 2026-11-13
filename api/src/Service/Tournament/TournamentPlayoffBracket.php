@@ -14,20 +14,43 @@ final class TournamentPlayoffBracket
      */
     public function plan(array $qualifiedTeamIds): array
     {
-        if (count($qualifiedTeamIds) < 8) {
-            throw new TournamentRuleException('not_enough_teams', 'Eight teams are required for the play-offs.', 409);
+        $count = count($qualifiedTeamIds);
+        if ($count < 2) {
+            throw new TournamentRuleException('not_enough_teams', 'At least two teams are required for the play-offs.', 409);
         }
 
-        $qualified = array_slice(array_values($qualifiedTeamIds), 0, 8);
+        $byRank = array_values($qualifiedTeamIds);
+        $teamAt = static function (int $rank) use ($byRank, $count): ?int {
+            if ($rank < 1 || $rank > $count) {
+                return null;
+            }
 
-        return [
-            new PlannedPlayoffMatch(TournamentPlayoffRound::QUARTER, 1, $qualified[0], $qualified[7], null, null),
-            new PlannedPlayoffMatch(TournamentPlayoffRound::QUARTER, 2, $qualified[3], $qualified[4], null, null),
-            new PlannedPlayoffMatch(TournamentPlayoffRound::QUARTER, 3, $qualified[1], $qualified[6], null, null),
-            new PlannedPlayoffMatch(TournamentPlayoffRound::QUARTER, 4, $qualified[2], $qualified[5], null, null),
-            new PlannedPlayoffMatch(TournamentPlayoffRound::SEMI, 1, null, null, 1, 2),
-            new PlannedPlayoffMatch(TournamentPlayoffRound::SEMI, 2, null, null, 3, 4),
-            new PlannedPlayoffMatch(TournamentPlayoffRound::FINAL, 1, null, null, 1, 2),
-        ];
+            return $byRank[$rank - 1];
+        };
+
+        $plans = [];
+        $quarterPairings = [[1, 8], [4, 5], [2, 7], [3, 6]];
+        foreach ($quarterPairings as $index => [$seedHome, $seedAway]) {
+            $slot = $index + 1;
+            $team1 = $teamAt($seedHome);
+            $team2 = $teamAt($seedAway);
+            if ($team1 !== null && $team2 !== null) {
+                $plans[] = new PlannedPlayoffMatch(TournamentPlayoffRound::QUARTER, $slot, $team1, $team2, null, null);
+                continue;
+            }
+            if ($team1 !== null) {
+                $plans[] = new PlannedPlayoffMatch(TournamentPlayoffRound::QUARTER, $slot, null, null, null, null, $team1);
+                continue;
+            }
+            if ($team2 !== null) {
+                $plans[] = new PlannedPlayoffMatch(TournamentPlayoffRound::QUARTER, $slot, null, null, null, null, $team2);
+            }
+        }
+
+        $plans[] = new PlannedPlayoffMatch(TournamentPlayoffRound::SEMI, 1, null, null, 1, 2);
+        $plans[] = new PlannedPlayoffMatch(TournamentPlayoffRound::SEMI, 2, null, null, 3, 4);
+        $plans[] = new PlannedPlayoffMatch(TournamentPlayoffRound::FINAL, 1, null, null, 1, 2);
+
+        return $plans;
     }
 }

@@ -81,11 +81,6 @@ final class TournamentScheduleService
         if ($day->getStatus() === TournamentDayStatus::CLOSED) {
             throw new TournamentRuleException('day_already_closed', 'This day is already closed.');
         }
-        foreach ($this->matches->findForDay($day) as $match) {
-            if (!$match->isFictional() && !$match->hasScore()) {
-                throw new TournamentRuleException('day_not_closable', 'Every real match needs a result before the day can be closed.');
-            }
-        }
         $day->close(new DateTimeImmutable());
         $this->entityManager->flush();
 
@@ -256,8 +251,15 @@ final class TournamentScheduleService
         ksort($qualified);
         $plans = $this->bracket->plan(array_values($qualified));
         $usable = $this->lanes->usableLaneNumbers($tournament->getNumberOfLanes(), $tournament->getExcludedLaneNumbers());
-        if (count($usable) < 4) {
-            throw new TournamentRuleException('not_enough_lanes', 'Four lanes are required to generate the quarter-finals.');
+        $quarterMatches = count(array_filter(
+            $plans,
+            static fn (PlannedPlayoffMatch $plan): bool => $plan->round === TournamentPlayoffRound::QUARTER
+                && $plan->byeTeamId === null
+                && $plan->team1Id !== null
+                && $plan->team2Id !== null,
+        ));
+        if (count($usable) < max(1, $quarterMatches)) {
+            throw new TournamentRuleException('not_enough_lanes', 'There are not enough available lanes for the play-offs.');
         }
         $teams = [];
         foreach ($this->teams->findForTournament($tournament) as $team) {
@@ -267,11 +269,13 @@ final class TournamentScheduleService
         $quarterDay = $this->playoffDay($tournament, $number, TournamentPlayoffRound::QUARTER);
         $semiDay = $this->playoffDay($tournament, $number + 1, TournamentPlayoffRound::SEMI);
         $finalDay = $this->playoffDay($tournament, $number + 2, TournamentPlayoffRound::FINAL);
-        $quarters = $this->createRound($quarterDay, $plans, TournamentPlayoffRound::QUARTER, $usable, $teams, []);
+        /** @var array<int, int> $byeAdvances */
+        $byeAdvances = [];
+        $quarters = $this->createRound($quarterDay, $plans, TournamentPlayoffRound::QUARTER, $usable, $teams, [], $byeAdvances);
         $this->entityManager->flush();
-        $semis = $this->createRound($semiDay, $plans, TournamentPlayoffRound::SEMI, $usable, $teams, $quarters);
+        $semis = $this->createRound($semiDay, $plans, TournamentPlayoffRound::SEMI, $usable, $teams, $quarters, $byeAdvances);
         $this->entityManager->flush();
-        $this->createRound($finalDay, $plans, TournamentPlayoffRound::FINAL, $usable, $teams, $semis);
+        $this->createRound($finalDay, $plans, TournamentPlayoffRound::FINAL, $usable, $teams, $semis, $byeAdvances);
         $this->markInProgress($tournament);
         $this->entityManager->flush();
     }
@@ -280,6 +284,7 @@ final class TournamentScheduleService
      * @param list<\App\Service\Tournament\PlannedPlayoffMatch> $plans
      * @param array<int, TournamentTeam> $teams
      * @param array<int, TournamentMatch> $sources
+     * @param array<int, int> $byeAdvances
      * @return array<int, TournamentMatch>
      */
     private function createRound(
@@ -289,6 +294,7 @@ final class TournamentScheduleService
         array $usable,
         array $teams,
         array $sources,
+        array &$byeAdvances = [],
     ): array {
         $lanes = $usable;
         shuffle($lanes);
@@ -298,13 +304,31 @@ final class TournamentScheduleService
             if ($plan->round !== $round) {
                 continue;
             }
+            if ($plan->byeTeamId !== null) {
+                $byeAdvances[$plan->slot] = $plan->byeTeamId;
+                continue;
+            }
             $match = new TournamentMatch($day, $lanes[$laneIndex], TournamentMatchPhase::PLAYOFF, false, $round, $plan->slot);
             ++$laneIndex;
             $team1 = $plan->team1Id !== null ? $teams[$plan->team1Id] : null;
             $team2 = $plan->team2Id !== null ? $teams[$plan->team2Id] : null;
-            $match->assignSides($team1, $team2, null, null);
-            if ($plan->homeSourceSlot !== null && $plan->awaySourceSlot !== null) {
-                $match->setSources($sources[$plan->homeSourceSlot], $sources[$plan->awaySourceSlot]);
+            if ($plan->homeSourceSlot !== null || $plan->awaySourceSlot !== null) {
+                $homeMatch = $plan->homeSourceSlot !== null ? ($sources[$plan->homeSourceSlot] ?? null) : null;
+                $awayMatch = $plan->awaySourceSlot !== null ? ($sources[$plan->awaySourceSlot] ?? null) : null;
+                $homeBye = $plan->homeSourceSlot !== null ? ($byeAdvances[$plan->homeSourceSlot] ?? null) : null;
+                $awayBye = $plan->awaySourceSlot !== null ? ($byeAdvances[$plan->awaySourceSlot] ?? null) : null;
+                if ($homeBye !== null) {
+                    $team1 = $teams[$homeBye];
+                }
+                if ($awayBye !== null) {
+                    $team2 = $teams[$awayBye];
+                }
+                $match->assignSides($team1, $team2, null, null);
+                if ($homeMatch !== null || $awayMatch !== null) {
+                    $match->setSources($homeMatch, $awayMatch);
+                }
+            } else {
+                $match->assignSides($team1, $team2, null, null);
             }
             $this->entityManager->persist($match);
             $this->occupy($match);

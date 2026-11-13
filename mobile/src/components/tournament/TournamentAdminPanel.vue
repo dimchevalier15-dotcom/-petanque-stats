@@ -1,7 +1,23 @@
 <template>
   <section class="admin">
-    <section class="block app-card">
-      <h3>{{ t('tournaments.admin.schedule') }}</h3>
+    <nav class="coach-subsegments" role="tablist" :aria-label="t('tournaments.tabs.admin')">
+      <div ref="sectionTrack" class="coach-subsegments-track">
+        <button
+          v-for="item in sections"
+          :key="item.id"
+          type="button"
+          role="tab"
+          class="coach-subsegment"
+          :class="{ 'coach-subsegment--active': activeSection === item.id }"
+          :aria-selected="activeSection === item.id"
+          @click="selectSection(item.id)"
+        >
+          {{ item.label }}
+        </button>
+      </div>
+    </nav>
+
+    <section v-show="activeSection === 'schedule'" class="block app-card">
       <p class="hint">{{ t('tournaments.admin.scheduleHint') }}</p>
       <p class="label">{{ t('tournaments.admin.present') }}</p>
       <label v-for="team in detail.teams" :key="team.id" class="check">
@@ -27,36 +43,102 @@
       <Button :label="t('tournaments.actions.generate')" :loading="busy" @click="generate" />
     </section>
 
-    <section class="block app-card">
-      <h3>{{ t('tournaments.admin.teams') }}</h3>
-      <p class="hint">{{ t('tournaments.admin.playerHint') }}</p>
-      <label class="app-field">
-        <span>{{ t('tournaments.fields.teamName') }}</span>
-        <InputText v-model="teamName" fluid />
-      </label>
-      <PlayerSearchSelect v-model="playerToAdd" :placeholder="t('tournaments.admin.players')" @update:model-value="pushPlayer" />
-      <div v-for="player in selectedPlayers" :key="player.id" class="chip">
-        <span>{{ player.nickname }}</span>
-        <Button type="button" icon="pi pi-times" text rounded @click="selectedPlayers = selectedPlayers.filter((item) => item.id !== player.id)" />
+    <section v-show="activeSection === 'teams'" class="teams-section">
+      <header class="teams-toolbar">
+        <p class="hint">{{ t('tournaments.admin.playerHint') }}</p>
+        <Button
+          type="button"
+          class="teams-add"
+          icon="pi pi-plus"
+          rounded
+          :aria-label="t('tournaments.admin.addTeam')"
+          :aria-expanded="showCreateTeam"
+          @click="showCreateTeam = !showCreateTeam"
+        />
+      </header>
+
+      <div v-if="showCreateTeam" class="team-create app-card">
+        <p class="team-create-title">{{ t('tournaments.admin.addTeam') }}</p>
+        <div class="team-create-body">
+          <label class="app-field">
+            <span>{{ t('tournaments.fields.teamName') }}</span>
+            <InputText v-model="teamName" fluid />
+          </label>
+          <PlayerSearchSelect
+            v-model="playerToAdd"
+            :placeholder="t('tournaments.admin.players')"
+            @update:model-value="pushPlayer"
+          />
+          <div v-for="player in selectedPlayers" :key="player.id" class="chip">
+            <span>{{ player.nickname }}</span>
+            <Button
+              type="button"
+              icon="pi pi-times"
+              text
+              rounded
+              @click="selectedPlayers = selectedPlayers.filter((item) => item.id !== player.id)"
+            />
+          </div>
+          <p class="hint">{{ teamSizeHint }}</p>
+          <div class="team-create-actions">
+            <Button type="button" text :label="t('tournaments.actions.cancel')" @click="cancelCreateTeam" />
+            <Button :label="t('tournaments.actions.save')" :disabled="!canCreateTeam" @click="createTeam" />
+          </div>
+        </div>
       </div>
-      <Button :label="t('tournaments.actions.add')" outlined :disabled="!canCreateTeam" @click="createTeam" />
-      <article v-for="team in detail.teams" :key="team.id" class="team">
-        <header>
-          <InputText v-model="teamNames[team.id]" fluid />
-          <Button type="button" :label="t('tournaments.actions.save')" text @click="renameTeam(team.id)" />
-          <Button type="button" :label="t('tournaments.actions.remove')" text @click="removeTeam(team.id)" />
-        </header>
-        <p v-for="player in team.players" :key="player.id" class="player-line">
-          <span>{{ player.firstName }} {{ player.lastName }}</span>
-          <Button type="button" icon="pi pi-times" text rounded @click="removePlayer(team.id, player.id)" />
-        </p>
-        <PlayerSearchSelect :model-value="null" :placeholder="t('tournaments.actions.add')" @update:model-value="(player) => player && addPlayer(team.id, player.id)" />
-      </article>
-      <p v-if="detail.teams.length === 0" class="hint">{{ t('tournaments.admin.noTeams') }}</p>
+
+      <p v-if="detail.teams.length === 0 && !showCreateTeam" class="empty-teams app-card">{{ t('tournaments.admin.noTeams') }}</p>
+
+      <details v-for="team in detail.teams" :key="team.id" class="team-fold app-card">
+        <summary class="team-summary">
+          <span class="team-summary-name">{{ team.name }}</span>
+          <span class="team-summary-meta">{{ t('tournaments.admin.playerCount', { count: team.players.length }) }}</span>
+          <i class="pi pi-chevron-down team-chevron" aria-hidden="true" />
+        </summary>
+        <div class="team-body">
+          <label class="app-field rename-field">
+            <span>{{ t('tournaments.fields.teamName') }}</span>
+            <div class="rename-row">
+              <InputText v-model="teamNames[team.id]" fluid />
+              <Button type="button" icon="pi pi-check" text rounded :aria-label="t('tournaments.actions.save')" @click="renameTeam(team.id)" />
+            </div>
+          </label>
+          <p v-if="team.players.length === 0" class="hint">{{ t('tournaments.admin.noPlayersInTeam') }}</p>
+          <ul v-else class="player-list">
+            <li v-for="player in team.players" :key="player.id" class="player-line">
+              <span class="player-name">{{ player.firstName }} {{ player.lastName }}</span>
+              <span v-if="player.nickname" class="player-nick">{{ player.nickname }}</span>
+              <Button
+                type="button"
+                icon="pi pi-times"
+                text
+                rounded
+                :aria-label="t('tournaments.actions.remove')"
+                @click="removePlayer(team.id, player.id)"
+              />
+            </li>
+          </ul>
+          <div class="add-player">
+            <span class="label">{{ t('tournaments.admin.addPlayer') }}</span>
+            <PlayerSearchSelect
+              :model-value="null"
+              :placeholder="t('tournaments.admin.players')"
+              @update:model-value="(player) => player && addPlayer(team.id, player.id)"
+            />
+          </div>
+          <Button
+            type="button"
+            class="remove-team"
+            text
+            severity="danger"
+            :label="t('tournaments.admin.removeTeam')"
+            @click="removeTeam(team.id)"
+          />
+        </div>
+      </details>
     </section>
 
-    <section class="block app-card">
-      <h3>{{ t('tournaments.admin.members') }}</h3>
+    <section v-show="activeSection === 'members'" class="block app-card">
       <div class="inline">
         <InputText v-model="memberQuery" :placeholder="t('tournaments.fields.adminSearch')" fluid />
         <Button type="button" outlined :label="t('tournaments.actions.search')" @click="searchMembers" />
@@ -75,8 +157,7 @@
       </article>
     </section>
 
-    <section class="block app-card">
-      <h3>{{ t('tournaments.admin.playoffs') }}</h3>
+    <section v-show="activeSection === 'playoffs'" class="block app-card">
       <p class="hint">{{ t('tournaments.admin.playoffsHint') }}</p>
       <p class="hint">{{ playoffMessage }}</p>
       <Button
@@ -87,8 +168,7 @@
       />
     </section>
 
-    <form class="block app-card" @submit.prevent="saveSettings">
-      <h3>{{ t('tournaments.admin.settings') }}</h3>
+    <form v-show="activeSection === 'settings'" class="block app-card" @submit.prevent="saveSettings">
       <label class="app-field">
         <span>{{ t('tournaments.fields.name') }}</span>
         <InputText v-model="settings.name" fluid />
@@ -137,7 +217,7 @@
 <script setup lang="ts">
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, nextTick, reactive, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useIsAdmin } from "../../composables/useIsAdmin";
 import type { Player } from "../../models/Player";
@@ -150,6 +230,8 @@ import {
 } from "../../utils/tournamentLanes";
 import PlayerSearchSelect from "../players/PlayerSearchSelect.vue";
 
+type AdminSection = "schedule" | "teams" | "members" | "playoffs" | "settings";
+
 const props = defineProps<{ detail: TournamentDetail }>();
 const emit = defineEmits<{
 	updated: [detail: TournamentDetail];
@@ -158,7 +240,10 @@ const emit = defineEmits<{
 
 const { t, te } = useI18n();
 const isMaster = useIsAdmin();
+const sectionTrack = ref<HTMLElement | null>(null);
+const activeSection = ref<AdminSection>("schedule");
 const busy = ref(false);
+const showCreateTeam = ref(false);
 const present = reactive<Record<number, boolean>>({});
 const teamNames = reactive<Record<number, string>>({});
 const fakeName = ref("");
@@ -182,6 +267,14 @@ const settings = reactive({
 	startsAt: "",
 	endsAt: "",
 });
+
+const sections = computed(() => [
+	{ id: "schedule" as const, label: t("tournaments.admin.schedule") },
+	{ id: "teams" as const, label: t("tournaments.admin.teams") },
+	{ id: "members" as const, label: t("tournaments.admin.members") },
+	{ id: "playoffs" as const, label: t("tournaments.admin.playoffs") },
+	{ id: "settings" as const, label: t("tournaments.admin.settings") },
+]);
 
 watch(
 	() => props.detail,
@@ -208,6 +301,10 @@ watch(
 	{ immediate: true },
 );
 
+watch(activeSection, () => {
+	void scrollActiveSection();
+});
+
 const laneChoices = computed(() => {
 	const upper = Math.max(
 		props.detail.numberOfLanes + excluded.value.length + 4,
@@ -227,6 +324,12 @@ const canCreateTeam = computed(() => {
 		count <= props.detail.maxPlayersPerTeam
 	);
 });
+const teamSizeHint = computed(() =>
+	t("tournaments.admin.teamSizeHint", {
+		min: props.detail.minPlayersPerTeam,
+		max: props.detail.maxPlayersPerTeam,
+	}),
+);
 const championshipDays = computed(() =>
 	props.detail.days.filter((day) => day.phase === "championship"),
 );
@@ -243,6 +346,22 @@ const playoffMessage = computed(() => {
 		? t("tournaments.admin.playoffsReady")
 		: t("tournaments.admin.playoffsWaiting");
 });
+
+function selectSection(id: AdminSection): void {
+	activeSection.value = id;
+}
+
+async function scrollActiveSection(): Promise<void> {
+	await nextTick();
+	const active = sectionTrack.value?.querySelector<HTMLElement>(
+		".coach-subsegment--active",
+	);
+	active?.scrollIntoView({
+		inline: "center",
+		block: "nearest",
+		behavior: "smooth",
+	});
+}
 
 function fail(error: unknown): void {
 	emit("failed", tournamentErrorMessage(error, t, te));
@@ -290,6 +409,13 @@ function pushPlayer(player: Player | null): void {
 	playerToAdd.value = null;
 }
 
+function cancelCreateTeam(): void {
+	showCreateTeam.value = false;
+	teamName.value = "";
+	selectedPlayers.value = [];
+	playerToAdd.value = null;
+}
+
 async function createTeam(): Promise<void> {
 	try {
 		emit(
@@ -300,8 +426,7 @@ async function createTeam(): Promise<void> {
 				selectedPlayers.value.map((player) => player.id),
 			),
 		);
-		teamName.value = "";
-		selectedPlayers.value = [];
+		cancelCreateTeam();
 	} catch (error) {
 		fail(error);
 	}
@@ -433,24 +558,58 @@ async function saveSettings(): Promise<void> {
 </script>
 
 <style scoped>
-.admin,
+.admin {
+  display: grid;
+  gap: var(--app-space-sm);
+  min-width: 0;
+}
+
+.coach-subsegments {
+  min-width: 0;
+}
+
+.coach-subsegments-track {
+  display: flex;
+  gap: 0.375rem;
+  overflow-x: auto;
+  padding: 0.125rem 0.125rem 0.25rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.coach-subsegments-track::-webkit-scrollbar {
+  display: none;
+}
+
+.coach-subsegment {
+  flex: 0 0 auto;
+  min-height: 2rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: var(--app-surface);
+  color: var(--app-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.coach-subsegment--active {
+  border-color: var(--app-primary);
+  background: var(--app-primary-soft);
+  color: var(--app-primary-dark);
+}
+
 .block {
   display: grid;
   gap: var(--app-space-sm);
-}
-
-.block {
   padding: var(--app-space-md);
 }
 
-h3,
 .hint,
 .label {
   margin: 0;
-}
-
-.hint,
-.label {
   color: var(--app-text-muted);
   font-size: 0.8125rem;
 }
@@ -488,5 +647,171 @@ h3,
 .member {
   padding-top: var(--app-space-sm);
   border-top: 1px solid var(--app-border);
+}
+
+.teams-section {
+  display: grid;
+  gap: var(--app-space-sm);
+  min-width: 0;
+}
+
+.teams-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--app-space-sm);
+}
+
+.teams-toolbar .hint {
+  flex: 1;
+  margin: 0;
+}
+
+.teams-toolbar :deep(.teams-add.p-button) {
+  flex-shrink: 0;
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+  min-width: 2.75rem !important;
+  min-height: 2.75rem !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: var(--app-primary) !important;
+  border-color: var(--app-primary) !important;
+  color: #fff !important;
+}
+
+.team-create,
+.team-fold,
+.empty-teams {
+  padding: 0;
+  overflow: hidden;
+}
+
+.team-create-title {
+  margin: 0;
+  padding: var(--app-space-sm) var(--app-space-md) 0;
+  font-weight: 700;
+}
+
+.team-create-body,
+.team-body {
+  display: grid;
+  gap: var(--app-space-sm);
+  padding: var(--app-space-sm) var(--app-space-md) var(--app-space-md);
+}
+
+.team-create-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--app-space-sm);
+}
+
+.team-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--app-space-sm);
+  min-height: var(--app-touch-min);
+  padding: var(--app-space-sm) var(--app-space-md);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.team-summary::-webkit-details-marker {
+  display: none;
+}
+
+.team-summary-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-summary-meta {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+}
+
+.team-chevron {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--app-text-muted);
+  transition: transform 0.15s ease;
+}
+
+.team-fold[open] .team-chevron {
+  transform: rotate(180deg);
+}
+
+.team-fold[open] .team-summary {
+  border-bottom: 1px solid var(--app-border);
+}
+
+.rename-row {
+  display: flex;
+  align-items: center;
+  gap: var(--app-space-xs);
+}
+
+.player-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0;
+}
+
+.player-line {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.15rem var(--app-space-sm);
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.player-line:last-child {
+  border-bottom: none;
+}
+
+.player-name {
+  grid-column: 1;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.player-nick {
+  grid-column: 1;
+  font-size: 0.75rem;
+  color: var(--app-text-muted);
+}
+
+.player-line :deep(.p-button) {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.add-player {
+  display: grid;
+  gap: var(--app-space-xs);
+  padding-top: var(--app-space-sm);
+  border-top: 1px solid var(--app-border);
+}
+
+.remove-team {
+  justify-self: start;
+  margin-top: var(--app-space-xs);
+}
+
+.empty-teams {
+  margin: 0;
+  padding: var(--app-space-md);
+  text-align: center;
+  color: var(--app-text-muted);
 }
 </style>

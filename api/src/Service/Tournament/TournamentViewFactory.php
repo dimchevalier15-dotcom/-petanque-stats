@@ -129,7 +129,9 @@ final class TournamentViewFactory
             $tournament->getPointsForWin(),
             $tournament->getPointsForDraw(),
         );
-        $canQualify = count($standings) >= 8;
+        $teamCount = count($standings);
+        $qualifyCutoff = min(8, $teamCount);
+        $canQualify = $teamCount >= 2;
         $tieUnresolved = false;
         $rows = [];
         foreach ($standings as $standing) {
@@ -149,7 +151,7 @@ final class TournamentViewFactory
                 $standing->pointsAgainst,
                 $standing->pointsDifference,
                 $standing->tieUnresolved,
-                $canQualify && $standing->position <= 8,
+                $canQualify && $standing->position <= $qualifyCutoff,
             );
         }
 
@@ -214,9 +216,6 @@ final class TournamentViewFactory
             $matches = [];
             $readyToClose = $day->getStatus()->value !== 'closed';
             foreach ($this->matches->findForDay($day) as $match) {
-                if ($readyToClose && !$match->isFictional() && !$match->hasScore()) {
-                    $readyToClose = false;
-                }
                 $matches[] = $this->matchResponse($match, $viewerTeamId, $viewerIsAdmin);
             }
             usort($matches, static function (TournamentMatchResponse $left, TournamentMatchResponse $right): int {
