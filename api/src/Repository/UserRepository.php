@@ -22,4 +22,21 @@ final class UserRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['email' => $email]);
     }
+
+    /**
+     * @return list<User>
+     */
+    public function searchByEmailPrefix(string $prefix, int $limit = 8): array
+    {
+        /** @var list<User> $users */
+        $users = $this->createQueryBuilder('u')
+            ->andWhere('LOWER(u.email) LIKE :prefix')
+            ->setParameter('prefix', mb_strtolower($prefix).'%')
+            ->orderBy('u.email', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        return $users;
+    }
 }

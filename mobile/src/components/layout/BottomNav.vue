@@ -14,46 +14,66 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
-import { useIsCoach, useIsSelectionGlobaleCoach } from '../../composables/useIsCoach'
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute } from "vue-router";
+import {
+	useIsCoach,
+	useIsSelectionGlobaleCoach,
+} from "../../composables/useIsCoach";
 
-const { t } = useI18n()
-const route = useRoute()
-const isCoach = useIsCoach()
-const isSelectionGlobaleCoach = useIsSelectionGlobaleCoach()
+const { t } = useI18n();
+const route = useRoute();
+const isCoach = useIsCoach();
+const isSelectionGlobaleCoach = useIsSelectionGlobaleCoach();
 
 const navItems = computed(() => {
-  const items = [
-    { name: 'home', icon: 'pi pi-home', labelKey: 'nav.home' },
-    { name: 'matchHistory', icon: 'pi pi-history', labelKey: 'nav.history' },
-    { name: 'myStats', icon: 'pi pi-chart-line', labelKey: 'nav.stats' },
-  ]
+	const items = [
+		{ name: "home", icon: "pi pi-home", labelKey: "nav.home" },
+		{ name: "matchHistory", icon: "pi pi-history", labelKey: "nav.history" },
+		{ name: "tournaments", icon: "pi pi-trophy", labelKey: "nav.tournaments" },
+		{ name: "myStats", icon: "pi pi-chart-line", labelKey: "nav.stats" },
+	];
 
-  if (isCoach.value) {
-    items.push({ name: 'coachPlayers', icon: 'pi pi-users', labelKey: 'nav.coach' })
-  }
-  if (isSelectionGlobaleCoach.value) {
-    items.push({ name: 'selectionGlobaleHub', icon: 'pi pi-flag', labelKey: 'nav.selectionGlobale' })
-  }
+	if (isCoach.value) {
+		items.push({
+			name: "coachPlayers",
+			icon: "pi pi-users",
+			labelKey: "nav.coach",
+		});
+	}
+	if (isSelectionGlobaleCoach.value) {
+		items.push({
+			name: "selectionGlobaleHub",
+			icon: "pi pi-flag",
+			labelKey: "nav.selectionGlobale",
+		});
+	}
 
-  return items
-})
+	return items;
+});
 
 const navStyle = computed(() => ({
-  gridTemplateColumns: `repeat(${navItems.value.length}, 1fr)`,
-}))
+	gridTemplateColumns: `repeat(${navItems.value.length}, 1fr)`,
+}));
 
 function isActive(name: string): boolean {
-  if (name === 'coachPlayers') {
-    return typeof route.name === 'string' && route.name.startsWith('coach')
-  }
-  if (name === 'selectionGlobaleHub') {
-    return typeof route.name === 'string' && String(route.name).startsWith('selectionGlobale')
-  }
+	if (name === "coachPlayers") {
+		return typeof route.name === "string" && route.name.startsWith("coach");
+	}
+	if (name === "selectionGlobaleHub") {
+		return (
+			typeof route.name === "string" &&
+			String(route.name).startsWith("selectionGlobale")
+		);
+	}
+	if (name === "tournaments") {
+		return (
+			typeof route.name === "string" && route.name.startsWith("tournament")
+		);
+	}
 
-  return route.name === name
+	return route.name === name;
 }
 </script>
 

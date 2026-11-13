@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Player;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -165,6 +166,11 @@ final class PlayerRepository extends ServiceEntityRepository
         $res = $qb->getQuery()->getResult();
 
         return $res;
+    }
+
+    public function findOneByUser(User $user): ?Player
+    {
+        return $this->findOneBy(['user' => $user]);
     }
 
     /**

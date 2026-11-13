@@ -27,6 +27,7 @@
     "newMatch": "Nový zápas",
     "coach": "Tréner",
     "stats": "Stats",
+    "tournaments": "Turnaje",
     "back": "Späť"
   },
   "validation": {
@@ -2203,6 +2204,145 @@
         "qrCaption": "Skenovať",
         "qrAria": "QR kód na Google Play"
       }
+    }
+  }
+,
+  "tournaments": {
+    "title": "Turnaje",
+    "subtitle": "Turnaje, ktorých ste členom",
+    "create": "Vytvoriť turnaj",
+    "empty": "Zatiaľ nie ste členom žiadneho turnaja.",
+    "loading": "Načítava sa…",
+    "formatLabel": "Jednokolový šampionát. Najlepších 8 postupuje do play-off.",
+    "status": {
+      "upcoming": "Pripravuje sa",
+      "in_progress": "Prebieha",
+      "finished": "Ukončený"
+    },
+    "tabs": {
+      "matches": "Zápasy",
+      "ranking": "Poradie",
+      "admin": "Admin"
+    },
+    "fields": {
+      "name": "Názov",
+      "description": "Popis",
+      "admins": "Správcovia",
+      "adminSearch": "Hľadať e-mail",
+      "minPlayers": "Minimum hráčov",
+      "maxPlayers": "Maximum hráčov",
+      "pointsWin": "Body za výhru",
+      "pointsDraw": "Body za remízu",
+      "draws": "Remízy povolené",
+      "lanes": "Počet ihrísk",
+      "excludedLanes": "Vylúčené ihriská (napr. 5, 8)",
+      "startsAt": "Dátum začiatku",
+      "endsAt": "Dátum konca",
+      "teamName": "Názov tímu",
+      "fakeTeam": "Fiktívny tím"
+    },
+    "actions": {
+      "search": "Hľadať",
+      "save": "Uložiť",
+      "add": "Pridať",
+      "remove": "Odobrať",
+      "generate": "Vygenerovať deň",
+      "closeDay": "Uzavrieť deň",
+      "saveScore": "Skóre",
+      "saveLane": "Ihrisko",
+      "saveTeams": "Tímy",
+      "generatePlayoffs": "Vygenerovať play-off"
+    },
+    "matches": {
+      "empty": "Zatiaľ žiadny deň.",
+      "championship": "Šampionát",
+      "playoffs": "Play-off",
+      "day": "Deň {number}",
+      "lane": "Ihrisko {lane}",
+      "scheduled": "Na hranie",
+      "finished": "Ukončený",
+      "generated": "Vygenerovaný",
+      "in_progress": "Prebieha",
+      "closed": "Uzavretý",
+      "fictional": "Fiktívny",
+      "pending": "Víťaz {round} {slot}",
+      "rounds": {
+        "quarter": "Štvrťfinále",
+        "semi": "Semifinále",
+        "final": "Finále"
+      }
+    },
+    "ranking": {
+      "empty": "V poradí zatiaľ nie je žiadny tím.",
+      "tie": "Remízu sa nepodarilo rozhodnúť podľa daných pravidiel.",
+      "position": "#",
+      "team": "Tím",
+      "played": "Z",
+      "wins": "V",
+      "draws": "R",
+      "losses": "P",
+      "points": "B",
+      "for": "SG",
+      "against": "SI",
+      "diff": "Roz",
+      "qualified": "Postup"
+    },
+    "admin": {
+      "schedule": "Vygenerovať deň",
+      "scheduleHint": "Všetky skutočné tímy hrajú predvolene. Odškrtnite neprítomné.",
+      "present": "Prítomné tímy",
+      "lanes": "Dostupné ihriská",
+      "teams": "Tímy",
+      "playerHint": "Účet prepojený s hráčom sa automaticky stane členom turnaja.",
+      "players": "Pridať hráča",
+      "noTeams": "Žiadny tím.",
+      "members": "Členovia",
+      "makeAdmin": "Správca",
+      "playoffs": "Play-off",
+      "playoffsHint": "Najlepších 8 tímov: 1-8, 4-5, 2-7, 3-6.",
+      "playoffsDone": "Pavúk je už vygenerovaný.",
+      "playoffsReady": "Všetky dni šampionátu sú uzavreté.",
+      "playoffsWaiting": "Pred generovaním pavúka uzavrite všetky dni šampionátu.",
+      "settings": "Nastavenia"
+    },
+    "errors": {
+      "generic": "Operáciu sa nepodarilo dokončiť.",
+      "not_found": "Tento turnaj nie je dostupný.",
+      "forbidden": "Na túto akciu nemáte oprávnenie.",
+      "conflict": "Táto operácia by zopakovala už naplánovanú konfrontáciu. Nič sa neuložilo.",
+      "day_already_closed": "Tento deň je už uzavretý.",
+      "day_closed": "Tento deň je uzavretý. Skóre môže zmeniť len správca.",
+      "day_not_closable": "Pred uzavretím dňa musia mať všetky skutočné zápasy výsledok.",
+      "lane_unavailable": "Toto ihrisko nie je dostupné.",
+      "lane_taken": "Toto ihrisko sa v tento deň už používa.",
+      "playoff_already_generated": "Play-off je už vygenerovaný.",
+      "unknown_team": "Tento tím nepatrí do turnaja.",
+      "invalid_settings": "Nastavenia turnaja nie sú platné.",
+      "not_enough_teams": "Na túto operáciu nie je dosť tímov.",
+      "no_valid_pairing": "S vybranými tímami a už naplánovanými konfrontáciami nie je možné vygenerovať platný deň.",
+      "not_enough_lanes": "Nie je dosť dostupných ihrísk.",
+      "playoff_not_ready": "Pred generovaním play-off uzavrite všetky dni šampionátu.",
+      "playoff_sides_fixed": "Tímy play-off sa riadia pavúkom a nedajú sa meniť.",
+      "fictional_sides_fixed": "Tímy fiktívneho zápasu zostávajú také, aké boli pri generovaní.",
+      "duplicate_pairing": "Tieto dva tímy sú v šampionáte už naplánované.",
+      "team_already_playing": "Skutočný tím nemôže v jeden deň hrať dva zápasy.",
+      "match_not_ready": "Pred uložením skóre musia byť známe oba tímy.",
+      "score_required": "Obe skóre sú povinné.",
+      "score_out_of_range": "Skóre musí byť od 0 do 13.",
+      "playoff_draw": "Zápas play-off sa nemôže skončiť remízou.",
+      "draws_not_allowed": "Remízy nie sú v tomto turnaji povolené.",
+      "match_locked": "Neskorší zápas pavúka už má výsledok.",
+      "user_not_found": "Tento používateľ sa nenašiel.",
+      "member_exists": "Tento používateľ už je členom.",
+      "last_admin": "Turnaj musí mať aspoň jedného správcu.",
+      "team_has_matches": "Tento tím už má zápasy a nedá sa odstrániť.",
+      "team_size": "Počet hráčov nespĺňa limity turnaja.",
+      "player_not_found": "Tento hráč sa nenašiel.",
+      "player_already_assigned": "Tento hráč už patrí do tímu tohto turnaja.",
+      "player_still_in_team": "Tento člen hrá v tíme a zostáva v turnaji.",
+      "member_not_found": "Tento používateľ nie je členom turnaja.",
+      "unknown_day": "Tento deň sa nenašiel.",
+      "unknown_match": "Tento zápas sa nenašiel."
     }
   }
 }

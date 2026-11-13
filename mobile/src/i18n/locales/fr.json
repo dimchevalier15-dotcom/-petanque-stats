@@ -28,6 +28,7 @@
     "coach": "Coach",
     "selectionGlobale": "Sélection",
     "stats": "Stats",
+    "tournaments": "Tournois",
     "back": "Retour"
   },
   "validation": {
@@ -2262,6 +2263,145 @@
         "qrCaption": "Scanner",
         "qrAria": "QR code vers Google Play"
       }
+    }
+  }
+,
+  "tournaments": {
+    "title": "Tournois",
+    "subtitle": "Les tournois dont vous êtes membre",
+    "create": "Créer un tournoi",
+    "empty": "Vous ne participez à aucun tournoi pour le moment.",
+    "loading": "Chargement…",
+    "formatLabel": "Championnat aller simple, les 8 premiers se qualifient pour les play-offs.",
+    "status": {
+      "upcoming": "À venir",
+      "in_progress": "En cours",
+      "finished": "Terminé"
+    },
+    "tabs": {
+      "matches": "Matchs",
+      "ranking": "Classement",
+      "admin": "Admin"
+    },
+    "fields": {
+      "name": "Nom",
+      "description": "Description",
+      "admins": "Administrateurs",
+      "adminSearch": "Rechercher un e-mail",
+      "minPlayers": "Joueurs minimum",
+      "maxPlayers": "Joueurs maximum",
+      "pointsWin": "Points victoire",
+      "pointsDraw": "Points nul",
+      "draws": "Matchs nuls autorisés",
+      "lanes": "Nombre de terrains",
+      "excludedLanes": "Terrains exclus (ex. 5, 8)",
+      "startsAt": "Date de début",
+      "endsAt": "Date de fin",
+      "teamName": "Nom de l'équipe",
+      "fakeTeam": "Équipe fictive"
+    },
+    "actions": {
+      "search": "Rechercher",
+      "save": "Enregistrer",
+      "add": "Ajouter",
+      "remove": "Retirer",
+      "generate": "Générer la journée",
+      "closeDay": "Clôturer la journée",
+      "saveScore": "Score",
+      "saveLane": "Terrain",
+      "saveTeams": "Équipes",
+      "generatePlayoffs": "Générer les play-offs"
+    },
+    "matches": {
+      "empty": "Aucune journée pour le moment.",
+      "championship": "Championnat",
+      "playoffs": "Play-offs",
+      "day": "Journée {number}",
+      "lane": "Terrain {lane}",
+      "scheduled": "À jouer",
+      "finished": "Terminé",
+      "generated": "Générée",
+      "in_progress": "En cours",
+      "closed": "Clôturée",
+      "fictional": "Fictif",
+      "pending": "Vainqueur {round} {slot}",
+      "rounds": {
+        "quarter": "Quart de finale",
+        "semi": "Demi-finale",
+        "final": "Finale"
+      }
+    },
+    "ranking": {
+      "empty": "Aucune équipe au classement.",
+      "tie": "Une égalité n'a pas pu être départagée par les critères prévus.",
+      "position": "#",
+      "team": "Équipe",
+      "played": "J",
+      "wins": "G",
+      "draws": "N",
+      "losses": "P",
+      "points": "Pts",
+      "for": "PM",
+      "against": "PE",
+      "diff": "Diff",
+      "qualified": "Qualifiée"
+    },
+    "admin": {
+      "schedule": "Générer une journée",
+      "scheduleHint": "Toutes les équipes réelles participent par défaut. Décochez les absentes.",
+      "present": "Équipes présentes",
+      "lanes": "Terrains disponibles",
+      "teams": "Équipes",
+      "playerHint": "Le compte lié au joueur devient automatiquement membre du tournoi.",
+      "players": "Ajouter un joueur",
+      "noTeams": "Aucune équipe.",
+      "members": "Membres",
+      "makeAdmin": "Administrateur",
+      "playoffs": "Play-offs",
+      "playoffsHint": "Les 8 premières équipes : 1-8, 4-5, 2-7, 3-6.",
+      "playoffsDone": "Le tableau est déjà généré.",
+      "playoffsReady": "Toutes les journées de championnat sont clôturées.",
+      "playoffsWaiting": "Clôturez toutes les journées de championnat avant de générer le tableau.",
+      "settings": "Paramètres"
+    },
+    "errors": {
+      "generic": "L'opération n'a pas abouti.",
+      "not_found": "Ce tournoi n'est pas accessible.",
+      "forbidden": "Vous n'avez pas le droit d'effectuer cette action.",
+      "conflict": "Cette opération recréerait une confrontation déjà planifiée. Rien n'a été enregistré.",
+      "day_already_closed": "Cette journée est déjà clôturée.",
+      "day_closed": "Cette journée est clôturée. Seul un administrateur peut modifier le score.",
+      "day_not_closable": "Tous les matchs réels doivent avoir un résultat avant la clôture.",
+      "lane_unavailable": "Ce terrain n'est pas disponible.",
+      "lane_taken": "Ce terrain est déjà utilisé dans la journée.",
+      "playoff_already_generated": "Les play-offs sont déjà générés.",
+      "unknown_team": "Cette équipe n'appartient pas au tournoi.",
+      "invalid_settings": "Les paramètres du tournoi ne sont pas valides.",
+      "not_enough_teams": "Il n'y a pas assez d'équipes pour cette opération.",
+      "no_valid_pairing": "Aucune journée valide ne peut être générée avec les équipes sélectionnées et les confrontations déjà planifiées.",
+      "not_enough_lanes": "Il n'y a pas assez de terrains disponibles.",
+      "playoff_not_ready": "Clôturez toutes les journées de championnat avant de générer les play-offs.",
+      "playoff_sides_fixed": "Les équipes d'un match de play-off suivent le tableau et ne peuvent pas être modifiées.",
+      "fictional_sides_fixed": "Les équipes d'un match fictif restent celles choisies à la génération.",
+      "duplicate_pairing": "Ces deux équipes sont déjà programmées dans le championnat.",
+      "team_already_playing": "Une équipe réelle ne peut pas jouer deux matchs dans la même journée.",
+      "match_not_ready": "Les deux équipes doivent être connues avant d'enregistrer un score.",
+      "score_required": "Les deux scores sont requis.",
+      "score_out_of_range": "Les scores doivent être compris entre 0 et 13.",
+      "playoff_draw": "Un match de play-off ne peut pas se terminer par un nul.",
+      "draws_not_allowed": "Les matchs nuls ne sont pas autorisés dans ce tournoi.",
+      "match_locked": "Un match suivant du tableau a déjà un résultat.",
+      "user_not_found": "Cet utilisateur est introuvable.",
+      "member_exists": "Cet utilisateur est déjà membre.",
+      "last_admin": "Le tournoi doit conserver au moins un administrateur.",
+      "team_has_matches": "Cette équipe a déjà des matchs et ne peut pas être supprimée.",
+      "team_size": "Le nombre de joueurs ne respecte pas les limites du tournoi.",
+      "player_not_found": "Ce joueur est introuvable.",
+      "player_already_assigned": "Ce joueur appartient déjà à une équipe de ce tournoi.",
+      "player_still_in_team": "Ce membre joue dans une équipe et reste inscrit au tournoi.",
+      "member_not_found": "Cet utilisateur n'est pas membre du tournoi.",
+      "unknown_day": "Cette journée est introuvable.",
+      "unknown_match": "Ce match est introuvable."
     }
   }
 }

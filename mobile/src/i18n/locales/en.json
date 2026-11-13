@@ -28,6 +28,7 @@
     "coach": "Coach",
     "selectionGlobale": "Selection",
     "stats": "Stats",
+    "tournaments": "Tournaments",
     "back": "Back"
   },
   "validation": {
@@ -2237,6 +2238,145 @@
         "qrCaption": "Scan",
         "qrAria": "QR code to Google Play"
       }
+    }
+  }
+,
+  "tournaments": {
+    "title": "Tournaments",
+    "subtitle": "Tournaments you belong to",
+    "create": "Create a tournament",
+    "empty": "You are not a member of any tournament yet.",
+    "loading": "Loading…",
+    "formatLabel": "Single-leg championship. The top 8 qualify for the play-offs.",
+    "status": {
+      "upcoming": "Upcoming",
+      "in_progress": "In progress",
+      "finished": "Finished"
+    },
+    "tabs": {
+      "matches": "Matches",
+      "ranking": "Standings",
+      "admin": "Admin"
+    },
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "admins": "Administrators",
+      "adminSearch": "Search an email",
+      "minPlayers": "Minimum players",
+      "maxPlayers": "Maximum players",
+      "pointsWin": "Points for a win",
+      "pointsDraw": "Points for a draw",
+      "draws": "Draws allowed",
+      "lanes": "Number of lanes",
+      "excludedLanes": "Excluded lanes (e.g. 5, 8)",
+      "startsAt": "Start date",
+      "endsAt": "End date",
+      "teamName": "Team name",
+      "fakeTeam": "Fictional team"
+    },
+    "actions": {
+      "search": "Search",
+      "save": "Save",
+      "add": "Add",
+      "remove": "Remove",
+      "generate": "Generate the day",
+      "closeDay": "Close the day",
+      "saveScore": "Score",
+      "saveLane": "Lane",
+      "saveTeams": "Teams",
+      "generatePlayoffs": "Generate play-offs"
+    },
+    "matches": {
+      "empty": "No day yet.",
+      "championship": "Championship",
+      "playoffs": "Play-offs",
+      "day": "Day {number}",
+      "lane": "Lane {lane}",
+      "scheduled": "To play",
+      "finished": "Finished",
+      "generated": "Generated",
+      "in_progress": "In progress",
+      "closed": "Closed",
+      "fictional": "Fictional",
+      "pending": "Winner {round} {slot}",
+      "rounds": {
+        "quarter": "Quarter-final",
+        "semi": "Semi-final",
+        "final": "Final"
+      }
+    },
+    "ranking": {
+      "empty": "No team in the standings.",
+      "tie": "A tie could not be split with the defined rules.",
+      "position": "#",
+      "team": "Team",
+      "played": "P",
+      "wins": "W",
+      "draws": "D",
+      "losses": "L",
+      "points": "Pts",
+      "for": "PF",
+      "against": "PA",
+      "diff": "Diff",
+      "qualified": "Qualified"
+    },
+    "admin": {
+      "schedule": "Generate a day",
+      "scheduleHint": "Every real team plays by default. Uncheck the absent ones.",
+      "present": "Teams present",
+      "lanes": "Available lanes",
+      "teams": "Teams",
+      "playerHint": "The account linked to the player automatically becomes a tournament member.",
+      "players": "Add a player",
+      "noTeams": "No team.",
+      "members": "Members",
+      "makeAdmin": "Administrator",
+      "playoffs": "Play-offs",
+      "playoffsHint": "Top 8 teams: 1-8, 4-5, 2-7, 3-6.",
+      "playoffsDone": "The bracket is already generated.",
+      "playoffsReady": "Every championship day is closed.",
+      "playoffsWaiting": "Close every championship day before generating the bracket.",
+      "settings": "Settings"
+    },
+    "errors": {
+      "generic": "The operation could not be completed.",
+      "not_found": "This tournament is not available.",
+      "forbidden": "You are not allowed to do this.",
+      "conflict": "This operation would recreate a confrontation that is already planned. Nothing was saved.",
+      "day_already_closed": "This day is already closed.",
+      "day_closed": "This day is closed. Only an administrator can change the score.",
+      "day_not_closable": "Every real match needs a result before the day can be closed.",
+      "lane_unavailable": "This lane is not available.",
+      "lane_taken": "This lane is already used on this day.",
+      "playoff_already_generated": "The play-offs are already generated.",
+      "unknown_team": "This team does not belong to the tournament.",
+      "invalid_settings": "The tournament settings are not valid.",
+      "not_enough_teams": "There are not enough teams for this operation.",
+      "no_valid_pairing": "No valid day can be generated with the selected teams and the confrontations already planned.",
+      "not_enough_lanes": "There are not enough available lanes.",
+      "playoff_not_ready": "Close every championship day before generating the play-offs.",
+      "playoff_sides_fixed": "Play-off teams follow the bracket and cannot be changed.",
+      "fictional_sides_fixed": "The teams of a fictional match stay as chosen when the day was generated.",
+      "duplicate_pairing": "These two teams are already scheduled in the championship.",
+      "team_already_playing": "A real team cannot play two matches on the same day.",
+      "match_not_ready": "Both teams must be known before a score is saved.",
+      "score_required": "Both scores are required.",
+      "score_out_of_range": "Scores must be between 0 and 13.",
+      "playoff_draw": "A play-off match cannot end in a draw.",
+      "draws_not_allowed": "Draws are not allowed in this tournament.",
+      "match_locked": "A later play-off match already has a result.",
+      "user_not_found": "This user could not be found.",
+      "member_exists": "This user is already a member.",
+      "last_admin": "The tournament must keep at least one administrator.",
+      "team_has_matches": "This team already has matches and cannot be deleted.",
+      "team_size": "The number of players does not respect the tournament limits.",
+      "player_not_found": "This player could not be found.",
+      "player_already_assigned": "This player already belongs to a team in this tournament.",
+      "player_still_in_team": "This member plays in a team and stays in the tournament.",
+      "member_not_found": "This user is not a member of the tournament.",
+      "unknown_day": "This day could not be found.",
+      "unknown_match": "This match could not be found."
     }
   }
 }
